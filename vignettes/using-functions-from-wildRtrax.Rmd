@@ -1,0 +1,28 @@
+---
+title: "using-functions-from-wildRtrax"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{using-functions-from-wildRtrax}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+#library(wildRtrax)
+```
+
+## Scanning audio files from a directory
+
+```{r, echo=FALSE, include=FALSE, eval=FALSE}
+
+df <- wt_audio_scanner(path, file_type)
+
+```
+
