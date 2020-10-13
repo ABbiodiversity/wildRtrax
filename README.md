@@ -37,12 +37,12 @@ data cleaning, analysis, and quality control in R.
 
 To report bugs, request additional features, or get help using the
 package, please file an
-[issue](https://github.com/mabecker89/wildRtrax/issues). Alternatively,
-you can email Alex MacPhail <agmacpha@ualberta.ca> or Marcus Becker
-<mabecker@ualberta.ca>.
+[issue](https://github.com/ABbiodiversity/wildRtrax/issues).
+Alternatively, you can email Alex MacPhail <agmacpha@ualberta.ca> or
+Marcus Becker <mabecker@ualberta.ca>.
 
 ## License
 
 This R package is licensed under [MIT
-license](https://github.com/mabecker89/wildRtrax/blob/master/LICENSE) ©
-2020 Marcus Becker, Alex MacPhail, and the ABMI.
+license](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE)
+© 2020 Marcus Becker, Alex MacPhail, and the ABMI.
