@@ -1,0 +1,8 @@
+pandoc: 2.7.3
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  using-functions-from-wildRtrax: using-functions-from-wildRtrax.html
+  working-with-wildRtrax: working-with-wildRtrax.html
+last_built: 2020-10-13T15:39Z
+
