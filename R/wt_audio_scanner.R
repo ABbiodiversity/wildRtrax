@@ -3,7 +3,7 @@
 #' @param path The path to the directory with audio files you wish to scan (character)
 #' @param file_type Can be either wac or wav file types (character)
 #'
-#' @import future fs furrr tibble dplyr tidyr stringr tools lubridate
+#' @import future fs furrr tibble dplyr tidyr stringr tools lubridate pipeR tuneR bioacoustics purrr
 #' @export
 #'
 #' @examples
@@ -48,6 +48,38 @@ wt_audio_scanner <- function(path, file_type) {
     dplyr::mutate(time_index = row_number()) %>%
     dplyr::ungroup()
 
-  return(df)
+  df_wav <- df %>%
+    dplyr::filter(file_type == "wav") %>%
+    dplyr::mutate(data = furrr::future_map(.x = file_path,
+                                           .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE),
+                                           .progress = TRUE)) %>%
+    dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]))),
+                  sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample.rate"]])),
+                  n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
+    dplyr::select(-data)
+
+  df_wac <- df %>%
+    dplyr::filter(file_type == "wac") %>>%
+    "Obtaining sampling rate from wac files ..." %>>%
+    dplyr::mutate(sample_rate = furrr::future_map_dbl(.x = file_path,
+                                               .f = ~ bioacoustics::read_audio(.x, from = 0, to = Inf)@samp.rate,
+                                               .progress = TRUE,
+                                               .options = future_options(seed = TRUE))) %>>%
+    "Retrieve number of channels from wac files ..." %>>%
+    dplyr::mutate(sample_rate = furrr::future_map_dbl(.x = file_path,
+                                                      .f = ~ bioacoustics::read_audio(.x, from = 0, to = Inf)@stereo,
+                                                      .progress = TRUE,
+                                                      .options = future_options(seed = TRUE))) %>>%
+    "Calculate sample rate from each wac file ... " %>>%
+    dplyr::mutate(sample_rate = furrr::future_map_dbl(.x = file_path,
+                                                      .f = ~ bioacoustics::read_audio(.x, from = 0, to = Inf)@left,
+                                                      .progress = TRUE,
+                                                      .options = future_options(seed = TRUE))) %>%
+    dplyr::mutate(length_seconds = samples / sample_rate) %>%
+    dplyr::select(-samples)
+
+  df_bind <- dplyr::bind_rows(df_wav, df_wac)
+
+  return(df_bind)
 
 }

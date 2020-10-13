@@ -22,7 +22,11 @@ Imports:
     tidyr (>= 1.0.2),
     lubridate,
     stringr,
-    tools
+    tools,
+    pipeR,
+    bioacoustics,
+    tuneR,
+    purrr
 Suggests: 
     testthat,
     covr,

@@ -6,4 +6,5 @@
 "_PACKAGE"
 
 # Define global variables
-utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext", "file_name", "recording_date_time"))
+utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext", "file_name", "recording_date_time",
+                         "data", "sample_rate", "samples"))
