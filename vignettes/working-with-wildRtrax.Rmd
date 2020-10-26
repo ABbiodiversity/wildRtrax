@@ -1,5 +1,10 @@
 ---
 title: "working with wildRtrax"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{working-with-wildRtrax}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}

@@ -1,26 +1,43 @@
-#' Scans directories of audio data and returns the filepath, filename, file size, date, time, station key, sample rate, length /(s)/ and number of channels to be used as filters for wt_aru_assign or other uses
+#' Scan and extract metadata from audio data
 #'
-#' @param path The path to the directory with audio files you wish to scan (character)
-#' @param file_type Can be either wac or wav file types (character)
+#' @description Scans directories of audio data and returns the filepath, filename, file size, date, time, station key,
+#' sample rate, length (seconds) and number of channels to be used as filters for wt_aru_assign or other uses.
+#'
+#' @param path Character; The path to the directory with audio files you wish to scan. Can be done recursively.
+#' @param file_type Character; Takes one of three values: wav, wac, or both. Use "both" if your directory contains both types of files.
 #'
 #' @import future fs furrr tibble dplyr tidyr stringr tools lubridate pipeR tuneR bioacoustics purrr
+#' @importFrom rlang env_has current_env
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' df <- wt_audio_scanner(path = "my_path", file_type = "\\.wav$|\\.wac$")
+#' df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both")
 #' }
 #'
 #' @return A dataframe with a summary of your audio files
 
 wt_audio_scanner <- function(path, file_type) {
 
+  # Create regex for file_type
+  if (file_type == "wav") {
+    file_type_reg <- "\\.wav$"
+  } else if (file_type == "wac") {
+    file_type_reg <- "\\.wac$"
+  } else if (file_type == "both") {
+    file_type_reg <- "\\.wav$|\\.wac$"
+  } else {
+    # Throw error if the file_type is not set to wav, wac, or both.
+    stop ("For now, this function can only be used for wav and/or wac files. Please specify either 'wac', 'wav', or 'both' with the file_type argument.")
+  }
+
   # Plan how to resolve a future
   future::plan(multisession)
 
+  # Scan files, gather metadata
   df <- fs::dir_ls(path = path,
                    recurse = TRUE,
-                   regexp = file_type) %>>%
+                   regexp = file_type_reg) %>>%
     "Scanning audio files in path ..." %>>%
     furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE) %>%
     tibble::enframe() %>%
@@ -37,6 +54,7 @@ wt_audio_scanner <- function(path, file_type) {
       extra = "merge",
       remove = FALSE
     ) %>%
+    # Create date/time fields
     dplyr::mutate(
       recording_date_time = lubridate::ymd_hms(recording_date_time),
       julian = lubridate::yday(recording_date_time),
@@ -45,9 +63,16 @@ wt_audio_scanner <- function(path, file_type) {
     dplyr::arrange(location, recording_date_time) %>%
     # Create time index
     dplyr::group_by(location, year, julian) %>%
-    dplyr::mutate(time_index = row_number()) %>%
+    dplyr::mutate(time_index = dplyr::row_number()) %>%
     dplyr::ungroup()
 
+  # Check whether anything was returned
+  if (nrow(df) == 0) {
+    stop ("There were no files of the type specified in file_path in the directory path specified.")
+  }
+
+  # wav files first
+  if ("wav" %in% df$file_type) {
   df_wav <- df %>%
     dplyr::filter(file_type == "wav") %>%
     dplyr::mutate(data = furrr::future_map(.x = file_path,
@@ -57,29 +82,65 @@ wt_audio_scanner <- function(path, file_type) {
                   sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample.rate"]])),
                   n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
     dplyr::select(-data)
+  }
 
+  # wac files next
+  if ("wac" %in% df$file_type) {
   df_wac <- df %>%
     dplyr::filter(file_type == "wac") %>>%
     "Obtaining sampling rate from wac files ..." %>>%
     dplyr::mutate(sample_rate = furrr::future_map_dbl(.x = file_path,
-                                               .f = ~ bioacoustics::read_audio(.x, from = 0, to = Inf)@samp.rate,
-                                               .progress = TRUE,
-                                               .options = future_options(seed = TRUE))) %>>%
+                                                      .f = ~ bioacoustics::read_audio(.x, from = 0, to = Inf)@samp.rate,
+                                                      .progress = TRUE,
+                                                      .options = furrr_options(seed = TRUE))) %>>%
     "Retrieve number of channels from wac files ..." %>>%
-    dplyr::mutate(sample_rate = furrr::future_map_dbl(.x = file_path,
-                                                      .f = ~ bioacoustics::read_audio(.x, from = 0, to = Inf)@stereo,
-                                                      .progress = TRUE,
-                                                      .options = future_options(seed = TRUE))) %>>%
+    dplyr::mutate(n_channels = furrr::future_map_dbl(.x = file_path,
+                                                     .f = ~ bioacoustics::read_audio(.x, from = 0, to = Inf)@stereo,
+                                                     .progress = TRUE,
+                                                     .options = furrr_options(seed = TRUE))) %>>%
     "Calculate sample rate from each wac file ... " %>>%
-    dplyr::mutate(sample_rate = furrr::future_map_dbl(.x = file_path,
-                                                      .f = ~ bioacoustics::read_audio(.x, from = 0, to = Inf)@left,
-                                                      .progress = TRUE,
-                                                      .options = future_options(seed = TRUE))) %>%
+    dplyr::mutate(samples = furrr::future_map_dbl(.x = file_path,
+                                                  .f = ~ length(bioacoustics::read_audio(.x, from = 0, to = Inf)@left),
+                                                  .progress = TRUE,
+                                                  .options = furrr_options(seed = TRUE))) %>%
     dplyr::mutate(length_seconds = samples / sample_rate) %>%
     dplyr::select(-samples)
+  }
 
-  df_bind <- dplyr::bind_rows(df_wav, df_wac)
+  # Stitch together
+  if (!rlang::env_has(rlang::current_env(), "df_wav")) {
+    df_final <- df_wac
+  } else if (!rlang::env_has(rlang::current_env(), "df_wac")) {
+    df_final <- df_wav
+  } else {
+    df_final <- dplyr::bind_rows(df_wac, df_wav)
+  }
 
-  return(df_bind)
+  # Return final dataframe
+  return(df_final)
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

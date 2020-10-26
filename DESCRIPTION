@@ -26,7 +26,8 @@ Imports:
     pipeR,
     bioacoustics,
     tuneR,
-    purrr
+    purrr,
+    rlang
 Suggests: 
     testthat,
     covr,
