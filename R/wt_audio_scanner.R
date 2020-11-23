@@ -39,7 +39,7 @@ wt_audio_scanner <- function(path, file_type) {
                    recurse = TRUE,
                    regexp = file_type_reg) %>>%
     "Scanning audio files in path ..." %>>%
-    furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE) %>%
+    furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, seed = TRUE) %>%
     tibble::enframe() %>%
     # Convert file sizes to megabytes
     dplyr::mutate(size_Mb = round(value / 10e5, digits = 2)) %>%
@@ -50,7 +50,7 @@ wt_audio_scanner <- function(path, file_type) {
     tidyr::separate(
       file_name,
       into = c("location", "recording_date_time"),
-      sep = "(?:_0\\+1_|_)",
+      sep = "(?:_0\\+1_|_|__0__|__1__)", #Strips Wildlife Acoustics SM3 file naming convention for channels
       extra = "merge",
       remove = FALSE
     ) %>%
@@ -116,7 +116,7 @@ wt_audio_scanner <- function(path, file_type) {
     df_final <- dplyr::bind_rows(df_wac, df_wav)
   }
 
-  # Return final dataframe
+  # Return final data frame
   return(df_final)
 
 }
