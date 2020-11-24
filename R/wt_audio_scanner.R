@@ -1,7 +1,7 @@
 #' Scan and extract metadata from audio data
 #'
-#' @description Scans directories of audio data and returns the filepath, filename, file size, date, time, station key,
-#' sample rate, length (seconds) and number of channels to be used as filters for wt_aru_assign or other uses.
+#' @description Scans directories of audio data and returns the filep ath, filen ame, file size, date, time, location name,
+#' sample rate, length (seconds) and number of channels to be used as filters for other uses
 #'
 #' @param path Character; The path to the directory with audio files you wish to scan. Can be done recursively.
 #' @param file_type Character; Takes one of three values: wav, wac, or both. Use "both" if your directory contains both types of files.
@@ -39,7 +39,7 @@ wt_audio_scanner <- function(path, file_type) {
                    recurse = TRUE,
                    regexp = file_type_reg) %>>%
     "Scanning audio files in path ..." %>>%
-    furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, seed = TRUE) %>%
+    furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = future_options(seed = TRUE)) %>%
     tibble::enframe() %>%
     # Convert file sizes to megabytes
     dplyr::mutate(size_Mb = round(value / 10e5, digits = 2)) %>%
@@ -58,7 +58,8 @@ wt_audio_scanner <- function(path, file_type) {
     dplyr::mutate(
       recording_date_time = lubridate::ymd_hms(recording_date_time),
       julian = lubridate::yday(recording_date_time),
-      year = lubridate::year(recording_date_time)
+      year = lubridate::year(recording_date_time),
+      gps_enabled = dplyr::case_when(grepl('$',file_name)) ~ TRUE
     ) %>%
     dplyr::arrange(location, recording_date_time) %>%
     # Create time index
@@ -77,7 +78,8 @@ wt_audio_scanner <- function(path, file_type) {
     dplyr::filter(file_type == "wav") %>%
     dplyr::mutate(data = furrr::future_map(.x = file_path,
                                            .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE),
-                                           .progress = TRUE)) %>%
+                                           .progress = TRUE,
+                                           .options = future_options(seed = TRUE))) %>%
     dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]))),
                   sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample.rate"]])),
                   n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
