@@ -73,24 +73,26 @@ There are four major audio file types used within the **wildRtrax** framework: *
 * *flac* a lossless compressed format useful for efficiently packing audio data
 
 ```{r Audio files, include = TRUE}
+
 audio_files <-
   # First list then retrieve file size from a given directory
-  dir_ls(path = '/users/alexandremacphail/desktop/testwav-1/',
+  dir_ls(path = '',
          recurse = TRUE,
          regexp = '\\.wac$|\\.w4v$|\\.wav$|\\.mp3$|\\.flac$') %>>%
   "Scanning audio files ..." %>>%
-  future_map_dbl(., .f = ~ file_size(.), .progress = TRUE) %>%
+  future_map_dbl(., .f = ~ file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE)) %>%
   enframe() %>%
   mutate(
     size = round(value / 10e5, digits = 2),   # Convert size to megabytes
     filename = basename(name),
     filetype = as_factor(file_ext(filename)),
-    compressed = case_when(filetype %in% c('wac', 'mp3', 'flac', '.w4v') ~ TRUE, TRUE ~ FALSE)) %>%
+    compressed = case_when(filetype %in% c('wac', 'mp3', 'flac', '.w4v', 'wav') ~ TRUE, TRUE ~ FALSE)) %>%
   select(name, filename, size, filetype, compressed)
   
 ```
 
 ```{r Figure 1 - Audio file formats, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, echo=FALSE, include = T}
+
 ggplot(audio_files, aes(x = reorder(filetype, size) , y = size, fill = compressed)) + geom_bar(stat="identity") + blanktheme + coord_flip() + xlab("Filetype") + ylab("Size (MB)")
 
 ```
@@ -101,7 +103,7 @@ It is important to understand how an R environment deals with audio data as well
 
 ```{r Examples of reading acoustic data into R, include = TRUE, echo = TRUE}
 
-file <- c('/users/alexandremacphail/desktop/testwav-1/ABMI-0320-NE_0+1_20180529_054500.wav')
+file <- c('')
 
 wave_t <- readWave(file, header = T) #True header format
 
@@ -127,9 +129,9 @@ When it comes to different file formats `read_wac`, `wav2flac`, `readMP3` and `r
 
 ```{r, include = TRUE, echo = TRUE}
 
-file_wac <- c('/users/alexandremacphail/desktop/testwav-1/ABMI-0320-NE_0+1_20180529_054500.wac')
+file_wac <- c('')
 
-file_flac <- c('/users/alexandremacphail/desktop/testwav-1/ABMI-0320-NE_0+1_20180529_054500.flac')
+file_flac <- c('')
 
 wac <- read_wac(file_wac)
 
@@ -145,7 +147,7 @@ A *spectrogram* is a visual representation of the spectrum of frequencies of a s
 * Frequency range of the vocalization via the y-axis in Hz
 * Relative amplitude of the vocalization via the z-axis in dBFS ([*decibels relative to full scale*](https://en.wikipedia.org/wiki/DBFS))
 
-Let's create a spectrogram to get a better looks at some of those audio files. Here's one way to do it using the `ggspectro` function in `**seewave**`. 
+Let's create a spectrogram to get a better looks at some of those audio files. Here's one way to do it using the `ggspectro` function in `seewave`. 
 
 ```{r Figure 2 - Create a spectrogram, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, warnings = FALSE, include = TRUE}
 #Let's filter by some dawn recordings in May
@@ -166,27 +168,29 @@ for (i in 1:nrow(audio_files)) {
 
 ```
 
-**SoX** is also a very powerful command line tool that can build spectrograms as well. Processing time here is much faster given R doesn't have to read in the file as an S4 wave object. More on this later. 
+([**SoX**](http://sox.sourceforge.net/)) is also a very powerful command line tool that can build spectrograms as well. Processing time here is much faster given R doesn't have to read in the file as an S4 wave object. More on this later. 
 
 ```{r SoX images in bash, engine='bash', include = TRUE}
+
 #Or try a bash command using SoX
-cd /users/alexandremacphail/desktop/testwav-1 && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
+cd path && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
 
 ```
 
 You'll notice that we are not manipulating any of the features of the wav file - simply reading in the raw acoustic information. You can read the images back into R using and create an array of images. See [`magick`](https://cran.r-project.org/web/packages/magick/index.html) for more functionality. 
 
 ```{r Read SoX images, fig.width = 5, fig.height = 3, fig.align = 'center', include = TRUE}
-pics <- list.files("/users/alexandremacphail/desktop/testwav-1",".png", recursive = T, full.names = T)
+
+pics <- list.files("",".png", recursive = T, full.names = T)
 images <- image_read(pics)
 image_append(image_border(images, "black", "3x3"), stack = FALSE)
 
 ```
 
-Manipulating spectrograms can be done by ...
 
-```{r Manipulating spectral signatures}
+```{r Manipulating spectral signatures, include = TRUE}
 
+#Content coming soon!
 
 ```
 
@@ -194,71 +198,57 @@ Manipulating spectrograms can be done by ...
 
 Stay tuned!
 
-
-
-
 --------------------------------------
 
 ## **Working with messy data: an introduction to environmental sensor data management**
 
 ### **From the field to the office**
 
-Familiarity with processes, protocols, equipment and data is a huge first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from certain aspects of the raw data, but robust field or *visit* metadata as it's called in **wildRtrax** is important to support the quality control process of the incoming sensor data.  
-
-In brief, the flow of environmental sensor data from the field can be outlined in few basic steps. The main portal to be used in each step is also noted:
-
-* Program and prepare the unit (*Equipment inventorying and maintenance protocols  - WildTrax*)
-* Deploy the unit in the field (*Visit metadata - WildTrax*)
-* Service the unit if it is staying in place, otherwise retrieve the unit along with the data (*Visit metadata - WildTrax*)
-* Backup, organize and quality control the sensor data (*Data management - wildRtrax*)
-* Link the visit metadata to sensor data (*Data management - WildTrax*)
-* Upload sensor data (*Data management - WildTrax*)
-* Process data (*Processing - WildTrax*)
-* Post-processing quality control (*Processing - WildTrax*)
-* Data publication, release and sharing (*Data Discovery - WildTrax*)
+Familiarity with processes, protocols, equipment and data is a huge first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from certain aspects of the raw data, but robust field or *visit* metadata as it's called in **wildRtrax** is important to support the quality control process of the incoming sensor data.
 
 ### **Metadata dependencies for acoustic data**
 
-You'll notice in the `audio_files` tibble, there is the *filename* column. The **wildRtrax** framework prefers that the file name string from which the data is deriving is composed of two parts: a *spatial* component and a *temporal* component. We call these fields the *location* and the *recording_date_time* of the recording, respectively. The location and date and time should be critical pieces of information that should be checked when you are visiting environmental sensors in the field. 
+You'll notice in the `audio_files` tibble, there is the *file name* column. The **wildRtrax** framework prefers that the file name string from which the data is deriving is composed of two parts: a *spatial* component and a *temporal* component. We call these fields the *location* and the *recording_date_time* of the recording, respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
 
 * **Location**
   * Is a string (or character vector) identifying a unique spatial location of your study
   * The following is currently supported:
-    * '^(.*?)(?:_+0\+1_?|_+0_?)?[_-](\d{12,14})(\.\w{2,6})?$' *or* '^(.*?)(?:_+0\+1_?|_+0_?)?[_-](\d{8})[-_\$](\d{4,6})(\.\w{2,6})?$' *or* '^(.*?)(?:_+0\+1_?|_+0_?)?[_-](\d{4})[_-](\d{2})[_-](\d{2})[_-\$](\d{2})[_-:](\d{2})[_-:]?(\d{0,2})(\.\w{2,6})?$'
+    * '^(.*?)(?:_+0\+1_?|_+0_?)?[_-](\d{12,14})(\.\w{2,6})?$' *or*
+    * '^(.*?)(?:_+0\+1_?|_+0_?)?[_-](\d{8})[-_\$](\d{4,6})(\.\w{2,6})?$' *or* 
+    * '^(.*?)(?:_+0\+1_?|_+0_?)?[_-](\d{4})[_-](\d{2})[_-](\d{2})[_-\$](\d{2})[_-:](\d{2})[_-:]?(\d{0,2})(\.\w{2,6})?$'
 
 * **Date time**
-  * Contains a POSIX.ct date time
-  * The following is currently supported: 
-    * lorem ipsum 
+  * Contains a POSIX.ct formattable date time
 
 Let's expand on the `audio_files` tibble a bit more to extract this information:
 
 ```{r Adding spatiotemporal metadata, include = TRUE}
+
 audio_files <-
-  dir_ls(path = '/users/alexandremacphail/desktop/testwav-1/',
-         recurse = TRUE,
-         regexp = '\\.wac$|\\.w4v$|\\.wav$|\\.mp3$|\\.flac$') %>>%
-  "Scanning audio files ..." %>>%
-  future_map_dbl(., .f = ~ file_size(.), .progress = TRUE) %>%
-  enframe() %>%
-  mutate(size_Mb = round(value / 10e5, digits = 2)) %>%
-  select(filepath = name, size_Mb) %>%
-  mutate(filename = str_replace(basename(filepath), "\\..*", "")) %>%
-  mutate(ftype = file_ext(filepath)) %>%
-  # Parse location and recording date time
-  separate(
-    filename,
-    into = c("location", "recording_date_time"),
-    sep = "(?:_0\\+1_|_|__0__|__1__)", #Deals with Wildlife Acoustics standard format
-    extra = "merge",
-    remove = FALSE
-  ) %>%
-  mutate(
-    recording_date_time = ymd_hms(recording_date_time),
-    julian = yday(recording_date_time), #Let's add julian date ...
-    year = year(recording_date_time) #... and year too!
-  ) %>%
-  arrange(location, recording_date_time)
+  fs::dir_ls(path = path,
+                   recurse = TRUE,
+                   regexp = file_type_reg) %>>%
+    "Scanning audio files in path ..." %>>%
+    furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = future_options(seed = TRUE)) %>%
+    tibble::enframe() %>%
+    # Convert file sizes to megabytes
+    dplyr::mutate(size_Mb = round(value / 10e5, digits = 2)) %>%
+    dplyr::select(file_path = name, size_Mb) %>%
+    dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", "")) %>%
+    dplyr::mutate(file_type = tools::file_ext(file_path)) %>%
+    # Parse location and recording date time
+    tidyr::separate(
+      file_name,
+      into = c("location", "recording_date_time"),
+      sep = "(?:_0\\+1_|_|__0__|__1__)", #Strips Wildlife Acoustics SM3 file naming convention for channels
+      extra = "merge",
+      remove = FALSE
+    ) %>%
+    # Create date/time fields
+    dplyr::mutate(
+      recording_date_time = lubridate::ymd_hms(recording_date_time),
+      julian = lubridate::yday(recording_date_time),
+      year = lubridate::year(recording_date_time))
 
 audio_files
 
@@ -271,36 +261,41 @@ Another important aspect of collecting long-duration acoustic data is ensuring t
 Let's give our pipe an indexing function and a larger acoustic data set to work with...
 
 ```{r Add time indexing, include = TRUE} 
-tic()
-audio_files <- #And a timer to see how long things take!
-  dir_ls(path = '/volumes/budata/abmi/2018/01/abmi-0320/abmi-0320-ne',
-         recurse = TRUE,
-         regexp = '\\.wac$|\\.w4v$|\\.wav$|\\.mp3$|\\.flac$') %>>%
-  "Scanning audio files ..." %>>%
-  future_map_dbl(., .f = ~ file_size(.), .progress = TRUE) %>%
-  enframe() %>%
-  mutate(size_Mb = round(value / 10e5, digits = 2)) %>%
-  select(filepath = name, size_Mb) %>%
-  mutate(filename = str_replace(basename(filepath), "\\..*", "")) %>%
-  mutate(ftype = file_ext(filepath)) %>%
-  separate(
-    filename,
-    into = c("location", "recording_date_time"),
-    sep = "(?:_0\\+1_|_|__0__|__1__)",
-    extra = "merge",
-    remove = FALSE
-  ) %>%
-  mutate(
-    recording_date_time = ymd_hms(recording_date_time),
-    julian = yday(recording_date_time),
-    year = year(recording_date_time)
-  ) %>%
-  arrange(location, recording_date_time) %>%
-  group_by(location, year, julian) %>% #Add time indexing
-  mutate(time_index = row_number()) %>%
-  ungroup() %>%
-  select(location, year, filename, size_Mb, ftype, recording_date_time, julian, time_index)
-toc()
+
+tic()#And a timer to see how long things take!
+
+audio_files <- 
+  fs::dir_ls(path = path,
+                   recurse = TRUE,
+                   regexp = file_type_reg) %>>%
+    "Scanning audio files in path ..." %>>%
+    furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = future_options(seed = TRUE)) %>%
+    tibble::enframe() %>%
+    # Convert file sizes to megabytes
+    dplyr::mutate(size_Mb = round(value / 10e5, digits = 2)) %>%
+    dplyr::select(file_path = name, size_Mb) %>%
+    dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", "")) %>%
+    dplyr::mutate(file_type = tools::file_ext(file_path)) %>%
+    # Parse location and recording date time
+    tidyr::separate(
+      file_name,
+      into = c("location", "recording_date_time"),
+      sep = "(?:_0\\+1_|_|__0__|__1__)", #Strips Wildlife Acoustics SM3 file naming convention for channels
+      extra = "merge",
+      remove = FALSE
+    ) %>%
+    # Create date/time fields
+    dplyr::mutate(
+      recording_date_time = lubridate::ymd_hms(recording_date_time),
+      julian = lubridate::yday(recording_date_time),
+      year = lubridate::year(recording_date_time),
+      gps_enabled = dplyr::case_when(grepl('$',file_name)) ~ TRUE #Find gps enable recordings using the '$' character
+    ) %>%
+    dplyr::arrange(location, recording_date_time) %>%
+    # Create time index
+    dplyr::group_by(location, year, julian) %>%
+    dplyr::mutate(time_index = dplyr::row_number()) %>%
+    dplyr::ungroup()
 
 sum(audio_files$size_Mb)/1000 #Total size of directory in GB
 
@@ -358,22 +353,21 @@ What if none of the above are acceptable? Are there other ways we can overcome t
 
 You might already be aware that **wildRtrax** and some of the functions previously described rely on *parallel computing* in order to speed up function run times. In general, the more cores you have, the faster you can run operations. For example `future_map_dbl` is a parallel computing function based off of `purrr`s `map_dbl`. See also its `pmap_dbl` cousin.
 
-* Show microbenchmarking blog for future_map
+### Scanning through data: *wt_audio_scanner*
 
-
-### Scanning through data: *wt_aru_scanner*
+Let's look at the output of the first `wildRtrax` function based on what we know now
 
 ```{r setup}
 
-#library(wildRtrax)
+library(wildRtrax)
+
+
 
 ```
 
 ### Assessing the situation
 
 ### Resolving data structure issues: *Python functions*
-
-
 
 ```{r}
 
@@ -387,9 +381,23 @@ You might already be aware that **wildRtrax** and some of the functions previous
 
 ## **Working with a clean dataset: pushing to WildTrax**
 
-### Scanning and subsetting
+### Scanning and subsetting data using `wt_audio_scanner`
 
-### Linking data for quick upload
+### Cleaning up recordings with `wt_varnish`
+
+### Linking data for quick upload with `wt_link`
+
+------------------------------------------------------------------------
+
+## **Advanced data subsetting**
+
+### Acoustic indices
+
+### Long-duration false-colour spectrograms
+
+### `wt_run_ap` and `wt_blow`
+
+### Other options for acoustic index extraction
 
 ------------------------------------------------------------------------
 
@@ -408,8 +416,6 @@ You might already be aware that **wildRtrax** and some of the functions previous
 ------------------------------------------------------------------------
 
 ## **Future directions**
-
-
 
 ------------------------------------------------------------------------
 
