@@ -8,14 +8,18 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
 ```
 
-```{r setup}
-# library(wildRtrax)
+```{r setup, include = FALSE, eval = FALSE, echo = FALSE}
+
+devtools::install_github("ABbiodiversity/wildRtrax")
+
 ```
 
 
@@ -37,7 +41,7 @@ This document contains an outline for how to use the R package **wildRtrax** for
 
 ### Do I need to know any other programming langugages in order to use **wildRtrax**?
 
-Certain functions rely on Python, Shell (bash) scripts and SQL. You do not need to know the languages in order to use the functions but it is encouraged to read the documentation.
+Certain functions rely on Python and bash scripts and some SQL. You do not need to know the languages in order to use the functions but it is encouraged to read the documentation.
 
 ### How do I report a bug in **wildRtrax**?
 
@@ -45,7 +49,7 @@ If you think you have found a bug in **wildRtrax**, you should report it to deve
 
 * The bug report should be so detailed that the bug can be replicated and corrected
 * Send an example that causes a bug
-* Send a minimal dataset as well if it is not available in R
+* Send a minimal data set as well if it is not available in R
 * Paste the output or error message in your message
 * Specify which version of **wildRtrax** you used
 
@@ -68,32 +72,34 @@ Both environmental sensors are designed to record sound or images autonomously f
 There are four major audio file types used within the **wildRtrax** framework: *wac*, *wav*, *mp3* and *flac*
 
 * *wac, w4v* are proprietary, lossless compressed file formats developed by [Wildlife Acoustics](https://www.wildlifeacoustics.com/)
-* *wav* is the standard, ubiquitous uncompressed audio file format AKA *"CD quality"*
+* *wav* is the standard, ubiquitous uncompressed audio file format
 * *mp3* a lossy compressed audio file format; works by reducing the accuracy of certain sound components, and eliminating others
 * *flac* a lossless compressed format useful for efficiently packing audio data
+
+Let's scan through a folder of audio data:
 
 ```{r Audio files, include = TRUE}
 
 audio_files <-
   # First list then retrieve file size from a given directory
-  dir_ls(path = '',
+  fs::dir_ls(path = '',
          recurse = TRUE,
          regexp = '\\.wac$|\\.w4v$|\\.wav$|\\.mp3$|\\.flac$') %>>%
   "Scanning audio files ..." %>>%
-  future_map_dbl(., .f = ~ file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE)) %>%
-  enframe() %>%
-  mutate(
+  purrr::future_map_dbl(., .f = ~ file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE)) %>%
+  tibble::enframe() %>%
+  dplyr::mutate(
     size = round(value / 10e5, digits = 2),   # Convert size to megabytes
     filename = basename(name),
-    filetype = as_factor(file_ext(filename)),
-    compressed = case_when(filetype %in% c('wac', 'mp3', 'flac', '.w4v', 'wav') ~ TRUE, TRUE ~ FALSE)) %>%
-  select(name, filename, size, filetype, compressed)
+    filetype = as_factor(tools::file_ext(filename)),
+    compressed = dplyr::case_when(filetype %in% c('wac', 'mp3', 'flac', '.w4v', 'wav') ~ TRUE, TRUE ~ FALSE)) %>%
+  dplyr::select(name, filename, size, filetype, compressed)
   
 ```
 
 ```{r Figure 1 - Audio file formats, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, echo=FALSE, include = T}
 
-ggplot(audio_files, aes(x = reorder(filetype, size) , y = size, fill = compressed)) + geom_bar(stat="identity") + blanktheme + coord_flip() + xlab("Filetype") + ylab("Size (MB)")
+ggplot2::ggplot(audio_files, aes(x = reorder(filetype, size) , y = size, fill = compressed)) + geom_bar(stat="identity") + blanktheme + coord_flip() + xlab("Filetype") + ylab("Size (MB)")
 
 ```
 
@@ -105,9 +111,9 @@ It is important to understand how an R environment deals with audio data as well
 
 file <- c('')
 
-wave_t <- readWave(file, header = T) #True header format
+wave_t <- tuneR::readWave(file, header = T) #True header format
 
-wave_f <- readWave(file, header = F)
+wave_f <- tuneR::readWave(file, header = F)
 
 list(wave_t, wave_f)
 
@@ -133,36 +139,37 @@ file_wac <- c('')
 
 file_flac <- c('')
 
-wac <- read_wac(file_wac)
+wac <- bioacoustics::read_wac(file_wac)
 
-flac <- wav2flac(file_flac, reverse = TRUE) #If needing to convert to a flac use reverse = FALSE
+flac <- bioacoustics::wav2flac(file_flac, reverse = TRUE) #If needing to convert to a flac use reverse = FALSE
 
 ```
 
 ### **Spectrograms**
 
-A *spectrogram* is a visual representation of the spectrum of frequencies of a signal as it varies with time ([Wikipedia](https://en.wikipedia.org/wiki/Spectrogram)). Spectrograms can be used to identify animal vocalizations by their unique spectral signature. Generally speaking, there are three pieces of information you can extract from a spectrogram:
+A *spectrogram* is a visual representation of the spectrum of frequencies of an audio signal as it varies with time ([Wikipedia](https://en.wikipedia.org/wiki/Spectrogram)). Spectrograms can be used to identify animal vocalizations by their unique spectral signature. Generally speaking, there are three pieces of information you can extract from a spectrogram:
 
 * Length of the vocalization via the x-axis in seconds
 * Frequency range of the vocalization via the y-axis in Hz
 * Relative amplitude of the vocalization via the z-axis in dBFS ([*decibels relative to full scale*](https://en.wikipedia.org/wiki/DBFS))
 
-Let's create a spectrogram to get a better looks at some of those audio files. Here's one way to do it using the `ggspectro` function in `seewave`. 
+Let's create a spectrogram to get a better looks at some of those audio files. Here's one way to do it using the `ggspectro` in `seewave`. 
 
 ```{r Figure 2 - Create a spectrogram, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, warnings = FALSE, include = TRUE}
+
 #Let's filter by some dawn recordings in May
 audio_files <- audio_files %>%
-  filter(filename %in% c('ABMI-0320-NE_0+1_20180529_054500.wav','ABMI-0320-NE_0+1_20180528_054600.wav'))
+  dplyr::filter(filename %in% c('ABMI-0320-NE_0+1_20180529_054500.wav','ABMI-0320-NE_0+1_20180528_054600.wav'))
 
 #You can use something like a loop and ggpspectro from seewave
 for (i in 1:nrow(audio_files)) {
   tryCatch(
-      t <- readWave(audio_files$name[i], from = 0, to = 60, units ="seconds"),
+      t <- tuneR::readWave(audio_files$name[i], from = 0, to = 60, units ="seconds"),
       error = function(e) {
         msg <- conditionMessage(e)
         print(paste0(msg, i, sep=' *** '))}
     )
-  v <- ggspectro(t, ovlp = 50) + geom_tile(aes(fill=amplitude)) + labs(title = audio_files$filename[i]) + blanktheme
+  v <- seewave::ggspectro(t, ovlp = 50) + ggplot2::geom_tile(aes(fill=amplitude)) + labs(title = audio_files$filename[i]) + blanktheme
   print(v)
 }
 
@@ -187,6 +194,7 @@ image_append(image_border(images, "black", "3x3"), stack = FALSE)
 
 ```
 
+Manipulating spectral signatures... 
 
 ```{r Manipulating spectral signatures, include = TRUE}
 
@@ -196,7 +204,7 @@ image_append(image_border(images, "black", "3x3"), stack = FALSE)
 
 ### **Photo file formats**
 
-Stay tuned!
+Content coming soon!
 
 --------------------------------------
 
@@ -204,7 +212,7 @@ Stay tuned!
 
 ### **From the field to the office**
 
-Familiarity with processes, protocols, equipment and data is a huge first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from certain aspects of the raw data, but robust field or *visit* metadata as it's called in **wildRtrax** is important to support the quality control process of the incoming sensor data.
+Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from certain aspects of the raw data, but robust field or *visit* metadata as it's called in **wildRtrax** and **WildTrax** is important to support the quality control process of the incoming sensor data.
 
 ### **Metadata dependencies for acoustic data**
 
@@ -218,7 +226,7 @@ You'll notice in the `audio_files` tibble, there is the *file name* column. The 
     * '^(.*?)(?:_+0\+1_?|_+0_?)?[_-](\d{4})[_-](\d{2})[_-](\d{2})[_-\$](\d{2})[_-:](\d{2})[_-:]?(\d{0,2})(\.\w{2,6})?$'
 
 * **Date time**
-  * Contains a POSIX.ct formattable date time
+  * Contains a POSIX.ct format date time
 
 Let's expand on the `audio_files` tibble a bit more to extract this information:
 
@@ -305,31 +313,59 @@ Looks like we are recording eight times a day throughout various times of day. B
 
 ```{r, echo = TRUE, fig.align='center'}
 
+server <- function(input, output) {
+  sliderValues <-
+    reactive({
+      (
+        input$variable1 * input$variable4 * (input$variable3 * 16 * 2 * input$variable2 *
+                                               60) / 8
+      ) * 0.000000000001
+    })
+  pl <- reactive({
+    sliderValues()
+  })
+  output$values <-
+    renderText({
+      paste0("Data accumulated: ", sliderValues(), " TB")
+    })
+}
+
+shinyApp(ui, server)
+
 ui <- pageWithSidebar(
   headerPanel("Data accumulation"),
   sidebarPanel(
-    sliderInput("variable1","Days:",
-                min = 0, max = 365,
-                value = 1),
-    sliderInput("variable2","Audio minutes recorded per day:",
-                min = 0, max = 1440,
-                value = 10),
-    sliderInput("variable3","Sample rate:",
-                min = 0, max = 48000,
-                value = 44100),
-    sliderInput("variable4","Locations surveyed:",
-                min = 0, max = 1000,
-                value = 1)
+    sliderInput(
+      "variable1",
+      "Days:",
+      min = 0,
+      max = 365,
+      value = 1
+    ),
+    sliderInput(
+      "variable2",
+      "Audio minutes recorded per day:",
+      min = 0,
+      max = 1440,
+      value = 10
+    ),
+    sliderInput(
+      "variable3",
+      "Sample rate:",
+      min = 0,
+      max = 48000,
+      value = 44100
+    ),
+    sliderInput(
+      "variable4",
+      "Locations surveyed:",
+      min = 0,
+      max = 1000,
+      value = 1
+    )
   ),
-  mainPanel(tableOutput("values")))
-
-server <- function(input, output) {
-  sliderValues <- reactive({ (input$variable1 * input$variable4 * (input$variable3*16*2*input$variable2*60)/8)*0.000000000001 })
-  pl <- reactive({ sliderValues() })
-  output$values <- renderText({paste0("Data accumulated: ",sliderValues(), " TB")})
-}
-  
-shinyApp(ui, server)
+  mainPanel(tableOutput("values"))
+)
 
 ```
 
@@ -357,11 +393,11 @@ You might already be aware that **wildRtrax** and some of the functions previous
 
 Let's look at the output of the first `wildRtrax` function based on what we know now
 
-```{r setup}
+```{r Running wt_audio_scanner}
 
 library(wildRtrax)
 
-
+audio_files <- wt_audio_scanner(path = , file_type = )
 
 ```
 
@@ -379,7 +415,7 @@ library(wildRtrax)
 
 --------------------------------------
 
-## **Working with a clean dataset: pushing to WildTrax**
+## **Working with a clean data set: pushing to WildTrax**
 
 ### Scanning and subsetting data using `wt_audio_scanner`
 
@@ -387,9 +423,15 @@ library(wildRtrax)
 
 ### Linking data for quick upload with `wt_link`
 
+### Scenario 1:
+
+### Scenario 2:
+
+### Scenario 3:
+
 ------------------------------------------------------------------------
 
-## **Advanced data subsetting**
+## **Advanced audio data manipulation**
 
 ### Acoustic indices
 
@@ -407,11 +449,9 @@ library(wildRtrax)
 
 ### Study design case study 1: 
 
-### Study design case study 2:
+### Study design case study 2: Seasonal phenology
 
-### Study design case study 3:
-
-### Seasonal phenology
+### Study design case study 3: Multi-observer record analysis with `wt_carrefour`
 
 ------------------------------------------------------------------------
 
