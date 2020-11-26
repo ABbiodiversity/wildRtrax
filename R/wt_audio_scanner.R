@@ -58,8 +58,7 @@ wt_audio_scanner <- function(path, file_type) {
     dplyr::mutate(
       recording_date_time = lubridate::ymd_hms(recording_date_time),
       julian = lubridate::yday(recording_date_time),
-      year = lubridate::year(recording_date_time),
-      gps_enabled = dplyr::case_when(grepl('$',file_name)) ~ TRUE
+      year = lubridate::year(recording_date_time)
     ) %>%
     dplyr::arrange(location, recording_date_time) %>%
     # Create time index

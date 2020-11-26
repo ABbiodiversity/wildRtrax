@@ -7,12 +7,47 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, echo = FALSE}
 
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+library(ecodist)
+library(shiny)
+library(vroom)
+library(reticulate)
+library(grid)
+library(vegan)
+library(plotly)
+library(lubridate)
+library(scales)
+library(ggrepel)
+library(RColorBrewer)
+library(RPostgreSQL)
+library(tibble)
+library(pipeR)
+library(tidyverse)
+library(gganimate)
+library(bioacoustics)
+library(tuneR)
+library(data.table)
+library(dbplyr)
+library(svDialogs)
+library(vegan)
+library(gghighlight)
+library(tictoc)
+library(furrr)
+library(bcmaps)
+library(bcmapsdata)
+library(sf)
+library(seewave)
+library(magick)
+blanktheme<-theme_bw() +
+    theme(panel.background = element_blank(), 
+      panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank())
 
 ```
 
@@ -82,11 +117,11 @@ Let's scan through a folder of audio data:
 
 audio_files <-
   # First list then retrieve file size from a given directory
-  fs::dir_ls(path = '',
+  fs::dir_ls(path = '/users/alexandremacphail/desktop/testwav',
          recurse = TRUE,
          regexp = '\\.wac$|\\.w4v$|\\.wav$|\\.mp3$|\\.flac$') %>>%
   "Scanning audio files ..." %>>%
-  purrr::future_map_dbl(., .f = ~ file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE)) %>%
+  furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE)) %>%
   tibble::enframe() %>%
   dplyr::mutate(
     size = round(value / 10e5, digits = 2),   # Convert size to megabytes
@@ -96,6 +131,7 @@ audio_files <-
   dplyr::select(name, filename, size, filetype, compressed)
   
 ```
+
 
 ```{r Figure 1 - Audio file formats, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, echo=FALSE, include = T}
 
@@ -109,7 +145,7 @@ It is important to understand how an R environment deals with audio data as well
 
 ```{r Examples of reading acoustic data into R, include = TRUE, echo = TRUE}
 
-file <- c('')
+file <- c('/users/alexandremacphail/desktop/testwav/ABMI-0439-NW_20190530_054400.wav')
 
 wave_t <- tuneR::readWave(file, header = T) #True header format
 
@@ -135,13 +171,13 @@ When it comes to different file formats `read_wac`, `wav2flac`, `readMP3` and `r
 
 ```{r, include = TRUE, echo = TRUE}
 
-file_wac <- c('')
+file_wac <- c('/users/alexandremacphail/desktop/testwav/ABMI-0439-NE_0+1_20190526_054900.wac')
 
-file_flac <- c('')
+file_flac <- c('/users/alexandremacphail/desktop/testwav/ABMI-0439-NW_0+1_20190530_054400.flac')
 
-wac <- bioacoustics::read_wac(file_wac)
+wac <- read_wac(file_wac)
 
-flac <- bioacoustics::wav2flac(file_flac, reverse = TRUE) #If needing to convert to a flac use reverse = FALSE
+flac <- wav2flac(file_flac, reverse = TRUE) #If needing to convert to a flac use reverse = FALSE
 
 ```
 
@@ -153,13 +189,12 @@ A *spectrogram* is a visual representation of the spectrum of frequencies of an 
 * Frequency range of the vocalization via the y-axis in Hz
 * Relative amplitude of the vocalization via the z-axis in dBFS ([*decibels relative to full scale*](https://en.wikipedia.org/wiki/DBFS))
 
-Let's create a spectrogram to get a better looks at some of those audio files. Here's one way to do it using the `ggspectro` in `seewave`. 
+Let's create a spectrogram to get a better look at some of those audio files. Here's one way to do it using `ggspectro` in `seewave`. 
 
 ```{r Figure 2 - Create a spectrogram, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, warnings = FALSE, include = TRUE}
 
-#Let's filter by some dawn recordings in May
 audio_files <- audio_files %>%
-  dplyr::filter(filename %in% c('ABMI-0320-NE_0+1_20180529_054500.wav','ABMI-0320-NE_0+1_20180528_054600.wav'))
+  dplyr::filter(filename %in% c('ABMI-0439-NW_20190530_054400.wav','ABMI-0439-NW_20190529_054500.wav'))
 
 #You can use something like a loop and ggpspectro from seewave
 for (i in 1:nrow(audio_files)) {
@@ -180,7 +215,7 @@ for (i in 1:nrow(audio_files)) {
 ```{r SoX images in bash, engine='bash', include = TRUE}
 
 #Or try a bash command using SoX
-cd path && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
+cd /users/alexandremacphail/desktop/testwav && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
 
 ```
 
@@ -188,7 +223,7 @@ You'll notice that we are not manipulating any of the features of the wav file -
 
 ```{r Read SoX images, fig.width = 5, fig.height = 3, fig.align = 'center', include = TRUE}
 
-pics <- list.files("",".png", recursive = T, full.names = T)
+pics <- list.files("/users/alexandremacphail/desktop/testwav",".png", recursive = T, full.names = T)
 images <- image_read(pics)
 image_append(image_border(images, "black", "3x3"), stack = FALSE)
 
@@ -233,9 +268,9 @@ Let's expand on the `audio_files` tibble a bit more to extract this information:
 ```{r Adding spatiotemporal metadata, include = TRUE}
 
 audio_files <-
-  fs::dir_ls(path = path,
+  fs::dir_ls(path = "/volumes/budata/abmi/2019/01/abmi-0439/abmi-0439-ne",
                    recurse = TRUE,
-                   regexp = file_type_reg) %>>%
+                   regexp = '\\.wac$|\\.wav$') %>>%
     "Scanning audio files in path ..." %>>%
     furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = future_options(seed = TRUE)) %>%
     tibble::enframe() %>%
@@ -273,9 +308,9 @@ Let's give our pipe an indexing function and a larger acoustic data set to work 
 tic()#And a timer to see how long things take!
 
 audio_files <- 
-  fs::dir_ls(path = path,
+  fs::dir_ls(path = "/volumes/budata/abmi/2019/01/abmi-0439/abmi-0439-ne",
                    recurse = TRUE,
-                   regexp = file_type_reg) %>>%
+                   regexp = '\\.wac$|\\.wav$') %>>%
     "Scanning audio files in path ..." %>>%
     furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = future_options(seed = TRUE)) %>%
     tibble::enframe() %>%
@@ -296,9 +331,7 @@ audio_files <-
     dplyr::mutate(
       recording_date_time = lubridate::ymd_hms(recording_date_time),
       julian = lubridate::yday(recording_date_time),
-      year = lubridate::year(recording_date_time),
-      gps_enabled = dplyr::case_when(grepl('$',file_name)) ~ TRUE #Find gps enable recordings using the '$' character
-    ) %>%
+      year = lubridate::year(recording_date_time)) %>%
     dplyr::arrange(location, recording_date_time) %>%
     # Create time index
     dplyr::group_by(location, year, julian) %>%
@@ -329,8 +362,6 @@ server <- function(input, output) {
       paste0("Data accumulated: ", sliderValues(), " TB")
     })
 }
-
-shinyApp(ui, server)
 
 ui <- pageWithSidebar(
   headerPanel("Data accumulation"),
@@ -367,6 +398,8 @@ ui <- pageWithSidebar(
   mainPanel(tableOutput("values"))
 )
 
+shinyApp(ui, server)
+
 ```
 
 ### **Data volume, storage and computing power**
@@ -397,7 +430,7 @@ Let's look at the output of the first `wildRtrax` function based on what we know
 
 library(wildRtrax)
 
-audio_files <- wt_audio_scanner(path = , file_type = )
+audio_files <- wt_audio_scanner(path = "/volumes/budata/abmi/2019/01/abmi-0439", file_type = "both")
 
 ```
 
