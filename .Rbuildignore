@@ -10,3 +10,4 @@
 ^pkgdown$
 ^\.travis\.yml$
 ^vignettes/articles$
+beta/
