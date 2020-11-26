@@ -8,14 +8,18 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
 ```
 
 ```{r setup}
+
 #library(wildRtrax)
+
 ```
 
 ## Scanning audio files from a directory
@@ -23,6 +27,14 @@ knitr::opts_chunk$set(
 ```{r, echo=FALSE, include=FALSE, eval=FALSE}
 
 df <- wt_audio_scanner(path, file_type)
+
+```
+
+## Running the QUT Ecoacoustics AnalysisPrograms on a wt_* standard data set
+
+```{r echo=FALSE, include=FALSE, eval=FALSE}
+
+wt_run_ap()
 
 ```
 

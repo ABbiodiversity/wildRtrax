@@ -62,6 +62,7 @@ wt_audio_scanner <- function(path, file_type) {
       gps_enabled = dplyr::case_when(
         grepl('$', file_name) ~ TRUE,
         TRUE ~ FALSE)
+      year = lubridate::year(recording_date_time)
     ) %>%
     dplyr::arrange(location, recording_date_time) %>%
     # Create time index
