@@ -15,8 +15,8 @@ wt_audio_scanner(path, file_type)
 A dataframe with a summary of your audio files
 }
 \description{
-Scans directories of audio data and returns the filepath, filename, file size, date, time, station key,
-sample rate, length (seconds) and number of channels to be used as filters for wt_aru_assign or other uses.
+Scans directories of audio data and returns the file path, file name, file size, date, time, location name,
+sample rate, length (seconds) and number of channels to be used as filters for other uses
 }
 \examples{
 \dontrun{
