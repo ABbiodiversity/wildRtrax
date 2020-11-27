@@ -1,10 +1,16 @@
 ---
-title: "working with wildRtrax"
+title: "working-with-wildRtrax"
 output: rmarkdown::html_vignette
+author: 
+- Alex MacPhail^[Alberta Biodiversity Monitoring Institute, agmacpha@ualberta.ca]
 vignette: >
   %\VignetteIndexEntry{working-with-wildRtrax}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+runtime: shiny
+bibliography: S1877050914002403.bib
+link-citations: yes
+
 ---
 
 ```{r, include = FALSE, echo = FALSE}
@@ -14,40 +20,24 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-library(ecodist)
 library(shiny)
 library(vroom)
 library(reticulate)
-library(grid)
 library(vegan)
-library(plotly)
 library(lubridate)
-library(scales)
-library(ggrepel)
-library(RColorBrewer)
-library(RPostgreSQL)
-library(tibble)
 library(pipeR)
 library(tidyverse)
-library(gganimate)
 library(bioacoustics)
 library(tuneR)
-library(data.table)
-library(dbplyr)
-library(svDialogs)
-library(vegan)
-library(gghighlight)
 library(tictoc)
 library(furrr)
-library(bcmaps)
-library(bcmapsdata)
-library(sf)
 library(seewave)
 library(magick)
+
 blanktheme<-theme_bw() +
     theme(panel.background = element_blank(), 
       panel.grid.major = element_blank(), 
-      panel.grid.minor = element_blank())
+      panel.grid.minor = element_blank()) #A blank theme for graphs
 
 ```
 
@@ -127,7 +117,7 @@ audio_files <-
     size = round(value / 10e5, digits = 2),   # Convert size to megabytes
     filename = basename(name),
     filetype = as_factor(tools::file_ext(filename)),
-    compressed = dplyr::case_when(filetype %in% c('wac', 'mp3', 'flac', '.w4v', 'wav') ~ TRUE, TRUE ~ FALSE)) %>%
+    compressed = dplyr::case_when(filetype %in% c('wac', 'mp3', 'flac', 'w4v') ~ TRUE, TRUE ~ FALSE)) %>%
   dplyr::select(name, filename, size, filetype, compressed)
   
 ```
@@ -210,7 +200,7 @@ for (i in 1:nrow(audio_files)) {
 
 ```
 
-([**SoX**](http://sox.sourceforge.net/)) is also a very powerful command line tool that can build spectrograms as well. Processing time here is much faster given R doesn't have to read in the file as an S4 wave object. More on this later. 
+[**SoX**](http://sox.sourceforge.net/) is also a very powerful command line tool that can build spectrograms as well. Processing time here is much faster given R doesn't have to read in the file as an S4 wave object. More on this later. 
 
 ```{r SoX images in bash, engine='bash', include = TRUE}
 
@@ -225,7 +215,7 @@ You'll notice that we are not manipulating any of the features of the wav file -
 
 pics <- list.files("/users/alexandremacphail/desktop/testwav",".png", recursive = T, full.names = T)
 images <- image_read(pics)
-image_append(image_border(images, "black", "3x3"), stack = FALSE)
+image_append(image_border(images, "black", "2x2"), stack = TRUE)
 
 ```
 
@@ -340,11 +330,13 @@ audio_files <-
 
 sum(audio_files$size_Mb)/1000 #Total size of directory in GB
 
+toc()
+
 ```
 
 Looks like we are recording eight times a day throughout various times of day. But this is just one location of data and we already had to scan through ~30GB of wac data. If these were wav, it would be ~60GB. Monitoring programs usually rely on collection of data from a multitude of sensors. This is where data compression comes in handy, but when you scale to the level of a multi-year monitoring program you can't avoid the data accumulation issue. See **Case studies** for more details.
 
-```{r, echo = TRUE, fig.align='center'}
+```{r, echo = TRUE, include=FALSE, fig.align='center'}
 
 server <- function(input, output) {
   sliderValues <-
@@ -422,51 +414,61 @@ What if none of the above are acceptable? Are there other ways we can overcome t
 
 You might already be aware that **wildRtrax** and some of the functions previously described rely on *parallel computing* in order to speed up function run times. In general, the more cores you have, the faster you can run operations. For example `future_map_dbl` is a parallel computing function based off of `purrr`s `map_dbl`. See also its `pmap_dbl` cousin.
 
-### Scanning through data: *wt_audio_scanner*
+### Scanning through data: `wt_audio_scanner`
 
 Let's look at the output of the first `wildRtrax` function based on what we know now
 
 ```{r Running wt_audio_scanner}
 
-library(wildRtrax)
+#library(wildRtrax)
 
-audio_files <- wt_audio_scanner(path = "/volumes/budata/abmi/2019/01/abmi-0439", file_type = "both")
+#audio_files <- wt_audio_scanner(path = "/volumes/budata/abmi/2019/01/abmi-0439", file_type = "both")
 
 ```
 
 ### Assessing the situation
 
+#### Scenario 1:
+
+#### Scenario 2:
+
+#### Scenario 3:
+
 ### Resolving data structure issues: *Python functions*
 
 ```{r}
-
-
 
 ```
 
 ### Summarizing results
 
---------------------------------------
+------------------------------------------------------------------------
 
 ## **Working with a clean data set: pushing to WildTrax**
 
 ### Scanning and subsetting data using `wt_audio_scanner`
 
+Given that there are thousands are recordings for each location, we'll need to select which recordings will be processed by a human. 
+
+```{r Subsetting data options using wt_audio_scanner}
+
+
+
+```
+
 ### Cleaning up recordings with `wt_varnish`
+
+Now that we have our data selected, we also want to ensure that the recordings will be the correct length before they go into WildTrax. You can do this by either choosing the *method*, However sometimes situations may occur where you 
 
 ### Linking data for quick upload with `wt_link`
 
-### Scenario 1:
-
-### Scenario 2:
-
-### Scenario 3:
-
 ------------------------------------------------------------------------
 
-## **Advanced audio data manipulation**
+## **Advanced audio data stuff**
 
 ### Acoustic indices
+
+Acoustic indices are statistics that summarize an aspect of the distribution of acoustic energy from an audio recording. There are excellent resources for the science behind these here: [@article]. 
 
 ### Long-duration false-colour spectrograms
 
@@ -476,9 +478,9 @@ audio_files <- wt_audio_scanner(path = "/volumes/budata/abmi/2019/01/abmi-0439",
 
 ------------------------------------------------------------------------
 
-## **Analytics**
+## ****
 
-### Cross-walking WildTrax with your entire data set
+To note that you also have the option to upload your entire acoustic data set to **WildTrax** 
 
 ### Study design case study 1: 
 
@@ -491,4 +493,7 @@ audio_files <- wt_audio_scanner(path = "/volumes/budata/abmi/2019/01/abmi-0439",
 ## **Future directions**
 
 ------------------------------------------------------------------------
+
+# References
+
 
