@@ -48,7 +48,7 @@ devtools::install_github("ABbiodiversity/wildRtrax")
 ```
 
 
-This document contains an outline for how to use the R package **wildRtrax** for environmental sensor data management and analytics. 
+This document contains an outline for how to use the functions from the R package **wildRtrax** for environmental sensor data management and analytics. 
 
 ## **FAQ**
 
@@ -428,7 +428,9 @@ Let's look at the output of the first `wildRtrax` function based on what we know
 
 ### Assessing the situation
 
-#### Scenario 1:
+#### Scenario 1: Detection of ARU failures
+
+
 
 #### Scenario 2:
 
