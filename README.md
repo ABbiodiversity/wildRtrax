@@ -28,8 +28,15 @@ devtools::install_github("ABbiodiversity/wildRtrax")
 
 ## Overview
 
-The **wildRtrax** package provides a set of functions for
-environmental sensor data management to and from [WildTrax](https://www.wildtrax.ca/home.html).
+The **wildRtrax** (pronounced '*wilder tracks*') package provides a set of functions for
+environmental sensor data (autonomous recording units and remote game cameras) management to and from [WildTrax](https://www.wildtrax.ca/home.html).
+
+## Usgae
+
+All functions begin with a `wt_*` prefix for ease of use in an R environment
+
+* `wt_audio_scannner` scans through multiple audio file types and returns standard metadata
+* `wt_run_ap` runs the [QUT Ecoacoustics AnalysisPrograms](https://github.com/QutEcoacoustics/audio-analysis) software package 
 
 ## Issues
 
