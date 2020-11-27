@@ -15,7 +15,7 @@ status](https://github.com/ABbiodiversity/wildRtrax/workflows/R-CMD-check/badge.
 status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https://travis-ci.com/ABbiodiversity/wildRtrax)
 <!-- badges: end -->
 
-\================================================================
+=============================================================
 
 ## Installation
 
