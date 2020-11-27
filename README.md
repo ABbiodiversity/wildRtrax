@@ -35,13 +35,8 @@ environmental sensor data (autonomous recording units and remote game cameras) m
 
 All functions begin with a `wt_*` prefix for ease of use in an R environment
 
-<<<<<<< HEAD
 * `wt_audio_scannner` scans through multiple audio file types and returns standard metadata
 * `wt_run_ap` runs the [QUT Ecoacoustics AnalysisPrograms](https://github.com/QutEcoacoustics/audio-analysis) software package 
-=======
-`wt_audio_scannner` scans through multiple audio file types and returns standard metadata
-`wt_run_ap` runs the [QUT Ecoacoustics AnalysisPrograms](https://github.com/QutEcoacoustics/audio-analysis) software package 
->>>>>>> 4596f92c193f6188c556a87cbe731a54f8aebccd
 
 ## Issues
 
