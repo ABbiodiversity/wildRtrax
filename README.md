@@ -17,19 +17,19 @@ status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https
 
 =============================================================
 
+## Overview
+
+The ``wildRtrax`` (pronounced '*wilder tracks*') package provides a set of functions for
+environmental sensor data (autonomous recording units and remote game cameras) management to and from [WildTrax](https://www.wildtrax.ca/home.html).
+
 ## Installation
 
-You can install the development version of wildRtrax from with:
+You can install the development version of wildRtrax with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("ABbiodiversity/wildRtrax")
 ```
-
-## Overview
-
-The **wildRtrax** (pronounced '*wilder tracks*') package provides a set of functions for
-environmental sensor data (autonomous recording units and remote game cameras) management to and from [WildTrax](https://www.wildtrax.ca/home.html).
 
 ## Usgae
 
