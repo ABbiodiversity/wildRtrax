@@ -1,0 +1,73 @@
+path:
+- data.csv
+- data.rds
+rows: 18825
+cols: 65
+columns:
+  project: character
+  organization: character
+  location: character
+  recording_date: character
+  recording_time: character
+  status: character
+  latitude: numeric
+  longitude: numeric
+  buffer_radius_m: logical
+  species_code: character
+  scientific_name: character
+  species_english_name: character
+  method: character
+  rain: integer
+  wind: integer
+  noise: integer
+  industry_noise: integer
+  audio_quality: character
+  species_individual_name: integer
+  transcriber: character
+  abundance: character
+  confidence: character
+  min0_voc: character
+  min0_start: character
+  min0_freq_range: character
+  min0_tag_duration: character
+  min1_voc: character
+  min1_start: character
+  min1_freq_range: character
+  min1_tag_duration: character
+  min2_voc: character
+  min2_start: character
+  min2_freq_range: character
+  min2_tag_duration: character
+  min3_voc: character
+  min3_start: numeric
+  min3_freq_range: character
+  min3_tag_duration: numeric
+  min4_voc: character
+  min4_start: numeric
+  min4_freq_range: character
+  min4_tag_duration: numeric
+  min5_voc: logical
+  min5_start: logical
+  min5_freq_range: logical
+  min5_tag_duration: logical
+  min6_voc: character
+  min6_start: numeric
+  min6_freq_range: character
+  min6_tag_duration: numeric
+  min7_voc: character
+  min7_start: numeric
+  min7_freq_range: character
+  min7_tag_duration: numeric
+  min8_voc: character
+  min8_start: numeric
+  min8_freq_range: character
+  min8_tag_duration: numeric
+  min9_voc: character
+  min9_start: numeric
+  min9_freq_range: character
+  min9_tag_duration: numeric
+  comment: character
+  species_comment: character
+  source_file_name: character
+description: ABMI Ecosystem Health audio data used for detection modeling
+type: table
