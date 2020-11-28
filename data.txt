@@ -1,6 +1,1 @@
-- path: abmi_ecosystem-health_2015-2020_detection
-  name: abmi_ecosystem-health_2015-2020_detection
-  rows: 18825
-  cols: 65
-  description: ABMI Ecosystem Health audio data used for detection modeling
-  type: table
+[]
