@@ -1,1 +1,6 @@
-[]
+- path: pins/detection_modeling
+  name: pins/detection_modeling
+  rows: 28329
+  cols: 70
+  description: Audio data for detection modeling
+  type: table
