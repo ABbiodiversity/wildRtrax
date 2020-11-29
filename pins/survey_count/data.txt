@@ -1,0 +1,11 @@
+path:
+- data.csv
+- data.rds
+rows: 513
+cols: 3
+columns:
+  station: character
+  count: integer
+  keep: logical
+description: Survey counts for detection probability modeling
+type: table

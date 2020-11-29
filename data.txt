@@ -4,3 +4,9 @@
   cols: 70
   description: Audio data for detection modeling
   type: table
+- path: pins/survey_count
+  name: pins/survey_count
+  rows: 513
+  cols: 3
+  description: Survey counts for detection probability modeling
+  type: table
