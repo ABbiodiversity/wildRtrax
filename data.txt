@@ -10,3 +10,6 @@
   cols: 3
   description: Survey counts for detection probability modeling
   type: table
+- path: pins/ovenbird
+  name: pins/ovenbird
+  type: default
