@@ -1,9 +1,3 @@
-- path: pins/survey_count
-  name: pins/survey_count
-  rows: 513
-  cols: 3
-  description: Survey counts for detection probability modeling
-  type: table
 - path: pins/ovenbird
   name: pins/ovenbird
   type: default
