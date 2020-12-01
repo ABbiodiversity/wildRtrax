@@ -15,10 +15,9 @@ link-citations: yes
 
 ```{r Setup, include = FALSE, echo = FALSE}
 
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
+
 
 library(shiny)
 library(vroom)
@@ -335,12 +334,12 @@ Looks like we are recording eight times a day throughout various times of day. B
 
 Try using the sliders below to estimate how much data you may accumulate for a monitoring program.
 
-```{r, echo = TRUE, include=FALSE, fig.align='center'}
+```{r, echo = FALSE, include=TRUE, fig.align='center'}
 server <- function(input, output) {
   sliderValues <-
     reactive({
       (
-        input$variable1 * input$variable4 * (input$variable3 * 16 * 2 * input$variable2 *
+        input$variable1 * input$variable4 * input$variable5 * (input$variable3 * 16 * 2 * input$variable2 *
                                                60) / 8
       ) * 0.000000000001
     })
@@ -383,9 +382,17 @@ ui <- pageWithSidebar(
       min = 0,
       max = 1000,
       value = 1
+    ),
+    sliderInput(
+      "variable5",
+      "Years:",
+      min = 0,
+      max = 10,
+      value = 1
     )
   ),
-  mainPanel(tableOutput("values"))
+  mainPanel(tableOutput("values"),
+            tags$head(tags$style('#values{color: #C7461F; font-size: 20px; font-style: bold;}')))
 )
 
 shinyApp(ui, server)
