@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 
-#library(wildRtrax)
+library(wildRtrax)
 
 ```
 
@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 
 ```{r, echo=FALSE, include=FALSE, eval=FALSE}
 
-df <- wt_audio_scanner(path, file_type)
+#df <- wt_audio_scanner(path, file_type)
 
 ```
 
@@ -34,7 +34,7 @@ df <- wt_audio_scanner(path, file_type)
 
 ```{r echo=FALSE, include=FALSE, eval=FALSE}
 
-wt_run_ap()
+#wt_run_ap()
 
 ```
 

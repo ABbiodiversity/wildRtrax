@@ -9,5 +9,5 @@
 This package provides a set of functions to query environmental sensor data from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
 }
 \author{
-Alexandre MacPhail \email{agmacpha@ualberta.ca}
+Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca}
 }

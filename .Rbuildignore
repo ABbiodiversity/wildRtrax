@@ -11,3 +11,4 @@
 ^\.travis\.yml$
 ^vignettes/articles$
 beta/
+^data-raw$

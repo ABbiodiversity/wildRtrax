@@ -61,7 +61,7 @@ wt_audio_scanner <- function(path, file_type) {
       year = lubridate::year(recording_date_time),
       gps_enabled = dplyr::case_when(
         grepl('$', file_name) ~ TRUE,
-        TRUE ~ FALSE)
+        TRUE ~ FALSE),
       year = lubridate::year(recording_date_time)
     ) %>%
     dplyr::arrange(location, recording_date_time) %>%
@@ -82,7 +82,7 @@ wt_audio_scanner <- function(path, file_type) {
     dplyr::mutate(data = furrr::future_map(.x = file_path,
                                            .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE),
                                            .progress = TRUE,
-                                           .options = future_options(seed = TRUE))) %>%
+                                           .options = furrr_options(seed = TRUE))) %>%
     dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]))),
                   sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample.rate"]])),
                   n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%

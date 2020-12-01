@@ -1,17 +1,18 @@
 ---
-title: "working-with-wildRtrax"
-output: rmarkdown::html_vignette
-author: 
-- Alex MacPhail^[Alberta Biodiversity Monitoring Institute, agmacpha@ualberta.ca]
-vignette: >
-  %\VignetteIndexEntry{working-with-wildRtrax}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
-runtime: shiny
-bibliography: S1877050914002403.bib
-link-citations: yes
-
+title: "Working with wildRtrax"
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+# library(wildRtrax)
+```
+
 
 ```{r, include = FALSE, echo = FALSE}
 
@@ -495,5 +496,3 @@ To note that you also have the option to upload your entire acoustic data set to
 ------------------------------------------------------------------------
 
 # References
-
-

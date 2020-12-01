@@ -4,19 +4,20 @@
 #'
 #' This function will batch calculate summary and spectral acoustic indices for a folder of audio files using the Towsey.Acoustic configuration (yml) file from the AP software. You can use the output from \code{wt_audio_scanner} in the function, or define a local folder with audio files directly.
 #'
-#' @param x (optional) A data frame or tibble; must contain the direct audio file path, name and size. Use output from \code{wt_audio_scanner}.
+#' @param x (optional) A data frame or tibble; must contain the absolute audio file path and file name. Use output from \code{wt_audio_scanner}.
 #' @param fp_col If x is supplied, the column containing the audio file paths. Defaults to file_path.
 #' @param audio_dir (optional) Character; path to directory storing audio files.
 #' @param output_dir Character; path to directory where you want outputs to be stored.
 #' @param path_to_ap Character; file path to the AnalysisPrograms software package. Defaults to "C:\\AP\\AnalysisPrograms.exe".
 #'
-#' @import foreach dplyr
+#' @import dplyr
 #' @importFrom stringr str_detect
+#' @importFrom foreach foreach
 #' @export
 #'
-#' @examples
+#' @example
 #' \dontrun{
-#   wt_run_ap(x = scanner_output, output_dir = '/user/output_folder', path_to_ap = "C:\\AP\\AnalysisPrograms.exe")
+#  wt_run_ap(x = scanner_output, output_dir = '/user/output_folder', path_to_ap = "C:\\AP\\AnalysisPrograms.exe")
 #' }
 #'
 #' @return Output will return to the specific root directory
@@ -33,7 +34,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 
   # Check if output_dir is supplied
   if(missing(output_dir)) {
-    stop("Please specify a path to a local directory where you would like outputs to be stored.")
+    stop("Please specify a path to a local directory where you would like outputs to be stored.", call. = TRUE)
   }
 
   # Supported AP audio formats
