@@ -72,7 +72,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
                        file_specific_output_directory)
 
     # Execute the command
-    system2(path_to_ap, command, invisible = TRUE)
+    system2(path_to_ap, command)
 
   }
 
