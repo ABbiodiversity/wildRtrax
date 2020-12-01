@@ -13,7 +13,7 @@ wt_run_ap(
 )
 }
 \arguments{
-\item{x}{(optional) A data frame or tibble; must contain the direct audio file path, name and size. Use output from \code{wt_audio_scanner}.}
+\item{x}{(optional) A data frame or tibble; must contain the absolute audio file path and file name. Use output from \code{wt_audio_scanner}.}
 
 \item{fp_col}{If x is supplied, the column containing the audio file paths. Defaults to file_path.}
 
@@ -30,9 +30,4 @@ Output will return to the specific root directory
 See \url{https://github.com/QutEcoacoustics/audio-analysis} for information about usage and installation of the AP software. Note that this function relies on having this software installed locally.
 
 This function will batch calculate summary and spectral acoustic indices for a folder of audio files using the Towsey.Acoustic configuration (yml) file from the AP software. You can use the output from \code{wt_audio_scanner} in the function, or define a local folder with audio files directly.
-}
-\examples{
-\dontrun{
-}
-
 }

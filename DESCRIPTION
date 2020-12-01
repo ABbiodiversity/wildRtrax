@@ -27,7 +27,10 @@ Imports:
     bioacoustics,
     tuneR,
     purrr,
-    rlang
+    rlang,
+    foreach,
+    unmarked,
+    plumber
 Suggests: 
     testthat,
     covr,
