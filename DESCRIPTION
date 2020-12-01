@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: 
     c(person(given = "Alex",
            family = "MacPhail",
-           role = "aut",
+           role = c("aut","cre"),
            email = "agmacpha@ualberta.ca"),
       person(given = "Marcus",
              family = "Becker",
@@ -12,7 +12,7 @@ Authors@R:
              email = "mabecker@ualberta.ca"),
       person(given = "Richard",
              family = "Hedley",
-             role = c("cre""),
+             role = "cre",
              email = "rhedley@ualberta.ca")
 Description: This package provides a set of functions to manage environmental sensor data to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
 Depends: R (>= 3.5.0)
