@@ -14,7 +14,7 @@ Description: This package provides a set of functions to manage environmental se
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Imports:
-    dplyr (>= 0.8.5),s
+    dplyr (>= 0.8.5),
     future,
     fs,
     furrr,
