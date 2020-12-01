@@ -7,4 +7,4 @@
 
 # Define global variables
 utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext", "file_name", "recording_date_time",
-                         "data", "sample_rate", "samples", "%dopar%", "detection_models", "detection_probability"))
+                         "data", "sample_rate", "samples", "%dopar%", "detection_models", "prob"))

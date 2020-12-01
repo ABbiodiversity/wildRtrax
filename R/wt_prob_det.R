@@ -53,7 +53,7 @@ wt_prob_det <- function(species_code, survey_length, number_of_surveys) {
 
   # Estimate probability of species detection based on number of surveys
   number_of_surveys <- as.numeric(number_of_surveys)
-  y <- 1 - ((1 - detection_probability) ^ number_of_surveys)
+  y <- 1 - ((1 - prob) ^ number_of_surveys)
 
   return(y)
 

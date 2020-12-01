@@ -10,5 +10,7 @@
 ^pkgdown$
 ^\.travis\.yml$
 ^vignettes/articles$
-beta/
+^beta$
 ^data-raw$
+^pins$
+^data.txt
