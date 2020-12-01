@@ -15,23 +15,28 @@ status](https://github.com/ABbiodiversity/wildRtrax/workflows/R-CMD-check/badge.
 status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https://travis-ci.com/ABbiodiversity/wildRtrax)
 <!-- badges: end -->
 
-\================================================================
+=============================================================
+
+## Overview
+
+The ``wildRtrax`` (pronounced '*wilder tracks*') package provides a set of functions for
+environmental sensor data (autonomous recording units and remote game cameras) management to and from [WildTrax](https://www.wildtrax.ca/home.html).
 
 ## Installation
 
-You can install the development version of wildRtrax from with:
+You can install the development version of wildRtrax with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("ABbiodiversity/wildRtrax")
 ```
 
-## Overview
+## Usage
 
-The **wildRtrax** package provides a set of functions to query
-environmental sensor data from the [WildTrax
-platform](https://www.wildtrax.ca/home.html), as well as perform basic
-data cleaning, analysis, and quality control in R.
+All functions begin with a `wt_*` prefix for ease of use in an R environment
+
+* `wt_audio_scannner` scans through multiple audio file types and returns standard metadata
+* `wt_run_ap` runs the [QUT Ecoacoustics AnalysisPrograms](https://github.com/QutEcoacoustics/audio-analysis) software package 
 
 ## Issues
 

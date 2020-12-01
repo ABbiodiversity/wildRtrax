@@ -1,0 +1,4 @@
+- path: pins/detection_modeling/models
+  name: pins/detection_modeling/models
+  description: 'Detection modeling for five species: OVEN, OSFL, CCSP, TEWA, WTSP'
+  type: default
