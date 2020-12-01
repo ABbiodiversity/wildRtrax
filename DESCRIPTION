@@ -9,11 +9,7 @@ Authors@R:
       person(given = "Marcus",
              family = "Becker",
              role = c("aut", "cre"),
-             email = "mabecker@ualberta.ca"),
-      person(given = "Richard",
-             family = "Hedley",
-             role = "cre",
-             email = "rhedley@ualberta.ca")
+             email = "mabecker@ualberta.ca")
 Description: This package provides a set of functions to manage environmental sensor data to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
