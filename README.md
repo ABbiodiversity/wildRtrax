@@ -31,7 +31,7 @@ You can install the development version of wildRtrax with:
 devtools::install_github("ABbiodiversity/wildRtrax")
 ```
 
-## Usgae
+## Usage
 
 All functions begin with a `wt_*` prefix for ease of use in an R environment
 
