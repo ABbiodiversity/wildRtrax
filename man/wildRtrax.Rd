@@ -6,7 +6,7 @@
 \alias{wildRtrax-package}
 \title{wildRtrax: A series of advanced user functions for environmental sensor data management, analytics and exploration.}
 \description{
-This package provides a set of functions to query environmental sensor data from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
+This package provides a set of functions to manage environmental sensor data to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
 }
 \author{
 Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca}
