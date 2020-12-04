@@ -1,16 +1,16 @@
 Package: wildRtrax
-Title: Queries, Cleaning, Analysis, and Quality Control of Data For and From the WildTrax Database in R
+Title: Environmental sensor data management and analytics to and from WildTrax
 Version: 0.0.0.9000
 Authors@R: 
-    c(person(given = "Alexandre",
+    c(person(given = "Alex",
            family = "MacPhail",
            role = "aut",
            email = "agmacpha@ualberta.ca"),
       person(given = "Marcus",
              family = "Becker",
-             role = c("aut", "cre"),
+             role = "cre",
              email = "mabecker@ualberta.ca"))
-Description: This package provides a set of functions to query environmental sensor data from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
+Description: This package provides a set of functions to manage environmental sensor data to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 Imports:

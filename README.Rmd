@@ -36,15 +36,21 @@ devtools::install_github("ABbiodiversity/wildRtrax")
 
 ## Overview
 
-The **wildRtrax** package provides a set of functions to query environmental sensor data from the [WildTrax platform](https://www.wildtrax.ca/home.html), as well as perform basic data cleaning, analysis, and quality control in R.
+The `wildRtrax` (pronounced *'wilder tracks'*) package provides a set of functions for environmental sensor data (autonomous recording units and remote game cameras) management to and from [WildTrax](https://www.wildtrax.ca/home.html).
 
 ## Issues
 
-To report bugs, request additional features, or get help using the package, please file an [issue](https://github.com/ABbiodiversity/wildRtrax/issues). Alternatively, you can email Alex MacPhail agmacpha@ualberta.ca or Marcus Becker mabecker@ualberta.ca.
+To report bugs, request additional features, or get help using the
+package, please file an
+[issue](https://github.com/ABbiodiversity/wildRtrax/issues).
+Alternatively, you can email Alex MacPhail <agmacpha@ualberta.ca> or
+Marcus Becker <mabecker@ualberta.ca>.
 
 ## License
 
-This R package is licensed under [MIT license](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE) © 2020 Marcus Becker, Alex MacPhail, and the ABMI.
+This R package is licensed under [MIT
+license](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE)
+© 2020 Marcus Becker, Alex MacPhail, and the [ABMI](http://https://abmi.ca/home.html)
 
 
 

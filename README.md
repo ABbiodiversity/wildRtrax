@@ -26,7 +26,7 @@ environmental sensor data (autonomous recording units and remote game cameras) m
 
 You can install the development version of wildRtrax with:
 
-``` r
+```r
 # install.packages("devtools")
 devtools::install_github("ABbiodiversity/wildRtrax")
 ```
@@ -36,7 +36,8 @@ devtools::install_github("ABbiodiversity/wildRtrax")
 All functions begin with a `wt_*` prefix for ease of use in an R environment
 
 * `wt_audio_scannner` scans through multiple audio file types and returns standard metadata
-* `wt_run_ap` runs the [QUT Ecoacoustics AnalysisPrograms](https://github.com/QutEcoacoustics/audio-analysis) software package 
+* `wt_run_ap` runs the [QUT Ecoacoustics AnalysisPrograms](https://github.com/QutEcoacoustics/audio-analysis) software package
+* `wt_prob_det` estimates the probability of detection of species, given a location is occupied, based on the audio survey length and the number of surveys conducted
 
 ## Issues
 
