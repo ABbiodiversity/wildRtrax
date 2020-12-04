@@ -15,3 +15,9 @@ A running Plumber API
 \description{
 Run prob_det function API
 }
+\examples{
+\dontrun{
+run_prob_det_api()
+}
+
+}

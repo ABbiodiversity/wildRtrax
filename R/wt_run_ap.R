@@ -12,10 +12,11 @@
 #'
 #' @import dplyr
 #' @importFrom stringr str_detect
-#' @importFrom foreach foreach
+#' @importFrom foreach foreach %dopar%
+#' @importFrom doParallel registerDoParallel
 #' @export
 #'
-#' @example
+#' @examples
 #' \dontrun{
 #  wt_run_ap(x = scanner_output, output_dir = '/user/output_folder', path_to_ap = "C:\\AP\\AnalysisPrograms.exe")
 #' }
@@ -56,6 +57,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
   }
 
   # Loop through each audio file and run through AP
+  doParallel::registerDoParallel()
   foreach::foreach(file = files) %dopar% {
 
     message("Processing ", file)
@@ -75,6 +77,8 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
     system2(path_to_ap, command, invisible = TRUE)
 
   }
+
+  doParallel::stopImplicitCluster()
 
 }
 
