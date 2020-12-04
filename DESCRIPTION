@@ -40,7 +40,7 @@ Suggests:
     rmarkdown,
     abmi.themes
 Remotes:
-    mabecker/abmi.themes
+    mabecker89/abmi.themes
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
