@@ -31,3 +31,8 @@ See \url{https://github.com/QutEcoacoustics/audio-analysis} for information abou
 
 This function will batch calculate summary and spectral acoustic indices for a folder of audio files using the Towsey.Acoustic configuration (yml) file from the AP software. You can use the output from \code{wt_audio_scanner} in the function, or define a local folder with audio files directly.
 }
+\examples{
+\dontrun{
+}
+
+}

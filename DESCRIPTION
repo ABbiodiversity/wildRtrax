@@ -29,13 +29,18 @@ Imports:
     purrr,
     rlang,
     foreach,
+    doParallel,
     unmarked,
-    plumber
+    plumber,
+    shiny
 Suggests: 
     testthat,
     covr,
     knitr,
-    rmarkdown
+    rmarkdown,
+    abmi.themes
+Remotes:
+    mabecker89/abmi.themes
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true

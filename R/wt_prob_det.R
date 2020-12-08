@@ -62,7 +62,7 @@ wt_prob_det <- function(species_code, survey_length, number_of_surveys) {
 #' Run prob_det function API
 #'
 #' @param ... Options passed to \code{plumber::plumb()$run()}
-#' @example
+#' @examples
 #' \dontrun{
 #' run_prob_det_api()
 #' }
@@ -76,3 +76,39 @@ run_prob_det_api <- function(...) {
   plumber::plumb(dir = system.file("plumber", "prob_det", package = "wildRtrax"))$run(...)
 
 }
+
+#' Run a wildRtrax Shiny App (locally)
+#'
+#' @description Choose a shiny app included as part of the wildRtrax package and run it locally
+#'
+#' @param app Character; name of the shiny app.
+#' @import shiny
+#' @export
+#' @example
+#' \dontrun{wt_run_shiny(app = "prob_det")}
+#'
+#' @return A shiny app running locally
+
+wt_run_shiny <- function(app) {
+
+  # Locate all Shiny apps in the package
+  apps <- list.files(system.file("shiny", package = "wildRtrax"))
+  msg <- paste0("Valid Shiny apps from wildRtrax include: '", paste(apps, collapse = "', '"), "'")
+
+  # Error if a invalid app is provided
+  if (missing(app) || !nzchar(app) || !app %in% apps) {
+    stop("Please run `wt_run_shiny()` with a valid app as an argument.\n",
+         msg,
+         call. = FALSE)
+  }
+
+  # Find app
+  app_directory <- system.file("shiny", app, package = "wildRtrax")
+  # Run app
+  shiny::runApp(app_directory, display.mode = "normal")
+
+}
+
+
+
+
