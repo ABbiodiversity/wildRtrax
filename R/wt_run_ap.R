@@ -1,4 +1,4 @@
-#' Generate acoustic indices for a folder of audio files with QUT Ecoacoustics **A**nalysis **P**rograms (AP.exe) software
+#' Generate acoustic indices for a folder of audio files with QUT Ecoacoustics **A**nalysis **P**rograms software
 #'
 #' @description  See \url{https://github.com/QutEcoacoustics/audio-analysis} for information about usage and installation of the AP software. Note that this function relies on having this software installed locally.
 #'
