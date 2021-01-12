@@ -33,10 +33,11 @@ library(furrr)
 library(seewave)
 library(magick)
 
+#A blank theme for graphs
 blanktheme<-theme_bw() +
     theme(panel.background = element_blank(), 
       panel.grid.major = element_blank(), 
-      panel.grid.minor = element_blank()) #A blank theme for graphs
+      panel.grid.minor = element_blank())
 
 ```
 
@@ -489,13 +490,106 @@ Now that we have our data selected, we also want to ensure that the recordings w
 
 ### Acoustic indices
 
-Acoustic indices are statistics that summarize an aspect of the distribution of acoustic energy from an audio recording. There are excellent resources for the science behind these here: [@article]. 
+Acoustic indices are statistics that summarize an aspect of the distribution of acoustic energy from an audio recording. There are excellent resources for the science behind these here: [@article]. `wt_run_ap` generates acoustic indices as well as long-duration false-colour spectrograms from the AnalysisPrograms software. 
 
-### Long-duration false-colour spectrograms
+```{r Acoustic indices}
 
-### `wt_run_ap` and `wt_blow`
+path_scan <- as.chracter('')
+path_ap = as.character('')
+path_indices = as.character('')
+
+#Scan a directory to create a dataframe
+files <- wt_audio_scanner(path_scan, file_type = 'wav')
+
+#Run the AP - will not do wac files! You'll have to convert them first in Kaleidoscope
+#Ensure you have AP installed as well - follow instructions here: https://ap.qut.ecoacoustics.info/
+
+#Include timing here eventually
+tic()
+wt_run_ap(files, output_dir = path_indices, path_to_ap = path_ap)
+toc()
+
+#Which acoustic indices do you want to use?
+index_list <-
+  c(
+    "Snr",
+    "BackgroundNoise",
+    "AcousticComplexity",
+    "TemporalEntropy",
+    "Ndsi",
+    "ResultMinute", #Include this for minute by minute summaries
+    "FileName" #And this to join back to the list of acoustic files
+  )
+
+#Extract the index values - find the files...
+test_files <- dir_ls(path = path_indices,
+                       regexp = '*Towsey.Acoustic.Indices.csv',
+                       recurse = TRUE)
+
+#...then vroom together the indices you want
+test_indices <- vroom(abmi_test_files, col_select = index_list)
+
+#Join the index values to the wt_audio_scanner tibble
+files_join <-
+  files %>% inner_join(., test_indices, by = c("file_name" = "FileName")) %>%
+  pivot_longer(cols = Snr:Ndsi,
+               names_to = "index_variable",
+               values_to = "index_value")
+
+#Extract the images from the LDFCs
+ldfcs <- dir_info(path = path_indices, regexp = '*__2Maps.png', recurse = TRUE)
+ldfcs$location <- str_extract(file_path_sans_ext(basename(ldfcs$path)), '[^_]*')
+ldfcs$file_name <- str_replace(basename(ldfcs$path),'__2Maps.png','')
+
+#Bring everything together
+everything <- files_join %>% 
+  inner_join(., ldfcs, by = c("file_name" = "file_name")) %>%
+  select(file_path, path, file_name, location.x, julian, time_index, recording_date_time, ResultMinute, index_variable, index_value) %>%
+  group_by(file_name, file_path, path, location.x, julian, time_index, recording_date_time, index_variable) %>%
+  summarise(index_value = mean(index_value)) %>%
+  ungroup() %>%
+  mutate(year = format(recording_date_time,"%Y")) %>%
+  rename(., location = "location.x") %>%
+  mutate(date = format(recording_date_time,"%m%d"))
+
+```
+
+```{r Plot indices}
+#Plot a graph of the indices
+ggplot(everything,
+       aes(x = date, y = index_value, colour = index_variable, fill = index_variable)) + 
+  geom_boxplot() + 
+  blanktheme +
+  theme(axis.text.x=element_blank()) + 
+  facet_wrap(~index_variable, scales = "free")
+
+```
+
+```{r Manipulate data for LDFCs}
+#Split by location (or whatever other variable you'd like)
+#This is everything
+pic <- image_append(do.call("c", lapply(unique(everything$path), function(x){image_read(x)})))
+pic 
+
+#This is each time index e.g. dawn, dusk
+pics <- lapply(split(unique(everything$path), unique(everything$time_index)), function(x) {image_append(image_read(x))})
+pics
+
+#This is each julian date
+pics2 <- lapply(split(unique(everything$path), unique(everything$julian)), function(x) {image_append(image_read(x))})
+pics2
+
+#This is each location stacked into a diel-style plot
+pics3 <- lapply(split(unique(everything$path), unique(everything$location)), function(x) {image_append(image_read(x))})
+
+#Make a diel plot
+image_scale(image_append(c(pics3), stack=TRUE), "4460x632")
+
+```
 
 ### Other options for acoustic index extraction
+
+See ``seewave``, ``bioacoustics`` and ``tuneR``.
 
 ------------------------------------------------------------------------
 
@@ -507,7 +601,7 @@ To note that you also have the option to upload your entire acoustic data set to
 
 ### Study design case study 2: Seasonal phenology
 
-### Study design case study 3: Multi-observer record analysis with `wt_carrefour`
+### Study design case study 3: Multi-observer analysis with `wt_carrefour`
 
 ------------------------------------------------------------------------
 
