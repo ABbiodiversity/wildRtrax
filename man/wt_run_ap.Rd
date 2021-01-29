@@ -2,7 +2,7 @@
 % Please edit documentation in R/wt_run_ap.R
 \name{wt_run_ap}
 \alias{wt_run_ap}
-\title{Generate acoustic indices for a folder of audio files with QUT Ecoacoustics \strong{A}nalysis \strong{P}rograms (AP.exe) software}
+\title{Generate acoustic indices for a folder of audio files with QUT Ecoacoustics \strong{A}nalysis \strong{P}rograms software}
 \usage{
 wt_run_ap(
   x = NULL,
