@@ -141,7 +141,7 @@ wt_wac_info <- function(path) {
   sample_rate <-  readBin(con = f, what = integer(), size = 4, endian = "little")
   samples <- readBin(con = f, what = integer(), size = 4, endian = "little")
 
-  if(channels == 1) {
+  if(n_channels == 1) {
     stereo <- FALSE
   } else {
     stereo <- TRUE
