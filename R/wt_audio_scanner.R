@@ -61,7 +61,7 @@ wt_audio_scanner <- function(path, file_type) {
       julian = lubridate::yday(recording_date_time),
       year = lubridate::year(recording_date_time),
       gps_enabled = dplyr::case_when(
-        grepl('$', file_name) ~ TRUE),
+        grepl('\\$', file_name) ~ TRUE),
       year = lubridate::year(recording_date_time)
     ) %>%
     dplyr::arrange(location, recording_date_time) %>%
@@ -77,7 +77,8 @@ wt_audio_scanner <- function(path, file_type) {
 
   # wav files first
   if ("wav" %in% df$file_type) {
-  df_wav <- df %>%
+  df_wav <- df %>>%
+    "Working on wav files..." %>>%
     dplyr::filter(file_type == "wav",
                   size_Mb > 0) %>%
     dplyr::mutate(data = furrr::future_map(.x = file_path,
@@ -91,7 +92,8 @@ wt_audio_scanner <- function(path, file_type) {
   }
 
   if("wac" %in% df$file_type) {
-    df_wac <- df %>%
+    df_wac <- df %>>%
+    "Working on wac files..." %>>%
       dplyr::filter(file_type == "wac",
                     size_Mb > 0) %>%
       dplyr::mutate(info = purrr::map(.x = file_path, .f = ~ wt_wac_info(.x)),
