@@ -55,6 +55,7 @@ wt_audio_scanner <- function(path, file_type) {
       extra = "merge",
       remove = FALSE
     ) %>%
+    dplyr::mutate(recording_date_time = str_remove(recording_date_time,'.+?(?:__)')) %>%
     # Create date/time fields
     dplyr::mutate(
       recording_date_time = lubridate::ymd_hms(recording_date_time),
