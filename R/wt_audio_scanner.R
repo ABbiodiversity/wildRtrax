@@ -55,13 +55,14 @@ wt_audio_scanner <- function(path, file_type) {
       extra = "merge",
       remove = FALSE
     ) %>%
+    dplyr::mutate(recording_date_time = str_remove(recording_date_time,'.+?(?:__)')) %>%
     # Create date/time fields
     dplyr::mutate(
       recording_date_time = lubridate::ymd_hms(recording_date_time),
       julian = lubridate::yday(recording_date_time),
       year = lubridate::year(recording_date_time),
       gps_enabled = dplyr::case_when(
-        grepl('$', file_name) ~ TRUE),
+        grepl('\\$', file_name) ~ TRUE),
       year = lubridate::year(recording_date_time)
     ) %>%
     dplyr::arrange(location, recording_date_time) %>%
@@ -77,8 +78,10 @@ wt_audio_scanner <- function(path, file_type) {
 
   # wav files first
   if ("wav" %in% df$file_type) {
-  df_wav <- df %>%
-    dplyr::filter(file_type == "wav") %>%
+  df_wav <- df %>>%
+    "Working on wav files..." %>>%
+    dplyr::filter(file_type == "wav",
+                  size_Mb > 0) %>%
     dplyr::mutate(data = furrr::future_map(.x = file_path,
                                            .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE),
                                            .progress = TRUE,
@@ -89,27 +92,16 @@ wt_audio_scanner <- function(path, file_type) {
     dplyr::select(-data)
   }
 
-  # wac files next
-  if ("wac" %in% df$file_type) {
-  df_wac <- df %>%
-    dplyr::filter(file_type == "wac") %>>%
-    "Obtaining sampling rate from wac files ..." %>>%
-    dplyr::mutate(sample_rate = furrr::future_map_dbl(.x = file_path,
-                                                      .f = ~ bioacoustics::read_audio(.x, from = 0, to = Inf)@samp.rate,
-                                                      .progress = TRUE,
-                                                      .options = furrr_options(seed = TRUE))) %>>%
-    "Retrieve number of channels from wac files ..." %>>%
-    dplyr::mutate(n_channels = furrr::future_map_dbl(.x = file_path,
-                                                     .f = ~ bioacoustics::read_audio(.x, from = 0, to = Inf)@stereo,
-                                                     .progress = TRUE,
-                                                     .options = furrr_options(seed = TRUE))) %>>%
-    "Calculate sample rate from each wac file ... " %>>%
-    dplyr::mutate(samples = furrr::future_map_dbl(.x = file_path,
-                                                  .f = ~ length(bioacoustics::read_audio(.x, from = 0, to = Inf)@left),
-                                                  .progress = TRUE,
-                                                  .options = furrr_options(seed = TRUE))) %>%
-    dplyr::mutate(length_seconds = samples / sample_rate) %>%
-    dplyr::select(-samples)
+  if("wac" %in% df$file_type) {
+    df_wac <- df %>>%
+    "Working on wac files..." %>>%
+      dplyr::filter(file_type == "wac",
+                    size_Mb > 0) %>%
+      dplyr::mutate(info = purrr::map(.x = file_path, .f = ~ wt_wac_info(.x)),
+                    sample_rate = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
+                    length_seconds = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["length_seconds"]])),
+                    n_channels = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
+      dplyr::select(-info)
   }
 
   # Stitch together
@@ -126,7 +118,45 @@ wt_audio_scanner <- function(path, file_type) {
 
 }
 
+#' Scrape relevant information from wac (Wildlife Acoustics) file
+#'
+#' @param path Character; The wac file path
+#'
+#' @import tools
+#'
+#' @return a list with relevant information
 
+wt_wac_info <- function(path) {
+
+  if(tools::file_ext(path) != "wac") {
+    stop("file type not supported by this function.")
+  }
+
+  f <- file(path, open = "rb")
+  on.exit(close(f))
+
+  name <- readChar(f, 4)
+  version <- readBin(con = f, what = integer(), size = 1, endian = "little")
+  n_channels <- readBin(con = f, what = integer(), size = 1, endian = "little")
+  frame_size <- readBin(con = f, what = integer(), size = 2, endian = "little")
+  block_size <-  readBin(con = f, what = integer(), size = 2, endian = "little")
+  flags <-  readBin(con = f, what = integer(), size = 2, endian = "little")
+  sample_rate <-  readBin(con = f, what = integer(), size = 4, endian = "little")
+  samples <- readBin(con = f, what = integer(), size = 4, endian = "little")
+
+  if(n_channels == 1) {
+    stereo <- FALSE
+  } else {
+    stereo <- TRUE
+  }
+
+  length_seconds = samples / sample_rate
+
+  return(out = list(sample_rate = sample_rate,
+                    n_channels = n_channels,
+                    length_seconds = length_seconds))
+
+}
 
 
 
