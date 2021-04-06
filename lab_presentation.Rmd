@@ -1,0 +1,109 @@
+---
+title: "lab_presentation"
+author: "Alex MacPhail"
+date: "06/04/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+#Lab presentation
+
+library(wildRtrax)
+library(tidyverse)
+library(vroom)
+library(fs)
+library(magick)
+
+#Set some things up
+devtools::install_github("ABbiodiversity/wildRtrax", force = T)
+
+path_scan <- as.character("/volumes/budata/abmi/2019/01/abmi-0571")
+path_indices <- as.character("/users/alexandremacphail/nuew/files")
+path_ap <- as.character("/users/alexandremacphail/AP")
+abmi_files <- wildRtrax::wt_audio_scanner(path_scan, file_type = "both") #Too slow for presentation - create a pre-cooked csv instead
+b <- read_csv("/users/alexandremacphail/af.csv")
+
+ggplot(b, aes(x=julian, fill=location)) + geom_density(alpha = 0.5) + facet_wrap(~location)
+
+b %>%
+  filter(julian %in% c(140:200)) %>%
+  filter(time_index == 2) %>%
+  group_by(location, time_index) %>%
+  sample_n(4, replace = F)
+  
+  
+  
+
+#   mutate(script = paste0("sudo ln -s ",file_path," /media/BUdata01/wildtrax_loads/gh16",file_name,".",file_type),
+#          script = str_replace(script, "/Volumes/BUdata","/media/BUdata01"))
+# 
+# write.csv(gh16$script,"/users/alexandremacphail/nuew/gh16.txt")
+
+a <- fs::dir_ls(path = '/users/alexandremacphail/nuew/files',
+          regexp = '*Towsey.Acoustic.Indices.csv',
+          recurse = TRUE)
+
+a2 <- vroom::vroom(a, col_select = c(BackgroundNoise,
+Snr,
+AcousticComplexity,
+TemporalEntropy,
+Ndsi,
+HighFreqCover,
+MidFreqCover,
+LowFreqCover,
+FileName,
+ResultMinute), altrep = F)
+
+a3 <- a2 %>% inner_join(., abmi_files, by = c("FileName" = "file_name")) %>%
+  pivot_longer(cols = BackgroundNoise:LowFreqCover,
+               names_to = "index_variable",
+               values_to = "index_value")
+
+#Extract the images from the LDFCS
+ldfcs <- fs::dir_info(path = path_indices, regexp = '*__2Maps.png', recurse = TRUE)
+ldfcs$location <- str_extract(tools::file_path_sans_ext(basename(ldfcs$path)), '[^_]*')
+ldfcs$file_name <- str_replace(basename(ldfcs$path),'__2Maps.png','')
+
+#Bring everything together
+everything <- a3 %>%
+  inner_join(., ldfcs, by = c("FileName" = "file_name")) %>%
+  rename("file_name" = "FileName") %>%
+  select(file_path, path, file_name, location.x, julian, time_index, recording_date_time, ResultMinute, index_variable, index_value) %>%
+  group_by(file_name, file_path, path, location.x, julian, time_index, recording_date_time, index_variable) %>%
+  summarise(index_value = mean(index_value)) %>%
+  ungroup() %>%
+  mutate(year = format(recording_date_time,"%Y")) %>%
+  rename(., location = "location.x") %>%
+  mutate(date = format(recording_date_time,"%m%d"))
+
+#Plot a graph of the indices
+ggplot(everything, aes(x = date, y = index_value, colour = index_variable)) +
+  geom_boxplot() +
+  blanktheme +
+  theme(axis.text.x=element_blank()) +
+  facet_wrap(~index_variable, scales="free_y")
+
+#Split by location (or whatever other variable you'd like)
+#This is everything
+pic <- image_append(do.call("c", lapply(unique(everything$path), function(x){image_read(x)})))
+pic
+
+#This is each time index e.g. dawn, dusk
+pics <- lapply(split(unique(everything$path), unique(everything$time_index)), function(x) {image_append(image_read(x))})
+pics
+
+#This is each julian date
+pics2 <- lapply(split(unique(everything$path), unique(everything$julian)), function(x) {image_append(image_read(x))})
+pics2
+
+pics2#This is each location stacked into a diel plot
+pics3 <- lapply(split(unique(everything$path), unique(everything$location)), function(x) {image_append(image_read(x))})
+
+
+
+```
