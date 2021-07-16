@@ -20,12 +20,12 @@
 wt_audio_scanner <- function(path, file_type) {
 
   # Create regex for file_type
-  if (file_type == "wav") {
-    file_type_reg <- "\\.wav$"
+  if (file_type == "wav" || file_type == "WAV") {
+    file_type_reg <- "\\.wav$|\\.WAV$"
   } else if (file_type == "wac") {
     file_type_reg <- "\\.wac$"
   } else if (file_type == "both") {
-    file_type_reg <- "\\.wav$|\\.wac$"
+    file_type_reg <- "\\.wav$|\\.wac$|\\.WAV$"
   } else {
     # Throw error if the file_type is not set to wav, wac, or both.
     stop ("For now, this function can only be used for wav and/or wac files. Please specify either 'wac', 'wav', or 'both' with the file_type argument.")
