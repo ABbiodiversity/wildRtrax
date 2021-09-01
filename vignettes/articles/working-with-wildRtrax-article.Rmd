@@ -53,11 +53,11 @@ This vignette contains an outline for how to use functions from the R package `w
 
 ### What is `wildRtrax`?
 
-`wildRtrax`, pronounced *'wilder tracks'*, is an R package for ecologists and advanced users who work with environmental sensor data, mainly from acoustic recordings units (ARUs) or remote game cameras (RGCs). It contains functions designed to meet most needs in order to organize, analyze and standardize data to the [WildTrax](https://wwww.wildtrax.ca) infrastructure. `wildRtrax` is self-contained and must be run under an R statistical environment, and it also depends on many other R packages. `wildRtrax` is free software and distributed under [MIT License (c) 2020](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE).
+`wildRtrax`, pronounced *'wilder tracks'*, is an R package for ecologists and advanced users who work with environmental sensor data, mainly from autonomous recordings units (ARUs). It contains functions designed to meet most needs in order to organize, analyze and standardize data to the [WildTrax](https://wwww.wildtrax.ca) infrastructure. `wildRtrax` is self-contained and must be run under an R statistical environment, and it also depends on many other R packages. `wildRtrax` is free software and distributed under [MIT License (c) 2020](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE).
 
 ### What is **WildTrax**?
 
-[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to centralize, store, process, manage and share environmental sensor data. It was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca) and the [Bioacoustic Unit](https://bioacoustic.abmi.ca). `wildRtrax` serves as a parallel design and indicator to analytics and functions that can be developed in **WildTrax**. 
+[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, and share this environmental sensor data and transform it into **biological data**. It was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca) and the [Bioacoustic Unit](https://bioacoustic.abmi.ca). `wildRtrax` serves as a parallel design and indicator to analytics and functions that can be developed in **WildTrax**. 
 
 ### What R packages does `wildRtrax` depend on?
 
@@ -65,7 +65,7 @@ This vignette contains an outline for how to use functions from the R package `w
 
 ### Do I need to know any other programming langugages in order to use `wildRtrax`?
 
-Certain functions rely on Python and bash scripts and some SQL. You do not need to know the languages in order to use the functions but it is encouraged to read the documentation.
+Certain functions rely on Python and bash scripts and some SQL. You do not need to know the languages in order to use the functions but it's encouraged to read the documentation.
 
 ### How do I report a bug in `wildRtrax`?
 
@@ -81,13 +81,15 @@ If you think you have found a bug in `wildRtrax`, you should report it to develo
 
 Yes! `wildRtrax` is dependent on user contribution and all feedback is welcome. If you have problems with `wildRtrax`, it may be as simple as incomplete documentation. Feature requests also are welcome, but they are not necessarily fulfilled. A new feature will be added if it is easy to do and it looks useful to the user base of the package, or if you submit fully annotated code.
 
+### Disclaimers
 
+The pronoun “you” throughout the book refers to the reader. “We” refers to the `wildRtrax` team in general.
 
 ------------------------------------------------------------------------
 
 ## **Introduction**
 
-Autonomous recording units (ARUs) and remote game cameras (RGCs) collect data on the environment by means of capturing acoustic or visual data, respectively. ARUs produce audio recordings and RGCs produce images. ARUs are used to survey a variety of species such as birds, amphibians, and bats. But really anything that gives a vocalizing cue. RGCs are best used to detect and monitor mammals. Check out [`abmi.camera.extras`](https://github.com/mabecker89/abmi.camera.extras) if you're interested in getting estimates of animal density collected from RGCs. Both environmental sensors are designed to record sound or images autonomously for long periods of time making them ideal non-invasive, passive wildlife detection tools.
+Autonomous recording units (ARUs) collect data on the environment by means of capturing acoustic or visual data, respectively. ARUs produce audio recordings and RGCs produce images. ARUs are used to survey a variety of species such as birds, amphibians, and bats. But really anything that gives a vocalizing cue. RGCs are best used to detect and monitor mammals. Check out [`abmi.camera.extras`](https://github.com/mabecker89/abmi.camera.extras) if you're interested in getting estimates of animal density collected from RGCs. Both environmental sensors are designed to record sound or images autonomously for long periods of time making them ideal non-invasive, passive wildlife detection tools.
 
 ### **Audio file formats**
 
@@ -104,7 +106,7 @@ Let's look through a folder of audio data:
 
 audio_files <-
   # First list then retrieve file size from a given directory
-  fs::dir_ls(path = '/users/alexandremacphail/desktop/testwav',
+  fs::dir_ls(path = '',
          recurse = TRUE,
          regexp = '\\.wac$|\\.w4v$|\\.wav$|\\.mp3$|\\.flac$') %>>%
   "Scanning audio files ..." %>>%
@@ -132,7 +134,7 @@ It is important to understand how an R environment deals with audio data as well
 
 ```{r Examples of reading acoustic data into R, include = TRUE, echo = TRUE}
 
-file <- c('/users/alexandremacphail/desktop/testwav/ABMI-0439-NW_20190530_054400.wav')
+file <- c('')
 
 wave_t <- tuneR::readWave(file, header = T) #True header format
 
@@ -158,9 +160,9 @@ When it comes to different file formats `read_wac`, `wav2flac`, `readMP3` and `r
 
 ```{r, include = TRUE, echo = TRUE}
 
-file_wac <- c('/users/alexandremacphail/desktop/testwav/ABMI-0439-NE_0+1_20190526_054900.wac')
+file_wac <- c('')
 
-file_flac <- c('/users/alexandremacphail/desktop/testwav/ABMI-0439-NW_0+1_20190530_054400.flac')
+file_flac <- c('')
 
 wac <- read_wac(file_wac)
 
@@ -181,7 +183,7 @@ Let's create a spectrogram to get a better look at some of those audio files. He
 ```{r Figure 2 - Create a spectrogram, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, warnings = FALSE, include = TRUE}
 
 audio_files <- audio_files %>%
-  dplyr::filter(filename %in% c('ABMI-0439-NW_20190530_054400.wav','ABMI-0439-NW_20190529_054500.wav'))
+  dplyr::filter(filename %in% c('',''))
 
 #You can use something like a loop and ggpspectro from seewave
 for (i in 1:nrow(audio_files)) {
@@ -202,7 +204,7 @@ for (i in 1:nrow(audio_files)) {
 ```{r SoX images in bash, engine='bash', include = TRUE}
 
 #Or try a bash command using SoX
-cd /users/alexandremacphail/desktop/testwav && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
+cd PATH && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
 
 ```
 
@@ -216,29 +218,17 @@ image_append(image_border(images, "black", "2x2"), stack = TRUE)
 
 ```
 
-Manipulating spectral signatures... 
-
-```{r Manipulating spectral signatures, include = TRUE}
-
-#Content coming soon!
-
-```
-
-### **Photo file formats**
-
-Content coming soon!
-
 --------------------------------------
 
 ## **Working with messy data: an introduction to environmental sensor data management**
 
 ### **From the field to the office**
 
-Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from certain aspects of the raw data, but robust field or *visit* metadata as it's called in **wildRtrax** and **WildTrax** is important to support the quality control process of the incoming sensor data.
+Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you're correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data workflows, but is of course heavily dependent on it. Acoustic data has metadata dependencies that can be extracted from the raw data, but robust field or [*visit*](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations/2.3-Visits.html) metadata is important to support the quality control process.
 
 ### **Metadata dependencies for acoustic data**
 
-You'll notice in the `audio_files` tibble, there is the *file name* column. The **wildRtrax** framework prefers that the file name string from which the data is deriving is composed of two parts: a *spatial* component and a *temporal* component. We call these fields the *location* and the *recording_date_time* of the recording, respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
+You'll notice in the `audio_files` tibble, there is the *file name* column. The **wildRtrax** framework prefers that the file name string be composed of two parts: a *spatial* component and a *temporal* component. We call these fields the *location* and the *recording_date_time* of the recording, respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
 
 * **Location**
   * Is a string (or character vector) identifying a unique spatial location of your study
