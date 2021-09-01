@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 # library(wildRtrax)
 ```
 
-```{r Setup, include = FALSE, echo = FALSE}
+```{r Setup, include = FALSE, echo = FALSE, eval = FALSE}
 
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
@@ -41,7 +41,7 @@ blanktheme<-theme_bw() +
 
 ```
 
-```{r setup, include = FALSE, echo = FALSE}
+```{r setup, include = FALSE, echo = FALSE, eval = FALSE}
 
 devtools::install_github("ABbiodiversity/wildRtrax")
 
@@ -102,7 +102,7 @@ There are four major audio file types used within the `wildRtrax` framework: *wa
 
 Let's look through a folder of audio data:
 
-```{r Audio files, include = TRUE}
+```{r Audio files, include = TRUE, eval = FALSE}
 
 audio_files <-
   # First list then retrieve file size from a given directory
@@ -122,7 +122,7 @@ audio_files <-
 ```
 
 
-```{r Figure 1 - Audio file formats, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, echo=FALSE, include = T}
+```{r Figure 1 - Audio file formats, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, echo=FALSE, include = T, eval = FALSE}
 
 ggplot2::ggplot(audio_files, aes(x = reorder(filetype, size) , y = size, fill = compressed)) + geom_bar(stat="identity") + blanktheme + coord_flip() + xlab("Filetype") + ylab("Size (MB)")
 
@@ -146,7 +146,7 @@ list(wave_t, wave_f)
 
 You can access the *objects* in `wave_t` through a `$` as you would a normal list. When `header = FALSE` and you are reading in the entire wav file, you can access *slots* of the `S4` object using `@`. 
 
-```{r Accessing S4 and lists, include = TRUE, echo = TRUE}
+```{r Accessing S4 and lists, include = TRUE, echo = TRUE, eval = FALSE}
 
 sound_length_S4 <- round((wave_f@left / wave_f@samp.rate), 2)
 
@@ -158,7 +158,7 @@ sound_length_list <- wave_t$samples / wave_t$sample.rate
 
 When it comes to different file formats `read_wac`, `wav2flac`, `readMP3` and `read_audio` are functions that all converts these format to an S4 wave object. 
 
-```{r, include = TRUE, echo = TRUE}
+```{r, include = TRUE, echo = TRUE, eval = FALSE}
 
 file_wac <- c('')
 
@@ -180,7 +180,7 @@ A *spectrogram* is a visual representation of the spectrum of frequencies of an 
 
 Let's create a spectrogram to get a better look at some of those audio files. Here's one way to do it using `ggspectro` in `seewave`. 
 
-```{r Figure 2 - Create a spectrogram, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, warnings = FALSE, include = TRUE}
+```{r Figure 2 - Create a spectrogram, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, warnings = FALSE, include = TRUE, eval = FALSE}
 
 audio_files <- audio_files %>%
   dplyr::filter(filename %in% c('',''))
@@ -201,7 +201,7 @@ for (i in 1:nrow(audio_files)) {
 
 [**SoX**](http://sox.sourceforge.net/) is also a very powerful command line tool that can build spectrograms as well. Processing time here is much faster given R doesn't have to read in the file as an S4 wave object. More on this later. 
 
-```{r SoX images in bash, engine='bash', include = TRUE}
+```{r SoX images in bash, engine='bash', include = TRUE, eval = FALSE}
 
 #Or try a bash command using SoX
 cd PATH && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
@@ -210,7 +210,7 @@ cd PATH && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%
 
 You'll notice that we are not manipulating any of the features of the wav file - simply reading in the raw acoustic information. You can read the images back into R using and create an array of images. See [``magick``](https://cran.r-project.org/web/packages/magick/index.html) for more functionality. 
 
-```{r Read SoX images, fig.width = 5, fig.height = 3, fig.align = 'center', include = TRUE}
+```{r Read SoX images, fig.width = 5, fig.height = 3, fig.align = 'center', include = TRUE, eval = FALSE}
 
 pics <- list.files("/users/alexandremacphail/desktop/testwav",".png", recursive = T, full.names = T)
 images <- image_read(pics)
@@ -242,7 +242,7 @@ You'll notice in the `audio_files` tibble, there is the *file name* column. The 
 
 Let's expand on the `audio_files` tibble a bit more to extract this information:
 
-```{r Adding spatiotemporal metadata, include = TRUE}
+```{r Adding spatiotemporal metadata, include = TRUE, eval = FALSE}
 
 audio_files <-
   fs::dir_ls(path = "/volumes/budata/abmi/2019/01/abmi-0439/abmi-0439-ne",
@@ -280,7 +280,7 @@ Another important aspect of collecting long-duration acoustic data is ensuring t
 
 Let's give our pipe an indexing function and a larger acoustic data set to work with...
 
-```{r Add time indexing, include = TRUE} 
+```{r Add time indexing, include = TRUE, eval = FALSE} 
 
 tic()#And a timer to see how long things take!
 
@@ -325,7 +325,7 @@ Looks like we are recording eight times a day throughout various times of day. B
 
 Try using the sliders below to estimate how much data you may accumulate for a monitoring program.
 
-```{r, echo = FALSE, include=TRUE, fig.align='center'}
+```{r, echo = FALSE, include=TRUE, fig.align='center', eval = FALSE}
 server <- function(input, output) {
   sliderValues <-
     reactive({
@@ -414,7 +414,7 @@ You might already be aware that ``wildRtrax`` and some of the functions previous
 
 Let's look at the output of the first `wildRtrax` function based on what we know now
 
-```{r Running wt_audio_scanner}
+```{r Running wt_audio_scanner, eval = FALSE}
 
 #library(wildRtrax)
 
@@ -442,15 +442,10 @@ Data collected at the beginning and end of an ARU deployment cycle play an impor
 
 ``wildRtrax`` provides some Python scripts that allow you to resolve data structure issues in a more expedited way.
 
-* ``rename`` - pipit
-* ``sitefolders`` - 
-* ``testrecordings`` - goldfinch
-* ``chop`` - chop
-* ``image_scanner`` - muskrat
-
-```{r}
-
-```
+* ``rename``
+* ``testrecordings``
+* ``chop``
+* ``image_scanner``
 
 ### Summarizing results
 
@@ -462,7 +457,7 @@ Data collected at the beginning and end of an ARU deployment cycle play an impor
 
 Given that there are thousands are recordings for each location, we'll need to select which recordings will be processed by a human. 
 
-```{r Subsetting data options using wt_audio_scanner}
+```{r Subsetting data options using wt_audio_scanner, eval = FALSE}
 
 
 
@@ -482,7 +477,7 @@ Now that we have our data selected, we also want to ensure that the recordings w
 
 Acoustic indices are statistics that summarize an aspect of the distribution of acoustic energy from an audio recording. There are excellent resources for the science behind these here: [@article]. `wt_run_ap` generates acoustic indices as well as long-duration false-colour spectrograms from the AnalysisPrograms software. 
 
-```{r Acoustic indices}
+```{r Acoustic indices, eval = FALSE}
 
 path_scan <- as.chracter('')
 path_ap = as.character('')
@@ -544,7 +539,7 @@ everything <- files_join %>%
 
 ```
 
-```{r Plot indices}
+```{r Plot indices, eval = FALSE}
 #Plot a graph of the indices
 ggplot(everything,
        aes(x = date, y = index_value, colour = index_variable, fill = index_variable)) + 
@@ -555,7 +550,7 @@ ggplot(everything,
 
 ```
 
-```{r Manipulate data for LDFCs}
+```{r Manipulate data for LDFCs, eval = FALSE}
 #Split by location (or whatever other variable you'd like)
 #This is everything
 pic <- image_append(do.call("c", lapply(unique(everything$path), function(x){image_read(x)})))
@@ -583,15 +578,9 @@ See ``seewave``, ``bioacoustics`` and ``tuneR``.
 
 ------------------------------------------------------------------------
 
-## **Study designs and other topics**
+## Adaptive sampling using wildRtrax
 
-To note that you also have the option to upload your entire acoustic data set to **WildTrax** 
 
-### Study design case study 1: Sampling designs
-
-### Study design case study 2: Seasonal phenology
-
-### Study design case study 3: Multi-observer analysis with `wt_carrefour`
 
 ------------------------------------------------------------------------
 
