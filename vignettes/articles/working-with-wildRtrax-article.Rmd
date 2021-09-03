@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 # library(wildRtrax)
 ```
 
-```{r Setup, include = FALSE, echo = FALSE}
+```{r Setup, include = FALSE, echo = FALSE, eval = FALSE}
 
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 knitr::opts_chunk$set(tidy.opts=list(width.cutoff=80), tidy=TRUE)
@@ -41,7 +41,7 @@ blanktheme<-theme_bw() +
 
 ```
 
-```{r setup, include = FALSE, echo = FALSE}
+```{r setup, include = FALSE, echo = FALSE, eval = FALSE}
 
 devtools::install_github("ABbiodiversity/wildRtrax")
 
@@ -53,11 +53,11 @@ This vignette contains an outline for how to use functions from the R package `w
 
 ### What is `wildRtrax`?
 
-`wildRtrax`, pronounced *'wilder tracks'*, is an R package for ecologists and advanced users who work with environmental sensor data, mainly from acoustic recordings units (ARUs) or remote game cameras (RGCs). It contains functions designed to meet most needs in order to organize, analyze and standardize data to the [WildTrax](https://wwww.wildtrax.ca) infrastructure. `wildRtrax` is self-contained and must be run under an R statistical environment, and it also depends on many other R packages. `wildRtrax` is free software and distributed under [MIT License (c) 2020](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE).
+`wildRtrax`, pronounced *'wilder tracks'*, is an R package for ecologists and advanced users who work with environmental sensor data, mainly from autonomous recordings units (ARUs). It contains functions designed to meet most needs in order to organize, analyze and standardize data to the [WildTrax](https://wwww.wildtrax.ca) infrastructure. `wildRtrax` is self-contained and must be run under an R statistical environment, and it also depends on many other R packages. `wildRtrax` is free software and distributed under [MIT License (c) 2020](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE).
 
 ### What is **WildTrax**?
 
-[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to centralize, store, process, manage and share environmental sensor data. It was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca) and the [Bioacoustic Unit](https://bioacoustic.abmi.ca). `wildRtrax` serves as a parallel design and indicator to analytics and functions that can be developed in **WildTrax**. 
+[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, and share this environmental sensor data and transform it into **biological data**. It was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca) and the [Bioacoustic Unit](https://bioacoustic.abmi.ca). `wildRtrax` serves as a parallel design and indicator to analytics and functions that can be developed in **WildTrax**. 
 
 ### What R packages does `wildRtrax` depend on?
 
@@ -65,7 +65,7 @@ This vignette contains an outline for how to use functions from the R package `w
 
 ### Do I need to know any other programming langugages in order to use `wildRtrax`?
 
-Certain functions rely on Python and bash scripts and some SQL. You do not need to know the languages in order to use the functions but it is encouraged to read the documentation.
+Certain functions rely on Python and bash scripts and some SQL. You do not need to know the languages in order to use the functions but it's encouraged to read the documentation.
 
 ### How do I report a bug in `wildRtrax`?
 
@@ -81,13 +81,15 @@ If you think you have found a bug in `wildRtrax`, you should report it to develo
 
 Yes! `wildRtrax` is dependent on user contribution and all feedback is welcome. If you have problems with `wildRtrax`, it may be as simple as incomplete documentation. Feature requests also are welcome, but they are not necessarily fulfilled. A new feature will be added if it is easy to do and it looks useful to the user base of the package, or if you submit fully annotated code.
 
+### Disclaimers
 
+The pronoun “you” throughout the book refers to the reader. “We” refers to the `wildRtrax` team in general.
 
 ------------------------------------------------------------------------
 
 ## **Introduction**
 
-Autonomous recording units (ARUs) and remote game cameras (RGCs) collect data on the environment by means of capturing acoustic or visual data, respectively. ARUs produce audio recordings and RGCs produce images. ARUs are used to survey a variety of species such as birds, amphibians, and bats. But really anything that gives a vocalizing cue. RGCs are best used to detect and monitor mammals. Check out [`abmi.camera.extras`](https://github.com/mabecker89/abmi.camera.extras) if you're interested in getting estimates of animal density collected from RGCs. Both environmental sensors are designed to record sound or images autonomously for long periods of time making them ideal non-invasive, passive wildlife detection tools.
+Autonomous recording units (ARUs) collect data on the environment by means of capturing acoustic or visual data, respectively. ARUs produce audio recordings and RGCs produce images. ARUs are used to survey a variety of species such as birds, amphibians, and bats. But really anything that gives a vocalizing cue. RGCs are best used to detect and monitor mammals. Check out [`abmi.camera.extras`](https://github.com/mabecker89/abmi.camera.extras) if you're interested in getting estimates of animal density collected from RGCs. Both environmental sensors are designed to record sound or images autonomously for long periods of time making them ideal non-invasive, passive wildlife detection tools.
 
 ### **Audio file formats**
 
@@ -100,11 +102,11 @@ There are four major audio file types used within the `wildRtrax` framework: *wa
 
 Let's look through a folder of audio data:
 
-```{r Audio files, include = TRUE}
+```{r Audio files, include = TRUE, eval = FALSE}
 
 audio_files <-
   # First list then retrieve file size from a given directory
-  fs::dir_ls(path = '/users/alexandremacphail/desktop/testwav',
+  fs::dir_ls(path = '',
          recurse = TRUE,
          regexp = '\\.wac$|\\.w4v$|\\.wav$|\\.mp3$|\\.flac$') %>>%
   "Scanning audio files ..." %>>%
@@ -120,7 +122,7 @@ audio_files <-
 ```
 
 
-```{r Figure 1 - Audio file formats, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, echo=FALSE, include = T}
+```{r Figure 1 - Audio file formats, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, echo=FALSE, include = T, eval = FALSE}
 
 ggplot2::ggplot(audio_files, aes(x = reorder(filetype, size) , y = size, fill = compressed)) + geom_bar(stat="identity") + blanktheme + coord_flip() + xlab("Filetype") + ylab("Size (MB)")
 
@@ -132,7 +134,7 @@ It is important to understand how an R environment deals with audio data as well
 
 ```{r Examples of reading acoustic data into R, include = TRUE, echo = TRUE}
 
-file <- c('/users/alexandremacphail/desktop/testwav/ABMI-0439-NW_20190530_054400.wav')
+file <- c('')
 
 wave_t <- tuneR::readWave(file, header = T) #True header format
 
@@ -144,7 +146,7 @@ list(wave_t, wave_f)
 
 You can access the *objects* in `wave_t` through a `$` as you would a normal list. When `header = FALSE` and you are reading in the entire wav file, you can access *slots* of the `S4` object using `@`. 
 
-```{r Accessing S4 and lists, include = TRUE, echo = TRUE}
+```{r Accessing S4 and lists, include = TRUE, echo = TRUE, eval = FALSE}
 
 sound_length_S4 <- round((wave_f@left / wave_f@samp.rate), 2)
 
@@ -156,11 +158,11 @@ sound_length_list <- wave_t$samples / wave_t$sample.rate
 
 When it comes to different file formats `read_wac`, `wav2flac`, `readMP3` and `read_audio` are functions that all converts these format to an S4 wave object. 
 
-```{r, include = TRUE, echo = TRUE}
+```{r, include = TRUE, echo = TRUE, eval = FALSE}
 
-file_wac <- c('/users/alexandremacphail/desktop/testwav/ABMI-0439-NE_0+1_20190526_054900.wac')
+file_wac <- c('')
 
-file_flac <- c('/users/alexandremacphail/desktop/testwav/ABMI-0439-NW_0+1_20190530_054400.flac')
+file_flac <- c('')
 
 wac <- read_wac(file_wac)
 
@@ -178,10 +180,10 @@ A *spectrogram* is a visual representation of the spectrum of frequencies of an 
 
 Let's create a spectrogram to get a better look at some of those audio files. Here's one way to do it using `ggspectro` in `seewave`. 
 
-```{r Figure 2 - Create a spectrogram, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, warnings = FALSE, include = TRUE}
+```{r Figure 2 - Create a spectrogram, fig.align='center', out.extra='angle=90', fig.width = 7, fig.height = 5, warnings = FALSE, include = TRUE, eval = FALSE}
 
 audio_files <- audio_files %>%
-  dplyr::filter(filename %in% c('ABMI-0439-NW_20190530_054400.wav','ABMI-0439-NW_20190529_054500.wav'))
+  dplyr::filter(filename %in% c('',''))
 
 #You can use something like a loop and ggpspectro from seewave
 for (i in 1:nrow(audio_files)) {
@@ -199,16 +201,16 @@ for (i in 1:nrow(audio_files)) {
 
 [**SoX**](http://sox.sourceforge.net/) is also a very powerful command line tool that can build spectrograms as well. Processing time here is much faster given R doesn't have to read in the file as an S4 wave object. More on this later. 
 
-```{r SoX images in bash, engine='bash', include = TRUE}
+```{r SoX images in bash, engine='bash', include = TRUE, eval = FALSE}
 
 #Or try a bash command using SoX
-cd /users/alexandremacphail/desktop/testwav && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
+cd PATH && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
 
 ```
 
 You'll notice that we are not manipulating any of the features of the wav file - simply reading in the raw acoustic information. You can read the images back into R using and create an array of images. See [``magick``](https://cran.r-project.org/web/packages/magick/index.html) for more functionality. 
 
-```{r Read SoX images, fig.width = 5, fig.height = 3, fig.align = 'center', include = TRUE}
+```{r Read SoX images, fig.width = 5, fig.height = 3, fig.align = 'center', include = TRUE, eval = FALSE}
 
 pics <- list.files("/users/alexandremacphail/desktop/testwav",".png", recursive = T, full.names = T)
 images <- image_read(pics)
@@ -216,29 +218,17 @@ image_append(image_border(images, "black", "2x2"), stack = TRUE)
 
 ```
 
-Manipulating spectral signatures... 
-
-```{r Manipulating spectral signatures, include = TRUE}
-
-#Content coming soon!
-
-```
-
-### **Photo file formats**
-
-Content coming soon!
-
 --------------------------------------
 
 ## **Working with messy data: an introduction to environmental sensor data management**
 
 ### **From the field to the office**
 
-Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from certain aspects of the raw data, but robust field or *visit* metadata as it's called in **wildRtrax** and **WildTrax** is important to support the quality control process of the incoming sensor data.
+Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you're correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data workflows, but is of course heavily dependent on it. Acoustic data has metadata dependencies that can be extracted from the raw data, but robust field or [*visit*](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations/2.3-Visits.html) metadata is important to support the quality control process.
 
 ### **Metadata dependencies for acoustic data**
 
-You'll notice in the `audio_files` tibble, there is the *file name* column. The **wildRtrax** framework prefers that the file name string from which the data is deriving is composed of two parts: a *spatial* component and a *temporal* component. We call these fields the *location* and the *recording_date_time* of the recording, respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
+You'll notice in the `audio_files` tibble, there is the *file name* column. The **wildRtrax** framework prefers that the file name string be composed of two parts: a *spatial* component and a *temporal* component. We call these fields the *location* and the *recording_date_time* of the recording, respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
 
 * **Location**
   * Is a string (or character vector) identifying a unique spatial location of your study
@@ -252,7 +242,7 @@ You'll notice in the `audio_files` tibble, there is the *file name* column. The 
 
 Let's expand on the `audio_files` tibble a bit more to extract this information:
 
-```{r Adding spatiotemporal metadata, include = TRUE}
+```{r Adding spatiotemporal metadata, include = TRUE, eval = FALSE}
 
 audio_files <-
   fs::dir_ls(path = "/volumes/budata/abmi/2019/01/abmi-0439/abmi-0439-ne",
@@ -290,7 +280,7 @@ Another important aspect of collecting long-duration acoustic data is ensuring t
 
 Let's give our pipe an indexing function and a larger acoustic data set to work with...
 
-```{r Add time indexing, include = TRUE} 
+```{r Add time indexing, include = TRUE, eval = FALSE} 
 
 tic()#And a timer to see how long things take!
 
@@ -335,7 +325,7 @@ Looks like we are recording eight times a day throughout various times of day. B
 
 Try using the sliders below to estimate how much data you may accumulate for a monitoring program.
 
-```{r, echo = FALSE, include=TRUE, fig.align='center'}
+```{r, echo = FALSE, include=TRUE, fig.align='center', eval = FALSE}
 server <- function(input, output) {
   sliderValues <-
     reactive({
@@ -424,7 +414,7 @@ You might already be aware that ``wildRtrax`` and some of the functions previous
 
 Let's look at the output of the first `wildRtrax` function based on what we know now
 
-```{r Running wt_audio_scanner}
+```{r Running wt_audio_scanner, eval = FALSE}
 
 #library(wildRtrax)
 
@@ -452,15 +442,10 @@ Data collected at the beginning and end of an ARU deployment cycle play an impor
 
 ``wildRtrax`` provides some Python scripts that allow you to resolve data structure issues in a more expedited way.
 
-* ``rename`` - pipit
-* ``sitefolders`` - 
-* ``testrecordings`` - goldfinch
-* ``chop`` - chop
-* ``image_scanner`` - muskrat
-
-```{r}
-
-```
+* ``rename``
+* ``testrecordings``
+* ``chop``
+* ``image_scanner``
 
 ### Summarizing results
 
@@ -472,7 +457,7 @@ Data collected at the beginning and end of an ARU deployment cycle play an impor
 
 Given that there are thousands are recordings for each location, we'll need to select which recordings will be processed by a human. 
 
-```{r Subsetting data options using wt_audio_scanner}
+```{r Subsetting data options using wt_audio_scanner, eval = FALSE}
 
 
 
@@ -492,7 +477,7 @@ Now that we have our data selected, we also want to ensure that the recordings w
 
 Acoustic indices are statistics that summarize an aspect of the distribution of acoustic energy from an audio recording. There are excellent resources for the science behind these here: [@article]. `wt_run_ap` generates acoustic indices as well as long-duration false-colour spectrograms from the AnalysisPrograms software. 
 
-```{r Acoustic indices}
+```{r Acoustic indices, eval = FALSE}
 
 path_scan <- as.chracter('')
 path_ap = as.character('')
@@ -554,7 +539,7 @@ everything <- files_join %>%
 
 ```
 
-```{r Plot indices}
+```{r Plot indices, eval = FALSE}
 #Plot a graph of the indices
 ggplot(everything,
        aes(x = date, y = index_value, colour = index_variable, fill = index_variable)) + 
@@ -565,7 +550,7 @@ ggplot(everything,
 
 ```
 
-```{r Manipulate data for LDFCs}
+```{r Manipulate data for LDFCs, eval = FALSE}
 #Split by location (or whatever other variable you'd like)
 #This is everything
 pic <- image_append(do.call("c", lapply(unique(everything$path), function(x){image_read(x)})))
@@ -593,15 +578,9 @@ See ``seewave``, ``bioacoustics`` and ``tuneR``.
 
 ------------------------------------------------------------------------
 
-## **Study designs and other topics**
+## Adaptive sampling using wildRtrax
 
-To note that you also have the option to upload your entire acoustic data set to **WildTrax** 
 
-### Study design case study 1: Sampling designs
-
-### Study design case study 2: Seasonal phenology
-
-### Study design case study 3: Multi-observer analysis with `wt_carrefour`
 
 ------------------------------------------------------------------------
 

@@ -24,7 +24,6 @@ Imports:
     stringr,
     tools,
     pipeR,
-    bioacoustics,
     tuneR,
     purrr,
     rlang,
@@ -32,7 +31,10 @@ Imports:
     doParallel,
     unmarked,
     plumber,
-    shiny
+    shiny,
+    seewave,
+    httr,
+    readr
 Suggests: 
     testthat,
     covr,

@@ -1,5 +1,5 @@
 ---
-title: "using-functions-from-wildRtrax"
+title: "Pre-processing tools in wildRtrax"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{using-functions-from-wildRtrax}

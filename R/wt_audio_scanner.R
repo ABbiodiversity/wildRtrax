@@ -6,7 +6,8 @@
 #' @param path Character; The path to the directory with audio files you wish to scan. Can be done recursively.
 #' @param file_type Character; Takes one of three values: wav, wac, or both. Use "both" if your directory contains both types of files.
 #'
-#' @import future fs furrr tibble dplyr tidyr stringr tools lubridate pipeR tuneR bioacoustics purrr
+#' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr
+#' @importFrom lubridate year ymd_hms yday
 #' @importFrom rlang env_has current_env
 #' @export
 #'
@@ -157,25 +158,3 @@ wt_wac_info <- function(path) {
                     length_seconds = length_seconds))
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
