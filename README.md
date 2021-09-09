@@ -35,25 +35,20 @@ library(vroom)
 
 # Scan directories of files using wt_audio_scanner
 
-files <- wt_audio_scanner("/path/to/files/", file_type = "both")
-
-
-# Detect limited amplitude sounds using wt_signal_level
-
 test_files <- "/path/to/files"
 
-files <- wt_audio_scanner(test_files, file_type = "wav")
+files <- **wt_audio_scanner**("/path/to/files/", file_type = "both")
 
 # Apply a limited amplitude filter
 
 files_lim_amp <- files %>% 
-      mutate(thresholds = future_map(.x = file_path, .f = ~ wt_signal_level(.x, fmin = 0, fmax = 2000, threshold = 55, aggregate = 10))) 
+      mutate(thresholds = future_map(.x = file_path, .f = ~ **wt_signal_level**(.x, fmin = 0, fmax = 2000, threshold = 55, aggregate = 10))) 
 
 # Create long-duration false-colour spectrograms and generate acoustic index values using the QUT Ecoacoustics package
 
 path_indices <- "/path/to/results"
 
-wt_run_ap(test_files, output_dir = path_indices, path_to_ap = /path/to/ap)
+**wt_run_ap**(test_files, output_dir = path_indices, path_to_ap = /path/to/ap)
 
 #Extract the index values - find the files...
 index_files <- fs::dir_ls(path = path_indices,
