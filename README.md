@@ -29,8 +29,8 @@ remotes::install_github("ABbiodiversity/wildRtrax")
 To report bugs, request additional features, or get help using the
 package, please file an
 [issue](https://github.com/ABbiodiversity/wildRtrax/issues).
-Alternatively, you can email Alex MacPhail <agmacpha@ualberta.ca> or
-Marcus Becker <mabecker@ualberta.ca>.
+Alternatively, you can email
+Marcus Becker <mabecker@ualberta.ca> or Alex MacPhail <agmacpha@ualberta.ca>.
 
 ## License
 
