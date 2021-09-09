@@ -94,7 +94,7 @@ wt_download_report <- function(project_id, sensor_id, cols_def = FALSE, weather_
   i <- wt_get_download_summary(sensor_id = sensor_id)
   i <- unlist(i$project_ids)
 
-  if (!project_id %in% i) {
+  if (!project_ids %in% i) {
     stop("The project_id you specified is not among the projects you are able to download for.", call. = TRUE)
   }
 

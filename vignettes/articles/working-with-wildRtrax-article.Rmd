@@ -43,7 +43,7 @@ blanktheme<-theme_bw() +
 
 ```{r setup, include = FALSE, echo = FALSE, eval = FALSE}
 
-devtools::install_github("ABbiodiversity/wildRtrax")
+remotes::install_github("ABbiodiversity/wildRtrax")
 
 ```
 

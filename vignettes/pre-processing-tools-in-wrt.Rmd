@@ -22,6 +22,8 @@ library(wildRtrax)
 
 ```
 
+# Pre-processing
+
 ## Scanning audio files from a directory
 
 ```{r, echo=FALSE, include=FALSE, eval=FALSE}
@@ -30,11 +32,19 @@ library(wildRtrax)
 
 ```
 
-## Running the QUT Ecoacoustics AnalysisPrograms on a wt_* standard data set
+## Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
 
 ```{r echo=FALSE, include=FALSE, eval=FALSE}
 
 #wt_run_ap()
+
+```
+
+## Applying a limited amplitude filter
+
+```{r echo=FALSE, include=FALSE, eval=FALSE}
+
+#wt_signal_level
 
 ```
 
