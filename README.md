@@ -30,6 +30,9 @@ All functions begin with a **wt_*** prefix
 
 ``` r
 library(wildRtrax)
+library(tidyverse)
+library(vroom)
+
 # Scan directories of files using wt_audio_scanner
 
 files <- wt_audio_scanner("/path/to/files/", file_type = "both")
@@ -37,12 +40,55 @@ files <- wt_audio_scanner("/path/to/files/", file_type = "both")
 
 # Detect limited amplitude sounds using wt_signal_level
 
-test_files <- "/users/alexandremacphail/desktop/wav/test2"
+test_files <- "/path/to/files"
 
 files <- wt_audio_scanner(test_files, file_type = "wav")
 
 # Apply a limited amplitude filter
-.f = ~ wt_signal_level(.x, fmin = 0, fmax = 2000, threshold = 55, aggregate = 10))) 
+
+files_lim_amp <- files %>% 
+      mutate(thresholds = future_map(.x = file_path, .f = ~ wt_signal_level(.x, fmin = 0, fmax = 2000, threshold = 55, aggregate = 10))) 
+
+# Create long-duration false-colour spectrograms and generate acoustic index values using the QUT Ecoacoustics package
+
+path_indices <- "/path/to/results"
+
+wt_run_ap(test_files, output_dir = path_indices, path_to_ap = /path/to/ap)
+
+#Extract the index values - find the files...
+index_files <- fs::dir_ls(path = path_indices,
+                   regexp = '*Towsey.Acoustic.Indices.csv',
+                   recurse = TRUE)
+
+#Which acoustic indices do you want to use?
+index_list <-
+  c(
+    "Snr",
+    "BackgroundNoise",
+    "AcousticComplexity",
+    "TemporalEntropy",
+    "Ndsi",
+    "ResultMinute",
+    "FileName"
+  )
+
+#...then vroom together the indices you want from all the csvs
+
+test_indices <- vroom(index_files, col_select = index_list)
+
+# Join the index values to the wt_audio_scanner tibble
+test_join <-
+  files %>% inner_join(., test_indices, by = c("file_name" = "FileName")) %>%
+  pivot_longer(cols = Snr:Ndsi,
+               names_to = "index_variable",
+               values_to = "index_value") %>%
+  #Plot a graph of the indices
+  ggplot(.,
+         aes(x = ResultMinute, y = index_value, colour = index_variable)) +
+  geom_point() +
+  blanktheme +
+  facet_wrap(~ index_variable, ncol = 1)
+test_join
 ```
 
 ## Issues
