@@ -6,6 +6,11 @@
 \usage{
 .wt_api_pr(path, ...)
 }
+\arguments{
+\item{path}{The path to the API}
+
+\item{...}{Argument to pass along into POST query}
+}
 \description{
 Generic function to handle certain POST requests
 }

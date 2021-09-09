@@ -30,7 +30,7 @@ Obtain a table listing projects that the user is able to download data for
 \dontrun{
 # Authenticate first:
 wt_auth()
-wt_get_download_summary(sensor_id = "ARU")
+wt_download_report(project_id = 397, sensor_id = "CAM", cols_def = FALSE, weather_cols = TRUE)
 }
 
 }

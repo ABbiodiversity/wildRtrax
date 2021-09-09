@@ -33,8 +33,7 @@ Imports:
     plumber,
     shiny,
     seewave,
-    httr,
-    readr
+    httr
 Suggests: 
     testthat,
     covr,

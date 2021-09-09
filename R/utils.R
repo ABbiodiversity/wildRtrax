@@ -77,6 +77,9 @@
 #'
 #' @description Generic function to handle certain POST requests
 #'
+#' @param path The path to the API
+#' @param ... Argument to pass along into POST query
+#'
 #' @import httr
 #'
 .wt_api_pr <- function(path, ...) {

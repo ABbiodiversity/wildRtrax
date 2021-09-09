@@ -71,7 +71,7 @@ wt_get_download_summary <- function(sensor_id) {
 #' @param weather_cols Logical; Do you want to include weather information for your stations? Defaults to TRUE
 #'
 #' @import httr purrr dplyr
-#' @importFrom readr read_csv
+#' @importFrom utils read.csv
 #'
 #' @export
 #'
@@ -79,7 +79,7 @@ wt_get_download_summary <- function(sensor_id) {
 #' \dontrun{
 #' # Authenticate first:
 #' wt_auth()
-#' wt_get_download_summary(sensor_id = "ARU")
+#' wt_download_report(project_id = 397, sensor_id = "CAM", cols_def = FALSE, weather_cols = TRUE)
 #' }
 #'
 #' @return If cols_def is TRUE, a list is returned with three elements: the data, english, and french column definitions; if FALSE, the data is returned as a dataframe.
@@ -92,9 +92,9 @@ wt_download_report <- function(project_id, sensor_id, cols_def = FALSE, weather_
 
   # Check if the project_id is valid:
   i <- wt_get_download_summary(sensor_id = sensor_id)
-  i <- unlist(i$project_ids)
+  i <- unlist(i$project_id)
 
-  if (!project_ids %in% i) {
+  if (!project_id %in% i) {
     stop("The project_id you specified is not among the projects you are able to download for.", call. = TRUE)
   }
 
@@ -114,11 +114,11 @@ wt_download_report <- function(project_id, sensor_id, cols_def = FALSE, weather_
   td <- tempdir()
 
   # Create POST request
-  httr::POST(
+  r <- httr::POST(
     httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
     query = list(
       projectIds = project_id,
-      sensorId = sensorId,
+      sensorId = sensor_id,
       splitLocation = FALSE
     ),
     accept = "application/zip",
@@ -142,7 +142,7 @@ wt_download_report <- function(project_id, sensor_id, cols_def = FALSE, weather_
   files <- list.files(td, pattern = ".csv")
   files.full <- list.files(td, pattern = ".csv", full.names = TRUE)
 
-  x <- purrr::map(.x = files.full, .f = readr::read_csv) %>%
+  x <- purrr::map(.x = files.full, .f = read.csv) %>%
     purrr::set_names(files)
 
   # Remove weather columns, if desired
