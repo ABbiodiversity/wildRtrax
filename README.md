@@ -24,6 +24,10 @@ repository with:
 remotes::install_github("ABbiodiversity/wildRtrax")
 ```
 
+## Usage
+
+All functions begin with a wt_* prefix. Column names and metadata align with the WildTrax infrastructure. 
+
 ## Issues
 
 To report bugs, request additional features, or get help using the
