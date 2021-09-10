@@ -51,8 +51,98 @@ If you think you have found a bug in `wildRtrax`, you should report it to develo
 
 Yes! `wildRtrax` is dependent on user contribution and all feedback is welcome. If you have problems with `wildRtrax`, it may be as simple as incomplete documentation. Feature requests also are welcome, but they are not necessarily fulfilled. A new feature will be added if it is easy to do and it looks useful to the user base of the package, or if you submit fully annotated code.
 
-See here[] for more information. 
+See [here](https://abbiodiversity.github.io/wildRtrax/CONTRIBUTING.html) for more information. 
 
 ### Disclaimers
 
 The pronoun “you” throughout the book refers to the reader. “We” refers to the `wildRtrax` team in general.
+
+## Audio data management
+
+Autonomous recording units (ARUs) and remote camera traps collect data on the environment by means of capturing acoustic or visual data, respectively. ARUs are used to survey a variety of species such as birds, amphibians, and bats. But really anything that gives a vocalizing cue. RGCs are best used to detect and monitor mammals. Check out [`abmi.camera.extras`](https://github.com/mabecker89/abmi.camera.extras) if you're interested in getting estimates of animal density collected from remote camera traps.
+
+Both environmental sensors are designed to record sound or images autonomously for long periods of time. This is turn can accrue a large amount of data. 
+
+### Audio file formats
+
+There are four major audio file types used within the **wildRtrax** framework: *wac*, *wav*, *mp3* and *flac*
+
+* *wac, w4v* are proprietary, lossless compressed file formats developed by [Wildlife Acoustics](https://www.wildlifeacoustics.com/)
+* *wav* is the standard, ubiquitous uncompressed audio file format
+* *mp3* a lossy compressed audio file format; works by reducing the accuracy of certain sound components, and eliminating others
+* *flac* a lossless compressed format useful for efficiently packing audio data
+
+```{r Examples of reading acoustic data into R, include = TRUE, echo = TRUE}
+
+file <- "/volumes/GoogleDrive/Shared drives/wildRtrax/data/example/ABMI-0754-SW_20170301_085900.wav"
+
+wave_t <- tuneR::readWave(file, header = T) #True header format
+
+wave_f <- tuneR::readWave(file, header = F)
+
+list(wave_t, wave_f)
+
+```
+
+You can access the *objects* in `wave_t` through a `$` as you would a normal list. When `header = FALSE` and you are reading in the entire wav file, you can access *slots* of the `S4` object using `@`. 
+
+```{r Accessing S4 and lists, include = TRUE, echo = TRUE}
+
+sound_length_S4 <- round((wave_f@left / wave_f@samp.rate), 2)
+
+#Is equivalent to:
+
+sound_length_list <- wave_t$samples / wave_t$sample.rate
+
+```
+
+### Spectrograms
+
+A *spectrogram* is a visual representation of the spectrum of frequencies of an audio signal as it varies with time ([Wikipedia](https://en.wikipedia.org/wiki/Spectrogram)). Spectrograms can be used to identify animal vocalizations by their unique spectral signature. Generally speaking, there are three pieces of information you can extract from a spectrogram:
+
+* Length of the vocalization via the x-axis in seconds
+* Frequency range of the vocalization via the y-axis in Hz
+* Relative amplitude of the vocalization via the z-axis in dB
+
+Let's create a spectrogram to get a better look at some of those audio files. Here's one way to do it using `ggspectro` in `seewave`. 
+
+```{r, echo=T, eval =F, warnings = FALSE, include = TRUE}
+
+
+```
+
+[**SoX**](http://sox.sourceforge.net/) is also a very powerful command line tool that can build spectrograms as well. Processing time here is much faster given R doesn't have to read in the file as an S4 wave object. More on this later. 
+
+```{r SoX images in bash, engine='bash', include = TRUE, eval = F}
+
+#Or try a bash command using SoX
+#cd /path/to/file && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
+
+```
+
+## Working with messy data: an introduction to environmental sensor data management
+
+### From the field to the office
+
+Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from certain aspects of the raw data, but robust field or *visit* metadata as it's called in **wildRtrax** and **WildTrax** is important to support the quality control process of the incoming sensor data.
+
+### Metadata dependencies for acoustic data
+
+You'll notice in the `audio_files` tibble, there is the *file name* column. The **wildRtrax** framework prefers that the file name string from which the data is deriving is composed of two parts: a *spatial* component and a *temporal* component. We call these fields the *location* and the *recording_date_time* of the recording, respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
+
+### Data volume, storage and computing power
+
+OK so we know we're going to accrue a lot of data using environmental sensors. Are there some ways we can reduce this?
+
+* *Are you interested in one or many species?*
+  * A community analysis would require a broad spectrum range to record in or analyze or with more data being collected to account for imperfect detection. Whereas with a single or multi-species approach, you may only need to look at a narrow frequency range in order to detect the species. 
+    * Show example with busy dawn recording vs BCFR CI3
+* *What frequency range does your species vocalize in?*
+  * If you know the frequency range your species vocalizes in, you may be able to *change the sampling rate*, apply a *band-pass filter* or *compress the data*
+    * Show what changing the sampling rate does
+    * Show what a band-pass filter does
+    * Show what compressing data does
+* *Data quality or data volume?*
+  * All methods above will inherently reduce data quality in favour of also reducing data volume. With more complex acoustic information comes larger files.
+    * Show size of compressed audio files between dawn summer and winter nights (extremes)
+

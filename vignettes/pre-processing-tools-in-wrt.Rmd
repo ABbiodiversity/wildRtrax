@@ -16,14 +16,6 @@ knitr::opts_chunk$set(
 
 ```
 
-```{r setup}
-# Attach package
-library(wildRtrax)
-library(vroom)
-library(tidyverse)
-
-```
-
 ## Pre-processing
 
 This vignette describes several pre-processing tools available in the `wildRtrax` package. 
@@ -32,30 +24,44 @@ This vignette describes several pre-processing tools available in the `wildRtrax
 
 The `wt_audio_scanner()` function reads in audio files (either wac or wav format) from a local directory and outputs useful metadata.
 
+
+```{r setup, echo = F, include = T, warning = F, message = F}
+# Attach packages
+
+library(wildRtrax)
+library(vroom)
+
+```
+
 ```{r, echo=TRUE, include=TRUE, eval=TRUE}
 # Root directory
-root <- "/volumes/GoogleDrive/Shared drives/wildRtrax/data"
+root <- "/volumes/GoogleDrive/Shared drives/wildRtrax/data/example"
+
 # Scan data
-d <- wt_audio_scanner(paste0(root, "/example"), file_type = "wav")
+d <- wt_audio_scanner(root, file_type = "wav")
+
 # View
 head(d)
+
 # Filter recordings based on criteria
-d %>% 
-  filter(julian %in% c(140:180)) %>%
-  group_by(location) %>%
-  sample_n(4, replace = F)
+
 ```
 
 ### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
 
 The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)](https://ap.qut.ecoacoustics.info/) on your audio data. Note that you must have the AP program installed on your computer. See more here [(Towsey et al., 2018)](https://researchoutput.csu.edu.au/ws/portalfiles/portal/28556441/28544328_Published_article.pdf). 
 
-```{r echo=TRUE, include=TRUE, eval=FALSE}
-wt_run_ap(x = d, output_dir = paste0(root, "ap_outputs"))
+```{r echo=TRUE, include=T, eval=F, warning = F, message = F}
+#Use the wt_* tibble to execute the AP on the files
 
+#wt_run_ap(x = d, output_dir = paste0(root, "ap_outputs"), path_to_ap = "/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP")
+
+```
+
+```{r echo=TRUE, include=T, eval=F, warning = F, message = F} 
 #Return the metadata obtained from AP
-#Extract the index values - find the files...
-index_files <- fs::dir_ls(path = paste0(root, "ap_outputs"),
+#Extract the index values - find the files
+index_files <- fs::dir_ls(path = "/volumes/GoogleDrive/Shared drives/wildRtrax/data/ap_example",
                    regexp = '*Towsey.Acoustic.Indices.csv',
                    #This contains the vector data to the average of each index
                    recurse = TRUE)
@@ -87,6 +93,7 @@ test_join <-
   geom_point() +
   blanktheme +
   facet_wrap(~ index_variable, ncol = 1)
+
 test_join
 ```
 

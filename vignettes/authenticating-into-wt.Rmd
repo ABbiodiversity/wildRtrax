@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, echo=FALSE, include=FALSE, eval=TRUE}
+#Attach package
 library(wildRtrax)
 ```
 
@@ -25,7 +26,7 @@ To obtain an Auth0 token, you need to first store your WildTrax username and pas
 ```{r echo=TRUE, eval=FALSE}
 # Note that you need to use 'WT_USERNAME' and 'WT_PASSWORD'.
 
-# Sys.setenv(WT_USERNAME = "my_username", WT_PASSWORD = "my_password")
+Sys.setenv(WT_USERNAME = "my_username", WT_PASSWORD = "my_password")
 
 ```
 
@@ -34,9 +35,9 @@ To obtain an Auth0 token, you need to first store your WildTrax username and pas
 Next, you use the `wt_auth()` function to authenticate.
 
 ```{r echo=TRUE, eval=FALSE}
-# Authenticate:
+# Authenticate
 
-# wt_auth()
+wt_auth()
 
 ```
 
@@ -47,10 +48,20 @@ The Auth0 token you obtained will last for 8 hours. After that time, you will ne
 Once authenticated, you can now use various functions that call upon the WildTrax API. For instance, you can use `wt_get_download_summary()` to see basic metadata about projects that you can download data for.  
 
 ```{r echo=TRUE, eval=FALSE}
-# wt_get_download_summary(sensorId = "ARU")
+#Download the project summary you have access to
+
+wt_get_download_summary(sensorId = "ARU")
 
 ```
 
+Using the project_id number in the download summary you can then use `wt_download_report` to access the species data. You can also find the project_id number in the url of a WildTrax project, e.g. https://www.wildtrax.ca/home/aru-tasks.html?projectId=**47**&sensorId=**ARU**
+
+```{r echo=TRUE, eval=FALSE, warning = F, message = F}
+#Download the project report
+
+wt_download_report(project_id = 47, sensor_id = 'ARU', cols_def = F, weather_cols = T)
+
+```
 
 
 
