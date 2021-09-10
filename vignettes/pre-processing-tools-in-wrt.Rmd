@@ -17,28 +17,58 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-
+# Attach package
 library(wildRtrax)
 
 ```
 
 ## Pre-processing
 
+This vignette describes several pre-processing tools available in the `wildRtrax` package. 
+
 ### Scanning audio files from a directory
 
-```{r, echo=TRUE, include=TRUE, eval=FALSE}
-#df <- wt_audio_scanner(path, file_type)
+The `wt_audio_scanner()` function reads in audio files (either wac or wav format) from a local directory and outputs useful metadata.
+
+```{r, echo=TRUE, include=TRUE, eval=TRUE}
+# Root directory
+root <- "G:/Shared drives/wildRtrax/data/"
+# Scan data
+d <- wt_audio_scanner(paste0(root, "example"), file_type = "wav")
+# View
+head(d)
 ```
 
 ### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
 
+The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)](https://ap.qut.ecoacoustics.info/) on your audio data (Towsey et al., 2018). Note that you must have the AP program installed on your computer.  
+
 ```{r echo=TRUE, include=TRUE, eval=FALSE}
-#wt_run_ap()
+wt_run_ap(x = d, output_dir = paste0(root, "ap_outputs"))
 ```
 
 ### Applying a limited amplitude filter
 
-```{r echo=TRUE, include=TRUE, eval=FALSE}
-#wt_signal_level()
+We can use the `wt_signal_level()` function to search for 
+
+```{r echo=TRUE, include=TRUE, eval=TRUE}
+# Example audio file
+path_to_file <- d$file_path[3]
+
+# Run
+s <- wt_signal_level(path = path_to_file, 
+                     fmin = 5000, 
+                     fmax = 10000, 
+                     threshold = 20, 
+                     channel = "left", 
+                     aggregate = 5)
+
+# Return a list object, with parameters stored
+str(s)
+
+# We can view the output:
+s["output"]
+# We have eleven detections that exceeded this threshold.
+
 ```
 
