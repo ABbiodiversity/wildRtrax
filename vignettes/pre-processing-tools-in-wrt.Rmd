@@ -22,29 +22,29 @@ library(wildRtrax)
 
 ```
 
-# Pre-processing
+## Pre-processing
 
-## Scanning audio files from a directory
+### Scanning audio files from a directory
 
-```{r, echo=FALSE, include=FALSE, eval=FALSE}
+```{r, echo=FALSE, include=TRUE, eval=FALSE}
 
 #df <- wt_audio_scanner(path, file_type)
 
 ```
 
-## Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
+### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
 
-```{r echo=FALSE, include=FALSE, eval=FALSE}
+```{r echo=FALSE, include=TRUE, eval=FALSE}
 
 #wt_run_ap()
 
 ```
 
-## Applying a limited amplitude filter
+### Applying a limited amplitude filter
 
-```{r echo=FALSE, include=FALSE, eval=FALSE}
+```{r echo=FALSE, include=TRUE, eval=FALSE}
 
-#wt_signal_level
+#wt_signal_level()
 
 ```
 
