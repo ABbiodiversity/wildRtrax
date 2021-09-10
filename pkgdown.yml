@@ -2,7 +2,7 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  using-functions-from-wildRtrax: using-functions-from-wildRtrax.html
-  working-with-wildRtrax: working-with-wildRtrax.html
-last_built: 2020-11-25T21:51Z
+  authenticating-into-wt: authenticating-into-wt.html
+  pre-processing-tools-in-wrt: pre-processing-tools-in-wrt.html
+last_built: 2021-09-10T01:42Z
 

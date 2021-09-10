@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">wildRtrax</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -79,7 +79,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -94,10 +94,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/using-functions-from-wildRtrax.html">using-functions-from-wildRtrax</a>
+      <a href="../articles/authenticating-into-wt.html">Authenticating into WildTrax</a>
     </li>
     <li>
-      <a href="../articles/working-with-wildRtrax.html">working with wildRtrax</a>
+      <a href="../articles/pre-processing-tools-in-wrt.html">Pre-processing tools in wildRtrax</a>
     </li>
   </ul>
 </li>
@@ -143,6 +143,36 @@
       <tr>
         
         <td>
+          <p><code><a href="detection_models.html">detection_models</a></code> </p>
+        </td>
+        <td><p>Occupancy modeling that produces detection probabilities</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="dot-wt_api_pr.html">.wt_api_pr()</a></code> </p>
+        </td>
+        <td><p>An internal function to handle generic POST requests to WildTrax API</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="dot-wt_auth.html">.wt_auth()</a></code> </p>
+        </td>
+        <td><p>Internal functions</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="dot-wt_auth_expired.html">.wt_auth_expired()</a></code> </p>
+        </td>
+        <td><p>Internal function to check if Auth0 token has expired</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="run_prob_det_api.html">run_prob_det_api()</a></code> </p>
+        </td>
+        <td><p>Run prob_det function API</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="wildRtrax.html">wildRtrax</a></code> </p>
         </td>
         <td><p>wildRtrax: A series of advanced user functions for environmental sensor data management, analytics and exploration.</p></td>
@@ -152,6 +182,54 @@
           <p><code><a href="wt_audio_scanner.html">wt_audio_scanner()</a></code> </p>
         </td>
         <td><p>Scan and extract metadata from audio data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="wt_auth.html">wt_auth()</a></code> </p>
+        </td>
+        <td><p>Authenticate into WildTrax</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="wt_download_report.html">wt_download_report()</a></code> </p>
+        </td>
+        <td><p>Get download summary</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="wt_get_download_summary.html">wt_get_download_summary()</a></code> </p>
+        </td>
+        <td><p>Get download summary</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="wt_prob_det.html">wt_prob_det()</a></code> </p>
+        </td>
+        <td><p>Estimate the probability of detection, given a location is occupied, based on the audio survey length and the number of surveys conducted.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="wt_run_ap.html">wt_run_ap()</a></code> </p>
+        </td>
+        <td><p>Generate acoustic indices for a folder of audio files with QUT Ecoacoustics <strong>A</strong>nalysis <strong>P</strong>rograms software</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="wt_run_shiny.html">wt_run_shiny()</a></code> </p>
+        </td>
+        <td><p>Run a wildRtrax Shiny App (locally)</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="wt_signal_level.html">wt_signal_level()</a></code> </p>
+        </td>
+        <td><p>Extract relative sound level from a wav file</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="wt_wac_info.html">wt_wac_info()</a></code> </p>
+        </td>
+        <td><p>Scrape relevant information from wac (Wildlife Acoustics) file</p></td>
       </tr>
     </tbody>
     </table>
@@ -167,7 +245,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Alexandre MacPhail, Marcus Becker.</p>
+  <p>Developed by Alex MacPhail, Marcus Becker.</p>
 </div>
 
 <div class="pkgdown">
