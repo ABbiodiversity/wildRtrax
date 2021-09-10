@@ -1,5 +1,5 @@
 ---
-title: "Pre-processing tools in wildRtrax"
+title: "Pre-processing in wildRtrax"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{using-functions-from-wildRtrax}
@@ -34,9 +34,9 @@ The `wt_audio_scanner()` function reads in audio files (either wac or wav format
 
 ```{r, echo=TRUE, include=TRUE, eval=TRUE}
 # Root directory
-root <- "G:/Shared drives/wildRtrax/data/"
+root <- "/volumes/GoogleDrive/Shared drives/wildRtrax/data"
 # Scan data
-d <- wt_audio_scanner(paste0(root, "example"), file_type = "wav")
+d <- wt_audio_scanner(paste0(root, "/example"), file_type = "wav")
 # View
 head(d)
 # Filter recordings based on criteria
