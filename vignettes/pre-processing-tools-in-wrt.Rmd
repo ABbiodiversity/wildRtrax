@@ -19,6 +19,8 @@ knitr::opts_chunk$set(
 ```{r setup}
 # Attach package
 library(wildRtrax)
+library(vroom)
+library(tidyverse)
 
 ```
 
@@ -37,14 +39,55 @@ root <- "G:/Shared drives/wildRtrax/data/"
 d <- wt_audio_scanner(paste0(root, "example"), file_type = "wav")
 # View
 head(d)
+# Filter recordings based on criteria
+d %>% 
+  filter(julian %in% c(140:180)) %>%
+  group_by(location) %>%
+  sample_n(4, replace = F)
 ```
 
 ### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
 
-The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)](https://ap.qut.ecoacoustics.info/) on your audio data (Towsey et al., 2018). Note that you must have the AP program installed on your computer.  
+The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)](https://ap.qut.ecoacoustics.info/) on your audio data. Note that you must have the AP program installed on your computer. See more here [(Towsey et al., 2018)](https://researchoutput.csu.edu.au/ws/portalfiles/portal/28556441/28544328_Published_article.pdf). 
 
 ```{r echo=TRUE, include=TRUE, eval=FALSE}
 wt_run_ap(x = d, output_dir = paste0(root, "ap_outputs"))
+
+#Return the metadata obtained from AP
+#Extract the index values - find the files...
+index_files <- fs::dir_ls(path = paste0(root, "ap_outputs"),
+                   regexp = '*Towsey.Acoustic.Indices.csv',
+                   #This contains the vector data to the average of each index
+                   recurse = TRUE)
+
+#Which acoustic indices do you want to use?
+index_list <-
+  c(
+    "Snr",
+    "BackgroundNoise",
+    "AcousticComplexity",
+    "TemporalEntropy",
+    "Ndsi",
+    "ResultMinute",
+    "FileName"
+  )
+
+#vroom together the indices you want from all the csvs
+test_indices <- vroom(index_files, col_select = index_list)
+
+#Join the index values to the wt_audio_scanner tibble
+test_join <-
+  d %>% inner_join(., test_indices, by = c("file_name" = "FileName")) %>%
+  pivot_longer(cols = Snr:Ndsi,
+               names_to = "index_variable",
+               values_to = "index_value") %>%
+  #Plot a graph of the indices
+  ggplot(.,
+         aes(x = ResultMinute, y = index_value, colour = index_variable)) +
+  geom_point() +
+  blanktheme +
+  facet_wrap(~ index_variable, ncol = 1)
+test_join
 ```
 
 ### Applying a limited amplitude filter
