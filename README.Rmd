@@ -40,6 +40,10 @@ package, please file an
 Alternatively, you can email Alex MacPhail <agmacpha@ualberta.ca> or
 Marcus Becker <mabecker@ualberta.ca>.
 
+## Usage
+
+All functions begin with a wt_* prefix. Column names and metadata align with the WildTrax infrastructure. 
+
 ## License
 
 This R package is licensed under [MIT
