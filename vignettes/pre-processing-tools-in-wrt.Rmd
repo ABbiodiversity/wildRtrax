@@ -99,7 +99,7 @@ test_join
 
 ### Applying a limited amplitude filter
 
-We can use the `wt_signal_level()` function to search for 
+We can use the `wt_signal_level()` function to search for detections that exceed a certain amplitude threshold. 
 
 ```{r echo=TRUE, include=TRUE, eval=TRUE}
 # Example audio file
