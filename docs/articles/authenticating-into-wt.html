@@ -95,7 +95,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Note that you need to use 'WT_USERNAME' and 'WT_PASSWORD'.</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html">Sys.setenv</a></span><span class="op">(</span>WT_USERNAME <span class="op">=</span> <span class="st">"my_username"</span>, WT_PASSWORD <span class="op">=</span> <span class="st">"my_password"</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html">Sys.setenv</a></span><span class="op">(</span>WT_USERNAME <span class="op">=</span> <span class="st">'guest'</span>, WT_PASSWORD <span class="op">=</span> <span class="st">'Apple123'</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="authenticate" class="section level2">
 <h2 class="hasAnchor">
@@ -111,15 +111,16 @@
 <h2 class="hasAnchor">
 <a href="#making-api-calls" class="anchor"></a>Making API calls</h2>
 <p>Once authenticated, you can now use various functions that call upon the WildTrax API. For instance, you can use <code><a href="../reference/wt_get_download_summary.html">wt_get_download_summary()</a></code> to see basic metadata about projects that you can download data for.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#Download the project summary you have access to</span>
-
-<span class="fu"><a href="../reference/wt_get_download_summary.html">wt_get_download_summary</a></span><span class="op">(</span>sensorId <span class="op">=</span> <span class="st">"ARU"</span><span class="op">)</span></code></pre></div>
-<p>Using the project_id number in the download summary you can then use <code>wt_download_report</code> to access the species data. You can also find the project_id number in the url of a WildTrax project, e.g. <a href="https://www.wildtrax.ca/home/aru-tasks.html?projectId=" class="uri">https://www.wildtrax.ca/home/aru-tasks.html?projectId=</a><strong>47</strong>&amp;sensorId=<strong>ARU</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">#Download the project summary you have access to</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>my_projects &lt;-<span class="st"> </span><span class="kw">wt_get_download_summary</span>(<span class="dt">sensor_id =</span> <span class="st">'ARU'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a></span>
+<span id="cb3-4"><a href="#cb3-4"></a>my projects</span></code></pre></div>
+<p>Using the project_id number in the download summary you can then use <code>wt_download_report</code> to access the species data. You can also find the project_id number in the url of a WildTrax project, e.g. <a href="https://www.wildtrax.ca/home/aru-tasks.html?projectId=47&amp;sensorId=ARU" class="uri">https://www.wildtrax.ca/home/aru-tasks.html?projectId=47&amp;sensorId=ARU</a></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Download the project report</span>
+<span class="va">my_report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">47</span>, sensor_id <span class="op">=</span> <span class="st">'ARU'</span>, cols_def <span class="op">=</span> <span class="cn">F</span>, weather_cols <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
 
-<span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">47</span>, sensor_id <span class="op">=</span> <span class="st">'ARU'</span>, cols_def <span class="op">=</span> <span class="cn">F</span>, weather_cols <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
+<span class="va">my_report</span></code></pre></div>
 </div>
   </div>
 

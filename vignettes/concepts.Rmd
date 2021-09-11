@@ -55,7 +55,7 @@ The pronoun “you” throughout these articles refers to the reader. “We” r
 
 ## Audio data management
 
-Autonomous recording units (ARUs) and remote camera traps collect data on the environment by means of capturing acoustic or visual data, respectively. ARUs are used to survey a variety of species such as birds, amphibians, and bats. But really anything that gives a vocalizing cue. RGCs are best used to detect and monitor mammals. See [`abmi.camera.extras`](https://github.com/mabecker89/abmi.camera.extras) if you're interested in getting estimates of animal density collected from remote camera traps. Both environmental sensors are designed to record sound or images autonomously for long periods of time. This is turn can accrue a large amount of data. 
+Autonomous recording units (ARUs) and remote camera traps collect data on the environment by means of capturing acoustic or visual data, respectively. ARUs are used to survey a variety of species such as birds, amphibians, and bats. But really anything that gives a vocalizing cue. Camera traps are best used to detect and monitor mammals. See [`abmi.camera.extras`](https://github.com/mabecker89/abmi.camera.extras) if you're interested in getting estimates of animal density collected from remote camera traps. Both environmental sensors are designed to record sound or images autonomously for long periods of time. This is turn can accrue a large amount of data. 
 
 ### Audio file formats
 
@@ -63,6 +63,9 @@ There are two major audio file types used within the **wildRtrax** framework: *w
 
 * *wac, w4v* are proprietary, lossless compressed file formats developed by [Wildlife Acoustics](https://www.wildlifeacoustics.com/)
 * *wav* is the standard, ubiquitous uncompressed audio file format
+
+There are also a couple other file types you might be working with:
+
 * *mp3* a lossy compressed audio file format; works by reducing the accuracy of certain sound components, and eliminating others
 * *flac* a lossless compressed format useful for efficiently packing audio data
 

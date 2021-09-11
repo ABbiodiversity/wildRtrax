@@ -49,17 +49,19 @@ Once authenticated, you can now use various functions that call upon the WildTra
 
 ```{r echo=TRUE, eval=FALSE}
 #Download the project summary you have access to
+my_projects <- wt_get_download_summary(sensor_id = 'ARU')
 
-wt_get_download_summary(sensor_id = 'ARU')
+my projects
 
 ```
 
-Using the project_id number in the download summary you can then use `wt_download_report` to access the species data. You can also find the project_id number in the url of a WildTrax project, e.g. https://www.wildtrax.ca/home/aru-tasks.html?projectId=**47**&sensorId=**ARU**
+Using the project_id number in the download summary you can then use `wt_download_report` to access the species data. You can also find the project_id number in the url of a WildTrax project, e.g. https://www.wildtrax.ca/home/aru-tasks.html?projectId=47&sensorId=ARU
 
 ```{r echo=TRUE, eval=FALSE, warning = F, message = F}
 #Download the project report
+my_report <- wt_download_report(project_id = 47, sensor_id = 'ARU', cols_def = F, weather_cols = T)
 
-wt_download_report(project_id = 47, sensor_id = 'ARU', cols_def = F, weather_cols = T)
+my_report
 
 ```
 

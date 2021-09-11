@@ -106,11 +106,6 @@
 <a href="#what-r-packages-does-wildrtrax-depend-on" class="anchor"></a>What R packages does <code>wildRtrax</code> depend on?</h3>
 <p><code>wildRtrax</code> depends on a multitude of packages to provide flexible routines and work flows for data management. <a href="https://tidyverse.org"><code>tidyverse</code></a> for piping functions, standard grammar and tidy data manipulation, <a href="https://davisvaughan.github.io/furrr/"><code>furrr</code></a> and <a href="https://cran.r-project.org/web/packages/doParallel/index.html"><code>doParallel</code></a> for parallel computing, and acoustic analysis packages: <a href="https://cran.r-project.org/web/packages/bioacoustics/index.html"><code>bioacoustics</code></a>, <a href="https://cran.r-project.org/web/packages/tuneR/index.html"><code>tuneR</code></a>, <a href="https://cran.r-project.org/web/packages/seewave/seewave.pdf"><code>seewave</code></a>. Certain functions are indebted to the <a href="https://github.com/QutEcoacoustics/audio-analysis">QUT Ecoacoustics Analysis Software</a> software package as well.</p>
 </div>
-<div id="do-i-need-to-know-any-other-programming-langugages-in-order-to-use-wildrtrax" class="section level3">
-<h3 class="hasAnchor">
-<a href="#do-i-need-to-know-any-other-programming-langugages-in-order-to-use-wildrtrax" class="anchor"></a>Do I need to know any other programming langugages in order to use <code>wildRtrax</code>?</h3>
-<p>Certain functions rely on Python and bash scripts and some SQL. You do not need to know the languages in order to use the functions but it’s encouraged to read the documentation.</p>
-</div>
 <div id="how-do-i-report-a-bug-in-wildrtrax" class="section level3">
 <h3 class="hasAnchor">
 <a href="#how-do-i-report-a-bug-in-wildrtrax" class="anchor"></a>How do I report a bug in <code>wildRtrax</code>?</h3>
@@ -132,32 +127,33 @@
 <div id="disclaimers" class="section level3">
 <h3 class="hasAnchor">
 <a href="#disclaimers" class="anchor"></a>Disclaimers</h3>
-<p>The pronoun “you” throughout the book refers to the reader. “We” refers to the <code>wildRtrax</code> team in general.</p>
+<p>The pronoun “you” throughout these articles refers to the reader. “We” refers to the <code>wildRtrax</code> team in general.</p>
 </div>
 </div>
 <div id="audio-data-management" class="section level2">
 <h2 class="hasAnchor">
 <a href="#audio-data-management" class="anchor"></a>Audio data management</h2>
-<p>Autonomous recording units (ARUs) and remote camera traps collect data on the environment by means of capturing acoustic or visual data, respectively. ARUs are used to survey a variety of species such as birds, amphibians, and bats. But really anything that gives a vocalizing cue. RGCs are best used to detect and monitor mammals. Check out <a href="https://github.com/mabecker89/abmi.camera.extras"><code>abmi.camera.extras</code></a> if you’re interested in getting estimates of animal density collected from remote camera traps.</p>
-<p>Both environmental sensors are designed to record sound or images autonomously for long periods of time. This is turn can accrue a large amount of data.</p>
+<p>Autonomous recording units (ARUs) and remote camera traps collect data on the environment by means of capturing acoustic or visual data, respectively. ARUs are used to survey a variety of species such as birds, amphibians, and bats. But really anything that gives a vocalizing cue. Camera traps are best used to detect and monitor mammals. See <a href="https://github.com/mabecker89/abmi.camera.extras"><code>abmi.camera.extras</code></a> if you’re interested in getting estimates of animal density collected from remote camera traps. Both environmental sensors are designed to record sound or images autonomously for long periods of time. This is turn can accrue a large amount of data.</p>
 <div id="audio-file-formats" class="section level3">
 <h3 class="hasAnchor">
 <a href="#audio-file-formats" class="anchor"></a>Audio file formats</h3>
-<p>There are four major audio file types used within the <strong>wildRtrax</strong> framework: <em>wac</em>, <em>wav</em>, <em>mp3</em> and <em>flac</em></p>
+<p>There are two major audio file types used within the <strong>wildRtrax</strong> framework: <em>wac</em> and <em>wav</em></p>
 <ul>
 <li>
 <em>wac, w4v</em> are proprietary, lossless compressed file formats developed by <a href="https://www.wildlifeacoustics.com/">Wildlife Acoustics</a>
 </li>
 <li>
 <em>wav</em> is the standard, ubiquitous uncompressed audio file format</li>
+</ul>
+<p>There are also a couple other file types you might be working with:</p>
+<ul>
 <li>
 <em>mp3</em> a lossy compressed audio file format; works by reducing the accuracy of certain sound components, and eliminating others</li>
 <li>
 <em>flac</em> a lossless compressed format useful for efficiently packing audio data</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">file</span> <span class="op">&lt;-</span> <span class="st">"/volumes/GoogleDrive/Shared drives/wildRtrax/data/example/ABMI-0754-SW_20170301_085900.wav"</span>
+<code class="sourceCode R"><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">"/volumes/GoogleDrive/Shared drives/wildRtrax/data/example/ABMI-0754-SW_20170301_085900.wav"</span>
 
 <span class="va">wave_t</span> <span class="op">&lt;-</span> <span class="fu">tuneR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tuneR/man/readWave.html">readWave</a></span><span class="op">(</span><span class="va">file</span>, header <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="co">#True header format</span>
 
@@ -189,11 +185,9 @@
 <span class="co">#&gt;  Bit (8/16/24/32/64):    16</span></code></pre></div>
 <p>You can access the <em>objects</em> in <code>wave_t</code> through a <code><a href="https://rdrr.io/r/base/Extract.html">$</a></code> as you would a normal list. When <code>header = FALSE</code> and you are reading in the entire wav file, you can access <em>slots</em> of the <code>S4</code> object using <code><a href="https://rdrr.io/r/base/slotOp.html">@</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">sound_length_S4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">wave_f</span><span class="op">@</span><span class="va">left</span> <span class="op">/</span> <span class="va">wave_f</span><span class="op">@</span><span class="va">samp.rate</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">sound_length_S4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="op">(</span><span class="va">wave_f</span><span class="op">@</span><span class="va">left</span> <span class="op">/</span> <span class="va">wave_f</span><span class="op">@</span><span class="va">samp.rate</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>
 
 <span class="co">#Is equivalent to:</span>
-
 <span class="va">sound_length_list</span> <span class="op">&lt;-</span> <span class="va">wave_t</span><span class="op">$</span><span class="va">samples</span> <span class="op">/</span> <span class="va">wave_t</span><span class="op">$</span><span class="va">sample.rate</span></code></pre></div>
 </div>
 <div id="spectrograms" class="section level3">
@@ -218,48 +212,35 @@
 <div id="from-the-field-to-the-office" class="section level3">
 <h3 class="hasAnchor">
 <a href="#from-the-field-to-the-office" class="anchor"></a>From the field to the office</h3>
-<p>Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. <strong>wildRtrax</strong> doesn’t focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from certain aspects of the raw data, but robust field or <em>visit</em> metadata as it’s called in <strong>wildRtrax</strong> and <strong>WildTrax</strong> is important to support the quality control process of the incoming sensor data.</p>
+<p>Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. <strong>wildRtrax</strong> doesn’t focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from raw data. But robust field or <a href="https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations/2.3-Visits.html"><em>visit</em></a> metadata as it’s called in <strong>wildRtrax</strong> and <strong>WildTrax</strong> is important to support the quality control process of the incoming sensor data.</p>
 </div>
 <div id="metadata-dependencies-for-acoustic-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#metadata-dependencies-for-acoustic-data" class="anchor"></a>Metadata dependencies for acoustic data</h3>
-<p>You’ll notice in the <code>audio_files</code> tibble, there is the <em>file name</em> column. The <strong>wildRtrax</strong> framework prefers that the file name string from which the data is deriving is composed of two parts: a <em>spatial</em> component and a <em>temporal</em> component. We call these fields the <em>location</em> and the <em>recording_date_time</em> of the recording, respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field.</p>
+<p>The <strong>wildRtrax</strong> prefers that the file name string from which the data is deriving is composed of two parts: a <em>spatial</em> component and a <em>temporal</em> component. We call these fields the <a href="https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations/2.2-Locations.html"><em>location</em></a> and the <em>recording_date_time</em> of the audio respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field.</p>
 </div>
 <div id="data-volume-storage-and-computing-power" class="section level3">
 <h3 class="hasAnchor">
 <a href="#data-volume-storage-and-computing-power" class="anchor"></a>Data volume, storage and computing power</h3>
-<p>OK so we know we’re going to accrue a lot of data using environmental sensors. Are there some ways we can reduce this?</p>
+<p>Collecting lots of data with environmental sensors is easy. Are there ways you can reduce what you collect and have to process?</p>
 <ul>
 <li>
 <em>Are you interested in one or many species?</em>
 <ul>
-<li>A community analysis would require a broad spectrum range to record in or analyze or with more data being collected to account for imperfect detection. Whereas with a single or multi-species approach, you may only need to look at a narrow frequency range in order to detect the species.
-<ul>
-<li>Show example with busy dawn recording vs BCFR CI3</li>
-</ul>
-</li>
+<li>A community analysis would require a broad spectrum range to record in or analyze or with more data being collected to account for imperfect detection. Whereas with a single or multi-species approach, you may only need to look at a narrow frequency range in order to detect the species.</li>
 </ul>
 </li>
 <li>
 <em>What frequency range does your species vocalize in?</em>
 <ul>
 <li>If you know the frequency range your species vocalizes in, you may be able to <em>change the sampling rate</em>, apply a <em>band-pass filter</em> or <em>compress the data</em>
-<ul>
-<li>Show what changing the sampling rate does</li>
-<li>Show what a band-pass filter does</li>
-<li>Show what compressing data does</li>
-</ul>
 </li>
 </ul>
 </li>
 <li>
 <em>Data quality or data volume?</em>
 <ul>
-<li>All methods above will inherently reduce data quality in favour of also reducing data volume. With more complex acoustic information comes larger files.
-<ul>
-<li>Show size of compressed audio files between dawn summer and winter nights (extremes)</li>
-</ul>
-</li>
+<li>All methods above will inherently reduce data quality in favour of also reducing data volume. With more complex acoustic information comes larger files.</li>
 </ul>
 </li>
 </ul>
