@@ -1,5 +1,5 @@
 ---
-title: "Authenticating into WildTrax"
+title: 'Authenticating into WildTrax'
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{authenticating-into-wt}
@@ -10,7 +10,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = '#>'
 )
 ```
 
@@ -26,7 +26,7 @@ To obtain an Auth0 token, you need to first store your WildTrax username and pas
 ```{r echo=TRUE, eval=FALSE}
 # Note that you need to use 'WT_USERNAME' and 'WT_PASSWORD'.
 
-Sys.setenv(WT_USERNAME = "my_username", WT_PASSWORD = "my_password")
+Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 
 ```
 
@@ -50,7 +50,7 @@ Once authenticated, you can now use various functions that call upon the WildTra
 ```{r echo=TRUE, eval=FALSE}
 #Download the project summary you have access to
 
-wt_get_download_summary(sensorId = "ARU")
+wt_get_download_summary(sensor_id = 'ARU')
 
 ```
 
