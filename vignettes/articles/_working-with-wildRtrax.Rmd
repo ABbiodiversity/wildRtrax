@@ -194,7 +194,7 @@ for (i in 1:nrow(audio_files)) {
         msg <- conditionMessage(e)
         print(paste0(msg, i, sep=' *** '))}
     )
-  v <- seewave::ggspectro(t, ovlp = 50) + ggplot2::geom_tile(aes(fill=amplitude)) + labs(title = audio_files$filename[i]) + blanktheme
+  v <- seewave::ggspectro(tuneR::readWave(file, from = 0, to = 60, units ="seconds"), ovlp = 50) + ggplot2::geom_tile(aes(fill=amplitude)) + labs(title = file) + blanktheme
   print(v)
 }
 

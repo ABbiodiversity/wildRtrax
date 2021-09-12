@@ -200,15 +200,16 @@
 <li>Relative amplitude of the vocalization via the z-axis in dB</li>
 </ul>
 <p>Let’s create a spectrogram to get a better look at some of those audio files. Here’s one way to do it using <code>ggspectro</code> in <code>seewave</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#Plot a spectrogram</span>
+<span class="va">v</span> <span class="op">&lt;-</span> <span class="fu">seewave</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/seewave/man/ggspectro.html">ggspectro</a></span><span class="op">(</span><span class="fu">tuneR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tuneR/man/readWave.html">readWave</a></span><span class="op">(</span><span class="va">file</span>, from <span class="op">=</span> <span class="fl">0</span>, to <span class="op">=</span> <span class="fl">60</span>, units <span class="op">=</span> <span class="st">"seconds"</span><span class="op">)</span>, ovlp <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html">geom_tile</a></span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>fill<span class="op">=</span><span class="va">amplitude</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span></code></pre></div>
 <p><a href="http://sox.sourceforge.net/"><strong>SoX</strong></a> is also a very powerful command line tool that can build spectrograms as well. Processing time here is much faster given R doesn’t have to read in the file as an S4 wave object. More on this later.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="co">#Or try a bash command using SoX</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="co">#cd /path/to/file &amp;&amp; for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">#Or try a bash command using SoX</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="co">#cd /path/to/file &amp;&amp; for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done</span></span></code></pre></div>
 </div>
-</div>
-<div id="working-with-messy-data-an-introduction-to-environmental-sensor-data-management" class="section level2">
-<h2 class="hasAnchor">
-<a href="#working-with-messy-data-an-introduction-to-environmental-sensor-data-management" class="anchor"></a>Working with messy data: an introduction to environmental sensor data management</h2>
 <div id="from-the-field-to-the-office" class="section level3">
 <h3 class="hasAnchor">
 <a href="#from-the-field-to-the-office" class="anchor"></a>From the field to the office</h3>
