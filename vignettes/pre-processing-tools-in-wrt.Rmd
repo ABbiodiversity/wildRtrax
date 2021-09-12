@@ -28,6 +28,7 @@ The `wt_audio_scanner()` function reads in audio files (either wac or wav format
 ```{r setup, echo = F, include = T, warning = F, message = F}
 # Attach package
 library(wildRtrax)
+library(tidyverse)
 
 ```
 
@@ -36,14 +37,15 @@ library(wildRtrax)
 root <- '/volumes/GoogleDrive/Shared drives/wildRtrax/data/example'
 
 # Scan data
-d <- wt_audio_scanner(root, file_type = 'wav')
+d <- wildRtrax::wt_audio_scanner(root, file_type = 'wav')
 
 # View
 head(d)
 
 # Filter recordings based on criteria
 less <- d %>%
-  filter(time_index == 1)
+  filter(time_index == 2)
+less
 ```
 
 ### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
@@ -121,16 +123,104 @@ s['output']
 
 ```
 
-### Linking files and creating templates for upload to WildTrax
+### Linking files and creating templates for upload to [WildTrax](https://www.wildtrax.ca)
 
-There are three phases of getting data into WildTrax once you have your [organization](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations.html) and [project](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects.html) setup: uploading recordings, uploading tasks and uploading tags.
+There are three phases of getting data into WildTrax once you have your [organization](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations.html) and [project](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects.html) setup: uploading recordings, uploading tasks and uploading tags (see more in [ARU projects](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects/3.2-ARU-projects.html) in WildTrax: The Definitive Guide).
 
 If you've used `wt_audio_scanner` to scan through a series of nested directories for audio files, link them together.
 
 ```{r, eval = F, echo = T, include = T, warning = F, message = F}
 #An example for a unix scneario
-R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")
+#R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")
 
 ```
 
+The next step is to create the tasks and format the columns to the upload template. 
+
+```{r}
+
+#In a limited amplitude workflow, unnest the lists to get the detections 
+less_tasks <- less %>%
+  mutate(thresholds = furrr::future_map(.x = file_path, .f = ~wt_signal_level(.x, fmin = 10, fmax = 1000, threshold = 35, aggregate = 10))) %>%
+  unnest_wider(thresholds) %>% 
+  unnest_wider(output) %>%
+  select(-c(end_time_s,aggregated,channel)) %>%
+  unnest(cols = c(detection, mean_rsl, start_time_s, detection_length))
+
+```
+
+```{r}
+#Create the template
+tasks <-
+  less_tasks %>% mutate(
+    recordingDate = recording_date_time,
+    method = "10m USPM", #Choose a method
+    status = "",
+    transcriber = "Alex MacPhail", #An observer
+    rain = "",
+    wind = "",
+    industryNoise = "",
+    otherNoise = "",
+    audioQuality = "",
+    taskComments = "",
+    internal_task_id = ""
+  ) %>%
+  select(
+    location,
+    recordingDate,
+    method,
+    status,
+    transcriber,
+    rain,
+    wind,
+    industryNoise,
+    otherNoise,
+    audioQuality,
+    taskComments,
+    internal_task_id
+  ) %>%
+  distinct()
+tasks
+
+#write.csv(tasks,"./tasks.csv")
+
+```
+
+And finally, the tags - this only applies if you're using a limited amplitude workflow or you're importing from another database. 
+
+```{r, eval = F, include = T, warning = F, message = F}
+#
+tags <-
+  less_tasks %>% mutate(
+    recordingDate = recording_date_time,
+    method = "10m USPM",
+    transcriber = "Alex MacPhail",
+    species = "UNKN", #Give the tag an unknown ID if using it in a limited amplitude workflow
+    speciesIndividualNumber = detection,
+    vocalization = "",
+    startTime = start_time_s,
+    length = detection_length,
+    minFreq = 4,
+    maxFreq = 8,
+    internal_tag_id = ""
+  ) %>%
+  select(
+    location,
+    recordingDate,
+    method,
+    transcriber,
+    species,
+    speciesIndividualNumber,
+    vocalization,
+    startTime,
+    length,
+    minFreq,
+    maxFreq,
+    internal_tag_id
+  )
+tags
+
+#write.csv(tags,"./tags.csv")
+
+```
 

@@ -19,7 +19,7 @@
 #'
 #' @return A dataframe with a summary of your audio files
 
-wt_audio_scanner <- function(path, file_type, tz = NULL) {
+wt_audio_scanner <- function(path, file_type, tz = "") {
 
   # Create regex for file_type
   if (file_type == "wav" || file_type == "WAV") {
@@ -61,8 +61,8 @@ wt_audio_scanner <- function(path, file_type, tz = NULL) {
     # Create date/time fields
     dplyr::mutate(
       #Apply the timezone if necessary
-      recording_date_time = case_when(tz == NULL ~ lubridate::ymd_hms(recording_date_time),
-                                      TRUE ~ force_tz(lubridate::ymd_hms(recording_date_time), tzone = tz, roll = TRUE)),
+      recording_date_time = case_when(tz == "" ~ lubridate::ymd_hms(recording_date_time),
+                                      TRUE ~ lubridate::force_tz(lubridate::ymd_hms(recording_date_time), tzone = tz, roll = TRUE)),
       julian = lubridate::yday(recording_date_time),
       year = lubridate::year(recording_date_time),
       gps_enabled = dplyr::case_when(

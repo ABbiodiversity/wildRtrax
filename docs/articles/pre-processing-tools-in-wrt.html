@@ -101,7 +101,7 @@
 <span class="va">root</span> <span class="op">&lt;-</span> <span class="st">'/volumes/GoogleDrive/Shared drives/wildRtrax/data/example'</span>
 
 <span class="co"># Scan data</span>
-<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_audio_scanner.html">wt_audio_scanner</a></span><span class="op">(</span><span class="va">root</span>, file_type <span class="op">=</span> <span class="st">'wav'</span><span class="op">)</span>
+<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">wildRtrax</span><span class="fu">::</span><span class="fu"><a href="../reference/wt_audio_scanner.html">wt_audio_scanner</a></span><span class="op">(</span><span class="va">root</span>, file_type <span class="op">=</span> <span class="st">'wav'</span><span class="op">)</span>
 <span class="co">#&gt; Scanning audio files in path ... </span>
 <span class="co">#&gt; Working on wav files...</span>
 
@@ -119,7 +119,16 @@
 <span class="co">#&gt; # … with 6 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,</span>
 <span class="co">#&gt; #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;</span>
 
-<span class="co"># Filter recordings based on criteria</span></code></pre></div>
+<span class="co"># Filter recordings based on criteria</span>
+<span class="va">less</span> <span class="op">&lt;-</span> <span class="va">d</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">time_index</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">less</span>
+<span class="co">#&gt; # A tibble: 1 × 13</span>
+<span class="co">#&gt;   file_path     size_Mb file_name  location recording_date_time file_type julian</span>
+<span class="co">#&gt;   &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt;</span>
+<span class="co">#&gt; 1 /volumes/Goo…    31.8 ABMI-0754… ABMI-07… 2017-03-01 02:00:00 wav           60</span>
+<span class="co">#&gt; # … with 6 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,</span>
+<span class="co">#&gt; #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;</span></code></pre></div>
 </div>
 <div id="running-the-qut-ecoacoustics-analysisprograms-software-on-a-wt_-standard-data-set" class="section level3">
 <h3 class="hasAnchor">
@@ -150,7 +159,7 @@
   <span class="op">)</span>
 
 <span class="co">#vroom together the indices you want from all the csvs</span>
-<span class="va">test_indices</span> <span class="op">&lt;-</span> <span class="fu">vroom</span><span class="op">(</span><span class="va">index_files</span>, col_select <span class="op">=</span> <span class="va">index_list</span><span class="op">)</span>
+<span class="va">test_indices</span> <span class="op">&lt;-</span> <span class="fu">vroom</span><span class="fu">::</span><span class="fu"><a href="https://vroom.r-lib.org/reference/vroom.html">vroom</a></span><span class="op">(</span><span class="va">index_files</span>, col_select <span class="op">=</span> <span class="va">index_list</span><span class="op">)</span>
 
 <span class="co">#Join the index values to the wt_audio_scanner tibble</span>
 <span class="va">test_join</span> <span class="op">&lt;-</span>
@@ -215,6 +224,101 @@
 <span class="co">#&gt; 10        10     20.9       167.       167.            0      </span>
 <span class="co">#&gt; 11        11     22.1       179.       179.            0.00581</span>
 <span class="co"># We have eleven detections that exceeded this threshold.</span></code></pre></div>
+</div>
+<div id="linking-files-and-creating-templates-for-upload-to-wildtrax" class="section level3">
+<h3 class="hasAnchor">
+<a href="#linking-files-and-creating-templates-for-upload-to-wildtrax" class="anchor"></a>Linking files and creating templates for upload to <a href="https://www.wildtrax.ca">WildTrax</a>
+</h3>
+<p>There are three phases of getting data into WildTrax once you have your <a href="https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations.html">organization</a> and <a href="https://www.wildtrax.ca/home/wildtrax-guide/3-Projects.html">project</a> setup: uploading recordings, uploading tasks and uploading tags (see more in <a href="https://www.wildtrax.ca/home/wildtrax-guide/3-Projects/3.2-ARU-projects.html">ARU projects</a> in WildTrax: The Definitive Guide).</p>
+<p>If you’ve used <code>wt_audio_scanner</code> to scan through a series of nested directories for audio files, link them together.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#An example for a unix scneario</span>
+<span class="co">#R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")</span></code></pre></div>
+<p>The next step is to create the tasks and format the columns to the upload template.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="co">#In a limited amplitude workflow, unnest the lists to get the detections </span>
+<span class="va">less_tasks</span> <span class="op">&lt;-</span> <span class="va">less</span> <span class="op">%&gt;%</span>
+  <span class="fu">mutate</span><span class="op">(</span>thresholds <span class="op">=</span> <span class="fu">furrr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/furrr/man/future_map.html">future_map</a></span><span class="op">(</span>.x <span class="op">=</span> <span class="va">file_path</span>, .f <span class="op">=</span> <span class="op">~</span><span class="fu"><a href="../reference/wt_signal_level.html">wt_signal_level</a></span><span class="op">(</span><span class="va">.x</span>, fmin <span class="op">=</span> <span class="fl">10</span>, fmax <span class="op">=</span> <span class="fl">1000</span>, threshold <span class="op">=</span> <span class="fl">35</span>, aggregate <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">unnest_wider</span><span class="op">(</span><span class="va">thresholds</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">unnest_wider</span><span class="op">(</span><span class="va">output</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">end_time_s</span>,<span class="va">aggregated</span>,<span class="va">channel</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">unnest</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">detection</span>, <span class="va">mean_rsl</span>, <span class="va">start_time_s</span>, <span class="va">detection_length</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] "Calculating segment 1 out of 1"</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#Create the template</span>
+<span class="va">tasks</span> <span class="op">&lt;-</span>
+  <span class="va">less_tasks</span> <span class="op">%&gt;%</span> <span class="fu">mutate</span><span class="op">(</span>
+    recordingDate <span class="op">=</span> <span class="va">recording_date_time</span>,
+    method <span class="op">=</span> <span class="st">"10m USPM"</span>, <span class="co">#Choose a method</span>
+    status <span class="op">=</span> <span class="st">""</span>,
+    transcriber <span class="op">=</span> <span class="st">"Alex MacPhail"</span>, <span class="co">#An observer</span>
+    rain <span class="op">=</span> <span class="st">""</span>,
+    wind <span class="op">=</span> <span class="st">""</span>,
+    industryNoise <span class="op">=</span> <span class="st">""</span>,
+    otherNoise <span class="op">=</span> <span class="st">""</span>,
+    audioQuality <span class="op">=</span> <span class="st">""</span>,
+    taskComments <span class="op">=</span> <span class="st">""</span>,
+    internal_task_id <span class="op">=</span> <span class="st">""</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">select</span><span class="op">(</span>
+    <span class="va">location</span>,
+    <span class="va">recordingDate</span>,
+    <span class="va">method</span>,
+    <span class="va">status</span>,
+    <span class="va">transcriber</span>,
+    <span class="va">rain</span>,
+    <span class="va">wind</span>,
+    <span class="va">industryNoise</span>,
+    <span class="va">otherNoise</span>,
+    <span class="va">audioQuality</span>,
+    <span class="va">taskComments</span>,
+    <span class="va">internal_task_id</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">distinct</span><span class="op">(</span><span class="op">)</span>
+<span class="va">tasks</span>
+<span class="co">#&gt; # A tibble: 1 × 12</span>
+<span class="co">#&gt;   location     recordingDate       method   status transcriber   rain  wind </span>
+<span class="co">#&gt;   &lt;chr&gt;        &lt;dttm&gt;              &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;</span>
+<span class="co">#&gt; 1 ABMI-0754-SW 2017-03-01 02:00:00 10m USPM ""     Alex MacPhail ""    ""   </span>
+<span class="co">#&gt; # … with 5 more variables: industryNoise &lt;chr&gt;, otherNoise &lt;chr&gt;,</span>
+<span class="co">#&gt; #   audioQuality &lt;chr&gt;, taskComments &lt;chr&gt;, internal_task_id &lt;chr&gt;</span>
+
+<span class="co">#write.csv(tasks,"./tasks.csv")</span></code></pre></div>
+<p>And finally, the tags - this only applies if you’re using a limited amplitude workflow or you’re importing from another database.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#</span>
+<span class="va">tags</span> <span class="op">&lt;-</span>
+  <span class="va">less_tasks</span> <span class="op">%&gt;%</span> <span class="fu">mutate</span><span class="op">(</span>
+    recordingDate <span class="op">=</span> <span class="va">recording_date_time</span>,
+    method <span class="op">=</span> <span class="st">"10m USPM"</span>,
+    transcriber <span class="op">=</span> <span class="st">"Alex MacPhail"</span>,
+    species <span class="op">=</span> <span class="st">"UNKN"</span>, <span class="co">#Give the tag an unknown ID if using it in a limited amplitude workflow</span>
+    speciesIndividualNumber <span class="op">=</span> <span class="va">detection</span>,
+    vocalization <span class="op">=</span> <span class="st">""</span>,
+    startTime <span class="op">=</span> <span class="va">start_time_s</span>,
+    length <span class="op">=</span> <span class="va">detection_length</span>,
+    minFreq <span class="op">=</span> <span class="fl">4</span>,
+    maxFreq <span class="op">=</span> <span class="fl">8</span>,
+    internal_tag_id <span class="op">=</span> <span class="st">""</span>
+  <span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">select</span><span class="op">(</span>
+    <span class="va">location</span>,
+    <span class="va">recordingDate</span>,
+    <span class="va">method</span>,
+    <span class="va">transcriber</span>,
+    <span class="va">species</span>,
+    <span class="va">speciesIndividualNumber</span>,
+    <span class="va">vocalization</span>,
+    <span class="va">startTime</span>,
+    <span class="va">length</span>,
+    <span class="va">minFreq</span>,
+    <span class="va">maxFreq</span>,
+    <span class="va">internal_tag_id</span>
+  <span class="op">)</span>
+<span class="va">tags</span>
+
+<span class="co">#write.csv(tags,"./tags.csv")</span></code></pre></div>
 </div>
 </div>
   </div>

@@ -100,17 +100,15 @@ A *spectrogram* is a visual representation of the spectrum of frequencies of an 
 
 Let's create a spectrogram to get a better look at some of those audio files. Here's one way to do it using `ggspectro` in `seewave`. 
 
-```{r, echo=T, eval =F, warnings = FALSE, include = TRUE}
+```{r, echo = T, eval = F, warnings = FALSE, include = TRUE}
 #Plot a spectrogram
 v <- seewave::ggspectro(tuneR::readWave(file, from = 0, to = 60, units = "seconds"), ovlp = 50) + ggplot2::geom_tile(aes(fill=amplitude)) + theme_bw()
-
-print(v)
 
 ```
 
 [**SoX**](http://sox.sourceforge.net/) is also a very powerful command line tool that can build spectrograms as well. Processing time here is much faster given R doesn't have to read in the file as an S4 wave object. More on this later. 
 
-```{r SoX images in bash, engine='bash', include = TRUE, eval = F}
+```{r SoX images in bash, engine='bash', include = TRUE, eval = F, include = T, warning = F, message = F}
 #Or try a bash command using SoX
 
 #cd /path/to/file && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done

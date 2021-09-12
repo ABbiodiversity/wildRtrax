@@ -4,7 +4,7 @@
 \alias{wt_audio_scanner}
 \title{Scan and extract metadata from audio data}
 \usage{
-wt_audio_scanner(path, file_type)
+wt_audio_scanner(path, file_type, tz)
 }
 \arguments{
 \item{path}{Character; The path to the directory with audio files you wish to scan. Can be done recursively.}
