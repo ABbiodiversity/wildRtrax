@@ -5,20 +5,21 @@
 #'
 #' @param path Character; The path to the directory with audio files you wish to scan. Can be done recursively.
 #' @param file_type Character; Takes one of three values: wav, wac, or both. Use "both" if your directory contains both types of files.
+#' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, wt_audio_scanner will assume the next valid time
 #'
 #' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr
-#' @importFrom lubridate year ymd_hms yday
+#' @importFrom lubridate year ymd_hms yday force_tz
 #' @importFrom rlang env_has current_env
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both")
+#' df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both", tz = "US/Mountain")
 #' }
 #'
 #' @return A dataframe with a summary of your audio files
 
-wt_audio_scanner <- function(path, file_type) {
+wt_audio_scanner <- function(path, file_type, tz = NULL) {
 
   # Create regex for file_type
   if (file_type == "wav" || file_type == "WAV") {
@@ -59,7 +60,9 @@ wt_audio_scanner <- function(path, file_type) {
     dplyr::mutate(recording_date_time = str_remove(recording_date_time,'.+?(?:__)')) %>%
     # Create date/time fields
     dplyr::mutate(
-      recording_date_time = lubridate::ymd_hms(recording_date_time),
+      #Apply the timezone if necessary
+      recording_date_time = case_when(tz == NULL ~ lubridate::ymd_hms(recording_date_time),
+                                      TRUE ~ force_tz(lubridate::ymd_hms(recording_date_time), tzone = tz, roll = TRUE)),
       julian = lubridate::yday(recording_date_time),
       year = lubridate::year(recording_date_time),
       gps_enabled = dplyr::case_when(

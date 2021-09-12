@@ -26,10 +26,8 @@ The `wt_audio_scanner()` function reads in audio files (either wac or wav format
 
 
 ```{r setup, echo = F, include = T, warning = F, message = F}
-# Attach packages
-
+# Attach package
 library(wildRtrax)
-library(vroom)
 
 ```
 
@@ -44,7 +42,8 @@ d <- wt_audio_scanner(root, file_type = 'wav')
 head(d)
 
 # Filter recordings based on criteria
-
+less <- d %>%
+  filter(time_index == 1)
 ```
 
 ### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
@@ -79,7 +78,7 @@ index_list <-
   )
 
 #vroom together the indices you want from all the csvs
-test_indices <- vroom(index_files, col_select = index_list)
+test_indices <- vroom::vroom(index_files, col_select = index_list)
 
 #Join the index values to the wt_audio_scanner tibble
 test_join <-
@@ -121,4 +120,17 @@ s['output']
 # We have eleven detections that exceeded this threshold.
 
 ```
+
+### Linking files and creating templates for upload to WildTrax
+
+There are three phases of getting data into WildTrax once you have your [organization](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations.html) and [project](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects.html) setup: uploading recordings, uploading tasks and uploading tags.
+
+If you've used `wt_audio_scanner` to scan through a series of nested directories for audio files, link them together.
+
+```{r, eval = F, echo = T, include = T, warning = F, message = F}
+#An example for a unix scneario
+R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")
+
+```
+
 

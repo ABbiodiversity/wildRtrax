@@ -10,6 +10,8 @@ wt_audio_scanner(path, file_type)
 \item{path}{Character; The path to the directory with audio files you wish to scan. Can be done recursively.}
 
 \item{file_type}{Character; Takes one of three values: wav, wac, or both. Use "both" if your directory contains both types of files.}
+
+\item{tz}{Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, wt_audio_scanner will assume the next valid time}
 }
 \value{
 A dataframe with a summary of your audio files
@@ -20,7 +22,7 @@ sample rate, length (seconds) and number of channels to be used as filters for o
 }
 \examples{
 \dontrun{
-df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both")
+df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both", tz = NULL)
 }
 
 }
