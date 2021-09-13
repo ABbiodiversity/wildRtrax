@@ -41,7 +41,9 @@ d <- wildRtrax::wt_audio_scanner(root, file_type = "both")
 
 # View
 head(d)
+```
 
+```{r}
 # Filter recordings based on criteria
 less <- d %>%
   filter(time_index == 4)
@@ -51,12 +53,13 @@ less
 ```{r}
 # Or link your media to something more detailed - here's an example of getting the sun's zenith 
 less %>%
-  dplyr::mutate(location_latitude = 55.403594,
+  mutate(location_latitude = 55.403594,
          location_longitude = -113.770721,
          recording_date_time = lubridate::force_tz(recording_date_time, tzone = "US/Mountain", roll = TRUE)) %>%
-  dplyr::rowwise() %>%
+  rowwise() %>%
   mutate(zenith = ((pull(suncalc::getSunlightPosition(date = recording_date_time, lat = location_latitude, lon = location_longitude, keep = c("altitude"))))*180)/pi) %>%
-  ungroup()
+  ungroup() %>%
+  select(location, recording_date_time, zenith)
 
 ```
 
@@ -96,21 +99,24 @@ test_indices <- vroom::vroom(index_files, col_select = index_list)
 
 #Join the index values to the wt_audio_scanner tibble
 test_join <-
-  d %>% inner_join(., test_indices, by = c('file_name' = 'FileName')) %>%
+  d %>% 
+  right_join(., test_indices, by = c('file_name' = 'FileName')) %>%
   pivot_longer(cols = Snr:Ndsi,
                names_to = 'index_variable',
                values_to = 'index_value') %>%
+  distinct() %>%
   #Plot a graph of the indices
   ggplot(.,
          aes(x = ResultMinute, y = index_value, colour = index_variable)) +
+  scale_x_continuous(limits = c(0,9)) +
   geom_point() +
-  blanktheme +
+  theme_bw() +
   facet_wrap(~ index_variable, ncol = 1)
 
 ```
 
 ```{r}
-test_join
+#test_join
 ```
 
 ### Applying a limited amplitude filter
@@ -153,7 +159,6 @@ If you've used `wt_audio_scanner` to scan through a series of nested directories
 The next step is to create the tasks and format the columns to the upload template. 
 
 ```{r}
-
 #In a limited amplitude workflow, unnest the lists to get the detections 
 less_tasks <- less %>%
   mutate(thresholds = furrr::future_map(.x = file_path, .f = ~wt_signal_level(.x, fmin = 10, fmax = 1000, threshold = 35, aggregate = 10))) %>%
@@ -161,6 +166,7 @@ less_tasks <- less %>%
   unnest_wider(output) %>%
   select(-c(end_time_s,aggregated,channel)) %>%
   unnest(cols = c(detection, mean_rsl, start_time_s, detection_length))
+less_tasks
 
 ```
 
@@ -204,7 +210,6 @@ tasks
 And finally, the tags - this only applies if you're using a limited amplitude workflow or you're importing from another database. 
 
 ```{r, eval = F, include = T, warning = F, message = F}
-#
 tags <-
   less_tasks %>% mutate(
     recordingDate = recording_date_time,

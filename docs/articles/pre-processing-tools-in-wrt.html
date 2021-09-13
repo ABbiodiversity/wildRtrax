@@ -101,7 +101,7 @@
 <span class="va">root</span> <span class="op">&lt;-</span> <span class="st">'/volumes/GoogleDrive/Shared drives/wildRtrax/data/example'</span>
 
 <span class="co"># Scan data</span>
-<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">wildRtrax</span><span class="fu">::</span><span class="fu"><a href="../reference/wt_audio_scanner.html">wt_audio_scanner</a></span><span class="op">(</span><span class="va">root</span>, file_type <span class="op">=</span> <span class="st">'wav'</span><span class="op">)</span>
+<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">wildRtrax</span><span class="fu">::</span><span class="fu"><a href="../reference/wt_audio_scanner.html">wt_audio_scanner</a></span><span class="op">(</span><span class="va">root</span>, file_type <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span>
 <span class="co">#&gt; Scanning audio files in path ... </span>
 <span class="co">#&gt; Working on wav files...</span>
 
@@ -117,28 +117,42 @@
 <span class="co">#&gt; 5 /volumes/Goo…   31.8  ABMI-0754… ABMI-07… 2017-03-01 10:29:00 wav           60</span>
 <span class="co">#&gt; 6 /volumes/Goo…   31.8  ABMI-0754… ABMI-07… 2017-03-01 12:00:00 wav           60</span>
 <span class="co">#&gt; # … with 6 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,</span>
-<span class="co">#&gt; #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;</span>
-
-<span class="co"># Filter recordings based on criteria</span>
+<span class="co">#&gt; #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Filter recordings based on criteria</span>
 <span class="va">less</span> <span class="op">&lt;-</span> <span class="va">d</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">time_index</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">time_index</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span>
 <span class="va">less</span>
 <span class="co">#&gt; # A tibble: 1 × 13</span>
 <span class="co">#&gt;   file_path     size_Mb file_name  location recording_date_time file_type julian</span>
 <span class="co">#&gt;   &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 /volumes/Goo…    31.8 ABMI-0754… ABMI-07… 2017-03-01 02:00:00 wav           60</span>
+<span class="co">#&gt; 1 /volumes/Goo…    31.8 ABMI-0754… ABMI-07… 2017-03-01 10:29:00 wav           60</span>
 <span class="co">#&gt; # … with 6 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,</span>
 <span class="co">#&gt; #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Or link your media to something more detailed - here's an example of getting the sun's zenith </span>
+<span class="va">less</span> <span class="op">%&gt;%</span>
+  <span class="fu">mutate</span><span class="op">(</span>location_latitude <span class="op">=</span> <span class="fl">55.403594</span>,
+         location_longitude <span class="op">=</span> <span class="op">-</span><span class="fl">113.770721</span>,
+         recording_date_time <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="http://lubridate.tidyverse.org/reference/force_tz.html">force_tz</a></span><span class="op">(</span><span class="va">recording_date_time</span>, tzone <span class="op">=</span> <span class="st">"US/Mountain"</span>, roll <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">rowwise</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">mutate</span><span class="op">(</span>zenith <span class="op">=</span> <span class="op">(</span><span class="op">(</span><span class="fu">pull</span><span class="op">(</span><span class="fu">suncalc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/suncalc/man/getSunlightPosition.html">getSunlightPosition</a></span><span class="op">(</span>date <span class="op">=</span> <span class="va">recording_date_time</span>, lat <span class="op">=</span> <span class="va">location_latitude</span>, lon <span class="op">=</span> <span class="va">location_longitude</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"altitude"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fl">180</span><span class="op">)</span><span class="op">/</span><span class="va">pi</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">ungroup</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">select</span><span class="op">(</span><span class="va">location</span>, <span class="va">recording_date_time</span>, <span class="va">zenith</span><span class="op">)</span>
+<span class="co">#&gt; # A tibble: 1 × 3</span>
+<span class="co">#&gt;   location     recording_date_time zenith</span>
+<span class="co">#&gt;   &lt;chr&gt;        &lt;dttm&gt;               &lt;dbl&gt;</span>
+<span class="co">#&gt; 1 ABMI-0754-SW 2017-03-01 10:29:00   20.9</span></code></pre></div>
 </div>
 <div id="running-the-qut-ecoacoustics-analysisprograms-software-on-a-wt_-standard-data-set" class="section level3">
 <h3 class="hasAnchor">
 <a href="#running-the-qut-ecoacoustics-analysisprograms-software-on-a-wt_-standard-data-set" class="anchor"></a>Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set</h3>
 <p>The <code><a href="../reference/wt_run_ap.html">wt_run_ap()</a></code> function allows you to run the QUT Analysis Programs <a href="https://ap.qut.ecoacoustics.info/">(AP.exe)</a> on your audio data. Note that you must have the AP program installed on your computer. See more here <a href="https://researchoutput.csu.edu.au/ws/portalfiles/portal/28556441/28544328_Published_article.pdf">(Towsey et al., 2018)</a>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Use the wt_* tibble to execute the AP on the files</span>
 
 <span class="co">#wt_run_ap(x = d, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP')</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Return the metadata obtained from AP</span>
 <span class="co">#Extract the index values - find the files</span>
 <span class="va">index_files</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="http://fs.r-lib.org/reference/dir_ls.html">dir_ls</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">'/volumes/GoogleDrive/Shared drives/wildRtrax/data/ap_example'</span>,
@@ -163,24 +177,27 @@
 
 <span class="co">#Join the index values to the wt_audio_scanner tibble</span>
 <span class="va">test_join</span> <span class="op">&lt;-</span>
-  <span class="va">d</span> <span class="op">%&gt;%</span> <span class="fu">inner_join</span><span class="op">(</span><span class="va">.</span>, <span class="va">test_indices</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'file_name'</span> <span class="op">=</span> <span class="st">'FileName'</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="va">d</span> <span class="op">%&gt;%</span> 
+  <span class="fu">right_join</span><span class="op">(</span><span class="va">.</span>, <span class="va">test_indices</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'file_name'</span> <span class="op">=</span> <span class="st">'FileName'</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">pivot_longer</span><span class="op">(</span>cols <span class="op">=</span> <span class="va">Snr</span><span class="op">:</span><span class="va">Ndsi</span>,
                names_to <span class="op">=</span> <span class="st">'index_variable'</span>,
                values_to <span class="op">=</span> <span class="st">'index_value'</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">distinct</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="co">#Plot a graph of the indices</span>
   <span class="fu">ggplot</span><span class="op">(</span><span class="va">.</span>,
          <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ResultMinute</span>, y <span class="op">=</span> <span class="va">index_value</span>, colour <span class="op">=</span> <span class="va">index_variable</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">scale_x_continuous</span><span class="op">(</span>limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">9</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="va">blanktheme</span> <span class="op">+</span>
-  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span> <span class="va">index_variable</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-
-<span class="va">test_join</span></code></pre></div>
+  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">facet_wrap</span><span class="op">(</span><span class="op">~</span> <span class="va">index_variable</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#test_join</span></code></pre></div>
 </div>
 <div id="applying-a-limited-amplitude-filter" class="section level3">
 <h3 class="hasAnchor">
 <a href="#applying-a-limited-amplitude-filter" class="anchor"></a>Applying a limited amplitude filter</h3>
 <p>We can use the <code><a href="../reference/wt_signal_level.html">wt_signal_level()</a></code> function to search for sounds that exceed a certain amplitude threshold.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Example audio file</span>
 <span class="va">path_to_file</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">$</span><span class="va">file_path</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>
 
@@ -231,21 +248,28 @@
 </h3>
 <p>There are three phases of getting data into WildTrax once you have your <a href="https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations.html">organization</a> and <a href="https://www.wildtrax.ca/home/wildtrax-guide/3-Projects.html">project</a> setup: uploading recordings, uploading tasks and uploading tags (see more in <a href="https://www.wildtrax.ca/home/wildtrax-guide/3-Projects/3.2-ARU-projects.html">ARU projects</a> in WildTrax: The Definitive Guide).</p>
 <p>If you’ve used <code>wt_audio_scanner</code> to scan through a series of nested directories for audio files, link them together.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#An example for a unix scneario</span>
 <span class="co">#R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")</span></code></pre></div>
 <p>The next step is to create the tasks and format the columns to the upload template.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co">#In a limited amplitude workflow, unnest the lists to get the detections </span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">#In a limited amplitude workflow, unnest the lists to get the detections </span>
 <span class="va">less_tasks</span> <span class="op">&lt;-</span> <span class="va">less</span> <span class="op">%&gt;%</span>
   <span class="fu">mutate</span><span class="op">(</span>thresholds <span class="op">=</span> <span class="fu">furrr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/furrr/man/future_map.html">future_map</a></span><span class="op">(</span>.x <span class="op">=</span> <span class="va">file_path</span>, .f <span class="op">=</span> <span class="op">~</span><span class="fu"><a href="../reference/wt_signal_level.html">wt_signal_level</a></span><span class="op">(</span><span class="va">.x</span>, fmin <span class="op">=</span> <span class="fl">10</span>, fmax <span class="op">=</span> <span class="fl">1000</span>, threshold <span class="op">=</span> <span class="fl">35</span>, aggregate <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">unnest_wider</span><span class="op">(</span><span class="va">thresholds</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu">unnest_wider</span><span class="op">(</span><span class="va">output</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">end_time_s</span>,<span class="va">aggregated</span>,<span class="va">channel</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">unnest</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">detection</span>, <span class="va">mean_rsl</span>, <span class="va">start_time_s</span>, <span class="va">detection_length</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; [1] "Calculating segment 1 out of 1"</span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<span class="co">#&gt; [1] "Calculating segment 1 out of 1"</span>
+<span class="va">less_tasks</span>
+<span class="co">#&gt; # A tibble: 1 × 18</span>
+<span class="co">#&gt;   file_path     size_Mb file_name  location recording_date_time file_type julian</span>
+<span class="co">#&gt;   &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;      &lt;dbl&gt;</span>
+<span class="co">#&gt; 1 /volumes/Goo…    31.8 ABMI-0754… ABMI-07… 2017-03-01 10:29:00 wav           60</span>
+<span class="co">#&gt; # … with 11 more variables: year &lt;dbl&gt;, gps_enabled &lt;lgl&gt;, time_index &lt;int&gt;,</span>
+<span class="co">#&gt; #   length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;, detection &lt;dbl&gt;,</span>
+<span class="co">#&gt; #   mean_rsl &lt;dbl&gt;, start_time_s &lt;dbl&gt;, detection_length &lt;dbl&gt;, threshold &lt;dbl&gt;</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#Create the template</span>
 <span class="va">tasks</span> <span class="op">&lt;-</span>
   <span class="va">less_tasks</span> <span class="op">%&gt;%</span> <span class="fu">mutate</span><span class="op">(</span>
@@ -280,15 +304,14 @@
 <span class="co">#&gt; # A tibble: 1 × 12</span>
 <span class="co">#&gt;   location     recordingDate       method   status transcriber   rain  wind </span>
 <span class="co">#&gt;   &lt;chr&gt;        &lt;dttm&gt;              &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;</span>
-<span class="co">#&gt; 1 ABMI-0754-SW 2017-03-01 02:00:00 10m USPM ""     Alex MacPhail ""    ""   </span>
+<span class="co">#&gt; 1 ABMI-0754-SW 2017-03-01 10:29:00 10m USPM ""     Alex MacPhail ""    ""   </span>
 <span class="co">#&gt; # … with 5 more variables: industryNoise &lt;chr&gt;, otherNoise &lt;chr&gt;,</span>
 <span class="co">#&gt; #   audioQuality &lt;chr&gt;, taskComments &lt;chr&gt;, internal_task_id &lt;chr&gt;</span>
 
 <span class="co">#write.csv(tasks,"./tasks.csv")</span></code></pre></div>
 <p>And finally, the tags - this only applies if you’re using a limited amplitude workflow or you’re importing from another database.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co">#</span>
-<span class="va">tags</span> <span class="op">&lt;-</span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">tags</span> <span class="op">&lt;-</span>
   <span class="va">less_tasks</span> <span class="op">%&gt;%</span> <span class="fu">mutate</span><span class="op">(</span>
     recordingDate <span class="op">=</span> <span class="va">recording_date_time</span>,
     method <span class="op">=</span> <span class="st">"10m USPM"</span>,
