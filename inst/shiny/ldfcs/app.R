@@ -113,7 +113,7 @@ ui <- fluidPage(
 server <- function(input, output) {
 
   test <- reactive({
-    data %>% ########## REPLACE EVERYTHING WITH DATA FROM THE GOOGLE DRIVE SERVER ################
+    data %>% ########## REPLACE data WITH DATA FROM THE GOOGLE DRIVE SERVER ################
       mutate(hour = lubridate::hour(recording_date_time)) %>%
       filter(
         julian >= input$juliandate[1] & julian <= input$juliandate[2],
@@ -155,7 +155,7 @@ server <- function(input, output) {
       }
     )
   audio_files <- reactive({
-    everything %>%
+    data %>%
       mutate(hour = lubridate::hour(recording_date_time)) %>%
       filter(
         julian >= input$juliandate[1] & julian <= input$juliandate[2],
@@ -176,7 +176,7 @@ server <- function(input, output) {
       })
   })
   eless <- reactive({
-    everything %>%
+    data %>%
       mutate(hour = lubridate::hour(recording_date_time)) %>%
       filter(
         julian >= input$juliandate[1] & julian <= input$juliandate[2],
@@ -204,7 +204,7 @@ server <- function(input, output) {
     )
   })
   i2 <- reactive({
-    i <- everything %>%
+    i <- data %>%
       mutate(hour = lubridate::hour(recording_date_time)) %>%
       filter(
         julian >= input$juliandate[1] & julian <= input$juliandate[2],
