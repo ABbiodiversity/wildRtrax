@@ -37,15 +37,27 @@ library(tidyverse)
 root <- '/volumes/GoogleDrive/Shared drives/wildRtrax/data/example'
 
 # Scan data
-d <- wildRtrax::wt_audio_scanner(root, file_type = 'wav')
+d <- wildRtrax::wt_audio_scanner(root, file_type = "both")
 
 # View
 head(d)
 
 # Filter recordings based on criteria
 less <- d %>%
-  filter(time_index == 2)
+  filter(time_index == 4)
 less
+```
+
+```{r}
+# Or link your media to something more detailed - here's an example of getting the sun's zenith 
+less %>%
+  dplyr::mutate(location_latitude = 55.403594,
+         location_longitude = -113.770721,
+         recording_date_time = lubridate::force_tz(recording_date_time, tzone = "US/Mountain", roll = TRUE)) %>%
+  dplyr::rowwise() %>%
+  mutate(zenith = ((pull(suncalc::getSunlightPosition(date = recording_date_time, lat = location_latitude, lon = location_longitude, keep = c("altitude"))))*180)/pi) %>%
+  ungroup()
+
 ```
 
 ### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
@@ -95,6 +107,9 @@ test_join <-
   blanktheme +
   facet_wrap(~ index_variable, ncol = 1)
 
+```
+
+```{r}
 test_join
 ```
 
