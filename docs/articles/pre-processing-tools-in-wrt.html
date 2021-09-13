@@ -166,6 +166,7 @@
     <span class="st">'Snr'</span>,
     <span class="st">'BackgroundNoise'</span>,
     <span class="st">'AcousticComplexity'</span>,
+    <span class="st">'HighFreqCover'</span>,    <span class="st">'MidFreqCover'</span>,<span class="st">'LowFreqCover'</span>,
     <span class="st">'TemporalEntropy'</span>,
     <span class="st">'Ndsi'</span>,
     <span class="st">'ResultMinute'</span>,
@@ -173,7 +174,7 @@
   <span class="op">)</span>
 
 <span class="co">#vroom together the indices you want from all the csvs</span>
-<span class="va">test_indices</span> <span class="op">&lt;-</span> <span class="fu">vroom</span><span class="fu">::</span><span class="fu"><a href="https://vroom.r-lib.org/reference/vroom.html">vroom</a></span><span class="op">(</span><span class="va">index_files</span>, col_select <span class="op">=</span> <span class="va">index_list</span><span class="op">)</span>
+<span class="va">test_indices</span> <span class="op">&lt;-</span> <span class="fu">vroom</span><span class="fu">::</span><span class="fu"><a href="https://vroom.r-lib.org/reference/vroom.html">vroom</a></span><span class="op">(</span><span class="va">index_files</span>, col_select <span class="op">=</span> <span class="va">index_list</span>, altrep <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>
 
 <span class="co">#Join the index values to the wt_audio_scanner tibble</span>
 <span class="va">test_join</span> <span class="op">&lt;-</span>

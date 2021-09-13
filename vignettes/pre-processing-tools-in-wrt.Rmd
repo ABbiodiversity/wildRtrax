@@ -88,6 +88,7 @@ index_list <-
     'Snr',
     'BackgroundNoise',
     'AcousticComplexity',
+    'HighFreqCover',	'MidFreqCover','LowFreqCover',
     'TemporalEntropy',
     'Ndsi',
     'ResultMinute',
@@ -95,7 +96,7 @@ index_list <-
   )
 
 #vroom together the indices you want from all the csvs
-test_indices <- vroom::vroom(index_files, col_select = index_list)
+test_indices <- vroom::vroom(index_files, col_select = index_list, altrep = F)
 
 #Join the index values to the wt_audio_scanner tibble
 test_join <-
