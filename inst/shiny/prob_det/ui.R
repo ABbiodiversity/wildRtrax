@@ -34,7 +34,9 @@ ui <- fluidPage(
                                "Red" = "#C7641F",
                                "Grey" = "#A19E99",
                                "Dark blue" = "#26507D",
-                               "Dark green" = "#309C62"),
+                               "Dark green" = "#309C62",
+                               "Black" = "#000000",
+                               "Wheat" = "F2D7A6"),
                    selected = "#2D415B"),
       width = 3
     ),
