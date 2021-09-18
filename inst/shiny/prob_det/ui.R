@@ -12,20 +12,12 @@ ui <- fluidPage(
                               "Clay-colored Sparrow" = "CCSP",
                               "Olive-sided Flycatcher" = "OSFL",
                               "Tennessee Warbler" = "TEWA",
-<<<<<<< HEAD
                               "White-throated Sparrow" = "WTSP",
-=======
-                              "White-throated Sparrow" = "WTSP"),
->>>>>>> c10f21c61c7af1c2d7f37285d9bf3e17897f7914
                               "Alder Flycatcher" = "ALFL",
                               "Swainson's Thrush" = "SWTH",
                               "Common Nighthawk" = "CONI",
                               "Lincoln's Sparrow" = "LISP",
-<<<<<<< HEAD
                               "Yellow-rumped Warbler" = "YRWA"),
-=======
-                              "Yellow-rumped Warbler" = "YRWA",
->>>>>>> c10f21c61c7af1c2d7f37285d9bf3e17897f7914
                   selected = "OSFL"),
       numericInput(inputId = "survey",
                    label = "Acoustic survey length (in minutes):",
