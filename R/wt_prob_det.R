@@ -13,6 +13,11 @@
 #'  \item "OSFL" (Olive-sided Flycatcher)
 #'  \item "TEWA" (Tennessee Warbler)
 #'  \item "WTSP" (White-throated Sparrow)
+#'  \item "ALFL" (Alder Flycatcher)
+#'  \item "LISP" (Lincoln's Sparrow)
+#'  \item "YRWA" (Yellow-rumped Warbler)
+#'  \item "CONI" (Common Nighthawk)
+#'  \item "SWTH" (Swainson's Thrush)
 #' }
 #'
 #' @importFrom unmarked backTransform
@@ -31,7 +36,7 @@ wt_prob_det <- function(species_code, survey_length, number_of_surveys) {
   data("detection_models", envir = environment())
 
   # Check that a valid species code was supplied
-  valid_codes <- c('OVEN', 'OSFL', 'CCSP', 'TEWA', 'WTSP')
+  valid_codes <- c('OVEN', 'OSFL', 'CCSP', 'TEWA', 'WTSP', 'ALFL', 'CONI', 'SWTH', 'LISP', 'YRWA')
   if(!species_code %in% valid_codes) {
     stop("Please supply a valid species code (species_code). See ?wt_prob_det for valid species.", call. = TRUE)
   }
