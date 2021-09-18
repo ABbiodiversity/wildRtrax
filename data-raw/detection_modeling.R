@@ -116,7 +116,7 @@ data = data[data$prefix %in% SurveyCount$station,]
 # The idea is to just give a measure of detection probability, with survey length = 1, 2, or 3 minutes.
 
 # Target species: Ovenbird, Clay-Colored Sparrow, Olive-Sided Flycatcher, Tennessee Warbler, White-Throated Sparrow
-species = c('OVEN', 'OSFL', 'CCSP', 'TEWA', 'WTSP')
+species = c('OVEN', 'OSFL', 'CCSP', 'TEWA', 'WTSP', 'ALFL', 'LISP', 'SWTH', 'YRWA', 'CONI')
 
 for(i in 1:length(species)) {
   Sp=species[i]
@@ -202,7 +202,10 @@ names <- list(sp = species, mod = c(1, 2, 3)) %>%
 
 detection_models <- list(OVEN1, OSFL1, CCSP1, TEWA1, WTSP1,
                          OVEN2, OSFL2, CCSP2, TEWA2, WTSP2,
-                         OVEN3, OSFL3, CCSP3, TEWA3, WTSP3) %>%
+                         OVEN3, OSFL3, CCSP3, TEWA3, WTSP3,
+                         ALFL1, LISP1, SWTH1, YRWA1, CONI1,
+                         ALFL2, LISP2, SWTH2, YRWA2, CONI2,
+                         ALFL3, LISP3, SWTH3, YRWA3, CONI3) %>%
                     set_names(names)
 
 # Save models in data/
@@ -211,7 +214,7 @@ usethis::use_data(detection_models, overwrite = TRUE)
 # Pin model outputs to repository
 pins::pin(x = models,
           name = "pins/detection_modeling/models",
-          description = "Detection modeling for five species: OVEN, OSFL, CCSP, TEWA, WTSP",
+          description = "Detection modeling for five species: OVEN, OSFL, CCSP, TEWA, WTSP, ALFL, LISP, SWTH, YRWA and CONI",
           board = "github")
 
 #-----------------------------------------------------------------------------------------------------------------------

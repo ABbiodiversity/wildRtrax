@@ -1,3 +1,3 @@
 path: data.rds
-description: 'Detection modeling for five species: OVEN, OSFL, CCSP, TEWA, WTSP'
+description: 'Detection modeling for five species: OVEN, OSFL, CCSP, TEWA, WTSP, ALFL, YRWA, CONI, LISP and SWTH'
 type: default
