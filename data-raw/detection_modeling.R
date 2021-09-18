@@ -9,7 +9,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 
 # Path to Google Drive
-root <- "G:/Shared drives/wildRtrax/"
+root <- "/volumes/GoogleDrive/Shared drives/wildRtrax/"
 
 # Attach packages
 library(unmarked)
@@ -126,8 +126,8 @@ for(i in 1:length(species)) {
   # Build the occupancy frame. Will be r x 3c where r = number of stations, c is 14, the max number of surveys.
   # The first c columns are 1-minute surveys, second c are 2-minute, third c are 3-minute.
 
-  frame = matrix(NA, nrow=nrow(survey_count), ncol=c*3)
-  row.names(frame) = survey_count$station
+  frame = matrix(NA, nrow=nrow(SurveyCount), ncol=c*3)
+  row.names(frame) = SurveyCount$station
 
   for(j in 1:nrow(frame)) {
     S = row.names(frame)[j]
