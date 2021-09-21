@@ -90,6 +90,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 
   # Aggregate (if desired)
   if(!is.null(aggregate)) {
+    if(!is.na(sl)) {
     sl <- sl %>%
       dplyr::mutate(time_lag = dplyr::lag(time),
              new_detection = ifelse((time - time_lag) >= aggregate, 1, 0),
@@ -101,9 +102,20 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
       dplyr::ungroup() %>%
       mutate(detection_length = end_time_s - start_time_s)
     aggregated <- TRUE
+    } else {
+      sl
+      aggregated <- FALSE
+      warning("No signals met the threshold criteria. Output not aggregated.")
+    }
   } else {
-    sl
-    aggregated <- FALSE
+    if(!is.na(sl)) {
+      sl
+      aggregated <- FALSE
+    } else {
+      sl
+      aggregated <- FALSE
+      warning("No signals met the threshold critera.")
+    }
   }
 
   # Create list object

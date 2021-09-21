@@ -4,7 +4,7 @@
 \alias{wt_audio_scanner}
 \title{Scan and extract metadata from audio data}
 \usage{
-wt_audio_scanner(path, file_type, tz)
+wt_audio_scanner(path, file_type, tz = "")
 }
 \arguments{
 \item{path}{Character; The path to the directory with audio files you wish to scan. Can be done recursively.}
@@ -22,7 +22,7 @@ sample rate, length (seconds) and number of channels to be used as filters for o
 }
 \examples{
 \dontrun{
-df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both", tz = NULL)
+df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both", tz = "US/Mountain")
 }
 
 }

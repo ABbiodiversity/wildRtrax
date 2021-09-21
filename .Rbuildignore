@@ -10,6 +10,8 @@
 ^pkgdown$
 ^\.travis\.yml$
 ^vignettes/articles$
+^vignettes/concepts.Rmd
+^vignettes/pre-processing-tools-in-wrt.Rmd
 ^beta$
 ^data-raw$
 ^pins$

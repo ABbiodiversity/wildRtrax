@@ -28,6 +28,11 @@ Valid values for species_code currently include:
 \item "OSFL" (Olive-sided Flycatcher)
 \item "TEWA" (Tennessee Warbler)
 \item "WTSP" (White-throated Sparrow)
+\item "ALFL" (Alder Flycatcher)
+\item "LISP" (Lincoln's Sparrow)
+\item "YRWA" (Yellow-rumped Warbler)
+\item "CONI" (Common Nighthawk)
+\item "SWTH" (Swainson's Thrush)
 }
 }
 \examples{
