@@ -125,13 +125,13 @@ for(i in 1:length(species)) {
   Sp=species[i]
   # Number of detections for this species.
   sum(data$species_code == Sp)
-  
+
   # Build the occupancy frame. Will be r x 3c where r = number of stations, c is 14, the max number of surveys.
   # The first c columns are 1-minute surveys, second c are 2-minute, third c are 3-minute.
-  
+
   frame = matrix(NA, nrow=nrow(SurveyCount), ncol=c*3)
   row.names(frame) = SurveyCount$station
-  
+
   for(j in 1:nrow(frame)) {
     S = row.names(frame)[j]
     sub = data[data$prefix == S,]
@@ -139,7 +139,7 @@ for(i in 1:length(species)) {
     detected1min = sub[sub$species_code == Sp & sub$min0_start!="" & sub$species_individual_name == 1,]
     detected2min = sub[sub$species_code == Sp & sub$min1_start!="" & sub$species_individual_name == 1,]
     detected3min = sub[sub$species_code == Sp & sub$min2_start!="" & sub$species_individual_name == 1,]
-    
+
     surveys = unique(sub$original_file_name)
     # Figure out minute-by-minute detection history, then
     detection_history1 = surveys %in% detected1min$original_file_name
@@ -148,7 +148,7 @@ for(i in 1:length(species)) {
     detection_history2 = pmax(detection_history1, detection_history2)
     detection_history3 = surveys %in% detected3min$original_file_name
     detection_history3 = pmax(detection_history2, detection_history3)
-    
+
     # Pad with NA if needed.
     if(length(detection_history1)<c) {
       detection_history1[(length(surveys)+1):c]=NA
@@ -157,29 +157,29 @@ for(i in 1:length(species)) {
     }
     frame[j,] = as.numeric(c(detection_history1, detection_history2,detection_history3))
   }
-  
+
   y1 = frame[,1:c]
   y2 = frame[,(1:c)+c]
   y3 = frame[,(1:c)+2*c]
-  
+
   occ1 <- unmarkedFrameOccu(y = y1)
   print('occ1 success!')
   occ2 <- unmarkedFrameOccu(y = y2)
   print('occ2 success!')
   occ3 <- unmarkedFrameOccu(y = y3)
   print('occ3 success!')
-  
+
   fm1 <- occu(~1 ~1, occ1)
   print('Model 1 success!')
   fm2 <- occu(~1 ~1, occ2)
   print('Model 2 success!')
   fm3 <- occu(~1 ~1, occ3)
   print('Model 3 success!')
-  
+
   assign(paste0(Sp, '1'),fm1)
   assign(paste0(Sp, '2'),fm2)
   assign(paste0(Sp, '3'),fm3)
-  
+
   rm(list = c(paste0('fm', 1:3), 'frame', paste0('occ', 1:3), 'sub', paste0('y', 1:3),
               paste0('detection_history',1:3), paste0('detected', 1:3, 'min')))
 }
@@ -190,10 +190,10 @@ for(i in 1:length(species)) {
   x3=get(paste0(species[i], 3))
   print(paste(species[i], '1 minute occupancy rate =',round(backTransform(x1, 'state')@estimate,2)))
   print(paste(species[i], '1 minute detection probability =',round(backTransform(x1, 'det')@estimate,2)))
-  
+
   print(paste(species[i], '2 minute occupancy rate =',round(backTransform(x2, 'state')@estimate,2)))
   print(paste(species[i], '2 minute detection probability =',round(backTransform(x2, 'det')@estimate,2)))
-  
+
   print(paste(species[i], '3 minute occupancy rate =',round(backTransform(x3, 'state')@estimate,2)))
   print(paste(species[i], '3 minute detection probability =',round(backTransform(x3, 'det')@estimate,2)))
 }
@@ -211,8 +211,8 @@ names <- list(sp = species, mod = c(1, 2, 3)) %>%
 
 detection_models <- list(GGOW1, GGOW2, GGOW3, GHOW1, GHOW2, GHOW3, SEOW1, SEOW2, SEOW3, NSWO1, NSWO2, NSWO3,
                          OVEN1, OVEN2, OVEN3, OSFL1, OSFL2, OSFL3, CCSP1, CCSP2, CCSP3, TEWA1, TEWA2, TEWA3,
-                         ALFL1, ALFL2, ALFL3, LISP1, LISP2, LISP3, SWTH1, SWTH2, SWTH3, YRWA1, YRWA2, YRWA3, 
-                         CONI1, CONI2, CONI3, WOLF1, WOLF2, WOLF3) %>%
+                         ALFL1, ALFL2, ALFL3, LISP1, LISP2, LISP3, SWTH1, SWTH2, SWTH3, YRWA1, YRWA2, YRWA3,
+                         CONI1, CONI2, CONI3, WOLF1, WOLF2, WOLF3, WTSP1, WTSP2, WTSP3) %>%
   set_names(names)
 
 # Save models in data/
