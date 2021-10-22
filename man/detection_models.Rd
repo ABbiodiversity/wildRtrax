@@ -5,7 +5,7 @@
 \alias{detection_models}
 \title{Occupancy modeling that produces detection probabilities}
 \format{
-A named list containing 30 models (15) species x 3 survey durations)
+A named list containing 45 models (15) species x 3 survey durations)
 }
 \source{
 Alberta Biodiversity Monitoring Institute
