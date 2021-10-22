@@ -134,7 +134,7 @@
 <span class="va">less</span> <span class="op">%&gt;%</span>
   <span class="fu">mutate</span><span class="op">(</span>location_latitude <span class="op">=</span> <span class="fl">55.403594</span>,
          location_longitude <span class="op">=</span> <span class="op">-</span><span class="fl">113.770721</span>,
-         recording_date_time <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="http://lubridate.tidyverse.org/reference/force_tz.html">force_tz</a></span><span class="op">(</span><span class="va">recording_date_time</span>, tzone <span class="op">=</span> <span class="st">"US/Mountain"</span>, roll <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+         recording_date_time <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/force_tz.html">force_tz</a></span><span class="op">(</span><span class="va">recording_date_time</span>, tzone <span class="op">=</span> <span class="st">"US/Mountain"</span>, roll <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">rowwise</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">mutate</span><span class="op">(</span>zenith <span class="op">=</span> <span class="op">(</span><span class="op">(</span><span class="fu">pull</span><span class="op">(</span><span class="fu">suncalc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/suncalc/man/getSunlightPosition.html">getSunlightPosition</a></span><span class="op">(</span>date <span class="op">=</span> <span class="va">recording_date_time</span>, lat <span class="op">=</span> <span class="va">location_latitude</span>, lon <span class="op">=</span> <span class="va">location_longitude</span>, keep <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"altitude"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">*</span><span class="fl">180</span><span class="op">)</span><span class="op">/</span><span class="va">pi</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">ungroup</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -210,6 +210,8 @@
                      channel <span class="op">=</span> <span class="st">'left'</span>, 
                      aggregate <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Calculating segment 1 out of 1"</span>
+<span class="co">#&gt; Warning in if (!is.na(sl)) {: the condition has length &gt; 1 and only the first</span>
+<span class="co">#&gt; element will be used</span>
 
 <span class="co"># Return a list object, with parameters stored</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span>
@@ -262,6 +264,8 @@
   <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">end_time_s</span>,<span class="va">aggregated</span>,<span class="va">channel</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu">unnest</span><span class="op">(</span>cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">detection</span>, <span class="va">mean_rsl</span>, <span class="va">start_time_s</span>, <span class="va">detection_length</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; [1] "Calculating segment 1 out of 1"</span>
+<span class="co">#&gt; Warning in if (!is.na(sl)) {: the condition has length &gt; 1 and only the first</span>
+<span class="co">#&gt; element will be used</span>
 <span class="va">less_tasks</span>
 <span class="co">#&gt; # A tibble: 1 × 18</span>
 <span class="co">#&gt;   file_path     size_Mb file_name  location recording_date_time file_type julian</span>

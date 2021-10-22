@@ -132,7 +132,7 @@ sample rate, length (seconds) and number of channels to be used as filters for o
 sample rate, length (seconds) and number of channels to be used as filters for other uses</p>
     </div>
 
-    <pre class="usage"><span class='fu'>wt_audio_scanner</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>file_type</span>, <span class='va'>tz</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>wt_audio_scanner</span><span class='op'>(</span><span class='va'>path</span>, <span class='va'>file_type</span>, tz <span class='op'>=</span> <span class='st'>""</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -157,7 +157,7 @@ sample rate, length (seconds) and number of channels to be used as filters for o
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'>wt_audio_scanner</span><span class='op'>(</span>path <span class='op'>=</span> <span class='st'>"C:/Users/me/path/to/audio/files"</span>, file_type <span class='op'>=</span> <span class='st'>"both"</span>, tz <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='va'>df</span> <span class='op'>&lt;-</span> <span class='fu'>wt_audio_scanner</span><span class='op'>(</span>path <span class='op'>=</span> <span class='st'>"C:/Users/me/path/to/audio/files"</span>, file_type <span class='op'>=</span> <span class='st'>"both"</span>, tz <span class='op'>=</span> <span class='st'>"US/Mountain"</span><span class='op'>)</span>
 <span class='op'>}</span>
 
 </div></pre>
