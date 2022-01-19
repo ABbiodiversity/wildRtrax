@@ -12,8 +12,6 @@
 #' wt_auth(force = FALSE)
 #' }
 #'
-#' @return
-#'
 wt_auth <- function(force = FALSE) {
 
   if (!exists("._wt_auth_env_"))
@@ -139,9 +137,13 @@ wt_download_report <- function(project_id, sensor_id, cols_def = FALSE, weather_
   # Unzip
   unzip(tmp, exdir = td)
 
+  # Remove abstract file
+  abstract <- list.files(td, pattern = "*_abstract.csv", full.names = TRUE)
+  file.remove(abstract)
+
+  # List data files, read into R as a list
   files <- list.files(td, pattern = ".csv")
   files.full <- list.files(td, pattern = ".csv", full.names = TRUE)
-
   x <- purrr::map(.x = files.full, .f = read.csv) %>%
     purrr::set_names(files)
 
