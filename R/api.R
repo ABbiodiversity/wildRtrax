@@ -53,7 +53,7 @@ wt_get_download_summary <- function(sensor_id) {
   )
 
   x <- data.frame(do.call(rbind, httr::content(r)$results)) %>%
-       dplyr::select(project = fullNm, project_id = id, sensorId, year, tags, status)
+       dplyr::select(project = fullNm, project_id = id, sensorId, tasks, status)
 
   return(x)
 
