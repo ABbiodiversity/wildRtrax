@@ -35,6 +35,7 @@ library(tidyverse)
 ```{r, echo=TRUE, include=TRUE, eval=TRUE}
 # Root directory
 root <- '/volumes/GoogleDrive/Shared drives/wildRtrax/data/example'
+dir.exists(root)
 
 # Scan data
 d <- wildRtrax::wt_audio_scanner(root, file_type = "both")
@@ -70,7 +71,7 @@ The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)
 ```{r echo=TRUE, include=T, eval=F, warning = F, message = F}
 #Use the wt_* tibble to execute the AP on the files
 
-#wt_run_ap(x = d, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP')
+wt_run_ap(x = d, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP')
 
 ```
 
@@ -94,7 +95,9 @@ index_list <-
     'ResultMinute',
     'FileName'
   )
+```
 
+```{r echo=TRUE, include=T, eval=T, warning = F, message = F} 
 #vroom together the indices you want from all the csvs
 test_indices <- vroom::vroom(index_files, col_select = index_list, altrep = F)
 
@@ -108,16 +111,16 @@ test_join <-
   distinct() %>%
   #Plot a graph of the indices
   ggplot(.,
-         aes(x = ResultMinute, y = index_value, colour = index_variable)) +
+         aes(x = ResultMinute, y = index_value, fill = index_variable, group = ResultMinute)) +
   scale_x_continuous(limits = c(0,9)) +
-  geom_point() +
+  geom_boxplot() +
   theme_bw() +
-  facet_wrap(~ index_variable, ncol = 1)
+  facet_wrap(~ index_variable, scales = "free_y")
 
-```
+test_join +
+  scale_fill_viridis_d() +
+  theme(aspect.ratio = 8/11)
 
-```{r}
-#test_join
 ```
 
 ### Applying a limited amplitude filter
@@ -153,9 +156,12 @@ If you've used `wt_audio_scanner` to scan through a series of nested directories
 
 ```{r, eval = F, echo = T, include = T, warning = F, message = F}
 #An example for a unix scneario
-#R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")
+
+R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")
 
 ```
+
+Now you should have all the links to the files across all directories in one folder. This is useful if you use a nested directory structure for your files (e.g. folders organized by location or visit).
 
 The next step is to create the tasks and format the columns to the upload template. 
 
