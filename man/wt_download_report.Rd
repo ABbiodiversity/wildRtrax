@@ -22,7 +22,7 @@ If multiple report types are requested, a list object is returned; if only one, 
 Download ARU, Camera, or Point Count data from a project
 }
 \details{
-Valid values for argument \code{report} when \code{sensor_id} = "ARU" currently are:
+Valid values for argument \code{report} when \code{sensor_id} = "CAM" currently are:
 \itemize{
 \item image
 \item tag
