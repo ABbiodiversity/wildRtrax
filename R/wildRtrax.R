@@ -12,4 +12,4 @@ utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext"
                          "new_detection", "detection", "end_time_s", "start_time_s", "date_detected", ":=",
                          "common_name", "field_of_view", "number_individuals", "project", "scientific_name",
                          "start_time", "end_time", "start_date", "end_date", "max_animals", "detections", "counts",
-                         "presence", "tasks"))
+                         "presence", "tasks", "report", "|>", "cam", "aru", "pc"))
