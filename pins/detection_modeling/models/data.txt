@@ -1,0 +1,3 @@
+path: data.rds
+description: 'Detection modeling for ten species: OVEN, OSFL, CCSP, TEWA, WTSP, ALFL, YRWA, CONI, LISP, WOLF, GGOW, GHOW, NSWO, SEOW and SWTH'
+type: default

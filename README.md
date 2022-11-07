@@ -1,37 +1,32 @@
 
-# wildRtrax <img src="man/figures/hex-logo-pipit.png" align="right" />
+# wildRtrax <img src="man/figures/hex-logo-pipit.png" width="40%" align="right" />
 
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/wildRtrax)](https://CRAN.R-project.org/package=wildRtrax)
-[![Codecov test
-coverage](https://codecov.io/gh/ABbiodiversity/wildRtrax/branch/master/graph/badge.svg)](https://codecov.io/gh/ABbiodiversity/wildRtrax?branch=master)
-[![R build
-status](https://github.com/ABbiodiversity/wildRtrax/workflows/R-CMD-check/badge.svg)](https://github.com/ABbiodiversity/wildRtrax/actions)
 [![Travis build
 status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https://travis-ci.com/ABbiodiversity/wildRtrax)
 <!-- badges: end -->
 
-\================================================================
+## Overview
+
+The `wildRtrax` (pronounced *‘wilder tracks’*) package provides a set of
+functions for environmental sensor data (autonomous recording units and
+remote game cameras) management to and from
+[WildTrax](https://www.wildtrax.ca/home.html).
 
 ## Installation
 
-You can install the development version of wildRtrax from with:
+You can install the development version of wildRtrax directly from this
+repository with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("ABbiodiversity/wildRtrax")
+# install.packages("remotes")
+remotes::install_github("ABbiodiversity/wildRtrax")
 ```
 
-## Overview
+## Usage
 
-The **wildRtrax** package provides a set of functions to query
-environmental sensor data from the [WildTrax
-platform](https://www.wildtrax.ca/home.html), as well as perform basic
-data cleaning, analysis, and quality control in R.
+All functions begin with a wt_* prefix. Column names and metadata align with the WildTrax infrastructure. 
 
 ## Issues
 
@@ -45,4 +40,5 @@ Marcus Becker <mabecker@ualberta.ca>.
 
 This R package is licensed under [MIT
 license](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE)
-© 2020 Marcus Becker, Alex MacPhail, and the ABMI.
+© 2020 Marcus Becker, Alex MacPhail, and the
+[ABMI](http://https://abmi.ca/home.html).

@@ -2,24 +2,27 @@
 % Please edit documentation in R/wt_audio_scanner.R
 \name{wt_audio_scanner}
 \alias{wt_audio_scanner}
-\title{Scans directories of audio data and returns the filepath, filename, file size, date, time, station key, sample rate, length /(s)/ and number of channels to be used as filters for wt_aru_assign or other uses}
+\title{Scan and extract metadata from audio data}
 \usage{
-wt_audio_scanner(path, file_type)
+wt_audio_scanner(path, file_type, tz = "")
 }
 \arguments{
-\item{path}{The path to the directory with audio files you wish to scan (character)}
+\item{path}{Character; The path to the directory with audio files you wish to scan. Can be done recursively.}
 
-\item{file_type}{Can be either wac or wav file types (character)}
+\item{file_type}{Character; Takes one of three values: wav, wac, or both. Use "both" if your directory contains both types of files.}
+
+\item{tz}{Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, wt_audio_scanner will assume the next valid time}
 }
 \value{
 A dataframe with a summary of your audio files
 }
 \description{
-Scans directories of audio data and returns the filepath, filename, file size, date, time, station key, sample rate, length /(s)/ and number of channels to be used as filters for wt_aru_assign or other uses
+Scans directories of audio data and returns the file path, file name, file size, date, time, location name,
+sample rate, length (seconds) and number of channels to be used as filters for other uses
 }
 \examples{
 \dontrun{
-df <- wt_audio_scanner(path = "my_path", file_type = "\\\\.wav$|\\\\.wac$")
+df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both", tz = "US/Mountain")
 }
 
 }

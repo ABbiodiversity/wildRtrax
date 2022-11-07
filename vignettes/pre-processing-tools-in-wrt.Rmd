@@ -1,0 +1,253 @@
+---
+title: 'Pre-processing in wildRtrax'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{using-functions-from-wildRtrax}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = '#>'
+)
+
+```
+
+## Pre-processing
+
+This vignette describes several pre-processing tools available in the `wildRtrax` package. 
+
+### Scanning audio files from a directory
+
+The `wt_audio_scanner()` function reads in audio files (either wac or wav format) from a local directory and outputs useful metadata.
+
+
+```{r setup, echo = F, include = T, warning = F, message = F}
+# Attach package
+library(wildRtrax)
+library(tidyverse)
+
+```
+
+```{r, echo=TRUE, include=TRUE, eval=TRUE}
+# Root directory
+root <- '/volumes/GoogleDrive/Shared drives/wildRtrax/data/example'
+dir.exists(root)
+
+# Scan data
+d <- wildRtrax::wt_audio_scanner(root, file_type = "both")
+
+# View
+head(d)
+```
+
+```{r}
+# Filter recordings based on criteria
+less <- d %>%
+  filter(time_index == 4)
+less
+```
+
+```{r}
+# Or link your media to something more detailed - here's an example of getting the sun's zenith 
+less %>%
+  mutate(location_latitude = 55.403594,
+         location_longitude = -113.770721,
+         recording_date_time = lubridate::force_tz(recording_date_time, tzone = "US/Mountain", roll = TRUE)) %>%
+  rowwise() %>%
+  mutate(zenith = ((pull(suncalc::getSunlightPosition(date = recording_date_time, lat = location_latitude, lon = location_longitude, keep = c("altitude"))))*180)/pi) %>%
+  ungroup() %>%
+  select(location, recording_date_time, zenith)
+
+```
+
+### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
+
+The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)](https://ap.qut.ecoacoustics.info/) on your audio data. Note that you must have the AP program installed on your computer. See more here [(Towsey et al., 2018)](https://researchoutput.csu.edu.au/ws/portalfiles/portal/28556441/28544328_Published_article.pdf). 
+
+```{r echo=TRUE, include=T, eval=F, warning = F, message = F}
+#Use the wt_* tibble to execute the AP on the files
+
+wt_run_ap(x = d, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP')
+
+```
+
+```{r echo=TRUE, include=T, eval=F, warning = F, message = F} 
+#Return the metadata obtained from AP
+#Extract the index values - find the files
+index_files <- fs::dir_ls(path = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/ap_example',
+                   regexp = '*Towsey.Acoustic.Indices.csv',
+                   #This contains the vector data to the average of each index
+                   recurse = TRUE)
+
+#Which acoustic indices do you want to use?
+index_list <-
+  c(
+    'Snr',
+    'BackgroundNoise',
+    'AcousticComplexity',
+    'HighFreqCover',	'MidFreqCover','LowFreqCover',
+    'TemporalEntropy',
+    'Ndsi',
+    'ResultMinute',
+    'FileName'
+  )
+```
+
+```{r echo=TRUE, include=T, eval=T, warning = F, message = F} 
+#vroom together the indices you want from all the csvs
+test_indices <- vroom::vroom(index_files, col_select = index_list, altrep = F)
+
+#Join the index values to the wt_audio_scanner tibble
+test_join <-
+  d %>% 
+  right_join(., test_indices, by = c('file_name' = 'FileName')) %>%
+  pivot_longer(cols = Snr:Ndsi,
+               names_to = 'index_variable',
+               values_to = 'index_value') %>%
+  distinct() %>%
+  #Plot a graph of the indices
+  ggplot(.,
+         aes(x = ResultMinute, y = index_value, fill = index_variable, group = ResultMinute)) +
+  scale_x_continuous(limits = c(0,9)) +
+  geom_boxplot() +
+  theme_bw() +
+  facet_wrap(~ index_variable, scales = "free_y")
+
+test_join +
+  scale_fill_viridis_d() +
+  theme(aspect.ratio = 8/11)
+
+```
+
+### Applying a limited amplitude filter
+
+We can use the `wt_signal_level()` function to search for sounds that exceed a certain amplitude threshold. 
+
+```{r echo=TRUE, include=TRUE, eval=TRUE}
+# Example audio file
+path_to_file <- d$file_path[3]
+
+# Run
+s <- wt_signal_level(path = path_to_file, 
+                     fmin = 5000, 
+                     fmax = 10000, 
+                     threshold = 20, 
+                     channel = 'left', 
+                     aggregate = 5)
+
+# Return a list object, with parameters stored
+str(s)
+
+# We can view the output:
+s['output']
+# We have eleven detections that exceeded this threshold.
+
+```
+
+### Linking files and creating templates for upload to [WildTrax](https://www.wildtrax.ca)
+
+There are three phases of getting data into WildTrax once you have your [organization](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations.html) and [project](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects.html) setup: uploading recordings, uploading tasks and uploading tags (see more in [ARU projects](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects/3.2-ARU-projects.html) in WildTrax: The Definitive Guide).
+
+If you've used `wt_audio_scanner` to scan through a series of nested directories for audio files, link them together.
+
+```{r, eval = F, echo = T, include = T, warning = F, message = F}
+#An example for a unix scneario
+
+R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")
+
+```
+
+Now you should have all the links to the files across all directories in one folder. This is useful if you use a nested directory structure for your files (e.g. folders organized by location or visit).
+
+The next step is to create the tasks and format the columns to the upload template. 
+
+```{r}
+#In a limited amplitude workflow, unnest the lists to get the detections 
+less_tasks <- less %>%
+  mutate(thresholds = furrr::future_map(.x = file_path, .f = ~wt_signal_level(.x, fmin = 10, fmax = 1000, threshold = 35, aggregate = 10))) %>%
+  unnest_wider(thresholds) %>% 
+  unnest_wider(output) %>%
+  select(-c(end_time_s,aggregated,channel)) %>%
+  unnest(cols = c(detection, mean_rsl, start_time_s, detection_length))
+less_tasks
+
+```
+
+```{r}
+#Create the template
+tasks <-
+  less_tasks %>% mutate(
+    recordingDate = recording_date_time,
+    method = "10m USPM", #Choose a method
+    status = "",
+    transcriber = "Alex MacPhail", #An observer
+    rain = "",
+    wind = "",
+    industryNoise = "",
+    otherNoise = "",
+    audioQuality = "",
+    taskComments = "",
+    internal_task_id = ""
+  ) %>%
+  select(
+    location,
+    recordingDate,
+    method,
+    status,
+    transcriber,
+    rain,
+    wind,
+    industryNoise,
+    otherNoise,
+    audioQuality,
+    taskComments,
+    internal_task_id
+  ) %>%
+  distinct()
+tasks
+
+#write.csv(tasks,"./tasks.csv")
+
+```
+
+And finally, the tags - this only applies if you're using a limited amplitude workflow or you're importing from another database. 
+
+```{r, eval = F, include = T, warning = F, message = F}
+tags <-
+  less_tasks %>% mutate(
+    recordingDate = recording_date_time,
+    method = "10m USPM",
+    transcriber = "Alex MacPhail",
+    species = "UNKN", #Give the tag an unknown ID if using it in a limited amplitude workflow
+    speciesIndividualNumber = detection,
+    vocalization = "",
+    startTime = start_time_s,
+    length = detection_length,
+    minFreq = 4,
+    maxFreq = 8,
+    internal_tag_id = ""
+  ) %>%
+  select(
+    location,
+    recordingDate,
+    method,
+    transcriber,
+    species,
+    speciesIndividualNumber,
+    vocalization,
+    startTime,
+    length,
+    minFreq,
+    maxFreq,
+    internal_tag_id
+  )
+tags
+
+#write.csv(tags,"./tags.csv")
+
+```
+
