@@ -2,6 +2,7 @@
 #'
 #' @param input Character; The path to the input csv
 #' @param output Character; Where the output file will be stored
+#' @param tz Character; Assigns a timezone to the recording files. Use `OlsonNames()` to get a list of valid names.
 #' @param freq_bump Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification
 #'
 #' @import dplyr tidyr readr pipeR
@@ -15,7 +16,7 @@
 #' @return A csv formatted as a WildTrax tag template
 
 
-wt_kaleido_tags <- function (input, output, freq_bump = T) {
+wt_kaleido_tags <- function (input, output, tz = "", freq_bump = T) {
 
   if (file.exists(input)) {
     in_tbl <- read_csv(input, col_names = TRUE, na = c("", "NA"), col_types = cols())
@@ -29,7 +30,7 @@ wt_kaleido_tags <- function (input, output, freq_bump = T) {
     arrange(file_path) %>%
     select(-(INDIR:`IN FILE`)) %>%
     relocate(file_path) %>%
-    mutate(recordingDate = as.POSIXct(paste(DATE, TIME), format = "%Y-%m-%d %H:%M:%S", tz = "US/Mountain")) %>% ####FIX TO TIMEZONE SPECIFIC
+    mutate(recordingDate = as.POSIXct(paste(DATE, TIME), format = "%Y-%m-%d %H:%M:%S", tz = "")) %>% ####FIX TO TIMEZONE SPECIFIC
     select(-(DATE:TIME)) %>%
     relocate(location) %>%
     relocate(recordingDate, .after = location) %>%

@@ -19,7 +19,7 @@
 #' @param file_type Character; Takes one of three values: wav, wac, or both. Use "both" if your directory contains both types of files.
 #' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns duration, sample rate and number of channels of the audio files.
 #' @param safe_scan Boolean; Omits files that may not contain a header or that are too short. Set to FALSE at your own risk.
-#' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, wt_audio_scanner will assume the next valid time
+#' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, wt_audio_scanner will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
 #'
 #' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr
 #' @importFrom lubridate year ymd_hms yday force_tz
