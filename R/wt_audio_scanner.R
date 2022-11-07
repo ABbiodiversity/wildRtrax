@@ -5,6 +5,8 @@
 #'
 #' @param path Character; The path to the directory with audio files you wish to scan. Can be done recursively.
 #' @param file_type Character; Takes one of three values: wav, wac, or both. Use "both" if your directory contains both types of files.
+#' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns duration, sample rate and number of channels of the audio files.
+#' @param safe_scan Boolean; Omits files that may not contain a header or that are too short. Set to FALSE at your own risk.
 #' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, wt_audio_scanner will assume the next valid time
 #'
 #' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr
@@ -14,12 +16,12 @@
 #'
 #' @examples
 #' \dontrun{
-#' df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both", tz = "US/Mountain")
+#' df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both", extra_cols = FALSE tz = "US/Mountain")
 #' }
 #'
-#' @return A dataframe with a summary of your audio files
+#' @return A tibble with a summary of your audio files
 
-wt_audio_scanner <- function(path, file_type, tz = "") {
+wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz = "") {
 
   # Create regex for file_type
   if (file_type == "wav" || file_type == "WAV") {
@@ -46,6 +48,7 @@ wt_audio_scanner <- function(path, file_type, tz = "") {
     tibble::enframe() %>%
     # Convert file sizes to megabytes
     dplyr::mutate(size_Mb = round(value / 10e5, digits = 2)) %>%
+    {if (safe_scan == TRUE) filter(., !size_Mb<=0.24562)} %>%
     dplyr::select(file_path = name, size_Mb) %>%
     dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", "")) %>%
     dplyr::mutate(file_type = tools::file_ext(file_path)) %>%
@@ -80,36 +83,42 @@ wt_audio_scanner <- function(path, file_type, tz = "") {
     stop ("There were no files of the type specified in file_path in the directory path specified.")
   }
 
-  # wav files first
-  if ("wav" %in% df$file_type) {
-  df_wav <- df %>>%
-    "Working on wav files..." %>>%
-    dplyr::filter(file_type == "wav",
-                  size_Mb > 0) %>%
-    dplyr::mutate(data = furrr::future_map(.x = file_path,
-                                           .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE),
-                                           .progress = TRUE,
-                                           .options = furrr_options(seed = TRUE))) %>%
-    dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]))),
-                  sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample.rate"]])),
-                  n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
-    dplyr::select(-data)
-  }
+  if (extra_cols == FALSE) {
+    df_final_simple <- df
+  } else {
+    # wav files first
+    if ("wav" %in% df$file_type) {
+      df_wav <- df %>>%
+        "Working on wav files..." %>>%
+        dplyr::filter(file_type == "wav",
+                      size_Mb > 0) %>%
+        dplyr::mutate(data = furrr::future_map(.x = file_path,
+                                               .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE),
+                                               .progress = TRUE,
+                                               .options = furrr_options(seed = TRUE))) %>%
+        dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]))),
+                      sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample.rate"]])),
+                      n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
+        dplyr::select(-data)
+    }
 
-  if("wac" %in% df$file_type) {
-    df_wac <- df %>>%
-    "Working on wac files..." %>>%
-      dplyr::filter(file_type == "wac",
-                    size_Mb > 0) %>%
-      dplyr::mutate(info = purrr::map(.x = file_path, .f = ~ wt_wac_info(.x)),
-                    sample_rate = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
-                    length_seconds = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["length_seconds"]])),
-                    n_channels = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
-      dplyr::select(-info)
+    if("wac" %in% df$file_type) {
+      df_wac <- df %>>%
+        "Working on wac files..." %>>%
+        dplyr::filter(file_type == "wac",
+                      size_Mb > 0) %>%
+        dplyr::mutate(info = purrr::map(.x = file_path, .f = ~ wt_wac_info(.x)),
+                      sample_rate = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
+                      length_seconds = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["length_seconds"]])),
+                      n_channels = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
+        dplyr::select(-info)
+    }
   }
 
   # Stitch together
-  if (!rlang::env_has(rlang::current_env(), "df_wav")) {
+  if (rlang::env_has(rlang::current_env(), "df_final_simple")) {
+    df_final <- df_final_simple
+  }  else if (!rlang::env_has(rlang::current_env(), "df_wav")) {
     df_final <- df_wac
   } else if (!rlang::env_has(rlang::current_env(), "df_wac")) {
     df_final <- df_wav
