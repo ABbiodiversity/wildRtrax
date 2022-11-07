@@ -1,20 +1,21 @@
 #' Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
 #'
-#' @param input The path to the input csv (character)
-#' @param output Where the output file will be stored (character)
+#' @param input Character; The path to the input csv
+#' @param output Character; Where the output file will be stored
+#' @param freq_bump Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification
 #'
-#' @import dplyr tidyr readr
+#' @import dplyr tidyr readr pipeR
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' wt_kaleido_tags(input = input_csv, output = tags_csv)
+#' wt_kaleido_tags(input = input_csv, output = tags_csv, freq_bump = T)
 #' }
 #'
 #' @return A csv formatted as a WildTrax tag template
 
 
-wt_kaleido_tags <- function (input, output) {
+wt_kaleido_tags <- function (input, output, freq_bump = T) {
 
   if (file.exists(input)) {
     in_tbl <- read_csv(input, col_names = TRUE, na = c("", "NA"), col_types = cols())
@@ -24,9 +25,7 @@ wt_kaleido_tags <- function (input, output) {
 
   in_tbl_wtd <- in_tbl %>%
     select(INDIR, `IN FILE`, DURATION, OFFSET, Dur, DATE, TIME, `AUTO ID*`, Fmin, Fmax) %>%
-    mutate(file_path = str_replace(paste0(INDIR, "/", `IN FILE`), "Y:\\\\", "/volumes/BUworkspace/"), ####FIX TO UNIVERSAL USAGE
-           file_path = str_replace_all(file_path,"\\\\","/"),
-           location = basename(dirname(file_path))) %>%
+    mutate(location = basename(dirname(file_path))) %>% ####ASSUMES WILDTRAX SOURCE FILE STRUCTURE MAY NEED TO UPDATE
     arrange(file_path) %>%
     select(-(INDIR:`IN FILE`)) %>%
     relocate(file_path) %>%
@@ -60,17 +59,17 @@ wt_kaleido_tags <- function (input, output) {
     mutate(tagLength = case_when(tagLength > taskLength ~ taskLength, TRUE ~ tagLength)) %>%
     mutate(tagLength = case_when(is.na(tagLength) ~ taskLength - startTime, TRUE ~ tagLength),
            minFreq = case_when(is.na(minFreq) ~ 12000, TRUE ~ minFreq * 1000),
-           maxFreq = case_when(is.na(maxFreq) ~ 96000, TRUE ~ maxFreq * 1000)) %>% ####FIX TO CONSERVATIVE USAGE ARGUMENT
+           maxFreq = case_when(is.na(maxFreq) ~ 96000, TRUE ~ maxFreq * 1000)) %>%
     ungroup() %>%
     mutate_at(vars(taskLength,minFreq,maxFreq), ~round(.,2)) %>%
+    {if (freq_bump == TRUE) mutate(., min_Freq = minFreq - 10000, maxFreq + 10000)} %>%
     relocate(taskLength, .after = method) %>%
     relocate(startTime, .after = abundance) %>%
     relocate(tagLength, .after = startTime) %>%
     relocate(minFreq, .after = tagLength) %>%
     relocate(maxFreq, .after = minFreq) %>%
-    relocate(internal_tag_id, .after = maxFreq) %>%
-    mutate(minFreq = minFreq - 10000,
-           maxFreq = maxFreq + 10000) ####FIX TO CONSERVATIVE USAGE ARGUMENT
+    relocate(internal_tag_id, .after = maxFreq) %>>%
+    "Converted to WildTrax tags. Go to your WildTrax project > Manage > Upload Tags."
 
   return(write.csv(in_tbl_wtd, file = output, row.names = F))
 
