@@ -1,3 +1,19 @@
+#' Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
+#'
+#' @param input The path to the input csv (character)
+#' @param output Where the output file will be stored (character)
+#'
+#' @import dplyr tidyr readr
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' wt_kaleido_tags(input = input_csv, output = tags_csv)
+#' }
+#'
+#' @return A csv formatted as a WildTrax tag template
+
+
 wt_kaleido_tags <- function (input, output) {
 
   if (file.exists(input)) {
