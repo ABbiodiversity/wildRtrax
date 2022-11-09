@@ -1,7 +1,7 @@
 #' Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
 #'
 #' @param input Character; The path to the input csv
-#' @param output Character; Where the output file will be stored
+#' @param output Character; Path where the output file will be stored
 #' @param tz Character; Assigns a timezone to the recording files. Use `OlsonNames()` to get a list of valid names.
 #' @param freq_bump Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification
 #'
@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' wt_kaleido_tags(input = input_csv, output = tags_csv, freq_bump = T)
+#' wt_kaleido_tags(input = input_csv, output = tags_csv, tz = "", freq_bump = T)
 #' }
 #'
 #' @return A csv formatted as a WildTrax tag template
@@ -34,7 +34,7 @@ wt_kaleido_tags <- function (input, output, freq_bump = T) {
     dplyr::relocate(recording_date_time, .after = location) %>%
     dplyr::mutate(recording_date_time = stringr::str_remove(recording_date_time,'.+?(?:__)')) %>%
     # Create date/time fields
-    dplyr::mutate(recording_date_time = lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = "US/Mountain", roll = TRUE)) %>%
+    dplyr::mutate(recording_date_time = lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = tz, roll = TRUE)) %>%
     dplyr::rename("taskLength" = 5,
            "startTime" = 6,
            "tagLength" = 7,
