@@ -1,5 +1,5 @@
 ---
-title: 'Pre-processing in wildRtrax'
+title: 'Acoustic pre-processing'
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{using-functions-from-wildRtrax}
@@ -16,13 +16,13 @@ knitr::opts_chunk$set(
 
 ```
 
-## Pre-processing
+## Acoustic pre-processing
 
-This vignette describes several pre-processing tools available in the `wildRtrax` package. 
+This vignette describes several acoustic pre-processing functions and work flows available in the `wildRtrax` package. 
 
 ### Scanning audio files from a directory
 
-The `wt_audio_scanner()` function reads in audio files (either wac or wav format) from a local directory and outputs useful metadata.
+The `wt_audio_scanner()` function reads in audio files (either wac, wav or flac format) from a local directory and outputs useful metadata.
 
 
 ```{r setup, echo = F, include = T, warning = F, message = F}
@@ -55,8 +55,7 @@ less
 # Or link your media to something more detailed - here's an example of getting the sun's zenith 
 less %>%
   mutate(location_latitude = 55.403594,
-         location_longitude = -113.770721,
-         recording_date_time = lubridate::force_tz(recording_date_time, tzone = "US/Mountain", roll = TRUE)) %>%
+         location_longitude = -113.770721) %>%
   rowwise() %>%
   mutate(zenith = ((pull(suncalc::getSunlightPosition(date = recording_date_time, lat = location_latitude, lon = location_longitude, keep = c("altitude"))))*180)/pi) %>%
   ungroup() %>%
@@ -179,75 +178,6 @@ less_tasks
 
 ```{r}
 #Create the template
-tasks <-
-  less_tasks %>% mutate(
-    recordingDate = recording_date_time,
-    method = "10m USPM", #Choose a method
-    status = "",
-    transcriber = "Alex MacPhail", #An observer
-    rain = "",
-    wind = "",
-    industryNoise = "",
-    otherNoise = "",
-    audioQuality = "",
-    taskComments = "",
-    internal_task_id = ""
-  ) %>%
-  select(
-    location,
-    recordingDate,
-    method,
-    status,
-    transcriber,
-    rain,
-    wind,
-    industryNoise,
-    otherNoise,
-    audioQuality,
-    taskComments,
-    internal_task_id
-  ) %>%
-  distinct()
-tasks
-
-#write.csv(tasks,"./tasks.csv")
+#how to make tasks
 
 ```
-
-And finally, the tags - this only applies if you're using a limited amplitude workflow or you're importing from another database. 
-
-```{r, eval = F, include = T, warning = F, message = F}
-tags <-
-  less_tasks %>% mutate(
-    recordingDate = recording_date_time,
-    method = "10m USPM",
-    transcriber = "Alex MacPhail",
-    species = "UNKN", #Give the tag an unknown ID if using it in a limited amplitude workflow
-    speciesIndividualNumber = detection,
-    vocalization = "",
-    startTime = start_time_s,
-    length = detection_length,
-    minFreq = 4,
-    maxFreq = 8,
-    internal_tag_id = ""
-  ) %>%
-  select(
-    location,
-    recordingDate,
-    method,
-    transcriber,
-    species,
-    speciesIndividualNumber,
-    vocalization,
-    startTime,
-    length,
-    minFreq,
-    maxFreq,
-    internal_tag_id
-  )
-tags
-
-#write.csv(tags,"./tags.csv")
-
-```
-
