@@ -11,21 +11,21 @@
 #'
 #' @examples
 #' \dontrun{
-#' wt_kaleido_tags(input = input_csv, output = tags_csv, tz = "", freq_bump = T)
+#' wt_kaleido_tags(input = input.csv, output = tags.csv, tz = "", freq_bump = T)
 #' }
 #'
 #' @return A csv formatted as a WildTrax tag template
 
-input <- "/users/alexandremacphail/desktop/tsp/SML183_id.csv"
-
 wt_kaleido_tags <- function (input, output, freq_bump = T) {
 
+  #Check to see if the input exists and reading it in
   if (file.exists(input)) {
     in_tbl <- readr::read_csv(input, col_names = TRUE, na = c("", "NA"), col_types = cols())
   } else {
     stop ("File cannot be found")
   }
 
+  #Cleaning things up for the tag template
   in_tbl_wtd <- in_tbl %>%
     dplyr::select(INDIR, `IN FILE`, DURATION, OFFSET, Dur, DATE, TIME, `AUTO ID*`, Fmin, Fmax) %>%
     tidyr::separate(`IN FILE`, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
@@ -34,7 +34,7 @@ wt_kaleido_tags <- function (input, output, freq_bump = T) {
     dplyr::relocate(recording_date_time, .after = location) %>%
     dplyr::mutate(recording_date_time = stringr::str_remove(recording_date_time,'.+?(?:__)')) %>%
     # Create date/time fields
-    dplyr::mutate(recording_date_time = lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = tz, roll = TRUE)) %>%
+    dplyr::mutate(recording_date_time = lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = tz, roll = TRUE)) %>% #Apply a time zone if necessary
     dplyr::rename("taskLength" = 5,
            "startTime" = 6,
            "tagLength" = 7,
@@ -42,11 +42,12 @@ wt_kaleido_tags <- function (input, output, freq_bump = T) {
            "minFreq" = 9,
            "maxFreq" = 10) %>%
     dplyr::select(-(INDIR:`IN FILE`)) %>%
+    # Updating names to WildTrax species codes
     dplyr::mutate(species = case_when(species == "NoID" ~ "UBAT",
                                species == "H_freq_Bat" ~ "HighF",
                                species == "L_freq_Bat" ~ "LowF",
                                TRUE ~ species),
-           startTime = dplyr::case_when(startTime == 0 ~ 0.1, TRUE ~ startTime)) %>%
+           startTime = dplyr::case_when(startTime == 0 ~ 0.1, TRUE ~ startTime)) %>% #Adjusting startTime parameter
     tibble::add_column(method = "1SPT", .after = "recording_date_time") %>%
     tibble::add_column(transcriber = "Not Assigned", .after = "taskLength") %>%
     dplyr::group_by(location, recording_date_time, taskLength, species) %>%
@@ -64,6 +65,7 @@ wt_kaleido_tags <- function (input, output, freq_bump = T) {
            maxFreq = dplyr::case_when(is.na(maxFreq) ~ 96000, TRUE ~ maxFreq * 1000)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate_at(vars(taskLength,minFreq,maxFreq), ~round(.,2)) %>%
+    #Apply the frequency bump (+/- 10000 Hz)
     dplyr::mutate(minFreq = dplyr::case_when(freq_bump == TRUE ~ minFreq - 10000, TRUE ~ minFreq),
            maxFreq = dplyr::case_when(freq_bump == TRUE ~ maxFreq + 10000, TRUE ~ maxFreq)) %>%
     dplyr::relocate(taskLength, .after = method) %>%
@@ -73,6 +75,7 @@ wt_kaleido_tags <- function (input, output, freq_bump = T) {
     dplyr::relocate(maxFreq, .after = minFreq) %>%
     dplyr::relocate(internal_tag_id, .after = maxFreq)
 
+  #Write the file
   return(write.csv(in_tbl_wtd, file = output, row.names = F))
 
   print("Converted to WildTrax tags. Go to your WildTrax project > Manage > Upload Tags.")
