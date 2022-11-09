@@ -21,8 +21,8 @@
 #' @param safe_scan Boolean; Omits files that may not contain a header or that are too short. Set to FALSE at your own risk.
 #' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, `wt_audio_scanner` will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
 #'
-#' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr
-#' @importFrom lubridate year ymd_hms yday force_tz
+#' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr seewave
+#' @importFrom lubridate year ymd_hms yday with_tz
 #' @importFrom rlang env_has current_env
 #' @export
 #'
@@ -76,7 +76,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
     dplyr::mutate(
       #Apply the timezone if necessary
       recording_date_time = case_when(tz == "" ~ lubridate::ymd_hms(recording_date_time),
-                                      TRUE ~ lubridate::force_tz(lubridate::ymd_hms(recording_date_time), tzone = tz, roll = TRUE)),
+                                      TRUE ~ lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = tz, roll = TRUE)),
       julian = lubridate::yday(recording_date_time),
       year = lubridate::year(recording_date_time),
       gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE),
@@ -122,7 +122,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
                                                .progress = TRUE,
                                                .options = furr_options(seed = TRUE)),
                       sample_rate = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
-                      length_seconds = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["length_seconds"]])),
+                      length_seconds = purrr::map_dbl(.x = info, .f = ~ round(purrr::pluck(.x[["length_seconds"]]),2)),
                       n_channels = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
         dplyr::select(-info)
     }
@@ -137,7 +137,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
                                                .progress = T,
                                                .options = furrr_options(seed = TRUE)),
                       sample_rate = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
-                      length_seconds = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["length_seconds"]])),
+                      length_seconds = purrr::map_dbl(.x = info, .f = ~ round(purrr::pluck(.x[["length_seconds"]]),2)),
                       n_channels = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
         dplyr::select(-info)
     }
@@ -151,7 +151,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
     df_final <- df_wac
   } else if (!rlang::env_has(rlang::current_env(), "df_wac")) {
     df_final <- df_wav
-  } else if (~rlang::env_has(rlang::current_env(), "df_flac")) {
+  } else if (!rlang::env_has(rlang::current_env(), "df_flac")) {
     df_final <- df_flac
   } else {
     df_final <- dplyr::bind_rows(df_wac, df_wav, df_flac)
