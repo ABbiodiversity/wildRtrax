@@ -6,7 +6,7 @@
 #' `wt_run_ap` allows you to generate acoustic indices and false-colour spectrograms from a `wt_audio_scanner` tibble. `wt_signal_level` detects signals
 #' in audio based on amplitude thresholds. In conjunction, these tools allow you to select recordings parameterized to a specific study design.
 #'
-#' Learn more in `vignette("pre-processing-tools-in-wrt")`.
+#' Learn more in `vignette("acoustic-pre-processing")`.
 #'
 #' Scan and extract metadata from audio data
 #'
@@ -16,10 +16,10 @@
 #' sample rate, length (seconds) and number of channels to be used as filters for other uses
 #'
 #' @param path Character; The path to the directory with audio files you wish to scan. Can be done recursively.
-#' @param file_type Character; Takes one of three values: wav, wac, or both. Use "both" if your directory contains both types of files.
-#' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns duration, sample rate and number of channels of the audio files.
+#' @param file_type Character; Takes one of four values: wav, wac, flac or all. Use "all" if your directory contains many types of files.
+#' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.
 #' @param safe_scan Boolean; Omits files that may not contain a header or that are too short. Set to FALSE at your own risk.
-#' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, wt_audio_scanner will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
+#' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, `wt_audio_scanner` will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
 #'
 #' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr
 #' @importFrom lubridate year ymd_hms yday force_tz
@@ -40,19 +40,21 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
     file_type_reg <- "\\.wav$|\\.WAV$"
   } else if (file_type == "wac") {
     file_type_reg <- "\\.wac$"
+  } else if (file_type == "flac") {
+    file_type_reg <- "\\.flac$"
   } else if (file_type == "all") {
-    file_type_reg <- "\\.wav$|\\.wac$|\\.WAV$"
+    file_type_reg <- "\\.wav$|\\.wac$|\\.WAV$|\\.flac$"
   } else {
     # Throw error if the file_type is not set to wav, wac, or both.
     stop ("For now, this function can only be used for wav and/or wac files. Please specify either 'wac', 'wav', or 'both' with the file_type argument.")
   }
 
   # Scan files, gather metadata
-  df <- "Scanning audio files in path ..." %>>%
-    fs::dir_ls(path = path,
+  df <- fs::dir_ls(path = path,
                    recurse = TRUE,
                    regexp = file_type_reg,
-                   fail = FALSE) %>%
+                   fail = FALSE) %>>%
+    "Scanning audio files in path ..." %>>%
     furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE)) %>%
     tibble::enframe() %>%
     # Convert file sizes to megabytes
@@ -77,8 +79,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
                                       TRUE ~ lubridate::force_tz(lubridate::ymd_hms(recording_date_time), tzone = tz, roll = TRUE)),
       julian = lubridate::yday(recording_date_time),
       year = lubridate::year(recording_date_time),
-      gps_enabled = dplyr::case_when(
-        grepl('\\$', file_name) ~ TRUE),
+      gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE),
       year = lubridate::year(recording_date_time)
     ) %>%
     dplyr::arrange(location, recording_date_time) %>%
@@ -115,7 +116,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
       df_wac <- df %>>%
         "Working on wac files..." %>>%
         dplyr::filter(file_type == "wac",
-                      size_Mb > 0) %>%
+                      size_Mb > 0.2) %>%
         dplyr::mutate(info = furrr::future_map(.x = file_path,
                                                .f = ~ wt_wac_info(.x),
                                                .progress = TRUE,
@@ -125,6 +126,22 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
                       n_channels = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
         dplyr::select(-info)
     }
+
+    if("flac" %in% df$file_type) {
+      df_flac <- df %>>%
+        "Working on flac files..." %>>%
+        dplyr::filter(file_type == "flac",
+                      size_Mb > 0.2) %>%
+        dplyr::mutate(info = furrr::future_map(.x = file_path,
+                                               .f = ~ seewave::wav2flac(.x, reverse = T),
+                                               .progress = T,
+                                               .options = furrr_options(seed = TRUE)),
+                      sample_rate = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
+                      length_seconds = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["length_seconds"]])),
+                      n_channels = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
+        dplyr::select(-info)
+    }
+
   }
 
   # Stitch together
@@ -134,8 +151,10 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
     df_final <- df_wac
   } else if (!rlang::env_has(rlang::current_env(), "df_wac")) {
     df_final <- df_wav
+  } else if (~rlang::env_has(rlang::current_env(), "df_flac")) {
+    df_final <- df_flac
   } else {
-    df_final <- dplyr::bind_rows(df_wac, df_wav)
+    df_final <- dplyr::bind_rows(df_wac, df_wav, df_flac)
   }
 
   # Return final data frame
@@ -245,6 +264,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 
   # Loop through each audio file and run through AP
   doParallel::registerDoParallel()
+
   foreach::foreach(file = files) %dopar% {
 
     message("Processing ", file)
@@ -269,7 +289,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 
 }
 
-#' @section `wt_signal_level` to extract relative sound level from a wav file
+#' @section `wt_signal_level` to extract relative sound level from a wav file using amplitude thresholds
 #'
 #'
 #' @param path The path to the wav file
