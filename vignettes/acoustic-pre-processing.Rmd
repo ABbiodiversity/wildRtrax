@@ -24,9 +24,8 @@ This vignette describes several acoustic pre-processing functions and work flows
 
 The `wt_audio_scanner()` function reads in audio files (either wac, wav or flac format) from a local directory and outputs useful metadata.
 
-
 ```{r setup, echo = F, include = T, warning = F, message = F}
-# Attach package
+# Attach packages
 library(wildRtrax)
 library(tidyverse)
 
@@ -35,42 +34,79 @@ library(tidyverse)
 ```{r, echo=TRUE, include=TRUE, eval=TRUE}
 # Root directory
 root <- '/volumes/GoogleDrive/Shared drives/wildRtrax/data/example'
-dir.exists(root)
 
 # Scan data
-d <- wildRtrax::wt_audio_scanner(root, file_type = "both")
+my_files <- wildRtrax::wt_audio_scanner(path = root, file_type = "all", safe_scan = T, extra_cols = T, tz = "US/Mountain")
 
 # View
-head(d)
+head(my_files)
 ```
+
+You might want to select recordings between certain times of day or year. 
 
 ```{r}
 # Filter recordings based on criteria
-less <- d %>%
-  filter(time_index == 4)
-less
+my_files %>%
+  mutate(hour = lubridate::hour(recording_date_time)) %>%
+  filter(julian %in% c(120:200), hour %in% c(4,9))
+
 ```
 
+Or let's say you need to select your recordings by something more specific. What about any recordings that are within civil twilight, i.e. +/- 5 degrees of zenith.
+
 ```{r}
-# Or link your media to something more detailed - here's an example of getting the sun's zenith 
-less %>%
-  mutate(location_latitude = 55.403594,
-         location_longitude = -113.770721) %>%
+my_files %>%
+  #Add spatial coordinates to the location
+  mutate(latitude = 55.403594,
+         longitude = -113.770721) %>%
   rowwise() %>%
+  # Get the sun's zenith for each recording
   mutate(zenith = ((pull(suncalc::getSunlightPosition(date = recording_date_time, lat = location_latitude, lon = location_longitude, keep = c("altitude"))))*180)/pi) %>%
   ungroup() %>%
+  filter(between(zenith,-5,5)) %>%
   select(location, recording_date_time, zenith)
 
 ```
 
+The goal of subsetting recordings is to achieve the minimum amount of sampling required. Here is the ABMIs stratified sampling design for the [Ecosystem Health Monitoring Program](https://https://www.abmi.ca/home/careers/field-monitoring-positions/Ecosystem-Health-and-Oil-Sands-Monitoring-Programs.html) schedule where ARUs begin recording March 1 and are retrieved after the songbird breeding season. 
+
+```{r}
+#ABMI stratified schedule
+abmib <- as_tibble(data.frame(julian = 90:210) %>%
+                     crossing(time_index = 1:4) %>%
+                     #Create the "blocks"
+                     mutate(blocks = case_when(julian %in% 90:139 & time_index == 1 ~ 9,
+                                               julian %in% 140:159 & time_index == 1 ~ 10,
+                                               julian %in% 160:179 & time_index == 1 ~ 11,
+                                               julian %in% 180:210 & time_index == 1 ~ 12,
+                                               julian %in% 90:104 & time_index == 3 ~ 1,
+                                               julian %in% 105:119 & time_index == 4 ~ 2,
+                                               julian %in% 120:139 & time_index == 3 ~ 3,
+                                               julian %in% 140:149 & time_index == 3 ~ 4,
+                                               julian %in% 150:159 & time_index == 4 ~ 5,
+                                               julian %in% 160:169 & time_index == 3 ~ 6,
+                                               julian %in% 170:179 & time_index == 4 ~ 7,
+                                               julian %in% 180:210 & time_index == 4 ~ 8,
+                                               TRUE ~ NA_real_),
+                            recs = case_when(blocks %in% c(4:7) ~ 180,
+                                             TRUE ~ 60)))
+                     
+
+my_files %>%
+  inner_join(., abmib, by = c("julian" =  "julian", "time_index" = "time_index")) %>%
+  na.omit(blocks) %>%
+  group_by(location, blocks) %>%
+  sample_n(1, replace = F)
+```
+
 ### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
 
-The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)](https://ap.qut.ecoacoustics.info/) on your audio data. Note that you must have the AP program installed on your computer. See more here [(Towsey et al., 2018)](https://researchoutput.csu.edu.au/ws/portalfiles/portal/28556441/28544328_Published_article.pdf). 
+The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)](https://ap.qut.ecoacoustics.info/) on your audio data. AP generates acoustic index values and false-colour spectrograms for each audio minute of data. Note that you must have the AP program installed on your computer. See more here [(Towsey et al., 2018)](https://researchoutput.csu.edu.au/ws/portalfiles/portal/28556441/28544328_Published_article.pdf). 
 
 ```{r echo=TRUE, include=T, eval=F, warning = F, message = F}
 #Use the wt_* tibble to execute the AP on the files
 
-wt_run_ap(x = d, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP')
+wt_run_ap(x = my_files, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP')
 
 ```
 
@@ -102,7 +138,7 @@ test_indices <- vroom::vroom(index_files, col_select = index_list, altrep = F)
 
 #Join the index values to the wt_audio_scanner tibble
 test_join <-
-  d %>% 
+  my_files %>% 
   right_join(., test_indices, by = c('file_name' = 'FileName')) %>%
   pivot_longer(cols = Snr:Ndsi,
                names_to = 'index_variable',
@@ -147,25 +183,8 @@ s['output']
 
 ```
 
-### Linking files and creating templates for upload to [WildTrax](https://www.wildtrax.ca)
-
-There are three phases of getting data into WildTrax once you have your [organization](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations.html) and [project](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects.html) setup: uploading recordings, uploading tasks and uploading tags (see more in [ARU projects](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects/3.2-ARU-projects.html) in WildTrax: The Definitive Guide).
-
-If you've used `wt_audio_scanner` to scan through a series of nested directories for audio files, link them together.
-
-```{r, eval = F, echo = T, include = T, warning = F, message = F}
-#An example for a unix scneario
-
-R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")
-
-```
-
-Now you should have all the links to the files across all directories in one folder. This is useful if you use a nested directory structure for your files (e.g. folders organized by location or visit).
-
-The next step is to create the tasks and format the columns to the upload template. 
-
 ```{r}
-#In a limited amplitude workflow, unnest the lists to get the detections 
+#Files in limited amplitude workflow, unnest the lists to get the detections 
 less_tasks <- less %>%
   mutate(thresholds = furrr::future_map(.x = file_path, .f = ~wt_signal_level(.x, fmin = 10, fmax = 1000, threshold = 35, aggregate = 10))) %>%
   unnest_wider(thresholds) %>% 
@@ -173,11 +192,5 @@ less_tasks <- less %>%
   select(-c(end_time_s,aggregated,channel)) %>%
   unnest(cols = c(detection, mean_rsl, start_time_s, detection_length))
 less_tasks
-
-```
-
-```{r}
-#Create the template
-#how to make tasks
 
 ```
