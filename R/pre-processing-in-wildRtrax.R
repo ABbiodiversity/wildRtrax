@@ -48,11 +48,11 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
   }
 
   # Scan files, gather metadata
-  df <- fs::dir_ls(path = path,
+  df <- "Scanning audio files in path ..." %>>%
+    fs::dir_ls(path = path,
                    recurse = TRUE,
                    regexp = file_type_reg,
-                   fail = FALSE) %>>%
-    "Scanning audio files in path ..." %>>%
+                   fail = FALSE) %>%
     furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE)) %>%
     tibble::enframe() %>%
     # Convert file sizes to megabytes
