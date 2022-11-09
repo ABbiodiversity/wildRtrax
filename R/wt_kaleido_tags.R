@@ -5,7 +5,8 @@
 #' @param tz Character; Assigns a timezone to the recording files. Use `OlsonNames()` to get a list of valid names.
 #' @param freq_bump Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification
 #'
-#' @import dplyr tidyr readr pipeR
+#' @import dplyr tidyr readr pipeR stringr lubridate tibble
+#' @importFrom lubridate ymd_hms with_tz
 #' @export
 #'
 #' @examples
@@ -20,57 +21,57 @@ input <- "/users/alexandremacphail/desktop/tsp/SML183_id.csv"
 wt_kaleido_tags <- function (input, output, freq_bump = T) {
 
   if (file.exists(input)) {
-    in_tbl <- read_csv(input, col_names = TRUE, na = c("", "NA"), col_types = cols())
+    in_tbl <- readr::read_csv(input, col_names = TRUE, na = c("", "NA"), col_types = cols())
   } else {
     stop ("File cannot be found")
   }
 
   in_tbl_wtd <- in_tbl %>%
-    select(INDIR, `IN FILE`, DURATION, OFFSET, Dur, DATE, TIME, `AUTO ID*`, Fmin, Fmax) %>%
-    separate(`IN FILE`, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
-    select(-(DATE:TIME)) %>%
-    relocate(location) %>%
-    relocate(recording_date_time, .after = location) %>%
-    dplyr::mutate(recording_date_time = str_remove(recording_date_time,'.+?(?:__)')) %>%
+    dplyr::select(INDIR, `IN FILE`, DURATION, OFFSET, Dur, DATE, TIME, `AUTO ID*`, Fmin, Fmax) %>%
+    tidyr::separate(`IN FILE`, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
+    dplyr::select(-(DATE:TIME)) %>%
+    dplyr::relocate(location) %>%
+    dplyr::relocate(recording_date_time, .after = location) %>%
+    dplyr::mutate(recording_date_time = stringr::str_remove(recording_date_time,'.+?(?:__)')) %>%
     # Create date/time fields
-    dplyr::mutate(recording_date_time = lubridate::force_tz(lubridate::ymd_hms(recording_date_time), tzone = "US/Mountain", roll = TRUE)) %>%
-    rename("taskLength" = 5,
+    dplyr::mutate(recording_date_time = lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = "US/Mountain", roll = TRUE)) %>%
+    dplyr::rename("taskLength" = 5,
            "startTime" = 6,
            "tagLength" = 7,
            "species" = 8,
            "minFreq" = 9,
            "maxFreq" = 10) %>%
-    select(-(INDIR:`IN FILE`)) %>%
-    mutate(species = case_when(species == "NoID" ~ "UBAT",
+    dplyr::select(-(INDIR:`IN FILE`)) %>%
+    dplyr::mutate(species = case_when(species == "NoID" ~ "UBAT",
                                species == "H_freq_Bat" ~ "HighF",
                                species == "L_freq_Bat" ~ "LowF",
                                TRUE ~ species),
-           startTime = case_when(startTime == 0 ~ 0.1, TRUE ~ startTime)) %>%
-    add_column(method = "1SPT", .after = "recording_date_time") %>%
-    add_column(transcriber = "Not Assigned", .after = "taskLength") %>%
-    group_by(location, recording_date_time, taskLength, species) %>%
-    mutate(speciesIndividualNumber = row_number()) %>%
-    ungroup() %>%
-    add_column(vocalization = "", .after = "speciesIndividualNumber") %>%
-    add_column(abundance = 1, .after= "vocalization") %>%
-    mutate(vocalization = case_when(species == "Noise" ~ "Non-vocal", TRUE ~ "Call")) %>%
-    add_column(internal_tag_id = "", .after = "maxFreq") %>%
-    mutate(recording_date_time = as.character(recording_date_time)) %>%
-    rowwise() %>%
-    mutate(tagLength = case_when(tagLength > taskLength ~ taskLength, TRUE ~ tagLength)) %>%
-    mutate(tagLength = case_when(is.na(tagLength) ~ taskLength - startTime, TRUE ~ tagLength),
-           minFreq = case_when(is.na(minFreq) ~ 12000, TRUE ~ minFreq * 1000),
-           maxFreq = case_when(is.na(maxFreq) ~ 96000, TRUE ~ maxFreq * 1000)) %>%
-    ungroup() %>%
-    mutate_at(vars(taskLength,minFreq,maxFreq), ~round(.,2)) %>%
-    mutate(minFreq = case_when(freq_bump == TRUE ~ minFreq - 10000, TRUE ~ minFreq),
-           maxFreq = case_when(freq_bump == TRUE ~ maxFreq + 10000, TRUE ~ maxFreq)) %>%
-    relocate(taskLength, .after = method) %>%
-    relocate(startTime, .after = abundance) %>%
-    relocate(tagLength, .after = startTime) %>%
-    relocate(minFreq, .after = tagLength) %>%
-    relocate(maxFreq, .after = minFreq) %>%
-    relocate(internal_tag_id, .after = maxFreq)
+           startTime = dplyr::case_when(startTime == 0 ~ 0.1, TRUE ~ startTime)) %>%
+    tibble::add_column(method = "1SPT", .after = "recording_date_time") %>%
+    tibble::add_column(transcriber = "Not Assigned", .after = "taskLength") %>%
+    dplyr::group_by(location, recording_date_time, taskLength, species) %>%
+    dplyr::mutate(speciesIndividualNumber = row_number()) %>%
+    dplyr::ungroup() %>%
+    tibble::add_column(vocalization = "", .after = "speciesIndividualNumber") %>%
+    tibble::add_column(abundance = 1, .after= "vocalization") %>%
+    dplyr::mutate(vocalization = case_when(species == "Noise" ~ "Non-vocal", TRUE ~ "Call")) %>%
+    tibble::add_column(internal_tag_id = "", .after = "maxFreq") %>%
+    dplyr::mutate(recording_date_time = as.character(recording_date_time)) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(tagLength = dplyr::case_when(tagLength > taskLength ~ taskLength, TRUE ~ tagLength)) %>%
+    dplyr::mutate(tagLength = dplyr::case_when(is.na(tagLength) ~ taskLength - startTime, TRUE ~ tagLength),
+           minFreq = dplyr::case_when(is.na(minFreq) ~ 12000, TRUE ~ minFreq * 1000),
+           maxFreq = dplyr::case_when(is.na(maxFreq) ~ 96000, TRUE ~ maxFreq * 1000)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate_at(vars(taskLength,minFreq,maxFreq), ~round(.,2)) %>%
+    dplyr::mutate(minFreq = dplyr::case_when(freq_bump == TRUE ~ minFreq - 10000, TRUE ~ minFreq),
+           maxFreq = dplyr::case_when(freq_bump == TRUE ~ maxFreq + 10000, TRUE ~ maxFreq)) %>%
+    dplyr::relocate(taskLength, .after = method) %>%
+    dplyr::relocate(startTime, .after = abundance) %>%
+    dplyr::relocate(tagLength, .after = startTime) %>%
+    dplyr::relocate(minFreq, .after = tagLength) %>%
+    dplyr::relocate(maxFreq, .after = minFreq) %>%
+    dplyr::relocate(internal_tag_id, .after = maxFreq)
 
   return(write.csv(in_tbl_wtd, file = output, row.names = F))
 
