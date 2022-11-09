@@ -28,7 +28,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "both", extra_cols = FALSE tz = "US/Mountain")
+#' df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "all", extra_cols = FALSE, safe_scan = TRUE, tz = "US/Mountain")
 #' }
 #'
 #' @return A tibble with a summary of your audio files
@@ -40,7 +40,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
     file_type_reg <- "\\.wav$|\\.WAV$"
   } else if (file_type == "wac") {
     file_type_reg <- "\\.wac$"
-  } else if (file_type == "both") {
+  } else if (file_type == "all") {
     file_type_reg <- "\\.wav$|\\.wac$|\\.WAV$"
   } else {
     # Throw error if the file_type is not set to wav, wac, or both.
@@ -105,7 +105,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
                                                .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE),
                                                .progress = TRUE,
                                                .options = furrr_options(seed = TRUE))) %>%
-        dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]))),
+        dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]),2)),
                       sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample.rate"]])),
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
         dplyr::select(-data)
