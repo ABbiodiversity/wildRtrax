@@ -1,7 +1,7 @@
 #' Scan and extract metadata from audio data
 #'
 #' @description Scans directories of audio data and returns the file path, file name, file size, date, time, location name,
-#' sample rate, length (seconds) and number of channels to be used as filters for other uses
+#' sample rate, length in seconds, and number of channels.
 #'
 #' @param path Character; The path to the directory with audio files you wish to scan. Can be done recursively.
 #' @param file_type Character; Takes one of three values: wav, wac, or both. Use "both" if your directory contains both types of files.
@@ -34,9 +34,6 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
     # Throw error if the file_type is not set to wav, wac, or both.
     stop ("For now, this function can only be used for wav and/or wac files. Please specify either 'wac', 'wav', or 'both' with the file_type argument.")
   }
-
-  # Plan how to resolve a future
-  future::plan(multisession)
 
   # Scan files, gather metadata
   df <- fs::dir_ls(path = path,
@@ -96,7 +93,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
                                                .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE),
                                                .progress = TRUE,
                                                .options = furrr_options(seed = TRUE))) %>%
-        dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]))),
+        dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]), 2)),
                       sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample.rate"]])),
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
         dplyr::select(-data)

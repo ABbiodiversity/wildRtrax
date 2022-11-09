@@ -3,8 +3,8 @@
 #' @description
 #'
 #' `wt_audio_scanner` scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns.
-#' `wt_run_ap` allows you to generate acoustic indices and false-colour spectrograms from a `wt_audio_scanner` tibble. `wt_signal_level` detects signal
-#' in audio based on amplitude. In conjunction these tools allow you to select recordings parameterized to a specific study design.
+#' `wt_run_ap` allows you to generate acoustic indices and false-colour spectrograms from a `wt_audio_scanner` tibble. `wt_signal_level` detects signals
+#' in audio based on amplitude thresholds. In conjunction, these tools allow you to select recordings parameterized to a specific study design.
 #'
 #' Learn more in `vignette("pre-processing-tools-in-wrt")`.
 #'
@@ -46,9 +46,6 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, safe_scan = T, tz 
     # Throw error if the file_type is not set to wav, wac, or both.
     stop ("For now, this function can only be used for wav and/or wac files. Please specify either 'wac', 'wav', or 'both' with the file_type argument.")
   }
-
-  # Plan how to resolve a future
-  future::plan(multisession)
 
   # Scan files, gather metadata
   df <- fs::dir_ls(path = path,
