@@ -4,7 +4,8 @@
 #'
 #' `wt_audio_scanner` scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns.
 #' `wt_run_ap` allows you to generate acoustic indices and false-colour spectrograms from a `wt_audio_scanner` tibble. `wt_signal_level` detects signals
-#' in audio based on amplitude thresholds. In conjunction, these tools allow you to select recordings parameterized to a specific study design.
+#' in audio based on amplitude thresholds. In conjunction, these tools allow you to select recordings parameterized to a specific study design before data is added
+#' to WildTrax - see `vignette("linking-media-to-wildtrax"`).
 #'
 #' Learn more in `vignette("acoustic-pre-processing")`.
 #'
@@ -291,6 +292,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 
 #' @section `wt_signal_level` to extract relative sound level from a wav file using amplitude thresholds
 #'
+#' @description Signal level uses amplitude and frequency thresholds in order to detect a signal.
 #'
 #' @param path The path to the wav file
 #' @param fmin The frequency minimum
@@ -417,76 +419,5 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
   )
 
   return(d)
-
-}
-
-#' @description
-#'
-#' Using a `wt_audio_scanner` tibble, generate a list of tasks for upload to WildTrax
-#'
-#' @section `wt_make_tasks` details:
-#'
-#' @param input Character; An input `wt_audio_scanner` tibble. If not a `wt_audio_scanner` tibble, the data must contain at minimum the location, recording_date_time and file_path as column headers.
-#' @param output Character; Path where the output task csv file will be stored
-#' @param im_feeling_lucky Boolean; If set to TRUE `wt_make_tasks` will randomly generate a list of tasks using the list of supplied files
-#'
-#' @import dplyr tidyr readr pipeR stringr lubridate tibble
-#' @importFrom lubridate ymd_hms with_tz
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' wt_make_tasks(input = my_audio_tibble, output = tasks.csv)
-#' }
-#'
-#' @return A csv formatted as a WildTrax task template
-#'
-#'
-
-wt_make_tasks <- function(input, output, task_method = c("1SPM","1SPT","None")) {
-
-  if (rlang::env_has(rlang::current_env(), input)) {
-    task_prep <- input
-  } else {
-    stop("Couldn't find this input in the current environment.")
-  }
-
-  req_cols <- c("file_path","location","recording_date_time")
-
-  if(req_cols %in% colnames(task_prep)) {
-    next
-  } else {
-    stop("One of the required columns are absent from this data input. Ensure you have file_path, location, recording_date_time, length")
-  }
-
-  req_methods <- c("1SPM","1SPT","None")
-
-  if(task_method %in% req_methods){
-    next
-  } else {
-    stop("This isn't an accepted method. Please use 1SPM, 1SPT or None.")
-  }
-
-  tasks <- task_prep %>%
-    dplyr::select(location, recording_date_time, length_seconds) %>%
-    dplyr::distinct() %>%
-    dplyr::rename("taskLength" = 3) %>%
-    #Add the necessary task columns
-    tibble::add_column(method = task_method, .after = "recording_date_time") %>%
-    tibble::add_column(status = "New", .after = "taskLength") %>%
-    tibble::add_column(transcriber = "", .after = "status") %>%
-    tibble::add_column(rain = "", .after = "transcriber") %>%
-    tibble::add_column(wind = "", .after = "rain") %>%
-    tibble::add_column(industryNoise = "", .after = "wind") %>%
-    tibble::add_column(otherNoise = "", .after = "industryNoise") %>%
-    tibble::add_column(audioQuality = "", .after = "otherNoise") %>%
-    tibble::add_column(taskComments = "", .after = "audioQuality") %>%
-    tibble::add_column(internal_task_id = "", .after = "taskComments")
-    #{if (im_feeling_lucky = T) sample_frac(runif(1,0,1), replace = F)}
-
-  return(write.csv(tasks, path = output, row.names = F))
-
-  print("Converted list of recordings to WildTrax tasks. Go to your WildTrax organization > Recordings Tab > Manage > Upload Recordings.
-        Then go to your WildTrax project > Manage > Upload Tasks to upload the csv of tasks.")
 
 }
