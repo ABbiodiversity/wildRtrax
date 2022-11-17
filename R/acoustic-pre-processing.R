@@ -129,7 +129,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
         dplyr::select(-c(data, unsafe))
     }
-  }s
+  }
 
   # Stitch together
   if (rlang::env_has(rlang::current_env(), "df_final_simple")) {

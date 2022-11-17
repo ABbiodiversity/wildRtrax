@@ -2,18 +2,17 @@
 #'
 #' @description
 #'
-#' `wt_make_tasks` uses a `wt_audio_scanner` tibble to create a task template to upload to a WildTrax project. `wt_kaleido_tags` takes the output from Wildlife Acoustics'
+#' `wt_make_aru_tasks` uses a `wt_audio_scanner` input tibble to create a task template to upload to a WildTrax project. `wt_kaleido_tags` takes the output from Wildlife Acoustics'
 #' Kaleidoscope software () in order to upload the hits as tags to a project for verification and publication.
 #'
 #' Learn more in `vignette("linking-media-to-wildtrax")`.
 #'
-#' Scan and extract metadata from audio data
 #'
 #' @description
 #'
 #' Using a `wt_audio_scanner` tibble, generate a list of tasks for upload to WildTrax
 #'
-#' @section `wt_make_tasks` details:
+#' @section `wt_make_aru_tasks` details:
 #'
 #' @param input Character; An input `wt_audio_scanner` tibble. If not a `wt_audio_scanner` tibble, the data must contain at minimum the location, recording_date_time and file_path as column headers.
 #' @param output Character; Path where the output task csv file will be stored
@@ -33,41 +32,31 @@
 #'
 #'
 
-wt_make_tasks <- function(input, output, task_method = c("1SPM","1SPT","None"), task_length) {
+wt_make_aru_tasks <- function(x, output, task_method = c("1SPM","1SPT","None"), task_length) {
 
-  if (rlang::env_has(rlang::current_env(), input)) {
-    task_prep <- input
-  } else {
-    stop("Couldn't find this input in the current environment.")
-  }
+  task_prep <- x
 
   req_cols <- c("file_path","location","recording_date_time")
 
-  if(req_cols %in% colnames(task_prep)) {
-    next
-  } else {
-    stop("One of the required columns are absent from this data input. Ensure you have file_path, location, recording_date_time, length")
+  if (!any(names(task_prep) %in% req_cols)){
+    stop("Missing certain columns")
   }
 
   req_methods <- c("1SPM","1SPT","None")
 
-  if(task_method %in% req_methods){
-    next
-  } else {
-    stop("This isn't an accepted method. Please use 1SPM, 1SPT or None.")
+  if (!(task_method %in% req_methods)) {
+    stop("This isn't an accepted method.")
   }
 
-  if(is.numeric(task_length) & task_length >= 1 & task_length < 1800){
-    next
-  } else {
-    stop("task_length must be a number between 1 and 1800.")
+  if ((is.numeric(task_length) & task_length >= 1 & task_length < 1800)==FALSE) {
+    stop("task_length must be a number and between 1 and 1800 seconds.")
   }
 
   tasks <- task_prep %>%
     dplyr::select(location, recording_date_time, length_seconds) %>%
     dplyr::distinct() %>%
-    dplyr::rename("taskLength" = 3) %>%
-    dplyr::mutate(taskLength = task_length) %>%
+    dplyr::mutate(taskLength = case_when(length_seconds < task_length ~ NA_real_, TRUE ~ task_length)) %>% #Make sure recording length is long enough
+    dplyr::select(-length_seconds) %>%
     #Add the necessary task columns
     tibble::add_column(method = task_method, .after = "recording_date_time") %>%
     tibble::add_column(status = "New", .after = "taskLength") %>%
@@ -81,11 +70,12 @@ wt_make_tasks <- function(input, output, task_method = c("1SPM","1SPT","None"), 
     tibble::add_column(internal_task_id = "", .after = "taskComments")
   #{if (im_feeling_lucky = T) sample_frac(runif(1,0,1), replace = F)}
 
-  return(write.csv(tasks, path = output, row.names = F))
-
-  print("Converted list of recordings to WildTrax tasks. Go to your WildTrax organization > Recordings Tab > Manage > Upload Recordings.
+  if (!is.null(tasks)) {
+    message("Converted list of recordings to WildTrax tasks. Go to your WildTrax organization > Recordings Tab > Manage > Upload Recordings.
         Then go to your WildTrax project > Manage > Upload Tasks to upload the csv of tasks.")
+  }
 
+  return(write.csv(tasks, output, row.names = F))
 }
 
 #' Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
