@@ -1,4 +1,4 @@
-#' wildRtrax: A series of advanced user functions for environmental sensor data management, analytics and exploration.
+#' wildRtrax: A package to facilitate full-cycle environmental sensor data work flows.
 #'
 #' @author Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca}
 #' @docType package
