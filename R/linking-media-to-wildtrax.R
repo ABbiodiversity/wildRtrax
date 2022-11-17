@@ -1,4 +1,4 @@
-#' Pre-process acoustic data for use in WildTrax
+#' Use tibbles and media lists to link media and data together in WildTrax
 #'
 #' @description
 #'
@@ -18,7 +18,7 @@
 #' @param input Character; An input `wt_audio_scanner` tibble. If not a `wt_audio_scanner` tibble, the data must contain at minimum the location, recording_date_time and file_path as column headers.
 #' @param output Character; Path where the output task csv file will be stored
 #' @param task_method Character; Method type of the task. Options are 1SPM, 1SPT and None. See Methods in WildTrax for more details.
-#' @param task_length Numeric; Task length in seconds. Must be an between 1 - 1800 and can be up to two decimal places.
+#' @param task_length Numeric; Task length in seconds. Must be between 1 - 1800 and can be up to two decimal places.
 #'
 #' @import dplyr tidyr readr pipeR stringr lubridate tibble
 #' @importFrom lubridate ymd_hms with_tz
