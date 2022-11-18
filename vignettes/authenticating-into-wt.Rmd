@@ -59,7 +59,7 @@ Using the project_id number in the download summary you can then use `wt_downloa
 
 ```{r echo=TRUE, eval=FALSE, warning = F, message = F}
 #Download the project report
-my_report <- wt_download_report(project_id = 47, sensor_id = 'ARU', cols_def = F, weather_cols = T)
+my_report <- wt_download_report(project_id = 41, sensor_id = 'ARU', cols_def = F, weather_cols = T)
 
 my_report
 

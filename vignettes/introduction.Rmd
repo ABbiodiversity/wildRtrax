@@ -1,5 +1,5 @@
 ---
-title: "Concepts"
+title: "Introduction"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{concepts}
@@ -27,11 +27,15 @@ library(wildRtrax)
 
 ### What is **WildTrax**?
 
-[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the  **biological data** extracted from the media. WildTrax was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca) and the [Bioacoustic Unit](https://bioacoustic.abmi.ca). `wildRtrax` serves as a parallel design and indicator to analytics and functions that can be developed in **WildTrax**. 
+[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the  **biological data** extracted from the media. WildTrax was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca) and the [Bioacoustic Unit](https://bioacoustic.abmi.ca). `wildRtrax` serves as a parallel design and indicator to **WildTrax** for future analytics anf functionalities.
+
+### Why did you build `wildRtrax`?
+
+By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of acoustic data from autonomous recording units (ARUs), **wildRtrax** and **WildTrax** hope to provide open work flows for using ARUs to answer meaningful biological questions in order to inform conservation and decision-making.
 
 ### What R packages does `wildRtrax` depend on?
 
-`wildRtrax` depends on a multitude of packages to provide flexible routines and work flows for data management. [`tidyverse`](https://tidyverse.org) for piping functions, standard grammar and tidy data manipulation, [`furrr`](https://davisvaughan.github.io/furrr/) and [`doParallel`](https://cran.r-project.org/web/packages/doParallel/index.html) for parallel computing, and acoustic analysis packages: [`bioacoustics`](https://cran.r-project.org/web/packages/bioacoustics/index.html), [`tuneR`](https://cran.r-project.org/web/packages/tuneR/index.html), [`seewave`](https://cran.r-project.org/web/packages/seewave/seewave.pdf). Certain functions are indebted to the [QUT Ecoacoustics Analysis Software](https://github.com/QutEcoacoustics/audio-analysis) software package as well. 
+`wildRtrax` depends on a multitude of packages to provide flexible routines and work flows for data management. [`tidyverse`](https://tidyverse.org) for piping functions, standard grammar and tidy data manipulation, [`furrr`](https://davisvaughan.github.io/furrr/) and [`doParallel`](https://cran.r-project.org/web/packages/doParallel/index.html) for parallel computing, and acoustic analysis packages: [`bioacoustics`](https://cran.r-project.org/web/packages/bioacoustics/index.html), [`tuneR`](https://cran.r-project.org/web/packages/tuneR/index.html), [`seewave`](https://cran.r-project.org/web/packages/seewave/seewave.pdf). The `wt_run_ap` function and associated work flows are indebted to the [QUT Ecoacoustics Analysis Software](https://github.com/QutEcoacoustics/audio-analysis). 
 
 ### How do I report a bug in `wildRtrax`?
 

@@ -18,7 +18,14 @@ If you've used `wt_audio_scanner` to scan through a series of nested directories
 ```{r, eval = F, echo = T, include = T, warning = F, message = F}
 #An example for a unix scneario
 
-R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")
+# Root directory
+root <- '/volumes/GoogleDrive/Shared drives/wildRtrax/data/example'
+
+# Scan data
+my_files <- wildRtrax::wt_audio_scanner(path = root, file_type = "all", safe_scan = T, extra_cols = T, tz = "US/Mountain")
+
+# View
+head(my_files)
 
 ```
 

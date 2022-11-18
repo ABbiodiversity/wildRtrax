@@ -11,22 +11,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Audio data management
 
-Autonomous recording units (ARUs) and remote camera traps collect data on the environment by means of capturing acoustic or visual data, respectively. ARUs are used to survey a variety of species such as birds, amphibians, and bats. But really anything that gives a vocalizing cue. Camera traps are best used to detect and monitor mammals. See [`abmi.camera.extras`](https://github.com/mabecker89/abmi.camera.extras) if you're interested in getting estimates of animal density collected from remote camera traps. Both environmental sensors are designed to record sound or images autonomously for long periods of time. This is turn can accrue a large amount of data. 
+Autonomous recording units (ARUs) and remote cameras collect data on the environment by means of capturing acoustic or visual signals, respectively. ARUs are used to survey a variety of species such as birds, amphibians, and bats, since these taxa give reliable, identifiable signals. These signals are produced for activities, such as, territory defense or mating. Environmental sensors are designed to record sound or images autonomously for long periods of time, which can accrue a large amount of data.
 
 ### Audio file formats
 
-There are two major audio file types used within the **wildRtrax** framework: *wac* and *wav*
+There are three major audio file types used within the **wildRtrax**: *wac*, *flac* and *wav*
 
-* *wac, w4v* are proprietary, lossless compressed file formats developed by [Wildlife Acoustics](https://www.wildlifeacoustics.com/)
+* *wac* is a proprietary, lossless compressed file format developed by [Wildlife Acoustics](https://www.wildlifeacoustics.com/)
 * *wav* is the standard, ubiquitous uncompressed audio file format
+* *flac* a lossless compressed format
 
-There are also a couple other file types you might be working with:
-
-* *mp3* a lossy compressed audio file format; works by reducing the accuracy of certain sound components, and eliminating others
-* *flac* a lossless compressed format useful for efficiently packing audio data
+You might also be working with *mp3* which is a lossy compressed audio file format.
 
 ```{r Examples of reading acoustic data into R, include = TRUE, echo = TRUE}
-file <- "/volumes/GoogleDrive/Shared drives/wildRtrax/data/example/ABMI-0754-SW_20170301_085900.wav"
+root <- "/volumes/GoogleDrive/Shared drives/wildRtrax/data/example/"
+
+file <- paste0(root,"ABMI-0754-SW_20170301_085900.wav")
 
 wave_t <- tuneR::readWave(file, header = T) #True header format
 
@@ -48,11 +48,13 @@ sound_length_list <- wave_t$samples / wave_t$sample.rate
 
 ### Spectrograms
 
-A *spectrogram* is a visual representation of the spectrum of frequencies of an audio signal as it varies with time ([Wikipedia](https://en.wikipedia.org/wiki/Spectrogram)). Spectrograms can be used to identify animal vocalizations by their unique spectral signature. Generally speaking, there are three pieces of information you can extract from a spectrogram:
+A *spectrogram* is a visual representation of the spectrum of frequencies of an audio signal as it varies with time ([Wikipedia](https://en.wikipedia.org/wiki/Spectrogram)). A **Fast-Fourier Transform** is what converts a waveform into a spectrogram.  Spectrograms can be used to identify wildlife and other signals by their unique spectral signature. Generally speaking, there are three pieces of information you can use when identifying a signal from a spectrogram:
 
-* Length of the vocalization via the x-axis in seconds
-* Frequency range of the vocalization via the y-axis in Hz
-* Relative amplitude of the vocalization via the z-axis in dB
+* Length in time (e.g. seconds, minutes) of the signal via the x-axis
+* Frequency range of the signal via the y-axis in Hz (hertz)
+* Relative amplitude of the signal via the z-axis in dBFS (decibels relative to full scale)
+
+The maximum frequency of a spectrogram is always the sample rate / 2, which is also called the **Nyquist Frequency**.
 
 Let's create a spectrogram to get a better look at some of those audio files. Here's one way to do it using `ggspectro` in `seewave`. 
 
@@ -73,11 +75,11 @@ v <- seewave::ggspectro(tuneR::readWave(file, from = 0, to = 60, units = "second
 
 ### From the field to the office
 
-Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from raw data. But robust field or [*visit*](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations/2.3-Visits.html) metadata as it's called in **wildRtrax** and **WildTrax** is important to support the quality control process of the incoming sensor data.
+Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from raw data. But robust field or [*visit*](https://www.wildtrax.ca/home/resources/guide/organizations/visits.html) metadata is important to support the quality control process of the media.
 
 ### Metadata dependencies for acoustic data
 
-The **wildRtrax** prefers that the file name string from which the data is deriving is composed of two parts: a *spatial* component and a *temporal* component. We call these fields the [*location*](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations/2.2-Locations.html) and the *recording_date_time* of the audio respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
+The **wildRtrax** prefers that the file name string from which the data is deriving is composed of two parts: a *spatial* component and a *temporal* component. We call these fields the [*location*](https://www.wildtrax.ca/home/resources/guide/organizations/locations.html) and the *recording_date_time* of the audio respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
 
 ### Data volume, storage and computing power
 
