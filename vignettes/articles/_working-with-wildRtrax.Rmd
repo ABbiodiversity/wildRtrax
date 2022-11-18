@@ -34,16 +34,11 @@ library(furrr)
 library(seewave)
 library(magick)
 
-blanktheme<-theme_bw() +
-    theme(panel.background = element_blank(), 
-      panel.grid.major = element_blank(), 
-      panel.grid.minor = element_blank()) #A blank theme for graphs
-
 ```
 
 ```{r setup, include = FALSE, eval = FALSE, echo = FALSE}
 
-devtools::install_github("ABbiodiversity/wildRtrax")
+remotes::install_github("ABbiodiversity/wildRtrax")
 
 ```
 
@@ -54,7 +49,7 @@ This document contains an outline for how to use the R package **wildRtrax** for
 
 ### What is **wildRtrax**?
 
-**wildRtrax**, pronounced *'wilder tracks'*, is an R package for ecologists and advanced users who work with environmental sensor data, mainly from acoustic recordings units (ARUs) or remote game cameras (RGCs). It contains functions designed to meet most needs in order to organize, analyze and standardize data. **wildRtrax** is self-contained and must be run under an R statistical environment, and it also depends on many other R packages. **wildRtrax** is free software and distributed under [MIT License (c) 2020](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE). All package functions are designed to standardize data to the [WildTrax](https://wwww.wildtrax.ca) infrastructure.
+**wildRtrax**, pronounced *'wilder tracks'*, is an R package for ecologists and advanced users who work with environmental sensor data, mainly from acoustic recordings units (ARUs) or remote cameras. It contains functions designed to meet most needs in order to organize, analyze and standardize media and corresponding metadata. **wildRtrax** is self-contained and must be run under an R statistical environment, and it also depends on many other R packages. **wildRtrax** is free software and distributed under [MIT License (c) 2020](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE). All package functions are designed to standardize data to the [WildTrax](https://wwww.wildtrax.ca) infrastructure.
 
 ### What is **WildTrax**?
 
