@@ -12,7 +12,7 @@
 #' wt_auth(force = FALSE)
 #' }
 #'
-wt_auth <- function(force = FALSE) {
+wt_auth <- function(type = c("OAuth2.0","env"), force = FALSE) {
 
   if (!exists("._wt_auth_env_"))
     stop("Cannot find the correct environment.", call. = TRUE)
@@ -190,8 +190,7 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   # List data files, read into R as a list
   files <- gsub(".csv", "", list.files(td, pattern = ".csv"))
   files.full <- list.files(td, pattern = ".csv", full.names = TRUE)
-  x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) |>
-    purrr::set_names(files)
+  x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) |> purrr::set_names(files)
 
   # Remove weather columns, if desired
   if(weather_cols) {

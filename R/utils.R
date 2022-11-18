@@ -15,7 +15,7 @@
              0x39, 0x37, 0x6e, 0x78, 0x55, 0x31, 0x33, 0x5a, 0x32, 0x4b, 0x31,
              0x69)))
 
-  # POST request
+  # POST request using env
   r <- httr::POST(
     url = "https://abmi.auth0.com/oauth/token",
     encode = "form",
@@ -25,6 +25,18 @@
       client_id = cid,
       username = Sys.getenv("WT_USERNAME"),
       password = Sys.getenv("WT_PASSWORD")
+    )
+  )
+
+  # POST request using OAuth2.0
+  rr <- httr::POST(
+    url = "https://oauth2.googleapis.com/token", #use OAuth2.0 token
+    encode = "form",
+    body = list(
+      audience = "http://www.wildtrax.ca",
+      grant_type = "authorization_code" #grant by code_verifier - need to do still
+      client_id = cid,
+      code = #BLARGH
     )
   )
 
