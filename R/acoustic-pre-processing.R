@@ -52,14 +52,20 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   }
 
   # Scan files, gather metadata
-  df <- fs::dir_ls(path = path, recurse = TRUE, regexp = file_type_reg, fail = FALSE) %>>%
+  df <- tibble::as_tibble(x = path) %>>%
     "Scanning audio files in path ..." %>>%
-    furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE)) %>%
-    tibble::enframe() %>%
+    dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, fail = F), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
+    tidyr::unnest(file_path) %>%
+    dplyr::mutate(file_size = furrr::future_map_dbl(.x = file_path, .f = ~ fs::file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
+    #fs::dir_ls(path = path, recurse = TRUE, regexp = file_type_reg, fail = FALSE) %>>%
+    #furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE)) %>%
+    #tibble::enframe() %>%
     # Convert file sizes to megabytes
-    dplyr::mutate(size_Mb = round(value / 10e5, digits = 2)) %>%
+    dplyr::mutate(file_path = as.character(file_path)) %>%
+    dplyr::mutate(size_Mb = round(file_size / 10e5, digits = 2)) %>%
+    dplyr::select(-file_size) %>%
     dplyr::mutate(unsafe = dplyr::case_when(size_Mb <= 0.5 ~ "Unsafe", TRUE ~ "Safe")) %>%
-    dplyr::select(file_path = name, size_Mb, unsafe) %>%
+    dplyr::select(file_path, size_Mb, unsafe) %>%
     dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", "")) %>%
     dplyr::mutate(file_type = tolower(tools::file_ext(file_path))) %>%
     # Parse location and recording date time
@@ -290,57 +296,57 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
     supported_formats <-
       "\\.wav$|\\.mp3$|\\.ogg$|\\.flac$|\\.wv$|\\.webm$|\\.wma$"
 
+    convert <-
+      "\\.wac$"
+
     # List audio files for analysis (vector)
     if (!is.null(x)) {
       # Ensure fp_col is a column name of x
-      column <- dplyr::enquo(fp_col) %>% dplyr::quo_name()
+      column <- dplyr::enquo(fp_col) %>%
+        dplyr::quo_name()
       if (!column %in% names(x)) {
         stop("The value in fp_col does not refer to a column in x.")
       }
       files <- x %>%
-        dplyr::filter(stringr::str_detect({
-          {
-            fp_col
-          }
-        }, supported_formats)) %>%
-        dplyr::select({
-          {
-            fp_col
-          }
-        }) %>%
+        dplyr::filter(stringr::str_detect({{fp_col}}, supported_formats)) %>%
+        dplyr::select({{fp_col}}) %>%
         dplyr::pull()
     } else {
-      files <-
-        list.files(audio_dir, pattern = supported_formats, full.names = TRUE)
+      files <- list.files(audio_dir, pattern = supported_formats, full.names = TRUE)
     }
 
-    # Loop through each audio file and run through AP
-    doParallel::registerDoParallel()
+    files %>%
+      as_tibble(column_name = "file_path") %>%
+      add_column("normalized_path" = normalizePath(file.path(output_dir, basename(file_path)))) %>%
+      future_map(.x = file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', file, file_specific_output_directory)))
 
-    foreach::foreach(file = files) %dopar% {
-      message("Processing ", file)
+    return(message('Done!'))
 
-      file_name <- basename(file)
+    # # Loop through each audio file and run through AP
+    # doParallel::registerDoParallel()
+    #
+    # foreach::foreach(file = files) %dopar% {
+    #
+    #   file_name <- basename(file)
+    #
+    #   # New folders for results
+    #   suppressWarnings(file_specific_output_directory <- normalizePath(file.path(output_dir, file_name)))
+    #   dir.create(file_specific_output_directory, recursive = TRUE)
+    #
+    #   # Prepare command
+    #   command <-
+    #     sprintf(
+    #       'audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"',
+    #       file,
+    #       file_specific_output_directory
+    #     )
+    #
+    #   # Execute the command
+    #   system2(path_to_ap, command)
 
-      # New folders for results
-      suppressWarnings(file_specific_output_directory <-
-                         normalizePath(file.path(output_dir, file_name)))
-      dir.create(file_specific_output_directory, recursive = TRUE)
+    #}
 
-      # Prepare command
-      command <-
-        sprintf(
-          'audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"',
-          file,
-          file_specific_output_directory
-        )
-
-      # Execute the command
-      system2(path_to_ap, command)
-
-    }
-
-    doParallel::stopImplicitCluster()
+    #doParallel::stopImplicitCluster()
 
   }
 
@@ -352,7 +358,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #' @param fmin The frequency minimum
 #' @param fmax The frequency maximum
 #' @param threshold The desired threshold
-#' @param channel Choose "left" or "right"
+#' @param channel Choose "left" or "right" channel
 #' @param aggregate Aggregate detections by this number of seconds, if desired
 #'
 #' @import tuneR dplyr
