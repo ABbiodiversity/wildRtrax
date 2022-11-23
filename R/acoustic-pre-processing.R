@@ -57,14 +57,10 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, fail = F), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
     tidyr::unnest(file_path) %>%
     dplyr::mutate(file_size = furrr::future_map_dbl(.x = file_path, .f = ~ fs::file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
-    #fs::dir_ls(path = path, recurse = TRUE, regexp = file_type_reg, fail = FALSE) %>>%
-    #furrr::future_map_dbl(., .f = ~ fs::file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE)) %>%
-    #tibble::enframe() %>%
-    # Convert file sizes to megabytes
     dplyr::mutate(file_path = as.character(file_path)) %>%
-    dplyr::mutate(size_Mb = round(file_size / 10e5, digits = 2)) %>%
+    dplyr::mutate(size_Mb = round(file_size / 10e5, digits = 2)) %>% # Convert file sizes to megabytes
     dplyr::select(-file_size) %>%
-    dplyr::mutate(unsafe = dplyr::case_when(size_Mb <= 0.5 ~ "Unsafe", TRUE ~ "Safe")) %>%
+    dplyr::mutate(unsafe = dplyr::case_when(size_Mb <= 0.5 ~ "Unsafe", TRUE ~ "Safe")) %>% #Create safe scanning protocol, pretty much based on file size
     dplyr::select(file_path, size_Mb, unsafe) %>%
     dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", "")) %>%
     dplyr::mutate(file_type = tolower(tools::file_ext(file_path))) %>%
@@ -80,7 +76,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     dplyr::arrange(location, recording_date_time) %>%
     # Create time index
     dplyr::group_by(location, year, julian) %>%
-    dplyr::mutate(time_index = dplyr::row_number()) %>%
+    dplyr::mutate(time_index = dplyr::row_number()) %>% # This serves as a ordered count of recordings per day.
     dplyr::ungroup()
 
   # Check whether anything was returned
