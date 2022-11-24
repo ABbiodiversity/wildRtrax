@@ -56,7 +56,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     "Scanning audio files in path ..." %>>%
     dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, recurse = T, fail = F), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
     tidyr::unnest(file_path) %>%
-    dplyr::mutate(file_size = furrr::future_map_dbl(.x = file_path, .f = ~ fs::file_size(.), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
+    dplyr::mutate(file_size = furrr::future_map_dbl(.x = file_path, .f = ~ fs::file_size(.x), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
     dplyr::mutate(file_path = as.character(file_path)) %>%
     dplyr::mutate(size_Mb = round(file_size / 10e5, digits = 2)) %>% # Convert file sizes to megabytes
     dplyr::select(-file_size) %>%
