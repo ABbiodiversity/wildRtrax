@@ -16,9 +16,9 @@
 #' }
 #' @return An object of class unmarkedFrameOccu. See `?unmarked::unmarkedFrameOccu` for details.
 
-wt_occu_singlesp_singleseas <- function(data,
-                                        species,
-                                        siteCovs=NULL){
+wt_format_occupancy <- function(data,
+                                species,
+                                siteCovs=NULL){
 
   #Wrangle observations and observation covariates for the species of interest
   visits <- dat %>%
