@@ -21,7 +21,7 @@
 wt_download_tagreport <- function(project_id) {
 
   # Check if authentication has expired:
-  if (wildRtrax:::.wt_auth_expired())
+  if (.wt_auth_expired())
     stop("Please authenticate with wt_auth().", call. = FALSE)
 
   # Check if the project_id is valid:
@@ -55,7 +55,7 @@ wt_download_tagreport <- function(project_id) {
       projectId = project_id
     ),
     accept = "application/zip",
-    httr::add_headers(Authorization = paste("Bearer", wildRtrax:::._wt_auth_env_$access_token)),
+    httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
     httr::user_agent(u),
     httr::write_disk(tmp),
     httr::progress()
@@ -78,9 +78,6 @@ wt_download_tagreport <- function(project_id) {
   x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) |>
     purrr::set_names(files)
 
-  # Return the requested report(s)
-  report <- paste(report, collapse = "|")
-  x <- x[grepl(report, names(x))]
   # Return a dataframe if only 1 element in the list (i.e., only 1 report requested)
   if (length(x) == 1) {
     x <- x[[1]]
