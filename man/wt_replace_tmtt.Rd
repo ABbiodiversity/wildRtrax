@@ -9,7 +9,7 @@ wt_replace_tmtt(data, calc = "round")
 \arguments{
 \item{data}{Dataframe of WildTrax observations, for example the summary report.}
 
-\item{calc}{Method to convert model predictions to integer. See ?round for details.}
+\item{calc}{Character; method to convert model predictions to integer ("round", "ceiling", or "floor"). See ?round for details.}
 }
 \value{
 A dataframe identical to input with 'TMTT' entries in the abundance column replaced by integer values.

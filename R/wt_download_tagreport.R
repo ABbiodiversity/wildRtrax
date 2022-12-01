@@ -11,7 +11,8 @@
 #' \dontrun{
 #' # Authenticate first:
 #' wt_auth()
-#' wt_download_report(project_id = 397)
+#'
+#' tags <- wt_download_tagreport(project_id = 397)
 #' }
 #'
 #' @return Dataframe of annotations and associated metadata.

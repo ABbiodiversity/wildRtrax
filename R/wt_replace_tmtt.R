@@ -3,7 +3,7 @@
 #' @description This function uses a lookup table of model-predicted values to replace 'TMTT' entries in listener-processed ARU data from WildTrax. The model-predicted values were produced using estimated abundances for 'TMTT' entries in mixed effects model with a Poisson distribution and random effects for species and observer.
 #'
 #' @param data Dataframe of WildTrax observations, for example the summary report.
-#' @param calc Method to convert model predictions to integer. See ?round for details.
+#' @param calc Character; method to convert model predictions to integer ("round", "ceiling", or "floor"). See ?round for details.
 #' @import dplyr
 #' @export
 #'
@@ -14,10 +14,10 @@
 #' @return A dataframe identical to input with 'TMTT' entries in the abundance column replaced by integer values.
 
 
-replace_tmtt <- function(data, calc="round"){
+wt_replace_tmtt <- function(data, calc="round"){
 
   #load tmtt lookup table
-  .tmtt <- read.csv(system.file("data/tmtt_predictions.csv", package="wildRtrax"))
+  .tmtt <- read.csv(system.file("tmtt_predictions", package="wildRtrax"))
 
   #wrangle to tmtts only
   dat.tmtt <- data %>%
