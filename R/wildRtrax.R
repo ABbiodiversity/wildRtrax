@@ -13,4 +13,5 @@ utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext"
                          "common_name", "field_of_view", "number_individuals", "project", "scientific_name",
                          "start_time", "end_time", "start_date", "end_date", "max_animals", "detections", "counts",
                          "presence", "tasks", "report", "|>", "cam", "aru", "pc",
-                         "dat", "tag_start", "tag_clip_url", "species", "filetype"))
+                         "dat", "tag_start", "tag_clip_url", "species", "filetype",
+                         "abundance", "species_code", "user_id"))
