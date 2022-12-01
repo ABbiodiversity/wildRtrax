@@ -15,6 +15,8 @@
              0x39, 0x37, 0x6e, 0x78, 0x55, 0x31, 0x33, 0x5a, 0x32, 0x4b, 0x31,
              0x69)))
 
+  client_secret <- 'WY2eOzgf9YqLmyWQO72jELOTy0597-BGR0afYt7FBK35W-VRAesoCXWG0SFpyxq9'
+
   # POST request using env
   r <- httr::POST(
     url = "https://abmi.auth0.com/oauth/token",
@@ -28,17 +30,82 @@
     )
   )
 
-  # POST request using OAuth2.0
-  rr <- httr::POST(
-    url = "https://oauth2.googleapis.com/token", #use OAuth2.0 token
+  r <- httr::POST(
+    url = "https://oauth2.googleapis.com/token",
     encode = "form",
     body = list(
       audience = "http://www.wildtrax.ca",
-      grant_type = "authorization_code" #grant by code_verifier - need to do still
+      grant_type = "password",
       client_id = cid,
-      code = #BLARGH
+      username = "agmacpha@ualberta.ca",
+      password = Sys.getenv("tkgQjsD9GmjfPM4T")
     )
   )
+
+
+
+  https://oauth2.googleapis.com/token
+
+  library(gargle)
+
+  #Google Auth
+  tok <- gargle::
+
+
+
+  u <- getOption("HTTPUserAgent")
+  if (is.null(u)) {
+    u <- sprintf("R/%s; R (%s)",
+                 getRversion(),
+                 paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
+  }
+
+  # Add wildRtrax version information:
+  u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
+
+  # Prepare temporary file:
+  tmp <- tempfile(fileext = ".zip")
+  # tmp directory
+  td <- tempdir()
+
+
+
+
+  rr <- httr::POST(
+    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
+    query = list(
+      projectIds = 47,
+      sensorId = 'ARU',
+      splitLocation = FALSE
+    ),
+    accept = "application/zip",
+    httr::add_headers(Authorization = paste("Bearer", tok)),
+    httr::user_agent(u),
+    #httr::write_disk(tmp, overwrite = T),
+    httr::progress()
+  )
+
+  # Create POST request
+  report <- httr::POST(
+    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
+    query = list(
+      projectIds = 47,
+      sensorId = 'ARU',
+      splitLocation = FALSE
+    ),
+    accept = "application/zip",
+    httr::add_headers(Authorization = paste("Bearer", old_tok)),
+    httr::user_agent(u),
+    #httr::write_disk(tmp),
+    httr::progress()
+  )
+
+
+
+
+
+
+
 
   # Write error message if POST request failed:
   if (httr::http_error(r))
