@@ -114,7 +114,7 @@ wt_kaleido_tags <- function (input, output, freq_bump = T) {
     dplyr::relocate(recording_date_time, .after = location) %>%
     dplyr::mutate(recording_date_time = stringr::str_remove(recording_date_time,'.+?(?:__)')) %>%
     # Create date/time fields
-    dplyr::mutate(recording_date_time = lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = tz, roll = TRUE)) %>% #Apply a time zone if necessary
+    dplyr::mutate(recording_date_time = lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = tz)) %>% #Apply a time zone if necessary
     dplyr::rename("taskLength" = 5,
                   "startTime" = 6,
                   "tagLength" = 7,
