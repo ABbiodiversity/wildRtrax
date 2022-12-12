@@ -9,10 +9,10 @@
 #' @examples
 #' \dontrun{
 #' # Authenticate first:
-#' wt_auth(force = FALSE)
+#' wt_auth(type = c("google", "env"), force = FALSE)
 #' }
 #'
-wt_auth <- function(type = c("OAuth2.0","env"), force = FALSE) {
+wt_auth <- function(type = c("google","env"), force = FALSE) {
 
   if (!exists("._wt_auth_env_"))
     stop("Cannot find the correct environment.", call. = TRUE)
