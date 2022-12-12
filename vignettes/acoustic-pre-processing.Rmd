@@ -36,7 +36,7 @@ library(tidyverse)
 root <- '/volumes/GoogleDrive/Shared drives/wildRtrax/data/example'
 
 # Scan data
-my_files <- wildRtrax::wt_audio_scanner(path = root, file_type = "all", safe_scan = T, extra_cols = T, tz = "US/Mountain")
+my_files <- wt_audio_scanner(path = root, file_type = "all", extra_cols = T, tz = "US/Mountain")
 
 # View
 head(my_files)
@@ -90,13 +90,14 @@ abmib <- as_tibble(data.frame(julian = 90:210) %>%
                                                TRUE ~ NA_real_),
                             recs = case_when(blocks %in% c(4:7) ~ 180,
                                              TRUE ~ 60)))
-                     
+
 
 my_files %>%
   inner_join(., abmib, by = c("julian" =  "julian", "time_index" = "time_index")) %>%
   na.omit(blocks) %>%
   group_by(location, blocks) %>%
   sample_n(1, replace = F)
+
 ```
 
 ### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
