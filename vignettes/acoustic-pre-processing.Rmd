@@ -107,11 +107,9 @@ The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)
 ```{r echo=TRUE, include=T, eval=F, warning = F, message = F}
 #Use the wt_* tibble to execute the AP on the files
 
-<<<<<<< HEAD:vignettes/acoustic-pre-processing.Rmd
 wt_run_ap(x = my_files, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP')
-=======
+
 #wt_run_ap(x = d, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP')
->>>>>>> parent of 80f0ef0... Merge branch 'main' of https://github.com/ABbiodiversity/wildRtrax into main:vignettes/pre-processing-tools-in-wrt.Rmd
 
 ```
 
@@ -186,8 +184,7 @@ s['output']
 
 ```
 
-<<<<<<< HEAD:vignettes/acoustic-pre-processing.Rmd
-=======
+
 ### Linking files and creating templates for upload to [WildTrax](https://www.wildtrax.ca)
 
 There are three phases of getting data into WildTrax once you have your [organization](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations.html) and [project](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects.html) setup: uploading recordings, uploading tasks and uploading tags (see more in [ARU projects](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects/3.2-ARU-projects.html) in WildTrax: The Definitive Guide).
@@ -201,16 +198,3 @@ If you've used `wt_audio_scanner` to scan through a series of nested directories
 ```
 
 The next step is to create the tasks and format the columns to the upload template. 
-
->>>>>>> parent of 80f0ef0... Merge branch 'main' of https://github.com/ABbiodiversity/wildRtrax into main:vignettes/pre-processing-tools-in-wrt.Rmd
-```{r}
-#Files in limited amplitude workflow, unnest the lists to get the detections 
-less_tasks <- less %>%
-  mutate(thresholds = furrr::future_map(.x = file_path, .f = ~wt_signal_level(.x, fmin = 10, fmax = 1000, threshold = 35, aggregate = 10))) %>%
-  unnest_wider(thresholds) %>% 
-  unnest_wider(output) %>%
-  select(-c(end_time_s,aggregated,channel)) %>%
-  unnest(cols = c(detection, mean_rsl, start_time_s, detection_length))
-less_tasks
-
-```
