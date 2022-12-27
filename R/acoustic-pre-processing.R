@@ -1,12 +1,11 @@
-#' Pre-process acoustic data for use in WildTrax
+#' # Pre-process acoustic data for use in WildTrax
 #'
+#' The following set of functions help to pre-process and organize audio and corresponding metadata.
 #' \code(`wt_audio_scanner`) scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns.
 #' \code(`wt_run_ap`) allows you to generate acoustic indices and false-colour spectrograms from a \code(`wt_audio_scanner`)
 #' tibble. \code(`wt_signal_level`) detects signals in audio based on amplitude thresholds. In conjunction, these tools allow
-#' you to select recordings parameterized to a specific study design before data is added
-#' to WildTrax - see `vignette("linking-media-to-wildtrax"`).
-#'
-#' Learn more in `vignette("acoustic-pre-processing")`.
+#' you to select recordings parameterized to a specific study design. `vignette("linking-media-to-wildtrax"` will allow you to d
+#' dive deeper in how to link the data to the WildTrax platform.
 #'
 #' @section `wt_audio_scanner` details:
 #'
@@ -153,7 +152,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
 
 }
 
-#' @section `wt_audio_scanner` details:
+#' @section `wt_wac_info` details:
 #'
 #' @description Scrape relevant information from wac (Wildlife Acoustics) file
 #'
