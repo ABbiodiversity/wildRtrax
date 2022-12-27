@@ -1,18 +1,9 @@
-#' Use tibbles and media lists to link media and data together in WildTrax
+#' Prepare media and data for upload to WildTrax
 #'
-#' @description
+#' @section `wt_make_aru_tasks`
 #'
-#' `wt_make_aru_tasks` uses a `wt_audio_scanner` input tibble to create a task template to upload to a WildTrax project. `wt_kaleido_tags` takes the output from Wildlife Acoustics'
-#' Kaleidoscope software () in order to upload the hits as tags to a project for verification and publication.
-#'
-#' Learn more in `vignette("linking-media-to-wildtrax")`.
-#'
-#'
-#' @description
-#'
-#' Using a `wt_audio_scanner` tibble, generate a list of tasks for upload to WildTrax
-#'
-#' @section `wt_make_aru_tasks` details:
+#' @description `wt_make_aru_tasks` uses a `wt_audio_scanner` input tibble to create a task template to upload to a WildTrax project. `wt_kaleido_tags` takes the output from Wildlife Acoustics'
+#' Kaleidoscope software () in order to upload the hits as tags to a project for verification and publication.  Learn more in `vignette("linking-media-to-wildtrax")`.
 #'
 #' @param input Character; An input `wt_audio_scanner` tibble. If not a `wt_audio_scanner` tibble, the data must contain at minimum the location, recording_date_time and file_path as column headers.
 #' @param output Character; Path where the output task csv file will be stored
@@ -32,9 +23,9 @@
 #'
 #'
 
-wt_make_aru_tasks <- function(x, output, task_method = c("1SPM","1SPT","None"), task_length) {
+wt_make_aru_tasks <- function(input, output, task_method = c("1SPM","1SPT","None"), task_length) {
 
-  task_prep <- x
+  task_prep <- input
 
   req_cols <- c("file_path","location","recording_date_time")
 
@@ -78,6 +69,7 @@ wt_make_aru_tasks <- function(x, output, task_method = c("1SPM","1SPT","None"), 
   return(write.csv(tasks, output, row.names = F))
 }
 
+#' @section `wt_kaleido_tags`
 #' Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
 #'
 #' @param input Character; The path to the input csv
@@ -96,7 +88,7 @@ wt_make_aru_tasks <- function(x, output, task_method = c("1SPM","1SPT","None"), 
 #'
 #' @return A csv formatted as a WildTrax tag template
 
-wt_kaleido_tags <- function (input, output, freq_bump = T) {
+wt_kaleido_tags <- function (input, output, tz, freq_bump = T) {
 
   #Check to see if the input exists and reading it in
   if (file.exists(input)) {
@@ -157,6 +149,69 @@ wt_kaleido_tags <- function (input, output, freq_bump = T) {
 
   #Write the file
   return(write.csv(in_tbl_wtd, file = output, row.names = F))
+
+  print("Converted to WildTrax tags. Go to your WildTrax project > Manage > Upload Tags.")
+
+}
+
+#' Takes the classifier output from Wildlife Acoustics Songscope and converts them into a WildTrax tag template for upload
+#'
+#' @param input Character; The path to the input csv
+#' @param output Character; Path where the output file will be stored
+#' @param species_code Character;
+#' @param vocalization_type Character;
+#' @param task_length Numeric;
+#'
+#' @import dplyr tidyr readr pipeR stringr lubridate tibble
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' wt_songscope_tags(input = input.csv, output = tags.csv, species_code, vocalization_type = "Call", task_length = 180)
+#' }
+#'
+#' @return A csv formatted as a WildTrax tag template
+
+wt_songscope_tags <- function (input, output, species_code, vocalization_type, task_length) {
+
+  #Check to see if the input exists and reading it in
+  if (file.exists(input)) {
+    in_tbl <- readr::read_table(input, col_names = F)
+  } else {
+    stop ("File cannot be found")
+  }
+
+  #Cleaning things up for the tag template
+  in_tbl_wtd <<- in_tbl %>%
+    rename("file_path" = 1) %>%
+    rename("startTime" = 2) %>%
+    rename("tagLength" = 3) %>%
+    rename("level" = 4) %>%
+    rename("quality" = 5) %>%
+    rename("score" = 6) %>%
+    rename("recognizer" = 7) %>%
+    rename("comments"= 8) %>%
+    mutate(file_name = tools::file_path_sans_ext(basename(file_path))) %>%
+    tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
+    mutate(startTime = as.numeric(startTime)) %>%
+    tibble::add_column(method = "USPM", .after = "recording_date_time") %>%
+    tibble::add_column(taskLength = task_length, .after = "method") %>%
+    tibble::add_column(transcriber = "Not Assigned", .after = "taskLength") %>%
+    tibble::add_column(species = species_code, .after = "transcriber") %>%
+    dplyr::group_by(location, recording_date_time, taskLength, species) %>%
+    dplyr::mutate(speciesIndividualNumber = row_number()) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(vocalization = vocalization_type) %>%
+    tibble::add_column(abundance = 1, .after= "vocalization") %>%
+    relocate(startTime, .after = abundance) %>%
+    relocate(tagLength, .after = startTime) %>%
+    tibble::add_column(minFreq = "", .after= "tagLength") %>%
+    tibble::add_column(maxFreq = "", .after= "minFreq") %>%
+    tibble::add_column(internal_tag_id = "", .after = "maxFreq") %>%
+    select(location, recording_date_time, method, taskLength, transcriber, species, speciesIndividualNumber, vocalization, abundance, startTime, tagLength, minFreq, maxFreq, internal_tag_id, quality, score)
+
+  #Write the file
+  return(list(in_tbl_wtd, write.csv(in_tbl_wtd, file = output, row.names = F)))
 
   print("Converted to WildTrax tags. Go to your WildTrax project > Manage > Upload Tags.")
 
