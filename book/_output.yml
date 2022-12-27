@@ -1,0 +1,23 @@
+bookdown::gitbook:
+  split_by: chapter+number
+  image:
+  css: style.css
+  config:
+    toolbar:
+      position: static
+    toc:
+      before: |
+        <li></li>
+      after: |
+        <li><a href="https://github.com/agmacpha/ic-qc" target="blank">
+        Published with bookdown</a></li>
+    edit: https://github.com/agmacpha/ic-qc/edit/master/%s
+    view: https://github.com/agmacpha/ic-qc/blob/master/%s
+    sharing:
+      facebook: yes
+      twitter: yes
+      github: yes
+      linkedin: yes
+    download: ["pdf"]
+bookdown::pdf_book:
+  keep_tex: yes

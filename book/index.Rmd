@@ -1,0 +1,37 @@
+---
+title: "wildRtrax: The Book"
+author: "Alexander G. MacPhail"
+date: "`r Sys.Date()`"
+output:
+  bookdown::html_document2: default
+  pdf_document: default
+description: null
+github-repo: ABbiodiversity/wildRtrax
+link-citations: yes
+graphics: yes
+site: bookdown::bookdown_site
+header-includes:
+- \usepackage{graphicx}
+- \usepackage{float}
+- \usepakcage{wallpaper}
+urlcolor: blue
+---
+
+```{r include=FALSE}
+# Include initial packages
+library(tinytex)
+library(kableExtra)
+
+# Automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
+
+```{r include=FALSE}
+# Knitr setup for markdown chunks
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(engine.opts = list(bash = "-l"))
+```
+
+# Preface {-}

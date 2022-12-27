@@ -1,0 +1,86 @@
+body{
+  font-family: Garamond;
+  font-size: 10pt;
+}
+.caption { /* this is for figure captions */
+  font-style: italic;
+  color: grey;
+  margin-top: 4px;
+  font-size: 0.9em;
+}
+p.caption {
+  color: #777;
+  margin-top: 10px;
+}
+p code {
+  white-space: inherit;
+}
+pre {
+  word-break: normal;
+  word-wrap: normal;
+}
+pre code {
+  white-space: inherit;
+}
+header-section-number::after {
+    content: ".";
+}
+.button-icons {  /* this is for embedded pictures of WildTrax buttons into text */
+  width: auto;
+  height: 2em;
+}
+.jargon {
+  font-weight: bold;
+  font-style: italic;
+  color: #cc3300;
+}
+.species {
+  font-weight: bold;
+  color: #55C667 ;
+}
+.infbox {
+  padding: 0.5em;
+  background: white;
+  color: blue;
+  border: 2px solid black;
+  border-radius: 10px;
+}
+.bashbox {
+  padding: 0.5em;
+  background: #4d4d4d;
+  color: white;
+  font-family: Courier New;
+  border: 2px white;
+  border-radius: 10px;
+}
+.dangerbox {
+  padding: 0.5em;
+  background: white;
+  color: red;
+  border: 2px;
+  border-radius: 10px;
+}
+.snakebox {
+  padding: 0.5em;
+  background: #e6e600;
+  color: black;
+  border: 2px black;
+  border-radius: 10px;
+}
+.excelbox {
+  padding: 0.5em;
+  background: #c2efc2;
+  color: black;
+  border: 2px black;
+  border-radius: 10px;
+}
+.tbox {
+  padding: 0.5em;
+  background: white;
+  color: black;
+  border: 2px solid gray;
+  border-radius: 10px;
+}
+.left {
+  text-align: left;
+}
