@@ -309,40 +309,47 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
       files <- list.files(audio_dir, pattern = supported_formats, full.names = TRUE)
     }
 
-    files %>%
-      as_tibble(column_name = "file_path") %>%
-      add_column("normalized_path" = normalizePath(file.path(output_dir, basename(file_path)))) %>%
-      future_map(.x = file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', file, file_specific_output_directory)))
+    files <- files %>%
+      as_tibble() %>%
+      rename("file_path" = 1) %>%
+      future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)))
 
-    return(message('Done!'))
+    # # # Loop through each audio file and run through AP
+    #  doParallel::registerDoParallel()
+    #
+    #  foreach::foreach(file = files) %dopar% {
+    #
+    #    file_name <- basename(file)
+    #
+    #    # New folders for results
+    #    suppressWarnings(file_specific_output_directory <- normalizePath(file.path(output_dir, file_name)))
+    #    dir.create(file_specific_output_directory, recursive = TRUE)
+    #
+    #    # Prepare command
+    #    command <-
+    #      sprintf(
+    #        'audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"',
+    #        file,
+    #        file_specific_output_directory
+    #      )
+    #
+    #    # Execute the command
+    #    system2(path_to_ap, command)
+    #
+    # }
+    #
+    # doParallel::stopImplicitCluster()
 
-    # # Loop through each audio file and run through AP
-    # doParallel::registerDoParallel()
-    #
-    # foreach::foreach(file = files) %dopar% {
-    #
-    #   file_name <- basename(file)
-    #
-    #   # New folders for results
-    #   suppressWarnings(file_specific_output_directory <- normalizePath(file.path(output_dir, file_name)))
-    #   dir.create(file_specific_output_directory, recursive = TRUE)
-    #
-    #   # Prepare command
-    #   command <-
-    #     sprintf(
-    #       'audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"',
-    #       file,
-    #       file_specific_output_directory
-    #     )
-    #
-    #   # Execute the command
-    #   system2(path_to_ap, command)
+    return(list(files,message('Done!')))
 
-    #}
+}
 
-    #doParallel::stopImplicitCluster()
+#' @section `wt_glean_ap`
+#'
+#' @description Grab various values from sources stored in AP. Move everything to a list object that can be unnested for other
 
-  }
+
+
 
 #' @section `wt_signal_level` to extract relative sound level from a wav file using amplitude thresholds
 #'
