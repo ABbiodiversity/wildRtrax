@@ -1,13 +1,19 @@
-#' Prepare media and data for upload to WildTrax
+#' # Prepare media and data for upload to WildTrax
+#'
+#' The following suite of functions will help you wrangle media and data together
+#' in order to upload them to WildTrax. You can make tasks(https://www.wildtrax.ca/home/resources/guide/projects/aru-projects.html)
+#' and tags(https://www.wildtrax.ca/home/resources/guide/acoustic-data/acoustic-tagging-methods.html) using the results from a
+#' `wt_audio_scanner` tibble or the hits from one of two Wildlife Acoustics programs Songscope() and Kaleidoscpe().
+#'
+#' ## Creating tasks from media
 #'
 #' @section `wt_make_aru_tasks`
 #'
-#' @description `wt_make_aru_tasks` uses a `wt_audio_scanner` input tibble to create a task template to upload to a WildTrax project. `wt_kaleido_tags` takes the output from Wildlife Acoustics'
-#' Kaleidoscope software () in order to upload the hits as tags to a project for verification and publication.  Learn more in `vignette("linking-media-to-wildtrax")`.
+#' @description `wt_make_aru_tasks` uses a `wt_audio_scanner` input tibble to create a task template to upload to a WildTrax project.
 #'
-#' @param input Character; An input `wt_audio_scanner` tibble. If not a `wt_audio_scanner` tibble, the data must contain at minimum the location, recording_date_time and file_path as column headers.
+#' @param input Character; An input `wt_audio_scanner` tibble. If not a `wt_audio_scanner` tibble, the data must contain at minimum the location, recording_date_time and file_path as columns.
 #' @param output Character; Path where the output task csv file will be stored
-#' @param task_method Character; Method type of the task. Options are 1SPM, 1SPT and None. See Methods in WildTrax for more details.
+#' @param task_method Character; Method type of the task. Options are 1SPM, 1SPT and None. See Methods(https://www.wildtrax.ca/home/resources/guide/acoustic-data/acoustic-tagging-methods.html) in WildTrax for more details.
 #' @param task_length Numeric; Task length in seconds. Must be between 1 - 1800 and can be up to two decimal places.
 #'
 #' @import dplyr tidyr readr pipeR stringr lubridate tibble
@@ -16,12 +22,13 @@
 #'
 #' @examples
 #' \dontrun{
-#' wt_make_tasks(input = my_audio_tibble, output = tasks.csv)
+#' wt_make_tasks(input = my_audio_tibble, output = tasks.csv, task_method = "1SPT", task_length = 180)
 #' }
 #'
 #' @return A csv formatted as a WildTrax task template
 #'
-#'
+#' It's important that if the media hasn't been uploaded to WildTrax, that you do that first before trying to generate tasks in a project.
+#' In parallel, you can select the files you want and upload and generate tasks in a project.
 
 wt_make_aru_tasks <- function(input, output, task_method = c("1SPM","1SPT","None"), task_length) {
 
@@ -69,8 +76,15 @@ wt_make_aru_tasks <- function(input, output, task_method = c("1SPM","1SPT","None
   return(write.csv(tasks, output, row.names = F))
 }
 
+#' ## Upload hits from a Wildlife Acoustics classifier
+#'
+#' ### Ultrasonic hits
+#'
 #' @section `wt_kaleido_tags`
+#'
 #' Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
+#'
+#' @description `wt_`
 #'
 #' @param input Character; The path to the input csv
 #' @param output Character; Path where the output file will be stored
@@ -154,6 +168,8 @@ wt_kaleido_tags <- function (input, output, tz, freq_bump = T) {
 
 }
 
+#' ### Sonic hits
+#'
 #' Takes the classifier output from Wildlife Acoustics Songscope and converts them into a WildTrax tag template for upload
 #'
 #' @param input Character; The path to the input csv
