@@ -1,0 +1,28 @@
+body{
+  font-family: Garamond;
+  font-size: 10pt;
+}
+.caption { /* this is for figure captions */
+  font-style: italic;
+  color: grey;
+  margin-top: 4px;
+  font-size: 0.9em;
+}
+p.caption {
+  color: #777;
+  margin-top: 10px;
+}
+p code {
+  white-space: inherit;
+}
+pre {
+  word-break: normal;
+  word-wrap: normal;
+}
+pre code {
+  white-space: inherit;
+}
+header-section-number::after {
+    content: ".";
+}
+
