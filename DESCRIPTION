@@ -1,20 +1,30 @@
 Package: wildRtrax
-Title: Environmental sensor data management and analytics to and from WildTrax
-Version: 0.1.0
+Title: Full-cycle environmental sensor data analysis in R
+Version: 1.0.0
 Authors@R: 
     c(person(given = "Alex",
            family = "MacPhail",
-           role = "aut",
+           role = c("aut","cre"),
            email = "agmacpha@ualberta.ca"),
+           comment = c(ORCID = "0000-0002-7968-6281"),
       person(given = "Marcus",
              family = "Becker",
              role = "cre",
-             email = "mabecker@ualberta.ca"))
-Description: This package provides a set of functions to manage environmental sensor data to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
-Depends: R (>= 3.5.0)
+             email = "mabecker@ualberta.ca"),
+      person(given = "Elly",
+             family = "Knight",
+             role = "cre",
+             email = "ecknight@ualberta.ca"),
+      person(given = "Richard",
+             family = "Hedley",
+             role = "ctb",
+             email = "rhedley@ualberta.ca"))
+Description: wildRtrax is an R package to help ecologists create full-cycle environmental sensor data work flows within the WildTrax framework.
+  It currently support two sensors: autonomous recording units and remote camera traps.
+Depends: R (>= 4.2.0)
 License: MIT + file LICENSE
 Imports:
-    dplyr (>= 0.8.5),
+    dplyr (>= 1.0.0),
     future,
     fs,
     furrr,
@@ -46,4 +56,4 @@ VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
