@@ -47,9 +47,16 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   }
 
   # Scan files, gather metadata
-  df <- tibble::as_tibble(x = path) %>>%
-    "Scanning audio files in path ..." %>>%
-    dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, recurse = T, fail = F), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
+  df <- tibble::as_tibble(x = path)
+
+  progressr::with_progress({
+    p <- progressr::progressor(steps = nrow(df))
+    df <- df %>>%
+      "Scanning files in path..." %>>%
+      dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, recurse = T, fail = F), .progress = TRUE, .options = furrr_options(seed = TRUE)))
+   })
+
+    df <- df %>%
     tidyr::unnest(file_path) %>%
     dplyr::mutate(file_size = furrr::future_map_dbl(.x = file_path, .f = ~ fs::file_size(.x), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
     dplyr::mutate(file_path = as.character(file_path)) %>%
@@ -92,6 +99,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
 
     # wav files first
     if ("wav" %in% df$file_type) {
+      with_progress({p <- progressr::progressor(steps = nrow(df))
       df_wav <- df %>>%
         "Working on wav files..." %>>%
         dplyr::filter(file_type == "wav") %>% #Make sure things are safe if needed
@@ -100,11 +108,12 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
                       sample_rate = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["sample.rate"]]), 2)),
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
         dplyr::select(-c(data, unsafe))
-
+      })
     }
 
     #Then wac files
     if ("wac" %in% df$file_type) {
+      with_progress({p <- progressr::progressor(steps = nrow(df))
       df_wac <- df %>>%
         "Working on wac files..." %>>%
         dplyr::filter(file_type == "wac") %>%
@@ -113,10 +122,12 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
                       length_seconds = purrr::map_dbl(.x = info, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
                       n_channels = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
         dplyr::select(-c(info, unsafe))
+      })
     }
 
     #Finally flac
     if ("flac" %in% df$file_type) {
+      with_progress({p <- progressr::progressor(steps = nrow(df))
       df_flac <- df %>>%
         "Working on flac files..." %>>%
         dplyr::filter(file_type == "flac") %>%
@@ -125,6 +136,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
                       length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
         dplyr::select(-c(data, unsafe))
+      })
     }
   }
 
@@ -256,8 +268,9 @@ wt_wac_info <- function(path) {
 #'
 #' @import dplyr
 #' @importFrom stringr str_detect
-#' @importFrom foreach foreach %dopar%
-#' @importFrom doParallel registerDoParallel
+#' @importFrom furrr future_map
+#' @importFrom progress progressor
+#' @importFrom shiny with_progress
 #' @export
 #'
 #' @examples
@@ -290,6 +303,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
     supported_formats <-
       "\\.wav$|\\.mp3$|\\.ogg$|\\.flac$|\\.wv$|\\.webm$|\\.wma$"
 
+    # Will support wac in 1.0.1
     convert <-
       "\\.wac$"
 
@@ -309,48 +323,23 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
       files <- list.files(audio_dir, pattern = supported_formats, full.names = TRUE)
     }
 
-    future::plan(multisession)
+    future::plan(multisession, workers = 2)
 
     files <- files %>%
-      as_tibble() %>%
-      rename("file_path" = 1) %>%
-      future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)))
+      tibble::as_tibble() %>%
+      dplyr::rename("file_path" = 1)
 
-    # # # Loop through each audio file and run through AP
-    #  doParallel::registerDoParallel()
-    #
-    #  foreach::foreach(file = files) %dopar% {
-    #
-    #    file_name <- basename(file)
-    #
-    #    # New folders for results
-    #    suppressWarnings(file_specific_output_directory <- normalizePath(file.path(output_dir, file_name)))
-    #    dir.create(file_specific_output_directory, recursive = TRUE)
-    #
-    #    # Prepare command
-    #    command <-
-    #      sprintf(
-    #        'audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"',
-    #        file,
-    #        file_specific_output_directory
-    #      )
-    #
-    #    # Execute the command
-    #    system2(path_to_ap, command)
-    #
-    # }
-    #
-    # doParallel::stopImplicitCluster()
+    progressr::with_progress({
+      p <- progressr::progressor(steps = nrow(files))
 
-    return(list(files,message('Done!')))
+      files <- files %>%
+        furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir), invisible = T), furrr_options(seed = T))
+
+    })
+
+    return(message('Done!'))
 
 }
-
-#' @section `wt_glean_ap`
-#'
-#' @description Grab various values from sources stored in AP. Move everything to a list object that can be unnested for other
-
-
 
 
 #' @section `wt_signal_level` to extract relative sound level from a wav file using amplitude thresholds
