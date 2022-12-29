@@ -341,6 +341,21 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 
 }
 
+#' @section `wt_glean_ap` for retrieving data from the AP output
+#'
+#' @description
+#'
+#' @param
+#'
+#' @import
+#' @export
+#'
+#' @examples
+#' \dontrun{}
+#'
+#' @return
+
+wt_glean_ap <- function(merge_to_files = x) {}
 
 #' @section `wt_signal_level` to extract relative sound level from a wav file using amplitude thresholds
 #'
