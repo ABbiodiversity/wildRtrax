@@ -102,7 +102,7 @@ wt_make_aru_tasks <- function(input, output, task_method = c("1SPM","1SPT","None
 #'
 #' @return A csv formatted as a WildTrax tag template
 
-wt_kaleido_tags <- function (input, output, tz, freq_bump = T) {
+wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
 
   #Check to see if the input exists and reading it in
   if (file.exists(input)) {
