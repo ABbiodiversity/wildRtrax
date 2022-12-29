@@ -309,6 +309,8 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
       files <- list.files(audio_dir, pattern = supported_formats, full.names = TRUE)
     }
 
+    future::plan(multisession)
+
     files <- files %>%
       as_tibble() %>%
       rename("file_path" = 1) %>%

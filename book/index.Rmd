@@ -1,6 +1,9 @@
 ---
-title: "wildRtrax: The Book"
-author: "Alexander G. MacPhail"
+title: "Full-cycle environmental sensor data analysis in R"
+author: 
+- "Alexander G. MacPhail"
+- "Marcus Becker"
+- "Elly C. Knight"
 date: "`r Sys.Date()`"
 output:
   bookdown::html_document2: default
