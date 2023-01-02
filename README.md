@@ -12,23 +12,23 @@ status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https
 `wildRtrax` (pronounced *‘wilder tracks’*) is an R package to help ecologists create full-cycle environmental sensor data work flows within [WildTrax](https://www.wildtrax.ca/home.html).
 
 - Pre-process acoustic data
-  - `wt_audio_scanner`
-  - `wt_run_ap`
-  - `wt_glean_ap`
-  - `wt_signal_level`
+  - `wt_audio_scanner` :sound:
+  - `wt_run_ap` :sound:
+  - `wt_glean_ap` :sound:
+  - `wt_signal_level` :sound:
 - Upload acoustic media and metadata to WildTrax
-  - `wt_make_aru_tasks`
-  - `wt_kaleidoscope_tags`
-  - `wt_songscope_tags`
+  - `wt_make_aru_tasks` :sound:
+  - `wt_kaleidoscope_tags` :sound:
+  - `wt_songscope_tags` :sound:
 - Download processed data from WildTrax
   - `wt_auth`
-  - `wt_get_download_summary`
-  - `wt_download_report`
+  - `wt_get_download_summary` :camera:
+  - `wt_download_report` :camera:
 - Analyze data
-  - `wt_replace_tmtt`
-  - `wt_occupancy`
-  - `wt_summarise_cam`
-  - `wt_ind_det`
+  - `wt_replace_tmtt` :sound:
+  - `wt_occupancy` :sound:
+  - `wt_summarise_cam` :camera:
+  - `wt_ind_det` :camera:
 
 ## Installation
 
