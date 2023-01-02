@@ -80,11 +80,9 @@ wt_make_aru_tasks <- function(input, output, task_method = c("1SPM","1SPT","None
 #'
 #' ### Ultrasonic hits
 #'
-#' @section `wt_kaleido_tags`
+#' @section `wt_kaleidoscope_tags`
 #'
-#' Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
-#'
-#' @description `wt_`
+#' @description `wt_kaleidoscope_tags` Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
 #'
 #' @param input Character; The path to the input csv
 #' @param output Character; Path where the output file will be stored

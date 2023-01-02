@@ -20,6 +20,7 @@
 #' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr seewave
 #' @importFrom lubridate year ymd_hms yday with_tz
 #' @importFrom rlang env_has current_env
+#' @importFrom progressr with_progress progressor
 #' @export
 #'
 #' @examples
@@ -40,15 +41,16 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   } else if (file_type == "all") {
     file_type_reg <- "\\.wav$|\\.wac$|\\.WAV$|\\.flac$"
   } else {
-    # Throw error if the file_type is not set to wav, wac, or both.
+    # Throw error if the file_type is not set to wav, wac, flac, or all..
     stop (
-      "For now, this function can only be used for wav, wac and/of flac files. Please specify either 'wac', 'wav', 'flac' or 'all' with the file_type argument."
+      "For now, this function can only be used for wav, wac and/or flac files. Please specify either 'wac', 'wav', 'flac' or 'all' with the file_type argument."
     )
   }
 
   # Scan files, gather metadata
   df <- tibble::as_tibble(x = path)
 
+  # Track progress of file reading
   progressr::with_progress({
     p <- progressr::progressor(steps = nrow(df))
     df <- df %>>%
@@ -56,6 +58,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, recurse = T, fail = F), .progress = TRUE, .options = furrr_options(seed = TRUE)))
    })
 
+   # Create the main tibble
     df <- df %>%
     tidyr::unnest(file_path) %>%
     dplyr::mutate(file_size = furrr::future_map_dbl(.x = file_path, .f = ~ fs::file_size(.x), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
@@ -76,12 +79,11 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
                   gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE),
                   year = lubridate::year(recording_date_time)) %>%
     dplyr::arrange(location, recording_date_time) %>%
-    # Create time index
     dplyr::group_by(location, year, julian) %>%
-    dplyr::mutate(time_index = dplyr::row_number()) %>% # This serves as a ordered count of recordings per day.
+    dplyr::mutate(time_index = dplyr::row_number()) %>% # Create time index - this is an ordered list of the recording per day.
     dplyr::ungroup()
 
-  # Check whether anything was returned
+  # Check if nothing was returned
   if (nrow(df) == 0) {
     stop (
       "There were no files of the type specified in file_path in the directory path specified."
@@ -156,7 +158,8 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   } else if (!exists("df_wav") & exists("df_wac") & exists("df_flac")) {
     df_final <- dplyr::bind_rows(df_wac, df_flac, df_unsafe)
   } else if (exists("df_wav") & exists("df_wac") & exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wac, df_wav, df_flac, df_unsafe)
+    df_final <- dplyr::bind_rows(df_wac, df_wav, df_flac, df_unsafe) %>%
+      select_if(~any(!is.na(unsafe)))
   }
 
   # Return final data frame
@@ -323,18 +326,16 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
       files <- list.files(audio_dir, pattern = supported_formats, full.names = TRUE)
     }
 
+    # Plan how to resolve futures
     future::plan(multisession, workers = 2)
 
-    files <- files %>%
-      tibble::as_tibble() %>%
-      dplyr::rename("file_path" = 1)
-
+    # Track progress of run
     progressr::with_progress({
       p <- progressr::progressor(steps = nrow(files))
-
       files <- files %>%
-        furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir), invisible = T), furrr_options(seed = T))
-
+      tibble::as_tibble() %>%
+      dplyr::rename("file_path" = 1) %>%
+      furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir), invisible = T, intern = T), furrr_options(seed = T))
     })
 
     return(message('Done!'))
@@ -355,7 +356,63 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #'
 #' @return
 
-wt_glean_ap <- function(merge_to_files = x) {}
+wt_glean_ap <- function(x = NULL, input_dir) {
+
+  # Check to see if the input exists and reading it in
+  files <- x
+
+  # Check to see if the input exists and reading it in
+  if (dir.exists(input_dir)) {
+    ind <-
+      fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) %>%
+      map_dfr( ~ read_csv(., show_col_types = F, progress = T)) %>%
+      relocate(c(FileName, ResultMinute)) %>%
+      select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
+      pivot_longer(!c(FileName, ResultMinute),
+                   names_to = "index_variable",
+                   values_to = "index_value")
+
+    ldfcs <-
+      fs::dir_info(input_dir, regexp = "*__2Maps.png", recurse = T) %>%
+      select(path) %>%
+      rename("image" = 1) %>%
+      mutate(file_name = str_replace(basename(image), '__2Maps.png', ''))
+
+  } else {
+    stop("Cannot find this directory")
+  }
+
+  # Join the indices and LDFCs to the media
+  joined <- files %>%
+    inner_join(., ind, by = c("file_name" = "FileName")) %>%
+    inner_join(., ldfcs, by = c("file_name" = "file_name")) %>>%
+    "Files joined!"
+
+  # Plot a summary of the indices
+  plotted <- joined %>%
+    ggplot(., aes(x=julian, y=index_value, group=julian, fill=index_variable)) +
+    geom_boxplot() +
+    scale_fill_viridis_d() +
+    theme_bw() +
+    facet_wrap(~index_variable, scales = "free_y") +
+    theme(legend.position="right", legend.box = "horizontal") +
+    guides(fill = guide_legend(title="New Legend Title")) +
+    guides(fill = guide_legend(nrow = 25, ncol = 1)) +
+    xlab("Julian Date") +
+    ylab("Index value") +
+    ggtitle("Summary of indices")
+
+  # Plot the LDFC
+  ldfc <- joined %>%
+    select(image) %>%
+    distinct() %>%
+    map(function(x){magick::image_read(x)}) %>%
+    do.call("c", .) %>%
+    magick::image_append()
+
+  return(list(joined,plotted,ldfc))
+}
+
 
 #' @section `wt_signal_level` to extract relative sound level from a wav file using amplitude thresholds
 #'
