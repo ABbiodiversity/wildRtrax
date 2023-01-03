@@ -1,6 +1,6 @@
-#' wildRtrax: A package to facilitate full-cycle environmental sensor data work flows.
+#' wildRtrax: Am R package to facilitate full-cycle environmental sensor data work flows.
 #'
-#' @author Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca}
+#' @author Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca} Elly Knight \email{ecknight@ualberta.ca}
 #' @docType package
 #' @name wildRtrax
 "_PACKAGE"
