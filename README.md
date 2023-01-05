@@ -16,14 +16,14 @@ status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https
   - `wt_run_ap` :sound:
   - `wt_glean_ap` :sound:
   - `wt_signal_level` :sound:
-- Upload acoustic media and metadata to WildTrax
+- Organize acoustic media and metadata for upload to WildTrax
   - `wt_make_aru_tasks` :sound:
   - `wt_kaleidoscope_tags` :sound:
   - `wt_songscope_tags` :sound:
 - Download processed data from WildTrax
   - `wt_auth`
-  - `wt_get_download_summary` :camera:
-  - `wt_download_report` :camera:
+  - `wt_get_download_summary` :camera: :sound:
+  - `wt_download_report` :camera: :sound:
 - Analyze data
   - `wt_replace_tmtt` :sound:
   - `wt_occupancy` :sound:
@@ -32,17 +32,22 @@ status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https
 
 ## Installation
 
-You can install the development version of `wildRtrax` directly from this
-repository with:
+You can install `wildRtrax` directly from this repository with:
 
 ``` r
 # install.packages("remotes")
+remotes::install_github("ABbiodiversity/wildRtrax")
+```
+
+Or the development version with:
+
+``` r
 remotes::install_github("ABbiodiversity/wildRtrax@development")
 ```
 
 ## Usage
 
-All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. 
+All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis. 
 
 ## Issues
 

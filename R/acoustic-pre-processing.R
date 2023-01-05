@@ -413,7 +413,6 @@ wt_glean_ap <- function(x = NULL, input_dir) {
   return(list(joined,plotted,ldfc))
 }
 
-
 #' @section `wt_signal_level` to extract relative sound level from a wav file using amplitude thresholds
 #'
 #' @description Signal level uses amplitude and frequency thresholds in order to detect a signal.
