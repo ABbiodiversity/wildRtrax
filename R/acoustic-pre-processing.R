@@ -56,10 +56,10 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     df <- df %>>%
       "Scanning files in path..." %>>%
       dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, recurse = T, fail = F), .progress = TRUE, .options = furrr_options(seed = TRUE)))
-   })
+  })
 
-   # Create the main tibble
-    df <- df %>%
+  # Create the main tibble
+  df <- df %>%
     tidyr::unnest(file_path) %>%
     dplyr::mutate(file_size = furrr::future_map_dbl(.x = file_path, .f = ~ fs::file_size(.x), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
     dplyr::mutate(file_path = as.character(file_path)) %>%
@@ -284,61 +284,61 @@ wt_wac_info <- function(path) {
 #' @return Output will return to the specific root directory
 
 wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir, path_to_ap = "C:\\AP\\AnalysisPrograms.exe") {
-    # Make sure at least (and only) one of x or audio_folder has been supplied
-    if (is.null(x) & is.null(audio_dir)) {
-      stop(
-        "Please supply either a dataframe with the x argument, or a path to a directory of audio files with the audio_dir argument.",
-        call. = TRUE
-      )
-    } else if (!is.null(x) & !is.null(audio_dir)) {
-      stop("Please only supply one of x or audio_dir", call. = TRUE)
+  # Make sure at least (and only) one of x or audio_folder has been supplied
+  if (is.null(x) & is.null(audio_dir)) {
+    stop(
+      "Please supply either a dataframe with the x argument, or a path to a directory of audio files with the audio_dir argument.",
+      call. = TRUE
+    )
+  } else if (!is.null(x) & !is.null(audio_dir)) {
+    stop("Please only supply one of x or audio_dir", call. = TRUE)
+  }
+
+  # Check if output_dir is supplied
+  if (missing(output_dir)) {
+    stop(
+      "Please specify a path to a local directory where you would like outputs to be stored.",
+      call. = TRUE
+    )
+  }
+
+  # Supported AP audio formats
+  supported_formats <-
+    "\\.wav$|\\.mp3$|\\.ogg$|\\.flac$|\\.wv$|\\.webm$|\\.wma$"
+
+  # Will support wac in 1.0.1
+  convert <-
+    "\\.wac$"
+
+  # List audio files for analysis (vector)
+  if (!is.null(x)) {
+    # Ensure fp_col is a column name of x
+    column <- dplyr::enquo(fp_col) %>%
+      dplyr::quo_name()
+    if (!column %in% names(x)) {
+      stop("The value in fp_col does not refer to a column in x.")
     }
+    files <- x %>%
+      dplyr::filter(stringr::str_detect({{fp_col}}, supported_formats)) %>%
+      dplyr::select({{fp_col}}) %>%
+      dplyr::pull()
+  } else {
+    files <- list.files(audio_dir, pattern = supported_formats, full.names = TRUE)
+  }
 
-    # Check if output_dir is supplied
-    if (missing(output_dir)) {
-      stop(
-        "Please specify a path to a local directory where you would like outputs to be stored.",
-        call. = TRUE
-      )
-    }
+  # Plan how to resolve futures
+  future::plan(multisession, workers = 2)
 
-    # Supported AP audio formats
-    supported_formats <-
-      "\\.wav$|\\.mp3$|\\.ogg$|\\.flac$|\\.wv$|\\.webm$|\\.wma$"
-
-    # Will support wac in 1.0.1
-    convert <-
-      "\\.wac$"
-
-    # List audio files for analysis (vector)
-    if (!is.null(x)) {
-      # Ensure fp_col is a column name of x
-      column <- dplyr::enquo(fp_col) %>%
-        dplyr::quo_name()
-      if (!column %in% names(x)) {
-        stop("The value in fp_col does not refer to a column in x.")
-      }
-      files <- x %>%
-        dplyr::filter(stringr::str_detect({{fp_col}}, supported_formats)) %>%
-        dplyr::select({{fp_col}}) %>%
-        dplyr::pull()
-    } else {
-      files <- list.files(audio_dir, pattern = supported_formats, full.names = TRUE)
-    }
-
-    # Plan how to resolve futures
-    future::plan(multisession, workers = 2)
-
-    # Track progress of run
-    progressr::with_progress({
-      p <- progressr::progressor(steps = nrow(files))
-      files <- files %>%
+  # Track progress of run
+  progressr::with_progress({
+    p <- progressr::progressor(steps = nrow(files))
+    files <- files %>%
       tibble::as_tibble() %>%
       dplyr::rename("file_path" = 1) %>%
       furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir), invisible = T, intern = T), furrr_options(seed = T))
-    })
+  })
 
-    return(message('Done!'))
+  return(message('Done!'))
 
 }
 
@@ -436,117 +436,117 @@ wt_glean_ap <- function(x = NULL, input_dir) {
 #' @return A list object containing the following four elements: output (dataframe), aggregated (boolean), channel (character), and threshold (numeric)
 #'
 wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "left", aggregate = NULL) {
-    # Load wav object from path
-    wav_object <- tuneR::readWave(path)
+  # Load wav object from path
+  wav_object <- tuneR::readWave(path)
 
-    # Sampling frequency
-    sampling_frequency <- wav_object@samp.rate
-    # Recording duration
-    recording_duration <-
-      length(wav_object@left) / sampling_frequency
+  # Sampling frequency
+  sampling_frequency <- wav_object@samp.rate
+  # Recording duration
+  recording_duration <-
+    length(wav_object@left) / sampling_frequency
 
-    # Check that channel is set to either left or right
-    if (!(channel == "left" | channel == "right")) {
-      stop('Please specify "left" or "right" channel.')
-    }
-
-    if (channel == "left") {
-      wav_object <- wav_object@left
-    } else {
-      if (length(wav_object@right) %in% c(0, 1)) {
-        stop('Channel set to "right", but no right channel')
-      }
-      wav_object <- wav_object@right
-    }
-
-    # Remove DC offset
-    wav_object <- wav_object - mean(wav_object)
-    # Set breaks
-    breaks <- seq(0, recording_duration, 300)
-    if (breaks[length(breaks)] != recording_duration) {
-      breaks[length(breaks) + 1] <- recording_duration
-    }
-
-    samps <- breaks * sampling_frequency
-    samps[1] <- 1
-
-    times = c()
-    rsl.out <- c()
-
-    for (i in 2:length(breaks)) {
-      print(paste0('Calculating segment ', i - 1, ' out of ', length(breaks) - 1))
-      s <- seewave::spectro(
-        wav_object[samps[i - 1]:samps[i]],
-        f = sampling_frequency,
-        wn = "hamming",
-        wl = 512,
-        ovlp = 50,
-        plot = FALSE,
-        norm = FALSE
-      )
-      # Filter spectrogram
-      subset <- which(s$freq >= fmin / 1000)
-      if (!is.na(fmax)) {
-        subset <- which(s$freq >= fmin / 1000 & s$freq <= fmax / 1000)
-      }
-      s$freq <- s$freq[subset]
-      s$amp <- s$amp[subset,]
-      # Calculate max RSL for each window
-      rsl <- apply(s$amp, 2, max)
-      # Edit times for the chunk
-      s$time <- s$time + breaks[i - 1]
-      times <- c(times, s$time[rsl > threshold])
-      rsl.out <- c(rsl.out, rsl[rsl > threshold])
-    }
-
-    if (length(times) > 0) {
-      sl <- data.frame(time = times, rsl = rsl.out)
-    } else {
-      sl <- NA
-    }
-
-    # Aggregate (if desired)
-    if (!is.null(aggregate)) {
-      if (!is.na(sl)) {
-        sl <- sl %>%
-          dplyr::mutate(
-            time_lag = dplyr::lag(time),
-            new_detection = ifelse((time - time_lag) >= aggregate, 1, 0),
-            detection = c(0, cumsum(new_detection[-1])) + 1
-          ) %>%
-          dplyr::group_by(detection) %>%
-          dplyr::summarise(
-            mean_rsl = mean(rsl),
-            start_time_s = min(time),
-            end_time_s = max(time)
-          ) %>%
-          dplyr::ungroup() %>%
-          mutate(detection_length = end_time_s - start_time_s)
-        aggregated <- TRUE
-      } else {
-        sl
-        aggregated <- FALSE
-        warning("No signals met the threshold criteria. Output not aggregated.")
-      }
-    } else {
-      if (!is.na(sl)) {
-        sl
-        aggregated <- FALSE
-      } else {
-        sl
-        aggregated <- FALSE
-        warning("No signals met the threshold critera.")
-      }
-    }
-
-    # Create list object
-    d <- list(
-      output = sl,
-      aggregated = aggregated,
-      channel = channel,
-      threshold = threshold
-    )
-
-    return(d)
-
+  # Check that channel is set to either left or right
+  if (!(channel == "left" | channel == "right")) {
+    stop('Please specify "left" or "right" channel.')
   }
+
+  if (channel == "left") {
+    wav_object <- wav_object@left
+  } else {
+    if (length(wav_object@right) %in% c(0, 1)) {
+      stop('Channel set to "right", but no right channel')
+    }
+    wav_object <- wav_object@right
+  }
+
+  # Remove DC offset
+  wav_object <- wav_object - mean(wav_object)
+  # Set breaks
+  breaks <- seq(0, recording_duration, 300)
+  if (breaks[length(breaks)] != recording_duration) {
+    breaks[length(breaks) + 1] <- recording_duration
+  }
+
+  samps <- breaks * sampling_frequency
+  samps[1] <- 1
+
+  times = c()
+  rsl.out <- c()
+
+  for (i in 2:length(breaks)) {
+    print(paste0('Calculating segment ', i - 1, ' out of ', length(breaks) - 1))
+    s <- seewave::spectro(
+      wav_object[samps[i - 1]:samps[i]],
+      f = sampling_frequency,
+      wn = "hamming",
+      wl = 512,
+      ovlp = 50,
+      plot = FALSE,
+      norm = FALSE
+    )
+    # Filter spectrogram
+    subset <- which(s$freq >= fmin / 1000)
+    if (!is.na(fmax)) {
+      subset <- which(s$freq >= fmin / 1000 & s$freq <= fmax / 1000)
+    }
+    s$freq <- s$freq[subset]
+    s$amp <- s$amp[subset,]
+    # Calculate max RSL for each window
+    rsl <- apply(s$amp, 2, max)
+    # Edit times for the chunk
+    s$time <- s$time + breaks[i - 1]
+    times <- c(times, s$time[rsl > threshold])
+    rsl.out <- c(rsl.out, rsl[rsl > threshold])
+  }
+
+  if (length(times) > 0) {
+    sl <- data.frame(time = times, rsl = rsl.out)
+  } else {
+    sl <- NA
+  }
+
+  # Aggregate (if desired)
+  if (!is.null(aggregate)) {
+    if (!is.na(sl)) {
+      sl <- sl %>%
+        dplyr::mutate(
+          time_lag = dplyr::lag(time),
+          new_detection = ifelse((time - time_lag) >= aggregate, 1, 0),
+          detection = c(0, cumsum(new_detection[-1])) + 1
+        ) %>%
+        dplyr::group_by(detection) %>%
+        dplyr::summarise(
+          mean_rsl = mean(rsl),
+          start_time_s = min(time),
+          end_time_s = max(time)
+        ) %>%
+        dplyr::ungroup() %>%
+        mutate(detection_length = end_time_s - start_time_s)
+      aggregated <- TRUE
+    } else {
+      sl
+      aggregated <- FALSE
+      warning("No signals met the threshold criteria. Output not aggregated.")
+    }
+  } else {
+    if (!is.na(sl)) {
+      sl
+      aggregated <- FALSE
+    } else {
+      sl
+      aggregated <- FALSE
+      warning("No signals met the threshold critera.")
+    }
+  }
+
+  # Create list object
+  d <- list(
+    output = sl,
+    aggregated = aggregated,
+    channel = channel,
+    threshold = threshold
+  )
+
+  return(d)
+
+}
