@@ -35,7 +35,7 @@ By outlining a standardized and harmonized procedure for data intake, quality co
 
 ### What R packages does `wildRtrax` depend on?
 
-`wildRtrax` depends on a multitude of packages to provide flexible routines and work flows for data management. [`tidyverse`](https://tidyverse.org) for piping functions, standard grammar and tidy data manipulation, [`furrr`](https://davisvaughan.github.io/furrr/) and [`doParallel`](https://cran.r-project.org/web/packages/doParallel/index.html) for parallel computing, and acoustic analysis packages: [`bioacoustics`](https://cran.r-project.org/web/packages/bioacoustics/index.html), [`tuneR`](https://cran.r-project.org/web/packages/tuneR/index.html), [`seewave`](https://cran.r-project.org/web/packages/seewave/seewave.pdf). The `wt_run_ap` function and associated work flows are indebted to the [QUT Ecoacoustics Analysis Software](https://github.com/QutEcoacoustics/audio-analysis). 
+`wildRtrax` depends on a multitude of packages to provide flexible routines and work flows for data management. [`tidyverse`](https://tidyverse.org) for piping functions, standard grammar and tidy data manipulation, [`furrr`](https://davisvaughan.github.io/furrr/) for parallel computing, and acoustic analysis packages: [`bioacoustics`](https://cran.r-project.org/web/packages/bioacoustics/index.html), [`tuneR`](https://cran.r-project.org/web/packages/tuneR/index.html), [`seewave`](https://cran.r-project.org/web/packages/seewave/seewave.pdf). The `wt_run_ap` function and associated work flows are indebted to the [QUT Ecoacoustics Audio Analysis Software](https://github.com/QutEcoacoustics/audio-analysis). 
 
 ### How do I report a bug in `wildRtrax`?
 
