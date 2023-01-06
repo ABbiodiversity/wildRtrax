@@ -12,13 +12,9 @@
 #' wt_auth(type = c("google", "env"), force = FALSE)
 #' }
 #'
-<<<<<<< HEAD
-wt_auth <- function(type = c("google","env"), force = FALSE) {
-=======
 #' @return
 #'
 wt_auth <- function(force = FALSE) {
->>>>>>> parent of 80f0ef0... Merge branch 'main' of https://github.com/ABbiodiversity/wildRtrax into main
 
   if (!exists("._wt_auth_env_"))
     stop("Cannot find the correct environment.", call. = TRUE)
@@ -145,13 +141,7 @@ wt_download_report <- function(project_id, sensor_id, cols_def = FALSE, weather_
 
   files <- list.files(td, pattern = ".csv")
   files.full <- list.files(td, pattern = ".csv", full.names = TRUE)
-<<<<<<< HEAD
   x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) |> purrr::set_names(files)
-=======
-
-  x <- purrr::map(.x = files.full, .f = read.csv) %>%
-    purrr::set_names(files)
->>>>>>> parent of 80f0ef0... Merge branch 'main' of https://github.com/ABbiodiversity/wildRtrax into main
 
   # Remove weather columns, if desired
   if(weather_cols) {
