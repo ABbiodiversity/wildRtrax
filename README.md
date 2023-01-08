@@ -26,6 +26,7 @@ status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https
   - `wt_auth`
   - `wt_get_download_summary` :camera: :sound:
   - `wt_download_report` :camera: :sound:
+  - `wt_download_tags` :sound:
 - Analyze data
   - `wt_replace_tmtt` :sound:
   - `wt_occupancy` :sound:
