@@ -15,8 +15,6 @@
              0x39, 0x37, 0x6e, 0x78, 0x55, 0x31, 0x33, 0x5a, 0x32, 0x4b, 0x31,
              0x69)))
 
-  client_secret <- 'WY2eOzgf9YqLmyWQO72jELOTy0597-BGR0afYt7FBK35W-VRAesoCXWG0SFpyxq9'
-
   # POST request using env
   r <- httr::POST(
     url = "https://abmi.auth0.com/oauth/token",
@@ -29,29 +27,6 @@
       password = Sys.getenv("WT_PASSWORD")
     )
   )
-
-  r <- httr::POST(
-    url = "https://oauth2.googleapis.com/token",
-    encode = "form",
-    body = list(
-      audience = "http://www.wildtrax.ca",
-      grant_type = "password",
-      client_id = cid,
-      username = "agmacpha@ualberta.ca",
-      password = Sys.getenv("tkgQjsD9GmjfPM4T")
-    )
-  )
-
-
-
-  https://oauth2.googleapis.com/token
-
-  library(gargle)
-
-  #Google Auth
-  tok <- gargle::
-
-
 
   u <- getOption("HTTPUserAgent")
   if (is.null(u)) {

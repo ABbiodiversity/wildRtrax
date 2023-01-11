@@ -10,7 +10,7 @@
 * `wt_auth` is now also Google Auth0 enabled; use new argument `type = "Google"` or `type = "OAuth0"` if you use a username and password to authenticate
 * Addition of `wt_glean_ap` function to acoustic pre-processing work flow to extract desired data from a `wt_run_ap` output
 * Addition of linking functions in order to add desired media and metadata to WildTrax: `wt_make_aru_tasks`, `wt_kaleidoscope_tags` and `wt_songscope_tags`
-* Alignment of `wt_download_report` with column headers released in [WildTrax Phase 8]() to resolve (#3, #4)
+* Alignment of `wt_download_report` with column headers released in [WildTrax Phase 8]() to resolve (#3, #4, #5)
 * Addition of acoustic analysis functions:
   * `wt_replace_tmtt` replaces TMTT with numeric abundance estimates
   * `wt_occupancy` provides the results of a single-species occupancy model

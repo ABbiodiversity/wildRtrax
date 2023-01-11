@@ -59,8 +59,8 @@ To report bugs, request additional features, or get help using the package, plea
 
 ## Contributors
 
-* `wildRtrax` is authored and created by [Alexander G. MacPhail](), created and maintained by [Marcus Becker]() and created by [Dr. Elly Knight](). The [Alberta Biodiversity Monitoring Institute](http://https://abmi.ca/home.html) provides ongoing support, development and funding for the package.
-* Many thanks to [Dr. Richard Hedley]() for providing the basis for the `wt_wac_info` internal function for *wac* file support
+* `wildRtrax` is authored and created by [Alexander G. MacPhail](https://github.com/agmacpha), created and maintained by [Marcus Becker](https://github.com/mabecker89) and created by [Dr. Elly Knight](https://github.com/ecknight). The [Alberta Biodiversity Monitoring Institute](http://https://abmi.ca/home.html) provides ongoing support, development and funding for the package.
+* Many thanks to [Dr. Richard Hedley](https://richardwhedley.wordpress.com/) for providing the basis for the `wt_wac_info` internal function for *wac* file support
 
 ## License
 
