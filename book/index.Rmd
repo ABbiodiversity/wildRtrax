@@ -10,7 +10,7 @@ output:
   pdf_document: default
 description: "wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps"
 github-repo: ABbiodiversity/wildRtrax
-cover-image: "images/cover.png"
+cover-image: "/book/images/cover.png"
 url: https://abbiodiversity.github.io/wildRtrax
 link-citations: yes
 graphics: yes
@@ -21,6 +21,8 @@ header-includes:
 - \usepakcage{wallpaper}
 urlcolor: blue
 ---
+
+![](images/cover.png)
 
 ```{r include=FALSE}
 # Include initial packages

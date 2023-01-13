@@ -15,8 +15,15 @@ acoustic-data
 acoustic-data-pre-processing
 reading-and-filtering-files
 using-acoustic-indices-and-ldfcs
+selecting-files-for-a-project
 linking-acoustic-data-to-wildtrax
 image-data
 acoustic-data-analysis
+authorizing-and-downloading-data-from-wildtrax
+wrangling-data-for-analysis
+biological-metrics
+occupancy-mdoelling
+wrangling-data-for-analysis-1
+constructing-a-classifier
 camera-data-analysis
 conclusions
