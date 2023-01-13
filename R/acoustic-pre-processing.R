@@ -3,8 +3,8 @@
 #' The following set of functions help to pre-process and organize audio and corresponding metadata.
 #' \code(`wt_audio_scanner`) scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns.
 #' \code(`wt_run_ap`) allows you to generate acoustic indices and false-colour spectrograms from a \code(`wt_audio_scanner`)
-#' tibble. \code(`wt_signal_level`) detects signals in audio based on amplitude thresholds. In conjunction, these tools allow
-#' you to select recordings parameterized to a specific study design. `vignette("linking-media-to-wildtrax"` will allow you to d
+#' tibble, while \code{`wt_glean_ap`} wrangles the output into summary plots and LDFCs. \code(`wt_signal_level`) detects signals in audio based on amplitude thresholds. In conjunction, these tools allow
+#' you to select recordings parameterized to a specific study design. `vignette("linking-media-to-wildtrax")` will allow you to
 #' dive deeper in how to link the data to the WildTrax platform.
 #'
 #' @section `wt_audio_scanner` details:
@@ -55,7 +55,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     p <- progressr::progressor(steps = nrow(df))
     df <- df %>>%
       "Scanning files in path..." %>>%
-      dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, recurse = T, fail = F), .progress = TRUE, .options = furrr_options(seed = TRUE)))
+      dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, recurse = T, fail = F), .options = furrr_options(seed = TRUE)))
   })
 
   # Create the main tibble
@@ -94,6 +94,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     df_final_simple <- df # Omit the extra columns if chosen
   } else {
 
+    # Filter out the unsafe recordings - re-append later
     df_unsafe <- df %>%
       filter(unsafe == "Unsafe")
     df <- df %>%
@@ -272,7 +273,7 @@ wt_wac_info <- function(path) {
 #' @import dplyr
 #' @importFrom stringr str_detect
 #' @importFrom furrr future_map
-#' @importFrom progress progressor
+#' @importFrom progress progressor with progress
 #' @importFrom shiny with_progress
 #' @export
 #'
@@ -344,17 +345,22 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 
 #' @section `wt_glean_ap` for retrieving data from the AP output
 #'
-#' @description
+#' @description This function will use a list of media files from a `wt_*` work flow and outputs from `wt_run_ap`
+#' in order to generate summary plots of acoustic indices and long-duration false-colour spectrograms. This can
+#' be viewed as the "final step" in interpreting acoustic index and LDFC values from your recordings.
 #'
-#' @param
+#' @param x A data frame or tibble; must contain the file name. Use output from \code{`wt_audio_scanner`}.
+#' @param input_dir Character; A folder path where outputs from \code{`wt_run_ap`} are stored.
 #'
-#' @import
+#' @import tidyverse lubridate magick
 #' @export
 #'
 #' @examples
-#' \dontrun{}
+#' \dontrun{
+#' wt_glean_ap(x = wt_audio_scanner_data, input_dir = "/path/to/my/files")
+#' }
 #'
-#' @return
+#' @return Output will return the merged tibble with all information, the summary plots of the indices and the LDFC
 
 wt_glean_ap <- function(x = NULL, input_dir) {
 
