@@ -43,45 +43,6 @@
   # tmp directory
   td <- tempdir()
 
-
-
-
-  rr <- httr::POST(
-    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
-    query = list(
-      projectIds = 47,
-      sensorId = 'ARU',
-      splitLocation = FALSE
-    ),
-    accept = "application/zip",
-    httr::add_headers(Authorization = paste("Bearer", tok)),
-    httr::user_agent(u),
-    #httr::write_disk(tmp, overwrite = T),
-    httr::progress()
-  )
-
-  # Create POST request
-  report <- httr::POST(
-    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
-    query = list(
-      projectIds = 47,
-      sensorId = 'ARU',
-      splitLocation = FALSE
-    ),
-    accept = "application/zip",
-    httr::add_headers(Authorization = paste("Bearer", old_tok)),
-    httr::user_agent(u),
-    #httr::write_disk(tmp),
-    httr::progress()
-  )
-
-
-
-
-
-
-
-
   # Write error message if POST request failed:
   if (httr::http_error(r))
     stop(sprintf(
