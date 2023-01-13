@@ -1,1 +1,19 @@
 # Introduction
+
+## What are environmental sensors? Why do we use them?
+
+## What is open data? Why is it important in the context of environmental sensors?
+
+## Why is reproducibility important for environmental sensor data?
+
+## How do standardized work flows help with environmental sensor data?
+
+## What is **WildTrax**?
+
+[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the  **biological data** extracted from the media. WildTrax was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca) and the [Bioacoustic Unit](https://bioacoustic.abmi.ca). `wildRtrax` serves as a parallel design and indicator to **WildTrax** for future analytics anf functionalities.
+
+## Why did you build `wildRtrax`?
+
+By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of acoustic data from autonomous recording units (ARUs), **wildRtrax** and **WildTrax** hope to provide open work flows for using ARUs to answer meaningful biological questions in order to inform conservation and decision-making.
+
+

@@ -4,28 +4,28 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 4 Camera data analysis | Full-cycle environmental sensor data analysis in R</title>
-  <meta name="description" content="null" />
+  <title>Chapter 4 Camera data analysis | Environmental sensor data analysis with R</title>
+  <meta name="description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
   <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 4 Camera data analysis | Full-cycle environmental sensor data analysis in R" />
+  <meta property="og:title" content="Chapter 4 Camera data analysis | Environmental sensor data analysis with R" />
   <meta property="og:type" content="book" />
-  
-  <meta property="og:description" content="null" />
+  <meta property="og:image" content="https://abbiodiversity.github.io/wildRtrax/images/cover.png" />
+  <meta property="og:description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
   <meta name="github-repo" content="ABbiodiversity/wildRtrax" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 4 Camera data analysis | Full-cycle environmental sensor data analysis in R" />
+  <meta name="twitter:title" content="Chapter 4 Camera data analysis | Environmental sensor data analysis with R" />
   
-  <meta name="twitter:description" content="null" />
-  
+  <meta name="twitter:description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
+  <meta name="twitter:image" content="https://abbiodiversity.github.io/wildRtrax/images/cover.png" />
 
 <meta name="author" content="Alexander G. MacPhail" />
 <meta name="author" content="Marcus Becker" />
 <meta name="author" content="Elly C. Knight" />
 
 
-<meta name="date" content="2022-12-29" />
+<meta name="date" content="2023-01-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -75,14 +75,34 @@
 <li></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
-<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html"><i class="fa fa-check"></i><b>2</b> Data pre-processing</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Foreword</a></li>
+<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a><ul>
+<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-is-this-book-for"><i class="fa fa-check"></i><b>0.1</b> Who is this book for?</a></li>
+<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-should-i-read-this-book"><i class="fa fa-check"></i><b>0.2</b> How should I read this book?</a></li>
+<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#why-in-r-why-bookdown"><i class="fa fa-check"></i><b>0.3</b> Why in R? Why bookdown?</a></li>
+<li class="chapter" data-level="0.4" data-path="preface.html"><a href="preface.html#impact-and-intentions"><i class="fa fa-check"></i><b>0.4</b> Impact and intentions</a></li>
+<li class="chapter" data-level="0.5" data-path="preface.html"><a href="preface.html#acknowledgements"><i class="fa fa-check"></i><b>0.5</b> Acknowledgements</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="1-introduction.html"><a href="1-introduction.html#what-are-environmental-sensors-why-do-we-use-them"><i class="fa fa-check"></i><b>1.1</b> What are environmental sensors? Why do we use them?</a></li>
+<li class="chapter" data-level="1.2" data-path="1-introduction.html"><a href="1-introduction.html#what-is-open-data-why-is-it-important-in-the-context-of-environmental-sensors"><i class="fa fa-check"></i><b>1.2</b> What is open data? Why is it important in the context of environmental sensors?</a></li>
+<li class="chapter" data-level="1.3" data-path="1-introduction.html"><a href="1-introduction.html#why-is-reproducibility-important-for-environmental-sensor-data"><i class="fa fa-check"></i><b>1.3</b> Why is reproducibility important for environmental sensor data?</a></li>
+<li class="chapter" data-level="1.4" data-path="1-introduction.html"><a href="1-introduction.html#how-do-standardized-work-flows-help-with-environmental-sensor-data"><i class="fa fa-check"></i><b>1.4</b> How do standardized work flows help with environmental sensor data?</a></li>
+<li class="chapter" data-level="1.5" data-path="1-introduction.html"><a href="1-introduction.html#what-is-wildtrax"><i class="fa fa-check"></i><b>1.5</b> What is <strong>WildTrax</strong>?</a></li>
+<li class="chapter" data-level="1.6" data-path="1-introduction.html"><a href="1-introduction.html#why-did-you-build-wildrtrax"><i class="fa fa-check"></i><b>1.6</b> Why did you build <code>wildRtrax</code>?</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html"><i class="fa fa-check"></i><b>2</b> Data pre-processing</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#acoustic-data"><i class="fa fa-check"></i><b>2.1</b> Acoustic data</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#acoustic-data-pre-processing"><i class="fa fa-check"></i><b>2.1.1</b> Acoustic data pre-processing</a></li>
+<li class="chapter" data-level="2.1.2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.1.2</b> Linking acoustic data to WildTrax</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#image-data"><i class="fa fa-check"></i><b>2.2</b> Image data</a></li>
+</ul></li>
 <li class="chapter" data-level="3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html"><i class="fa fa-check"></i><b>3</b> Acoustic data analysis</a></li>
 <li class="chapter" data-level="4" data-path="4-camera-data-analysis.html"><a href="4-camera-data-analysis.html"><i class="fa fa-check"></i><b>4</b> Camera data analysis</a></li>
 <li class="chapter" data-level="5" data-path="5-conclusions.html"><a href="5-conclusions.html"><i class="fa fa-check"></i><b>5</b> Conclusions</a></li>
 <li class="divider"></li>
-<li><a href="https://github.com/agmacpha/ic-qc" target="blank">
+<li><a href="https://github.com/abbiodiversity/wildRtrax/book" target="blank">
 Published with bookdown</a></li>
 
 </ul>
@@ -94,7 +114,7 @@ Published with bookdown</a></li>
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Full-cycle environmental sensor data analysis in R</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Environmental sensor data analysis with R</a>
           </h1>
         </div>
 
@@ -143,7 +163,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/agmacpha/ic-qc/edit/master/04-Camera-data-analysis.Rmd",
+"link": "https://github.com/abbiodiversity/wildRtrax/book/edit/master/04-Camera-data-analysis.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -151,10 +171,10 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/agmacpha/ic-qc/blob/master/04-Camera-data-analysis.Rmd",
+"link": "https://github.com/abbiodiversity/wildRtrax/book/blob/master/04-Camera-data-analysis.Rmd",
 "text": null
 },
-"download": ["ic-qc.pdf"],
+"download": ["Environmental sensor data analysis with R.pdf"],
 "search": {
 "engine": "fuse",
 "options": null

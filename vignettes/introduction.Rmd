@@ -49,9 +49,7 @@ If you think you have found a bug in `wildRtrax`, you should report it to develo
 
 ### Can I contribute to `wildRtrax`?
 
-Yes! `wildRtrax` is dependent on user contribution and all feedback is welcome. If you have problems with `wildRtrax`, it may be as simple as incomplete documentation. Feature requests also are welcome, but they are not necessarily fulfilled. A new feature will be added if it is easy to do and it looks useful to the user base of the package, or if you submit fully annotated code.
-
-See [here](https://abbiodiversity.github.io/wildRtrax/CONTRIBUTING.html) for more information. 
+Yes! `wildRtrax` is dependent on user contribution and all feedback is welcome. If you have problems with `wildRtrax`, it may be as simple as incomplete documentation. Feature requests also are welcome, but they are not necessarily fulfilled. A new feature will be added if it is easy to do and it looks useful to the user base of the package, or if you submit fully annotated code. See [here](https://abbiodiversity.github.io/wildRtrax/CONTRIBUTING.html) for more information and please read the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ### Disclaimers
 

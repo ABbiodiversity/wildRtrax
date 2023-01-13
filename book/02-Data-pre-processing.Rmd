@@ -1,1 +1,20 @@
 # Data pre-processing
+
+## Acoustic data
+
+
+### Acoustic data pre-processing
+
+
+#### Reading and filtering files
+
+#### Using acoustic indices and LDFCs
+
+
+
+### Linking acoustic data to WildTrax
+
+
+## Image data
+
+

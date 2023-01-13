@@ -8,8 +8,10 @@ date: "`r Sys.Date()`"
 output:
   bookdown::html_document2: default
   pdf_document: default
-description: null
+description: "wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps"
 github-repo: ABbiodiversity/wildRtrax
+cover-image: "images/cover.png"
+url: https://abbiodiversity.github.io/wildRtrax
 link-citations: yes
 graphics: yes
 site: bookdown::bookdown_site
@@ -37,4 +39,35 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(engine.opts = list(bash = "-l"))
 ```
 
+# Foreword {-}
+
+*Alex*
+
+*Marcus*
+
+*Elly*
+
+
 # Preface {-}
+
+## Who is this book for?
+
+
+
+## How should I read this book?
+
+1. Data pre-processing
+2. Data processing
+3. Data analysis
+
+## Why in R? Why bookdown?
+
+
+
+## Impact and intentions
+
+
+
+## Acknowledgements
+
+
