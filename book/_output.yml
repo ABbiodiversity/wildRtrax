@@ -9,10 +9,10 @@ bookdown::gitbook:
       before: |
         <li></li>
       after: |
-        <li><a href="https://github.com/agmacpha/ic-qc" target="blank">
+        <li><a href="https://github.com/abbiodiversity/wildRtrax/book" target="blank">
         Published with bookdown</a></li>
-    edit: https://github.com/agmacpha/ic-qc/edit/master/%s
-    view: https://github.com/agmacpha/ic-qc/blob/master/%s
+    edit: https://github.com/abbiodiversity/wildRtrax/book/edit/master/%s
+    view: https://github.com/abbiodiversity/wildRtrax/book/blob/master/%s
     sharing:
       facebook: yes
       twitter: yes

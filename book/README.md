@@ -1,1 +1,1 @@
-# Full-cycle environmental sensor data analysis in R
+# Environmental sensor data analysis with R

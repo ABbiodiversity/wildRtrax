@@ -1,5 +1,5 @@
 ---
-title: "Full-cycle environmental sensor data analysis in R"
+title: "Environmental sensor data analysis with R"
 author: 
 - "Alexander G. MacPhail"
 - "Marcus Becker"

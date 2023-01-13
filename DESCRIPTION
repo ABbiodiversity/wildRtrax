@@ -1,5 +1,5 @@
 Package: wildRtrax
-Title: Full-cycle environmental sensor data analysis in R
+Title: Environmental sensor data analysis with R
 Version: 1.0.0
 Authors@R: 
     c(person(given = "Alex",
