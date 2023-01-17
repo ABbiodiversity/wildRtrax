@@ -26,9 +26,9 @@ wt_replace_tmtt <- function(data, calc="round"){
   #replace values with random selection from bootstraps
   dat.abun <- dat.tmtt %>%
     mutate(species_code = ifelse(species_code %in% .tmtt$species_code, species_code, "species"),
-           user_id = as.integer(ifelse(user_id %in% .tmtt$user_id, user_id, 0))) %>%
+           observer_id = as.integer(ifelse(observer_id %in% .tmtt$observer_id, observer_id, 0))) %>%
     data.frame() %>%
-    left_join(.tmtt, by=c("species_code", "user_id", "boot"))
+    left_join(.tmtt, by=c("species_code", "observer_id", "boot"))
 
   #summarize predicted values
   dat.abun$abundance <- as.integer(case_when(calc=="round" ~ round(pred),
