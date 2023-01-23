@@ -43,12 +43,6 @@ knitr::opts_chunk$set(engine.opts = list(bash = "-l"))
 
 # Foreword {-}
 
-*Alex*
-
-*Marcus*
-
-*Elly*
-
 
 # Preface {-}
 

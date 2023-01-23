@@ -10,7 +10,7 @@
 
 ## What is **WildTrax**?
 
-[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the  **biological data** extracted from the media. WildTrax was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca) and the [Bioacoustic Unit](https://bioacoustic.abmi.ca). `wildRtrax` serves as a parallel design and indicator to **WildTrax** for future analytics anf functionalities.
+[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the  **biological data** extracted from the media. WildTrax was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca) and the [Bioacoustic Unit](https://bioacoustic.abmi.ca). `wildRtrax` serves as a parallel design and indicator to **WildTrax** for future analytics and functionalities.
 
 ## Why did you build `wildRtrax`?
 
