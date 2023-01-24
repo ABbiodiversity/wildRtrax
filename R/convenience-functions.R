@@ -2,8 +2,7 @@
 #'
 #' @section `wt_location_distances` details:
 #'
-#' @description Scans directories of audio data and returns the file path, file name, file size, date, time, location name,
-#' sample rate, length (seconds) and number of channels to be used as filters for other uses
+#' @description
 #'
 #' @param input_from_tibble Use a tibble constructed with a distinct list of location names, latitude and longitude
 #' @param input_from_file Use a file downloaded from either an organization or project
@@ -81,5 +80,90 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
   return(final_distances)
 
 }
+
+#'
+#' @section `wt_chop` details:
+#'
+#' @description "Chops" up an audio file into many smaller files of a desired duration
+#'
+#' @param input
+#'
+#' @import tuneR future furrr lubridate %>% dplyr pipeR
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' df <- (input = my_audio_tibble %>% slice(1), segment_length = 60, output_folder "/where/i/store/my/chopped/files")
+#' }
+#'
+#' @return
+#'
+
+wt_chop <- function(input = NULL, segment_length = 60, output_folder = NULL) {
+
+  future::plan(multisession)
+
+  # if (!file.exists(input)) {
+  #   stop('There is no file.')
+  # }
+
+  outroot <- output_folder
+
+  if (!dir.exists(outroot)) {
+    stop('The output directory does not exist.')
+  }
+
+  length_sec <- inp %>% pluck('length_seconds')
+
+  if (segment_length > length_sec){
+    stop('Segment is longer than duration')
+  }
+
+  inp <- input %>%
+    dplyr::select(file_path,
+                  recording_date_time,
+                  location,
+                  file_type,
+                  length_seconds)
+
+
+  start_times = seq(0, length_sec - segment_length, by = segment_length)
+  val <- max(start_times) + segment_length
+
+  if (val < length_sec){
+    inp %>>%
+      "Chopping the modulo recording" %>>%
+      furrr::future_pmap(
+        ..1 = .$file_path,
+        ..2 = .$recording_date_time,
+        ..3 = .$location,
+        ..4 = .$file_type,
+        ..5 = .$length_seconds,
+        .f = ~ tuneR::writeWave(tuneR::readWave(..1, from = val, to = ..5, units = "seconds"),
+                                filename = paste0(outroot, ..3, "_", format(..2 + lubridate::seconds(val), "%Y%m%d_%H%M%S"), ".", ..4),
+                                extensible = T),
+        .options = furrr::furrr_options(seed = T)
+      )
+  } else {
+    message("No modulos found. Chopping the regular segments")
+  }
+
+  for (i in seq_along(start_times)) {
+       inp %>%
+         furrr::future_pmap(
+          ..1 = .$file_path,
+          ..2 = .$recording_date_time,
+           ..3 = .$location,
+          ..4 = .$file_type,
+         .f = ~ tuneR::writeWave(tuneR::readWave(..1, from = start_times[[i]], to = start_times[[i]] + segment_length, units = "seconds"),
+                                    filename = paste0(outroot, ..3, "_", format(..2 + lubridate::seconds(start_times[[i]]), "%Y%m%d_%H%M%S"), ".", ..4),
+                                    extensible = T),
+         .options = furrr::furrr_options(seed = T)
+         )
+  }
+}
+
+
+
 
 
