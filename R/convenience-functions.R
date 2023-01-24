@@ -84,22 +84,29 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #'
 #' @section `wt_chop` details:
 #'
-#' @description "Chops" up an audio file into many smaller files of a desired duration
+#' @description "Chops" up a wav file into many smaller files of a desired duration
 #'
-#' @param input
+#' @param input A tibble; A single row from a \code(`wt_audio_scanner`) tibble
+#' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
+#' @param output_folder Character; output path to where the segments will be stored
 #'
 #' @import tuneR future furrr lubridate %>% dplyr pipeR
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' df <- (input = my_audio_tibble %>% slice(1), segment_length = 60, output_folder "/where/i/store/my/chopped/files")
+#' wt_chop(input = my_audio_tibble %>% slice(1), segment_length = 60, output_folder "/where/i/store/my/chopped/files")
+#'
+#' df %>%
+#'    dplyr::rowwise() %>%
+#'    ~purrr::map_lgl(.x = ., ~wt_chop(., segment_length = 60, output_folder = "where/i/store/my/chopped/files")
+#
 #' }
 #'
-#' @return
+#' @return Segmented files written to the output_folder
 #'
 
-wt_chop <- function(input = NULL, segment_length = 60, output_folder = NULL) {
+wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
 
   future::plan(multisession)
 
@@ -113,12 +120,6 @@ wt_chop <- function(input = NULL, segment_length = 60, output_folder = NULL) {
     stop('The output directory does not exist.')
   }
 
-  length_sec <- inp %>% pluck('length_seconds')
-
-  if (segment_length > length_sec){
-    stop('Segment is longer than duration')
-  }
-
   inp <- input %>%
     dplyr::select(file_path,
                   recording_date_time,
@@ -126,6 +127,12 @@ wt_chop <- function(input = NULL, segment_length = 60, output_folder = NULL) {
                   file_type,
                   length_seconds)
 
+
+  length_sec <- inp %>% pluck('length_seconds')
+
+  if (segment_length > length_sec){
+    stop('Segment is longer than duration')
+  }
 
   start_times = seq(0, length_sec - segment_length, by = segment_length)
   val <- max(start_times) + segment_length
@@ -149,7 +156,8 @@ wt_chop <- function(input = NULL, segment_length = 60, output_folder = NULL) {
   }
 
   for (i in seq_along(start_times)) {
-       inp %>%
+       inp %>>%
+       "Chopping the regular segments" %>>%
          furrr::future_pmap(
           ..1 = .$file_path,
           ..2 = .$recording_date_time,
@@ -162,8 +170,5 @@ wt_chop <- function(input = NULL, segment_length = 60, output_folder = NULL) {
          )
   }
 }
-
-
-
 
 
