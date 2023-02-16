@@ -6,7 +6,7 @@
 [![Travis build
 status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https://travis-ci.com/ABbiodiversity/wildRtrax)
 [![CRAN status](https://www.r-pkg.org/badges/version/wildRtrax)](https://CRAN.R-project.org/package=wildRtrax)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 ## Overview
@@ -23,15 +23,18 @@ status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https
   - `wt_kaleidoscope_tags` :sound:
   - `wt_songscope_tags` :sound:
 - Download processed data from WildTrax
-  - `wt_auth`
-  - `wt_get_download_summary` :camera: :sound:
-  - `wt_download_report` :camera: :sound:
+  - `wt_auth` :camera: :sound: :bird:
+  - `wt_get_download_summary` :camera: :sound: :bird:
+  - `wt_download_report` :camera: :sound: :bird:
   - `wt_download_tags` :sound:
 - Analyze data
   - `wt_replace_tmtt` :sound:
-  - `wt_occupancy` :sound:
+  - `wt_occupancy` :sound: :bird:
   - `wt_summarise_cam` :camera:
   - `wt_ind_det` :camera:
+- Convenience functions
+  - `wt_chop` :sound:
+  - `wt_location_distances` :sound: :camera: :bird:
 
 ## Installation
 

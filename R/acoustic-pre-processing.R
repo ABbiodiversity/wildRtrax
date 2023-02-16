@@ -134,7 +134,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       df_flac <- df %>>%
         "Working on flac files..." %>>%
         dplyr::filter(file_type == "flac") %>%
-        dplyr::mutate(data = furrr::future_map(.x = file_path, .f = ~ seewave::wav2flac(.x, reverse = TRUE), .progress = TRUE, .options = furrr_options(seed = TRUE)),
+        dplyr::mutate(data = furrr::future_map(.x = file_path, .f = ~ seewave::wav2flac(.x), .options = furrr_options(seed = TRUE)),
                       sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample_rate"]])),
                       length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
@@ -256,6 +256,19 @@ wt_wac_info <- function(path) {
 
 }
 
+#' @section `wt_flac_info` details:
+#'
+#' @description Scrape relevant information from flac file
+#'
+#' @param path Character; The flac file path
+#'
+#' @import
+#' @export
+#'
+#' @return a list with relevant information
+
+wt_flac_info <- function(path {})
+
 #' @section `wt_run_ap` for generating acoustic indices and false-colour spectrograms using QUT Ecoacoustics **A**nalysis **P**rograms software
 #'
 #' @description See \url{https://github.com/QutEcoacoustics/audio-analysis} for information about usage and installation of the AP software.
@@ -331,13 +344,13 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
   future::plan(multisession, workers = 2)
 
   # Track progress of run
-  progressr::with_progress({
-    p <- progressr::progressor(steps = nrow(files))
+  # progressr::with_progress({
+  #   p <- progressr::progressor(steps = nrow(files))
     files <- files %>%
       tibble::as_tibble() %>%
       dplyr::rename("file_path" = 1) %>%
-      furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir), invisible = T, intern = T), furrr_options(seed = T))
-  })
+      furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir), invisible = T), furrr_options(seed = T))
+  # })
 
   return(message('Done!'))
 

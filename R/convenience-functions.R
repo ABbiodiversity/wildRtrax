@@ -110,10 +110,6 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
 
   future::plan(multisession)
 
-  # if (!file.exists(input)) {
-  #   stop('There is no file.')
-  # }
-
   outroot <- output_folder
 
   if (!dir.exists(outroot)) {
@@ -130,7 +126,7 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
 
   length_sec <- inp %>% pluck('length_seconds')
 
-  if (segment_length > length_sec){
+  if (segment_length > length_sec) {
     stop('Segment is longer than duration')
   }
 
@@ -152,12 +148,12 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
         .options = furrr::furrr_options(seed = T)
       )
   } else {
-    message("No modulos found. Chopping the regular segments")
+    message("No modulo recordings found. Chopping the regular segments")
   }
 
   for (i in seq_along(start_times)) {
        inp %>>%
-       "Chopping the regular segments" %>>%
+       "Chopping the regular segments" [[i]] %>>%
          furrr::future_pmap(
           ..1 = .$file_path,
           ..2 = .$recording_date_time,
