@@ -1,9 +1,7 @@
 ---
-title: "Environmental sensor data analysis with R"
+title: "Environmental sensor data management and analysis with R"
 author: 
-- "Alexander G. MacPhail"
-- "Marcus Becker"
-- "Elly C. Knight"
+- "Alexander G. MacPhail, Marcus Becker, Elly C. Knight"
 date: "`r Sys.Date()`"
 output:
   bookdown::html_document2: default
@@ -41,10 +39,9 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(engine.opts = list(bash = "-l"))
 ```
 
-# Foreword {-}
-
-
 # Preface {-}
+
+`wildRtrax` (pronounced *‘wilder tracks’*) is an R package to help ecologists create full-cycle environmental sensor data work flows. 
 
 ## Who is this book for?
 
@@ -65,5 +62,6 @@ Bookdown is a powerful tool for writing and publishing books, especially those t
 
 ## Acknowledgements
 
+* The [Alberta Biodiversity Monitoring Institute](https://abmi.ca) supports and funds all operations surrounding `wildRtrax` and [WildTrax](https://www.wildtrax.ca).
 * Many thanks to [Dr. Richard Hedley](https://richardwhedley.wordpress.com/) for providing the basis for the `wt_wac_info` internal function for *wac* file support
 

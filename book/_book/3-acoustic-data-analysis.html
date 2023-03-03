@@ -4,25 +4,23 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 3 Acoustic data analysis | Environmental sensor data analysis with R</title>
+  <title>Chapter 3 Acoustic data analysis | Environmental sensor data management and analysis with R</title>
   <meta name="description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
   <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 3 Acoustic data analysis | Environmental sensor data analysis with R" />
+  <meta property="og:title" content="Chapter 3 Acoustic data analysis | Environmental sensor data management and analysis with R" />
   <meta property="og:type" content="book" />
   <meta property="og:image" content="https://abbiodiversity.github.io/wildRtrax/book/images/cover.png" />
   <meta property="og:description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
   <meta name="github-repo" content="ABbiodiversity/wildRtrax" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 3 Acoustic data analysis | Environmental sensor data analysis with R" />
+  <meta name="twitter:title" content="Chapter 3 Acoustic data analysis | Environmental sensor data management and analysis with R" />
   
   <meta name="twitter:description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
   <meta name="twitter:image" content="https://abbiodiversity.github.io/wildRtrax/book/images/cover.png" />
 
-<meta name="author" content="Alexander G. MacPhail" />
-<meta name="author" content="Marcus Becker" />
-<meta name="author" content="Elly C. Knight" />
+<meta name="author" content="Alexander G. MacPhail, Marcus Becker, Elly C. Knight" />
 
 
 <meta name="date" content="2023-03-03" />
@@ -139,13 +137,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Foreword</a></li>
-<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a><ul>
-<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-is-this-book-for"><i class="fa fa-check"></i><b>0.1</b> Who is this book for?</a></li>
-<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-should-i-read-this-book"><i class="fa fa-check"></i><b>0.2</b> How should I read this book?</a></li>
-<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#why-in-r-why-bookdown"><i class="fa fa-check"></i><b>0.3</b> Why in R? Why bookdown?</a></li>
-<li class="chapter" data-level="0.4" data-path="preface.html"><a href="preface.html#impact-and-intentions"><i class="fa fa-check"></i><b>0.4</b> Impact and intentions</a></li>
-<li class="chapter" data-level="0.5" data-path="preface.html"><a href="preface.html#acknowledgements"><i class="fa fa-check"></i><b>0.5</b> Acknowledgements</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a><ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-is-this-book-for"><i class="fa fa-check"></i><b>0.1</b> Who is this book for?</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-should-i-read-this-book"><i class="fa fa-check"></i><b>0.2</b> How should I read this book?</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#why-in-r-why-bookdown"><i class="fa fa-check"></i><b>0.3</b> Why in R? Why bookdown?</a></li>
+<li class="chapter" data-level="0.4" data-path="index.html"><a href="index.html#impact-and-intentions"><i class="fa fa-check"></i><b>0.4</b> Impact and intentions</a></li>
+<li class="chapter" data-level="0.5" data-path="index.html"><a href="index.html#acknowledgements"><i class="fa fa-check"></i><b>0.5</b> Acknowledgements</a></li>
 </ul></li>
 <li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
 <li class="chapter" data-level="1.1" data-path="1-introduction.html"><a href="1-introduction.html#environmental-sensors"><i class="fa fa-check"></i><b>1.1</b> Environmental sensors</a></li>
@@ -153,19 +150,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.3" data-path="1-introduction.html"><a href="1-introduction.html#standardizing-information-pipelines"><i class="fa fa-check"></i><b>1.3</b> Standardizing information pipelines</a></li>
 <li class="chapter" data-level="1.4" data-path="1-introduction.html"><a href="1-introduction.html#what-is-wildtrax"><i class="fa fa-check"></i><b>1.4</b> What is <strong>WildTrax</strong>?</a></li>
 <li class="chapter" data-level="1.5" data-path="1-introduction.html"><a href="1-introduction.html#why-did-you-build-wildrtrax"><i class="fa fa-check"></i><b>1.5</b> Why did you build <code>wildRtrax</code>?</a></li>
+<li class="chapter" data-level="1.6" data-path="1-introduction.html"><a href="1-introduction.html#installing-the-package"><i class="fa fa-check"></i><b>1.6</b> Installing the package</a></li>
+<li class="chapter" data-level="1.7" data-path="1-introduction.html"><a href="1-introduction.html#usage"><i class="fa fa-check"></i><b>1.7</b> Usage</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html"><i class="fa fa-check"></i><b>2</b> Data pre-processing</a><ul>
-<li class="chapter" data-level="2.1" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#acoustic-data"><i class="fa fa-check"></i><b>2.1</b> Acoustic data</a><ul>
-<li class="chapter" data-level="2.1.1" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#acoustic-data-pre-processing"><i class="fa fa-check"></i><b>2.1.1</b> Acoustic data pre-processing</a></li>
-<li class="chapter" data-level="2.1.2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.1.2</b> Linking acoustic data to WildTrax</a></li>
+<li class="chapter" data-level="2.1" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#acoustic-data-basics"><i class="fa fa-check"></i><b>2.1</b> Acoustic data basics</a></li>
+<li class="chapter" data-level="2.2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#acoustic-data-pre-processing"><i class="fa fa-check"></i><b>2.2</b> Acoustic data pre-processing</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#reading-filtering-and-selecting-audio-recordings"><i class="fa fa-check"></i><b>2.2.1</b> Reading, filtering and selecting audio recordings</a></li>
+<li class="chapter" data-level="2.2.2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#using-acoustic-indices-and-ldfcs"><i class="fa fa-check"></i><b>2.2.2</b> Using acoustic indices and LDFCs</a></li>
+<li class="chapter" data-level="2.2.3" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.2.3</b> Linking acoustic data to WildTrax</a></li>
+<li class="chapter" data-level="2.2.4" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#making-tasks"><i class="fa fa-check"></i><b>2.2.4</b> Making tasks</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#image-data"><i class="fa fa-check"></i><b>2.2</b> Image data</a></li>
+<li class="chapter" data-level="2.3" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#image-data"><i class="fa fa-check"></i><b>2.3</b> Image data</a></li>
+<li class="chapter" data-level="2.4" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#other-convenience-functions"><i class="fa fa-check"></i><b>2.4</b> Other convenience functions</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html"><i class="fa fa-check"></i><b>3</b> Acoustic data analysis</a><ul>
 <li class="chapter" data-level="3.1" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax"><i class="fa fa-check"></i><b>3.1</b> Authorizing and downloading data from WildTrax</a></li>
 <li class="chapter" data-level="3.2" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis"><i class="fa fa-check"></i><b>3.2</b> Wrangling data for analysis</a></li>
 <li class="chapter" data-level="3.3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#biological-metrics"><i class="fa fa-check"></i><b>3.3</b> Biological metrics</a></li>
-<li class="chapter" data-level="3.4" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#occupancy-mdoelling"><i class="fa fa-check"></i><b>3.4</b> Occupancy mdoelling</a></li>
+<li class="chapter" data-level="3.4" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#occupancy-modelling"><i class="fa fa-check"></i><b>3.4</b> Occupancy modelling</a></li>
 <li class="chapter" data-level="3.5" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis-1"><i class="fa fa-check"></i><b>3.5</b> Wrangling data for analysis</a></li>
 <li class="chapter" data-level="3.6" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#constructing-a-classifier"><i class="fa fa-check"></i><b>3.6</b> Constructing a classifier</a></li>
 </ul></li>
@@ -184,7 +187,7 @@ Published with bookdown</a></li>
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Environmental sensor data analysis with R</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Environmental sensor data management and analysis with R</a>
           </h1>
         </div>
 
@@ -196,33 +199,33 @@ Published with bookdown</a></li>
 <h1><span class="header-section-number">Chapter 3</span> Acoustic data analysis<a href="3-acoustic-data-analysis.html#acoustic-data-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <div id="authorizing-and-downloading-data-from-wildtrax" class="section level2 hasAnchor">
 <h2><span class="header-section-number">3.1</span> Authorizing and downloading data from WildTrax<a href="3-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="3-acoustic-data-analysis.html#cb5-1"></a><span class="kw">wt_auth</span>()</span>
-<span id="cb5-2"><a href="3-acoustic-data-analysis.html#cb5-2"></a></span>
-<span id="cb5-3"><a href="3-acoustic-data-analysis.html#cb5-3"></a></span>
-<span id="cb5-4"><a href="3-acoustic-data-analysis.html#cb5-4"></a><span class="kw">wt_get_download_summary</span>()</span>
-<span id="cb5-5"><a href="3-acoustic-data-analysis.html#cb5-5"></a></span>
-<span id="cb5-6"><a href="3-acoustic-data-analysis.html#cb5-6"></a></span>
-<span id="cb5-7"><a href="3-acoustic-data-analysis.html#cb5-7"></a></span>
-<span id="cb5-8"><a href="3-acoustic-data-analysis.html#cb5-8"></a><span class="kw">wt_download_report</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="3-acoustic-data-analysis.html#cb14-1"></a><span class="kw">wt_auth</span>()</span>
+<span id="cb14-2"><a href="3-acoustic-data-analysis.html#cb14-2"></a></span>
+<span id="cb14-3"><a href="3-acoustic-data-analysis.html#cb14-3"></a></span>
+<span id="cb14-4"><a href="3-acoustic-data-analysis.html#cb14-4"></a><span class="kw">wt_get_download_summary</span>()</span>
+<span id="cb14-5"><a href="3-acoustic-data-analysis.html#cb14-5"></a></span>
+<span id="cb14-6"><a href="3-acoustic-data-analysis.html#cb14-6"></a></span>
+<span id="cb14-7"><a href="3-acoustic-data-analysis.html#cb14-7"></a></span>
+<span id="cb14-8"><a href="3-acoustic-data-analysis.html#cb14-8"></a><span class="kw">wt_download_report</span>()</span></code></pre></div>
 </div>
 <div id="wrangling-data-for-analysis" class="section level2 hasAnchor">
 <h2><span class="header-section-number">3.2</span> Wrangling data for analysis<a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="3-acoustic-data-analysis.html#cb6-1"></a><span class="kw">wt_replace_tmtt</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="3-acoustic-data-analysis.html#cb15-1"></a><span class="kw">wt_replace_tmtt</span>()</span></code></pre></div>
 </div>
 <div id="biological-metrics" class="section level2 hasAnchor">
 <h2><span class="header-section-number">3.3</span> Biological metrics<a href="3-acoustic-data-analysis.html#biological-metrics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>What is abundance, occupancy, etc.</p>
 </div>
-<div id="occupancy-mdoelling" class="section level2 hasAnchor">
-<h2><span class="header-section-number">3.4</span> Occupancy mdoelling<a href="3-acoustic-data-analysis.html#occupancy-mdoelling" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="occupancy-modelling" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.4</span> Occupancy modelling<a href="3-acoustic-data-analysis.html#occupancy-modelling" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 </div>
 <div id="wrangling-data-for-analysis-1" class="section level2 hasAnchor">
 <h2><span class="header-section-number">3.5</span> Wrangling data for analysis<a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="3-acoustic-data-analysis.html#cb7-1"></a><span class="kw">wt_occupancy</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="3-acoustic-data-analysis.html#cb16-1"></a><span class="kw">wt_occupancy</span>()</span></code></pre></div>
 </div>
 <div id="constructing-a-classifier" class="section level2 hasAnchor">
 <h2><span class="header-section-number">3.6</span> Constructing a classifier<a href="3-acoustic-data-analysis.html#constructing-a-classifier" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="3-acoustic-data-analysis.html#cb8-1"></a><span class="kw">wt_download_tag_report</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="3-acoustic-data-analysis.html#cb17-1"></a><span class="kw">wt_download_tag_report</span>()</span></code></pre></div>
 
 </div>
 </div>

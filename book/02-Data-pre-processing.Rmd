@@ -52,7 +52,8 @@ The *modulo recording* refers to the remaining portion of the recording that is 
 
 At this stage, you can filter recordings from the `wt_audio_scanner` tibble output in order to select the files you're interested in. Here's an example of the ABMI's Stratified Sampling Design for the Ecosystem Health Monitoring program that's used to pick recordings across a breadth of dates and times in order to maximize the species inventory collected at a location.  
 
-```{r}
+```{r, eval = F, warning = F, message = F, include = T}
+
 
 abmi_blocks <- as_tibble(data.frame(julian = 90:210) %>%
                      crossing(time_index = 1:4) %>%
@@ -79,7 +80,7 @@ head(abmi_blocks)
 
 The Before-After Dose-Response program is another example of a sampling design. Here, we select four recordings near dawn and one recording at dusk for each location between Julian date 140 and 210, for a total of 15 audio minutes. Again, this approach allows users to maximize species diversity while accounting for processing effort.
 
-```{r, eval = T, warning = F, message = F, include = T}
+```{r, eval = F, warning = F, message = F, include = T}
 
 bz <- b %>%
   select(file_name:year) %>%
@@ -105,6 +106,46 @@ head(bzz)
 
 ```
 
+Another example of selecting files may be geographic. Here's an example with selecting recordings with Bird Conservation Regions. 
+
+```{r, include=T, eval=F, message=F, warning=F}
+
+library(tidyverse)
+library(sf)
+library(fs)
+
+locs <- dir_ls(path = "/users/alexandremacphail/desktop/2023MASTER/recs",regexp="*.csv") %>%
+  map_dfr(~read_csv(.)) %>%
+  filter(!is.na(latitude), !is.na(longitude)) %>%
+  select(location, recordingDate, latitude, longitude) %>%
+  distinct() %>%
+  mutate(index = row_number())
+
+locsset <- st_as_sf(locs %>% select(location, latitude, longitude) %>% distinct(), coords = c("longitude","latitude"))
+locsset <- st_make_valid(locsset)
+locsset <- st_set_crs(locsset, 4269)
+
+bcrs <- read_sf("/users/alexandremacphail/desktop/BCR_Terrestrial/BCR_Terrestrial_master.shp")
+bcrs <- st_make_valid(bcrs)
+
+ggplot(bcrs_select) +
+  coord_sf(crs = 4269) +
+  geom_sf(aes(fill = BCRNAME)) +
+  guides(fill = "none") +
+  theme_bw() +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()
+
+out <- st_intersection(locsset, bcrs) %>%
+  as_tibble()
+
+locss <- locs %>%
+  inner_join(., out, by = c("location" = "location"))
+
+```
+
+In the end, how recordings are selected is completely dependent on your study design.
+
 ### Using acoustic indices and LDFCs
 
 *Acoustic indices* and *long-duration false-colour (LDFC)* spectrograms are two tools used in the analysis of acoustic data developed by the Towsey lab at QUT. Acoustic indices are numerical measurements that quantify various aspects of sound using different measurements that reflect the soundscpe. They are used to identify and track patterns of vocal activity over time, generate soundscape and monitor ecosystem-level patterns and changes. Some commonly known acoustic indices include the Acoustic Complexity Index (ACI), which measures the diversity of sound frequencies and amplitudes, and the Acoustic Diversity Index (ADI), which measures the number and relative abundance of different vocalizations. Long-duration false-color spectrograms are visual representations of acoustic data using index values rather than spectral generation in order to provide detailed views of sound patterns over long periods of time. The use of false-colours allows for easier interpretation of the spectrogram, as different colors can be used to represent different types of sounds. These unique spectrograms are particularly useful in studies of animal vocalizations, as they allow researchers to identify specific vocalizations and track patterns of vocal activity over long periods of time, and determine seasonal phenology patterns. 
@@ -124,6 +165,28 @@ wt_run_ap()
 
 wt_glean_ap()
 
+
+```
+
+#### Abiotic, geophonic and anthropophonic signal detection
+
+
+
+#### Biophonic signal detection
+
+Let's look at the entire seasonal phenology of an ABMI Ecosystem Health site
+
+```{r, eval=F, include=T, message=F, warning=F}
+
+ran_ap
+
+```
+
+While acoustic indices are good at detecting large scale patterns, it is more difficult to detect rare and elusive signals, especially those that exceed the signal-to-noise threshold to capture the signal. Neverthless, we can look at relative influence plots in order to determine whether or not a signal is occuring over time. 
+
+```{r, eval=F, include=T, message=F, warning=F}
+
+relative_influence
 
 ```
 
@@ -147,8 +210,10 @@ wt_kaleidoscope_tags()
 
 ```
 
-
 ### Making tasks
+
+![](assets/task.png)
+
 
 ```{r, include = T, eval=F, warning=F, message=F}
 
@@ -157,7 +222,7 @@ wt_make_aru_tasks()
 ```
 
 
-## Image data
+## Image data pre-processing
 
 
 ## Other convenience functions

@@ -31,11 +31,11 @@ By standardizing these workflows, researchers can ensure that data is collected 
 
 ## What is **WildTrax**?
 
-[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the  **biological data** extracted from the media. WildTrax was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca). `wildRtrax` serves as a parallel design and indicator to **WildTrax** for future analytics and functionalities.
+[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the  **biological data** extracted from the media. WildTrax was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca). `wildRtrax` serves as a parallel design and indicator to WildTrax for future analytics and functionalities.
 
 ## Why did you build `wildRtrax`?
 
-By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of acoustic data from autonomous recording units (ARUs), **wildRtrax** and **WildTrax** hope to provide open work flows for using ARUs to answer meaningful biological questions in order to inform conservation and decision-making.
+By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of acoustic data from autonomous recording units (ARUs), `wildRtrax` and WildTrax hope to provide open work flows for using ARUs to answer meaningful biological questions in order to inform conservation and decision-making.
 
 ## Installing the package
 

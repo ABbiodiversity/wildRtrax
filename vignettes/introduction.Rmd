@@ -31,7 +31,7 @@ library(wildRtrax)
 
 ### Why did you build `wildRtrax`?
 
-By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of acoustic data from autonomous recording units (ARUs), **wildRtrax** and **WildTrax** hope to provide open work flows for using ARUs to answer meaningful biological questions in order to inform conservation and decision-making.
+By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of acoustic data from autonomous recording units (ARUs), `wildRtrax` and WildTrax hope to provide open work flows for using ARUs to answer meaningful biological questions in order to inform conservation and decision-making.
 
 ### What R packages does `wildRtrax` depend on?
 
