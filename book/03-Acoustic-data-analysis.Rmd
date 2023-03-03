@@ -1,5 +1,9 @@
 # Acoustic data analysis
 
+## Biological metrics
+
+What is abundance, occupancy, etc.
+
 
 ## Authorizing and downloading data from WildTrax
 
@@ -98,17 +102,7 @@ wt_replace_tmtt()
 
 ```
 
-
-## Biological metrics
-
-What is abundance, occupancy, etc.
-
-
-
 ## Occupancy modelling
-
-
-## Wrangling data for analysis
 
 ```{r, include = T, eval=F, warning=F, message=F}
 

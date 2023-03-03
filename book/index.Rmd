@@ -22,7 +22,7 @@ urlcolor: blue
 
 ![](assets/cover.png)
 
-```{r include=FALSE}
+```{r include=FALSE, warning=F, message=F}
 # Include initial packages
 library(tinytex)
 library(kableExtra)
@@ -31,6 +31,33 @@ library(kableExtra)
 knitr::write_bib(c(
   .packages(), 'bookdown', 'knitr', 'rmarkdown'
 ), 'packages.bib')
+
+library(tidyverse)
+library(lubridate)
+library(fitdistrplus)
+library(furrr)
+library(sf)
+library(purrr)
+library(scales)
+library(doParallel)
+library(tools)
+library(wildRtrax)
+library(gamlss)
+library(gamlss.dist)
+library(vegan)
+library(pipeR)
+library(gamlss.add)
+library(progress)
+library(progressr)
+library(plotly)
+library(fs)
+library(lme4)
+library(lmerTest)
+library(vctrs)
+library(extraDistr)
+
+#save.image("book.RData")
+load("book.RData")
 ```
 
 ```{r include=FALSE}

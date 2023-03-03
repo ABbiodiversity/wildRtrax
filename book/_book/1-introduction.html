@@ -161,16 +161,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.2.3" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.2.3</b> Linking acoustic data to WildTrax</a></li>
 <li class="chapter" data-level="2.2.4" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#making-tasks"><i class="fa fa-check"></i><b>2.2.4</b> Making tasks</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#image-data"><i class="fa fa-check"></i><b>2.3</b> Image data</a></li>
+<li class="chapter" data-level="2.3" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#image-data-pre-processing"><i class="fa fa-check"></i><b>2.3</b> Image data pre-processing</a></li>
 <li class="chapter" data-level="2.4" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#other-convenience-functions"><i class="fa fa-check"></i><b>2.4</b> Other convenience functions</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html"><i class="fa fa-check"></i><b>3</b> Acoustic data analysis</a><ul>
-<li class="chapter" data-level="3.1" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax"><i class="fa fa-check"></i><b>3.1</b> Authorizing and downloading data from WildTrax</a></li>
-<li class="chapter" data-level="3.2" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis"><i class="fa fa-check"></i><b>3.2</b> Wrangling data for analysis</a></li>
-<li class="chapter" data-level="3.3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#biological-metrics"><i class="fa fa-check"></i><b>3.3</b> Biological metrics</a></li>
+<li class="chapter" data-level="3.1" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#biological-metrics"><i class="fa fa-check"></i><b>3.1</b> Biological metrics</a></li>
+<li class="chapter" data-level="3.2" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax"><i class="fa fa-check"></i><b>3.2</b> Authorizing and downloading data from WildTrax</a></li>
+<li class="chapter" data-level="3.3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis"><i class="fa fa-check"></i><b>3.3</b> Wrangling data for analysis</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#species-identification-and-observer-error"><i class="fa fa-check"></i><b>3.3.1</b> Species identification and observer error</a></li>
+<li class="chapter" data-level="3.3.2" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#false-negative-rates-and-birdnet"><i class="fa fa-check"></i><b>3.3.2</b> False negative rates and BirdNET</a></li>
+<li class="chapter" data-level="3.3.3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#abundance-estimation"><i class="fa fa-check"></i><b>3.3.3</b> Abundance estimation</a></li>
+</ul></li>
 <li class="chapter" data-level="3.4" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#occupancy-modelling"><i class="fa fa-check"></i><b>3.4</b> Occupancy modelling</a></li>
-<li class="chapter" data-level="3.5" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis-1"><i class="fa fa-check"></i><b>3.5</b> Wrangling data for analysis</a></li>
-<li class="chapter" data-level="3.6" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#constructing-a-classifier"><i class="fa fa-check"></i><b>3.6</b> Constructing a classifier</a></li>
+<li class="chapter" data-level="3.5" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#constructing-a-classifier"><i class="fa fa-check"></i><b>3.5</b> Constructing a classifier</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="4-camera-data-analysis.html"><a href="4-camera-data-analysis.html"><i class="fa fa-check"></i><b>4</b> Camera data analysis</a></li>
 <li class="chapter" data-level="5" data-path="5-conclusions.html"><a href="5-conclusions.html"><i class="fa fa-check"></i><b>5</b> Conclusions</a></li>
@@ -233,7 +236,7 @@ Published with bookdown</a></li>
 <div id="installing-the-package" class="section level2 hasAnchor">
 <h2><span class="header-section-number">1.6</span> Installing the package<a href="1-introduction.html#installing-the-package" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>You can install <code>wildRtrax</code> directly from this repository with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="1-introduction.html#cb1-1"></a><span class="co"># install.packages(&quot;remotes&quot;)</span></span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="1-introduction.html#cb1-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
 <span id="cb1-2"><a href="1-introduction.html#cb1-2"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;ABbiodiversity/wildRtrax&quot;</span>)</span></code></pre></div>
 <p>Or the development version with:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="1-introduction.html#cb2-1"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;ABbiodiversity/wildRtrax@development&quot;</span>)</span></code></pre></div>

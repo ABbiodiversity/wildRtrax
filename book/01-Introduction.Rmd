@@ -42,7 +42,7 @@ By outlining a standardized and harmonized procedure for data intake, quality co
 You can install `wildRtrax` directly from this repository with:
 
 ```r
-# install.packages("remotes")
+install.packages("remotes")
 remotes::install_github("ABbiodiversity/wildRtrax")
 ```
 

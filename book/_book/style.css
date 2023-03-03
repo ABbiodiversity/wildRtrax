@@ -39,5 +39,17 @@ header-section-number::after {
   background-color: #FFFFFF;
   background-image: url("./book/assets/danger.png");
 }
+.didyouknow {
+  border: 4px #3F3D56;
+  border-style: dashed solid;
+  padding: 1em;
+  margin: 1em 0;
+  padding-left: 50px;
+  background-size: 70px;
+  background-repeat: no-repeat;
+  background-position: 15px center;
+  color: #006400;
+  background-color: #E8F1F2;
+}
 
 
