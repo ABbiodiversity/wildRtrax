@@ -9,9 +9,9 @@ output:
 
 # Introduction
 
-Avian point-count surveys rely on skilled observers to identify species and estimate numbers of individuals using distinct visual or acoustic signals. Since birds rely on acoustic cues to attract mates, defend territory and communicate with one another, humans can take advantage of these unique signatures in order to identify species and individuals. In passive field-based surveys (i.e. "point counts"), human observers use distance and time-interval sampling in order for analysts to incorporate perceptibility and dectectability offsets (Solymos et al. 2013) to accurately calculate meaningful biological metrics such as density or occupancy. These are then are used to make conservation decisions for the species. The accuracy and reliability of the results of this sampling must be high otherwise incorrect conclusions and flawed decision-making can lead to the improper management of a species or landscape.
+Avian count surveys rely on skilled observers to identify species and estimate numbers of individuals using distinct visual or acoustic signals. Since birds rely on acoustic cues to attract mates, defend territory and communicate with one another, humans can take advantage of these unique signatures in order to identify species and individuals. In passive field-based surveys (i.e. "point counts"), human observers use distance and time-interval sampling in order for analysts to incorporate perceptibility and dectectability offsets (Buckland et al. 2001, Farnsworth et al. 2002, Solymos et al. 2013) to accurately calculate meaningful biological metrics such as population size or density which are then are used to make conservation decisions. The accuracy and reliability of these results must be high otherwise incorrect conclusions and flawed decision-making can lead to the improper management of a species or landscape.
 
-Since the advent of affordable autonomous recording unit (ARU) technology, single-visit human-based surveys have been rapidly replaced by archivable acoustic recordings of the environment. This has established both the fields of bioacoustics and ecoacoustics, launching ARUs as the new standard for bird population monitoring. The comparison of human-based surveys and acoustic recording technology for monitoring avian populations is well-documented (Shonfield et al. 2017, Van Wilgenburg et al. 2017, Venier et al. 2017, Pankratz et al. 2017, Yip et al. 2019). Factors such as distance from the observer or ARU (Yip et al. 2016, Knight et al. 2020, Van Wilgenburg et al. 2017), frequency range and habitat type (Yip et al. 2016) all play an important role in whether a species is detected (true positive; *TP*) or not (true negative; *TN*). Researchers can leverage the ability to archive acoustic recording data over point counts in order to improve data processing quality and benefit from long-term secure data storage. Ensuring the proper integration of traditional human-collected and acoustic data [REFERENCE] is key to avian monitoring management implications and conservation goals. By creating open data sets, (Docherty et al. 2021) researchers can also merge data sets together allowing for larger coproduced (Westwood et al. 2020) and reproducible analyses.
+Since the advent of affordable autonomous recording unit (ARU) technology, single-visit human-based surveys have been rapidly replaced by archiveable acoustic recordings of the environment. This has established both the fields of bioacoustics and ecoacoustics, launching ARUs as the new standard for bird population monitoring. The comparison of human-based surveys and acoustic recording technology for monitoring avian populations is well-documented (Shonfield et al. 2017, Van Wilgenburg et al. 2017, Venier et al. 2017, Pankratz et al. 2017, Yip et al. 2019). Factors such as distance from the observer or ARU (Yip et al. 2016, Knight et al. 2020, Van Wilgenburg et al. 2017), frequency range and habitat type (Yip et al. 2016) all play an important role in whether a species is detected (true positive; *TP*) or not (true negative; *TN*). Researchers can leverage the acoustic recording data over point counts in order to improve data processing quality and benefit from long-term secure data storage. Ensuring the proper integration of traditional human-collected and acoustic data [REFERENCE] is key to avian monitoring management implications and conservation goals. By creating open data sets, (Docherty et al. 2021) researchers can also merge data sets together allowing for larger coproduced (Westwood et al. 2020) and reproducible analyses.
 
 False positives (*FP*) and false negatives (*FN*) in avian data sets are rarely reported in the scientific literature suggesting that they are either flawlessly collected or species are identified to a high degree of accuracy and / or precision. *FP*s can increase the count and therefore skew the population estimates for certain species. Morrison (2016) proposes that to avoid observer error in plant identification, additional training including active feedback approaches, continual evaluation and calibration among a multi-observer set are important. Similarly, Dennett and Nielsen (2019) determined that abundance and scale of the survey were the most influential factors in detecting rare species of plants. These types of assessments would be operationally difficult or costly to implement for field-based avian surveys given the mobile nature of birds, however utilizing the ability to return to acoustic recording would show the potential to determine the error in the avian count data. Standardizing multiple observers is known to be effective for correcting inter-observer variability in species detections in a monitoring program [REFERENCE]. While acoustic data excludes any visual cues for species identification, the principal advantage of collecting avian data with ARUs is that a permanent copy of the recording can be kept for future reference.
 
@@ -45,23 +45,18 @@ knitr::opts_chunk$set(collapse = TRUE, comment = '#>')
 
 ```
 
-Data processing took place in a web-enabled, environmental sensor data platform called [WildTrax](https://www.wildtrax.ca). WildTrax allows users to store, manage, process, verify, share and discover data deriving from environmental sensors, such as ARUs, remote camera traps. 
+## Divergence and similarities in avian counts between observers
 
 [FIGURE]
 
-1. Assessing differences in avian communities between observers
-
-A total of 12 observers were given the same ten, 3-minute long recordings (n<sub>rep</sub>=120, n<sub>min_total</sub>=360) and instructed to process data to identify time-of-first-detection of each species-individual on the recording. Species detections in WildTrax are designated as **tags** where a user draws a box around the spectral signature in the spectrogram, with confirmation via the audio, and WildTrax stores the tag metadata, e.g. frequency range = Hz, duration = ms.
+A total of 11 observers were given the same ten, 3-minute long recordings (n<sub>rep</sub>=120, n<sub>min_total</sub>=360) and instructed to process data to identify time-of-first-detection of each species-individual on the recording. Species detections in WildTrax are designated as **tags** where a user draws a box around the spectral signature in the spectrogram, with confirmation via the audio. WildTrax stores the tag metadata, e.g. frequency range = Hz, duration = ms. Each observer were given the same recordings to process independent of one another in groupings of data called [projects](). A user is given access to a project through user authentication and membership so that data processing could be done blind. Locations were placed on a map but within a 5.5 km buffer so the user also did not know exactly what habitat type or exact spatial location they were processing data in as not to bias species detections based on community structure. Projects were then merged together to create the full dataset for this protocol.
 
 [FIGURE]
 
-Each observer were given the same recordings to process independent of one another in groupings of data called [projects](). A user is given access to a project through user authentication and membership so that data processing could be done blind. Locations were placed on a map but within a 5.5 km buffer so the user also did not know exactly what habitat type they were processing data in. Projects were then merged together to create the full dataset for this protocol.
 
-[FIGURE]
 
-Data was downloaded from WildTrax projects using `wt_download_report` function. This is an API that allows users authorized to the projects or organization on WildTrax to download the report data directly to R.
 
-```{r, eval = F, include = T}
+```{r, eval = T, include = T, warning = F, message = F}
 
 # DOWNLOAD LIKE THIS WHEN THIS IS WORKING FOR GOOGLE AUTH0
 
@@ -71,20 +66,6 @@ Data was downloaded from WildTrax projects using `wt_download_report` function. 
 #
 # wt_download_report()
 
-```
-
-Then, using the `wildRtrax::wt_ord` function the data will be run through a series of steps to do the following:
-
-- [*Tidies*](https://www.tidyverse.org/) and prepares data in a species matrix
-- Runs the redundancy analysis (RDA) on observer with recording as a constrained effect to determine the relationship between observer and species detections
-- Runs a generalized linear mixed model (GLMM) on tag start time against observer with recording as a random effect
-- Creates an ordination plot of the RDA and raw data summary for the time of first detection faceted by each observer
-- Returns results of a PERMANOVA, Adjusted *R*<sup>2<sup> and *F*-statistic corresponding to the overall strength and significance of the relationship of the ordination
-- Returns stepwise model output of the GLMM to determine significant differences between observers and the mean of the group
-
-Import the species table and raw data that will be used for analysis. This comes from a single WildTrax project that was merged together. 
-
-```{r, eval = T, include = T, warning = F, message = F}
 # Omit any abiotic data
 abiotic_codes<-c('LIBA','MOBA','HEBA','LITR','MOTR','HETR','LINO','MONO','HENO',
                  'LIRA','MORA','HERA','LIWI','MOWI','HEWI','LIAI','MOAI','HEAI',
@@ -100,38 +81,26 @@ data <-
   map(~read_csv(., col_types = list(location = col_character(), abundance = col_character(), verified_by = col_character()))) %>%
   bind_rows()
 
-# Load and prepare the BirdNET data
-
-fn <- dir_ls(path = "/users/alexandremacphail/desktop/qc", regexp = "*recording_birdnet.csv") %>%
-  map(~read_csv(., col_types = list(location = col_character()))) %>%
-  bind_rows()
-
-nfn <- fn %>%
-  filter(!window_start_time >= 180) %>%
-  select(location, recording_date, scientific_name, window_start_time, confidence) %>%
-  distinct() %>%
-  inner_join(., cls %>% select(species_code, species_common_name, scientific_name), by = c("scientific_name" = "scientific_name")) %>%
-  add_column(observer = "BirdNET") %>%
-  add_column(project_name = "BirdNET Output") %>%
-  select(project_name, location, recording_date, observer, species_code, window_start_time, confidence) %>%
-  rename("tag_start_s" = 6) %>%
-  mutate(tag_start_s = as.double(tag_start_s)) %>%
-  add_column(abundance = "1")
-
-data_bn <- bind_rows(data, nfn)
+head(data)
 
 ```
 
+Data was downloaded from WildTrax projects using `wt_download_report` function in the `wildRtrax` package. This is an API that allows users authorized to the projects or organization on WildTrax to download the report data directly to R. Here we are also importing the WildTrax species table and raw data that will be used for analysis. We'll also create a list of abiotic variables that we'll omit later. 
+
+The `wildRtrax::wt_ord` function conducts a series of steps to return the results of a multi-observer project. The first step in this process involves tidying and preparing the data in a species matrix. The `tidyverse` familyl of packages is utilized for this process, which is a collection of packages designed for efficient data manipulation and analysis. The `wt_ord` function then runs a redundancy analysis (RDA) on the observer with recording, in other words, location (spatial component) and recording date (temporal component), as a constrained effect. This statistical technique is commonly used to determine the relationship between a set of response variables and a set of predictor variables. In the context of this analysis, the RDA is used to determine the relationship between the observer and the species detections. The `wt_ord` function also conducts variance partitioning where necessary to determine the contribution of predictor variables in the RDA. This process helps to identify the factors that have the greatest influence on the relationship between the observer and the species detections. The function also returns results of a *PERMANOVA*, adjusted *R*-squared, and *F*-statistic to provide information on the overall strength and significance of the relationship of the ordination. The *PERMANOVA* is a non-parametric statistical method used to test the null hypothesis that there is no difference in the means of the groups being compared. The adjusted *R*-squared and *F*-statistic provide information on how well the model fits the data, and the significance of the differences observed between the groups.
+
+In addition to the RDA, the wt_ord function also runs a generalized linear mixed model (GLMM) on the tag start time against observer, with recording as a random effect. GLMMs are widely used in statistical analysis, and are especially useful for analyzing data that has both fixed and random effects. By using a GLMM in this context, the wt_ord function can determine if there are any significant differences between the observers and the mean of the group.
+
 This is the underlying Roxygen parameters that supports the `wt_ord` function in WildTrax.
 
-```{r}
+```{r, eval=F, include=F,message=F,warning=F}
 
 #' @section `wt_ord` details:
 #'
 #' @description 
 
 #' @param input Character; A wt_download_report tibble
-#' @param min_obs Numeric; The minimum number of replicates you want to use
+#' @param min_obs Numeric; The minimum number of replicates you want to use. wt_ord will omit 
 #' @param confidence Numeric; The confidence of the ellipses in the RDA
 #' 
 #' @import 
@@ -150,7 +119,7 @@ This is the underlying Roxygen parameters that supports the `wt_ord` function in
 
 And the `wt_ord` function itself.
 
-```{r}
+```{r, eval=T, include=T, message=F, warning=F}
 
 # Create the wt_ord function
 wt_ord <- function(input = x, min_obs, confidence) {
@@ -203,37 +172,68 @@ wt_ord <- function(input = x, min_obs, confidence) {
     dplyr::select(location, recording_date, observer) %>%
     distinct()
   
+  if (length(unique(multi2$location)) == 1) {
+    stop(print("You need at least two recordings duplicated in order to generate the analysis"))
+  }
+  
   # Run the RDA 
-  t3 <- rda(multi2[,-c(1:4)] ~ observer + location + recording_date, data = multi_type)
+  ordination <- rda(multi2[,-c(1:4)] ~ observer + location + recording_date, data = multi_type)
+  ordination_obs <- rda(multi2[,-c(1:4)] ~ observer, data = multi_type)
+  ordination_loc <- rda(multi2[,-c(1:4)] ~ location, data = multi_type)
+  ordination_date <- rda(multi2[,-c(1:4)] ~ recording_date, data = multi_type)
+  ordination_obs_loc <- rda(multi2[,-c(1:4)] ~ observer + location, data = multi_type)
+  ordination_recording <- rda(multi2[,-c(1:4)] ~ location + recording_date, data = multi_type)
+  ordination_obs_date <- rda(multi2[,-c(1:4)] ~ observer + recording_date, data = multi_type)
+  
+  # Getting R2 for models
+  firstmodel <- RsquareAdj(ordination)$adj.r.squared
+  obsmodel <- RsquareAdj(ordination_obs)$adj.r.squared
+  locmodel <- RsquareAdj(ordination_loc)$adj.r.squared
+  datemodel <- RsquareAdj(ordination_date)$adj.r.squared
+  obs_plus_locmodel <- RsquareAdj(ordination_obs_loc)$adj.r.squared
+  recordingmodel <- RsquareAdj(ordination_recording)$adj.r.squared
+  obs_plus_datemodel <- RsquareAdj(ordination_obs_date)$adj.r.squared
   
   # Print the results of a permutation test for the constrained ordination
-  ordistep(t3)
+  step <- ordistep(ordination, direction = "both")
+  u <- ordination$CCA$u %>% as.data.frame()
+  
+  showvarparts(2, bg = c("hotpink","skyblue"))
+  # Partioning the variance of the RDA
+  mod <- varpart(multi2[,-c(1:4)] %>% as.data.frame(), as.factor(multi2$location), as.factor(multi2$observer), transfo="hel")
+  ## Use fill colours
+  plot(mod, bg = c("hotpink","skyblue"))
+  # Alternative way of to conduct this partitioning
   
   # Set up the output - scores first
-  t3scores <- scores(t3, display = "sites") %>%
+  ordination_scores <- scores(ordination_obs, display = "sites") %>%
     as.data.frame() %>%
     rownames_to_column("site") %>%
     bind_cols(., multi_type)
   
   # Then eigenvectors 
-  t3vect <- scores(t3, display = "species") %>%
+  ordination_vect <- scores(ordination_obs, display = "species") %>%
     as.data.frame()
   
   # Now plot everything for the ordination
-  plot_RDA <- ggplot(data = t3scores, aes(x = RDA1, y = RDA2)) +
-    geom_point(data = t3scores, aes(x = RDA1, y = RDA2, colour = observer), alpha = 0.6) +
-    stat_ellipse(data = t3scores, aes(colour = observer), linetype = 4, type = 'norm', level = confidence) +
+  plot_RDA <- ggplot(data = ordination_scores, aes(x = RDA1, y = RDA2)) +
+    geom_point(data = ordination_scores, aes(x = RDA1, y = RDA2, colour = observer), alpha = 0.6) +
+    stat_ellipse(data = ordination_scores, aes(colour = observer), linetype = 4, type = 'norm', level = 0.67) +
     geom_vline(xintercept = c(0), color = "#A19E99", linetype = 2) +
     geom_hline(yintercept = c(0), color = "#A19E99", linetype = 2) +
-    geom_segment(data = t3vect, aes(x = 0, y = 0, xend = RDA1, yend = RDA2), arrow = arrow(length = unit(0.2, "cm"))) +
-    geom_text(data = t3vect, aes(x = RDA1, y = RDA2, label = rownames(t3vect))) +
+    geom_segment(data = ordination_vect, aes(x = 0, y = 0, xend = RDA1, yend = RDA2), arrow = arrow(length = unit(0.2, "cm"))) +
+    geom_text(data = ordination_vect, aes(x = RDA1, y = RDA2, label = rownames(ordination_vect))) +
     # Apply ABMI themes
-    labs(x = paste0("RDA1 ", round(t3$CA$eig[[1]],2), '%'),
-         y = paste0("RDA2 ", round(t3$CA$eig[[2]],2), '%'),
-         title = paste0("RDA of observer detections constrained by recording"))
+    labs(x = paste0("RDA1 ", round(ordination$CA$eig[[1]],2), '%'),
+         y = paste0("RDA2 ", round(ordination$CA$eig[[2]],2), '%'),
+         title = paste0("RDA of observer detections constrained by recording")) +
+    theme_bw() +
+    guides(fill="none") +
+    scale_colour_viridis_d()
+    
   
   # Time to first detection data setup
-  dd <- input %>%
+  dd <- data %>%
   select(location, recording_date, 
          observer, species_code, individual_appearance_order, 
          tag_start_s, tag_duration_s,  min_tag_freq, max_tag_freq, vocalization, abundance) %>%
@@ -241,7 +241,7 @@ wt_ord <- function(input = x, min_obs, confidence) {
   group_by(location, recording_date) %>%
   mutate(unique_times = n_distinct(observer)) %>%
   ungroup() %>%
-  filter(unique_times >= min_obs) %>%
+  filter(unique_times >= 11) %>%
   select(-unique_times) %>%
   relocate(abundance, .after=individual_appearance_order) %>%
   mutate_at(vars(min_tag_freq, max_tag_freq), ~as.numeric(str_replace(.,"kHz",""))) %>%
@@ -258,15 +258,18 @@ d <- ggplot(dd, aes(x=tag_start_s,y=detection_order,colour=Unknown,shape=Unknown
   ylim(0,50) +
   facet_wrap(~observer, scales="free_x") +
   ggtitle("Time to first detection of species and unknown tags") +
-  xlab("Tag start time (seconds)") + ylab("Detections per recording")
+  xlab("Tag start time (seconds)") + ylab("Detections per recording") +
+  scale_colour_viridis_d() +
+  theme_bw()
 
 #Return all objects 
   return(list(plot_RDA, # Ordination
               d, # Time to first detection plot 
-              t3, # Ordination 
-              t3scores %>% as_tibble(), # Ordination scores
-              vegan::anova.cca(t3, permu = 999), # Permutation Test for RDA (ANOVA-like)
-              vegan::adonis(multi2[,-c(1:4)] ~ observer + location + recording_date, data = multi_type, distance = "bray"))) # PERMANOVA
+              ordination, # Ordination 
+              ordination_scores %>% as_tibble(), # Ordination scores
+              vegan::anova.cca(ordination, step = 1000, by = "term"), # Permutation Test for RDA (ANOVA-like)
+              vegan::adonis(multi2[,-c(1:4)] ~ observer + location + recording_date, data = multi_type, distance = "jaccard"), # PERMANOVA
+              vegan::adonis2(multi2[,-c(1:4)] ~ observer + location + recording_date, data = multi_type, distance = "jaccard")))
 }
 
 ```
@@ -278,6 +281,49 @@ Now we run the function.
 res <- wt_ord(input = data, min_obs = 11, confidence = 0.67)
 
 ```
+
+
+
+
+
+
+## Time to first detection between observers
+
+```{r}
+
+res[[2]]
+
+
+```
+
+## False negative rates and use of BirdNET
+
+
+```{r}
+# Load and prepare the BirdNET data
+
+fn <- dir_ls(path = "/users/alexandremacphail/desktop/qc", regexp = "*recording_birdnet.csv") %>%
+  map(~read_csv(., col_types = list(location = col_character()))) %>%
+  bind_rows()
+
+nfn <- fn %>%
+  filter(!window_start_time >= 180) %>%
+  select(location, recording_date, scientific_name, window_start_time, confidence) %>%
+  distinct() %>%
+  inner_join(., cls %>% select(species_code, species_common_name, scientific_name), by = c("scientific_name" = "scientific_name")) %>%
+  add_column(observer = "BirdNET") %>%
+  add_column(project_name = "BirdNET Output") %>%
+  select(project_name, location, recording_date, observer, species_code, window_start_time, confidence) %>%
+  rename("tag_start_s" = 6) %>%
+  mutate(tag_start_s = as.double(tag_start_s)) %>%
+  add_column(abundance = "1")
+
+data_bn <- bind_rows(data, nfn)
+
+```
+
+
+
 
 # Results
 
@@ -322,141 +368,4 @@ res[[2]] # Time to first detection
 
 # References
 
-
-
-
-
-
-
-
-This is just other stuff I tried.
-
-```{r, eval = F, include = F}
-
-dd <- input %>%
-  select(location, recording_date, 
-         observer, species_code, individual_appearance_order, 
-         tag_start_s, tag_duration_s,  min_tag_freq, max_tag_freq, vocalization, abundance) %>%
-  distinct() %>%
-  group_by(location, recording_date) %>%
-  mutate(unique_times = n_distinct(observer)) %>%
-  ungroup() %>%
-  filter(unique_times >= 11) %>%
-  select(-unique_times) %>%
-  relocate(abundance, .after=individual_appearance_order) %>%
-  mutate_at(vars(min_tag_freq, max_tag_freq), ~as.numeric(str_replace(.,"kHz",""))) %>%
-  group_by(location, recording_date, observer) %>%
-  mutate(detection_order = row_number()) %>%
-  ungroup() %>%
-  mutate(freq_diff = max_tag_freq - min_tag_freq) %>%
-  mutate(Unknown = case_when(grepl('^U',species_code) ~ "Unknown", TRUE ~ "Species"))
-  
-d <- ggplot(dd, aes(x=tag_start_s,y=detection_order,colour=Unknown,shape=Unknown)) +
-  geom_point(alpha = 0.2) +
-  geom_smooth(alpha = 0.6) +
-  ylim(0,50) +
-  facet_wrap(~observer, scales="free_x") +
-  abmi.themes::theme_abmi() +
-  abmi.themes::scale_color_abmi() +
-  ggtitle("Time to first detection of species and unknown tags") +
-  xlab("Tag start time (seconds)") + ylab("Detections per recording")
-
-
-j2 <- wt_ord(input = data, min_obs = 11, confidence = 0.67)
-
-p1 <- lmer(tag_start_s ~ observer + (1|location) + (1|recording_date), data = dd)
-library(lattice)
-
-randoms <- ranef(p1)
-dotplot(randoms)
-qqmath(randoms)
-
-p2 <- lmer(tag_start_s ~ 1 + (1|observer), data = dd)
-
-p3 <- lmer(tag_start_s ~ observer + (1|location) + (1|recording_date) + (1|species_code) + (1|abundance), data = dd)
-
-anova(p1,p3)
-
-confint(p3)
-
-summary(p1)
-plot(p1)
-
-p4 <- gamlss(log(tag_start_s) ~ observer + location + recording_date, data=dd)
-plot(p4)
-
-anova(p1, p4)
-
-
-```
-
-
-```{r, eval = F, include = F}
-###Take the eigenvalues for each point and determine the sum of squares to get a preliminary score
-rich_score <- j2[[4]] %>%
-  group_by(observer) %>%
-  summarise(score = sum(RDA1^2 + RDA2^2)) %>%
-  arrange(-score) %>%
-  ungroup()
-
-#Figure out the distribution of the data
-descdist(rich_score$score, discrete = F, boot = 500)
-
-h <- ggplot(rich_score, aes(x=reorder(observer,-score), y=score)) + geom_point() + geom_smooth()
-
-h
-#Fit data to weibull distribution
-fit <- fitdist(rich_score$score, "pois", "mme")
-
-mod <- lmer(tag_start_s ~ observer + (1|location) + (1|recording_date), data = dd)
-
-p1 <- lmer(tag_start_s ~ observer + (1|location) + (1|recording_date), data=dd)
-nb1 <- glmer.nb(tag_start_s ~ observer + (1|location) + (1|recording_date), data=dd)
-summary(p1)
-plot(p1)
-
-```
-
-
-```{r, eval = F, include = F}
-ggplot(dd, aes(x=reorder(observer,-freq_diff),y=freq_diff,fill=observer)) +
-  geom_boxplot() +
-  abmi.themes::theme_abmi() +
-  abmi.themes::scale_fill_abmi() +
-  theme(axis.text.x = element_text(angle = 85, vjust = 0.5, hjust=0.5)) +
-  ggtitle("Average frequency range of detections") +
-  theme(axis.text.x = element_blank()) +
-  xlab("Observer within group") + ylab("Average frequency range of tags")
-
-un <- dd %>%
-  group_by(observer, Unknown) %>%
-  tally() %>%
-  ungroup() %>%
-  pivot_wider(names_from = Unknown, values_from = n) %>%
-  mutate(prop = paste0(round(((Unknown / Species)*100),2)," %")) %>%
-  pivot_longer(cols = Species:Unknown, names_to = "Unknown")
-
-ggplot(un, aes(fill=Unknown, y=value, x=reorder(observer,-value))) +
-  geom_bar(position="dodge", stat="identity") + coord_flip() +
-  abmi.themes::theme_abmi() +
-  abmi.themes::scale_fill_abmi() +
-  geom_text(aes(label = ifelse(Unknown == "Unknown",prop,""), hjust=-0.7, vjust =-0.8)) +
-  #gghighlight::gghighlight(observer == "Gill Holmes", label_key = observer) +
-  ylab("Count of tags") + xlab("Observer") + ggtitle("Proportion of unknowns tagged per observer")
-
-
-uns <- dd %>%
-  mutate(Unknown = case_when(grepl('^U',species_code) ~ "Unknown", TRUE ~ "Species")) %>%
-  select(observer, Unknown, tag_start_s) %>%
-  distinct()
-
-ggplot(uns, aes(x=observer,y=tag_start_s,fill=Unknown)) +
-  geom_boxplot() +
-  theme(axis.text.x = element_text(angle = 85, vjust = 0.5, hjust=0.5)) +
-  abmi.themes::theme_abmi() +
-  abmi.themes::scale_fill_abmi() +
-  ylab("Tag start time (seconds)") + xlab("Observer") +
-  facet_wrap(~Unknown)
-
-```
 
