@@ -25,4 +25,11 @@ pre code {
 header-section-number::after {
     content: ".";
 }
+.dangerbox {
+  padding: 0.5em;
+  background: white;
+  color: red;
+  border: 2px;
+  border-radius: 10px;
+}
 

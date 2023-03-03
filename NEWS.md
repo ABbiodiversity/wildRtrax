@@ -1,4 +1,4 @@
-# wildRtrax 1.0.0 'Rose-breasted Grosbeak'
+# wildRtrax 1.0.0 'Rose-breasted Grosbeak / Wolverine'
 
 ## Major changes 
 
@@ -6,10 +6,10 @@
   * Addition of *flac* as file type
   * Addition of `extra_cols` argument to enable faster scanning when argument is set to `FALSE`. This also deals with headerless file errors for (#2)
   * Enabled parallel file scanning; microbenchmarked base scanning at 5.6x faster on a dual-core machine
-  * Moved progress bars from `furrr_options` to the `progressr` package
-* `wt_auth` is now also Google Auth0 enabled; use new argument `type = "Google"` or `type = "OAuth0"` if you use a username and password to authenticate
+  * Moved progress bars from `furrr_options` to the `progressr` and `progress` packages
 * Addition of `wt_glean_ap` function to acoustic pre-processing work flow to extract desired data from a `wt_run_ap` output
 * Addition of linking functions in order to add desired media and metadata to WildTrax: `wt_make_aru_tasks`, `wt_kaleidoscope_tags` and `wt_songscope_tags`
+* Addition of convenience functions: `wt_location_distances` and `wt_chop`
 * Alignment of `wt_download_report` with column headers released in [WildTrax Phase 8]() to resolve (#3, #4, #5)
 * Addition of acoustic analysis functions:
   * `wt_replace_tmtt` replaces TMTT with numeric abundance estimates

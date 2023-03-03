@@ -22,7 +22,7 @@ header-includes:
 urlcolor: blue
 ---
 
-![](images/cover.png)
+![](assets/cover.png)
 
 ```{r include=FALSE}
 # Include initial packages
@@ -48,17 +48,16 @@ knitr::opts_chunk$set(engine.opts = list(bash = "-l"))
 
 ## Who is this book for?
 
-
+This book is a valuable resource for anyone working with environmental sensor data and seeking to manage it using R. It is suitable for both experienced users and those new to the subject, as it is written in a clear and accessible style. While the book is designed to be user-friendly, it also contains advanced concepts and functions that may require additional reading to fully understand. However, the authors encourage readers to ask questions and provide feedback, as the book and workflows will continue to evolve.
 
 ## How should I read this book?
 
 1. Data pre-processing
-2. Data processing
-3. Data analysis
+2. Data analysis
 
 ## Why in R? Why bookdown?
 
-
+Bookdown is a powerful tool for writing and publishing books, especially those that require complex formatting or incorporate code and data analysis and integrates well with RStudio.
 
 ## Impact and intentions
 
@@ -66,4 +65,5 @@ knitr::opts_chunk$set(engine.opts = list(bash = "-l"))
 
 ## Acknowledgements
 
+* Many thanks to [Dr. Richard Hedley](https://richardwhedley.wordpress.com/) for providing the basis for the `wt_wac_info` internal function for *wac* file support
 

@@ -4,10 +4,9 @@ why-in-r-why-bookdown
 impact-and-intentions
 acknowledgements
 introduction
-what-are-environmental-sensors-why-do-we-use-them
-what-is-open-data-why-is-it-important-in-the-context-of-environmental-sensors
-why-is-reproducibility-important-for-environmental-sensor-data
-how-do-standardized-work-flows-help-with-environmental-sensor-data
+environmental-sensors
+open-data
+standardizing-information-pipelines
 what-is-wildtrax
 why-did-you-build-wildrtrax
 data-pre-processing

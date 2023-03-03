@@ -153,7 +153,7 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
 
   for (i in seq_along(start_times)) {
        inp %>>%
-       "Chopping the regular segments" [[i]] %>>%
+       "Chopping the regular segments" %>>%
          furrr::future_pmap(
           ..1 = .$file_path,
           ..2 = .$recording_date_time,
@@ -166,5 +166,4 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
          )
   }
 }
-
 

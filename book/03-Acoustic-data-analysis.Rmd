@@ -35,7 +35,7 @@ What is abundance, occupancy, etc.
 
 
 
-## Occupancy mdoelling
+## Occupancy modelling
 
 
 ## Wrangling data for analysis

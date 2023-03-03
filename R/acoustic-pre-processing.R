@@ -375,10 +375,22 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #'
 #' @return Output will return the merged tibble with all information, the summary plots of the indices and the LDFC
 
-wt_glean_ap <- function(x = NULL, input_dir) {
+wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","biotic")) {
 
   # Check to see if the input exists and reading it in
   files <- x
+
+  #Purpose lists
+  if (purpose == "quality") {
+    purpose_list <- c("Snr","BackgroundNoise")
+  } else if (purpose == "abiotic") {
+    purpose_list <- c("ClippingIndex","TemporalEntropy","Ndsi")
+  } else if (purpose == "biotic") {
+    purpose_list <- c("HighFreqCover","MidFreqCover","LowFreqCover","AcousticComplexity","Ndsi")
+  } else if (purpose == NULL) {
+    purpose_list <- list_all
+  }
+
 
   # Check to see if the input exists and reading it in
   if (dir.exists(input_dir)) {
@@ -407,8 +419,11 @@ wt_glean_ap <- function(x = NULL, input_dir) {
     inner_join(., ldfcs, by = c("file_name" = "file_name")) %>>%
     "Files joined!"
 
+  joined_purpose <- joined %>%
+    filter(index_variable %in% purpose_list)
+
   # Plot a summary of the indices
-  plotted <- joined %>%
+  plotted <- joined_purpose %>%
     ggplot(., aes(x=julian, y=index_value, group=julian, fill=index_variable)) +
     geom_boxplot() +
     scale_fill_viridis_d() +
@@ -422,7 +437,7 @@ wt_glean_ap <- function(x = NULL, input_dir) {
     ggtitle("Summary of indices")
 
   # Plot the LDFC
-  ldfc <- joined %>%
+  ldfc <- joined_purpose %>%
     select(image) %>%
     distinct() %>%
     map(function(x){magick::image_read(x)}) %>%

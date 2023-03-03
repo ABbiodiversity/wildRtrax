@@ -31,9 +31,16 @@ library(tidyverse)
 
 ```
 
-```{r, echo=TRUE, include=TRUE, eval=TRUE}
-# Root directory
-root <- '/volumes/GoogleDrive/Shared drives/wildRtrax/data/example'
+```{r, include=F, eval=F, warning=F, message=F}
+save.image(".Data")
+
+# Load example data. Hide this block.
+load(".RData")
+
+```
+
+```{r, echo=TRUE, include=TRUE, eval=TRUE, warning = F, message = F}
+
 
 # Scan data
 my_files <- wt_audio_scanner(path = root, file_type = "all", extra_cols = T, tz = "US/Mountain")

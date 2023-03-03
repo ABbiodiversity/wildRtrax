@@ -1,11 +1,24 @@
 # Data pre-processing
 
-## Acoustic data
+## Acoustic data basics
+
+After an ARU is retrieved from the field, it is crucial to promptly download and secure the data to create a redundant backup. Having redundant backups not only protects against data loss but also ensures business continuity and minimizes downtime in the event of a system failure or disaster. In case there is an issue with the SD card copy during the quality control process, having a redundant backup ensures that a copy of the data can be restored.
+
+## Acoustic data pre-processing
 
 
-### Acoustic data pre-processing
 
-#### Reading and filtering files
+### Reading, filtering and selecting audio recordings
+
+:::: {.dangerbox data-latex=""}
+::: {.left data-latex=""}
+Note, if you're not an R user you can stop here and upload all of your recordings directly to the organization on WildTrax. WildTrax however does not contain all the necessary data quality control measures to uptake data that are included in ``wildRtrax``
+:::
+::::
+
+- Go to the organization on WildTrax
+- Go to Manage > Upload Recordings to Organization
+- Follow the steps in WildTrax to finalize data upload
 
 ```{r, include = T, eval=F, warning=F, message=F}
 
@@ -15,7 +28,88 @@ wt_audio_scanner()
 
 ```
 
-#### Using acoustic indices and LDFCs
+You can choose `extra_cols = T` you'll be supplied with additional columns that can be used to help select recordings. 
+
+```{r, include = T, eval=F, warning=F, message=F}
+
+
+wt_audio_scanner()
+
+
+```
+
+It's possible that the recordings you have are longer than the maximum length WildTrax can currently import (1800 seconds or 320MB). In this case, you can use `wt_chop` to create intervals of recordings
+
+```{r, include = T, eval=F, warning=F, message=F}
+
+
+wt_chop()
+
+
+```
+
+The *modulo recording* refers to the remaining portion of the recording that is left over after it has been divided into equal intervals of the chosen duration. For example, if a recording is 120 seconds long and it is split into 50-second intervals, the modulo recording would be the final 20 seconds of the recording that does not fit into the final interval (e.g. 50 - 50 - 20). However, if the chosen interval duration is a factor of the total duration of the recording, there will be no modulo recording. For example, if a 120-second recording is divided into 60-second intervals, there will be no modulo recording since 60 seconds is a factor of 120 seconds.
+
+At this stage, you can filter recordings from the `wt_audio_scanner` tibble output in order to select the files you're interested in. Here's an example of the ABMI's Stratified Sampling Design for the Ecosystem Health Monitoring program that's used to pick recordings across a breadth of dates and times in order to maximize the species inventory collected at a location.  
+
+```{r}
+
+abmi_blocks <- as_tibble(data.frame(julian = 90:210) %>%
+                     crossing(time_index = 1:4) %>%
+                     mutate(blocks = case_when(julian %in% 90:139 & time_index == 1 ~ 9,
+                                               julian %in% 140:159 & time_index == 1 ~ 10,
+                                               julian %in% 160:179 & time_index == 1 ~ 11,
+                                               julian %in% 180:210 & time_index == 1 ~ 12,
+                                               julian %in% 90:104 & time_index == 3 ~ 1,
+                                               julian %in% 105:119 & time_index == 4 ~ 2,
+                                               julian %in% 120:139 & time_index == 3 ~ 3,
+                                               julian %in% 140:149 & time_index == 3 ~ 4,
+                                               julian %in% 150:159 & time_index == 4 ~ 5,
+                                               julian %in% 160:169 & time_index == 3 ~ 6,
+                                               julian %in% 170:179 & time_index == 4 ~ 7,
+                                               julian %in% 180:210 & time_index == 4 ~ 8,
+                                               TRUE ~ NA_real_),
+                            recs = case_when(blocks %in% c(4:7) ~ 180,
+                                             TRUE ~ 60)))
+
+head(abmi_blocks)
+
+
+```
+
+The Before-After Dose-Response program is another example of a sampling design. Here, we select four recordings near dawn and one recording at dusk for each location between Julian date 140 and 210, for a total of 15 audio minutes. Again, this approach allows users to maximize species diversity while accounting for processing effort.
+
+```{r, eval = T, warning = F, message = F, include = T}
+
+bz <- b %>%
+  select(file_name:year) %>%
+  inner_join(., locs, by = c("location")) %>%
+  mutate(recording_date_time = force_tz(recording_date_time, "US/Mountain")) %>%
+  rowwise() %>%
+  mutate(angle = pull(suncalc::getSunlightPosition(date = recording_date_time, lat = latitude, lon = longitude, keep = c("altitude"))) * (180/pi)) %>%
+  ungroup() %>%
+  filter(between(angle,-6,6), # Take recordings between civil twilight and 6 degrees after dawn
+         between(julian,140,210)) %>%
+  mutate(hour = hour(recording_date_time))
+
+# Sample on dusk recording
+bz1 <- bz %>% filter(hour %in% c(20:22)) %>%
+  sample_n(1, replace = F)
+# And four dawn recordings
+bz2 <- bz %>% filter(hour %in% c(4:7)) %>%
+  sample_n(4, replace = F)
+
+bzz <- bind_rows(bz1, bz2)
+
+head(bzz)
+
+```
+
+### Using acoustic indices and LDFCs
+
+*Acoustic indices* and *long-duration false-colour (LDFC)* spectrograms are two tools used in the analysis of acoustic data developed by the Towsey lab at QUT. Acoustic indices are numerical measurements that quantify various aspects of sound using different measurements that reflect the soundscpe. They are used to identify and track patterns of vocal activity over time, generate soundscape and monitor ecosystem-level patterns and changes. Some commonly known acoustic indices include the Acoustic Complexity Index (ACI), which measures the diversity of sound frequencies and amplitudes, and the Acoustic Diversity Index (ADI), which measures the number and relative abundance of different vocalizations. Long-duration false-color spectrograms are visual representations of acoustic data using index values rather than spectral generation in order to provide detailed views of sound patterns over long periods of time. The use of false-colours allows for easier interpretation of the spectrogram, as different colors can be used to represent different types of sounds. These unique spectrograms are particularly useful in studies of animal vocalizations, as they allow researchers to identify specific vocalizations and track patterns of vocal activity over long periods of time, and determine seasonal phenology patterns. 
+
+``wildRtrax`` utilizes the results of the AnalysisPrograms software which generates the csv, json and png files associated to the results, and generates tidy versions of the data that can be joined to the media in order to select recordings based on index values and patterns. Let us demonstrate some different examples while introducing the `wt_run_ap` and `wt_glean_ap` functions.
 
 ```{r, include = T, eval=F, warning=F, message=F}
 
@@ -33,18 +127,45 @@ wt_glean_ap()
 
 ```
 
-#### Selecting files for a project
+### Linking acoustic data to WildTrax
+
+Wildlife Acoustics offers advanced tools for analyzing wildlife vocalizations. Two of their most popular programs are Songscope and Kaleidoscope that allows users to visualize and identify animal songs and calls and also create and run automated classifiers. The output files from these programs can be transformed into WildTrax tags to be uploaded for verification purposes. This is also the primary mechansim that ultrasonic data makes its way into the system if it is being analyzed in Kaleidoscope. 
+
+#### Sonscope results
 
 ```{r, include = T, eval=F, warning=F, message=F}
 
-
-# Boosted regression tree example for built-out of wt_boost_ap()
-
+wt_songscope_tags()
 
 ```
 
-### Linking acoustic data to WildTrax
+#### Kaleidoscope results
+
+```{r, include = T, eval=F, warning=F, message=F}
+
+wt_kaleidoscope_tags()
+
+```
+
+
+### Making tasks
+
+```{r, include = T, eval=F, warning=F, message=F}
+
+wt_make_aru_tasks()
+
+```
+
 
 ## Image data
 
 
+## Other convenience functions
+
+```{r, include = T, eval=F, warning=F, message=F}
+
+
+wt_location_distances()
+
+
+```
