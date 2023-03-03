@@ -30,7 +30,7 @@ False positives (*FP*) and false negatives (*FN*) in avian data sets are rarely 
 
 A standardized system of reporting, assessing and determining actions to resolve avian identification error is crucial to ensure that reporting meets a high data quality standard and that it can be used comfortably in aggregation with other data to answer a wider range of scientific questions. The goals were to provide a standard way of assessing the prevalence of false positives, false negatives and true negatives in avian datasets, to provide solutions to correct and integrate identification error into analyses, and to provide recommendations for the evaluation, training and development of skilled observers. 
 
-```{r, eval = F, include = T, warning = F, message = F}
+```{r, include = T, eval=F, warning=F, message=F}
 
 # Omit any abiotic data
 abiotic_codes<-c('LIBA','MOBA','HEBA','LITR','MOTR','HETR','LINO','MONO','HENO',
@@ -55,7 +55,7 @@ The `wildRtrax::wt_ord` function conducts a series of steps to return the result
 
 In addition to the RDA, the wt_ord function also runs a generalized linear mixed model (GLMM) on the tag start time against observer, with recording as a random effect. GLMMs are widely used in statistical analysis, and are especially useful for analyzing data that has both fixed and random effects. By using a GLMM in this context, the wt_ord function can determine if there are any significant differences between the observers and the mean of the group.
 
-```{r, eval = F, include = T, warning = F, message = F}
+```{r, include = T, eval=F, warning=F, message=F}
 # Using the most recent quality control
 res <- wt_ord(input = data, min_obs = 11, confidence = 0.67)
 
@@ -63,7 +63,7 @@ res <- wt_ord(input = data, min_obs = 11, confidence = 0.67)
 
 ### False negative rates and BirdNET
 
-```{r}
+```{r, include = T, eval=F, warning=F, message=F}
 # Load and prepare the BirdNET data
 
 fn <- dir_ls(path = "/users/alexandremacphail/desktop/qc", regexp = "*recording_birdnet.csv") %>%
