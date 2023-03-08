@@ -1,6 +1,5 @@
 who-is-this-book-for
 how-should-i-read-this-book
-why-in-r-why-bookdown
 impact-and-intentions
 acknowledgements
 introduction

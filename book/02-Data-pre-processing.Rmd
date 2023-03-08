@@ -2,15 +2,17 @@
 
 ## Acoustic data basics
 
-After an ARU is retrieved from the field, it is crucial to promptly download and secure the data to create a redundant backup. Having redundant backups not only protects against data loss but also ensures business continuity and minimizes downtime in the event of a system failure or disaster. In case there is an issue with the SD card copy during the quality control process, having a redundant backup ensures that a copy of the data can be restored.
+The first step after an ARU is retrieved from the field is to promptly download and secure the data to create a redundant backup. Having redundant backups not only protects against data loss but also ensures business continuity and minimizes downtime in the event of a system failure or natural disaster. Furthermore, in case there is an issue with the SD card copy during the quality control process, having a redundant backup ensures that a copy of the data can be restored.
 
 In `wildRtrax` and WildTrax, there are a few essential components and standards that are required in order for the data to be utilized within this context:
 
 - [**Location**](): The physical, geographic place at which environmental sensors were deployed and/or biological data was collected on the landscape. This is how you would associate spatial coordinates to the raw audio data.
-- **Date and time**: The temporal component of the audio recording - when the recording took place. 
-- **Sample rate**: The frequency at which audio waveforms are captured during analog-to-digital conversion in the environment. Digital audio uses pulse-code modulation and digital signals for sound reproduction, allowing signals to be stored, retrieved and transmitted without any loss of quality. Sampling rates of 44.1 kHz, 48 kHz, or 96 kHz are commonly used for capturing audio within the 20–20,000 Hz range. Higher sampling rates are employed to captue ultrasonic species as needed.
+- **Date and time**: The temporal component of the audio recording - when the recording took place. Many time formats are possible but the recommended standard is `YYYY-MM-DD`
+- **Sample rate**: The frequency at which audio waveforms are captured during analog-to-digital conversion in the environment. Digital audio uses pulse-code modulation and digital signals for sound reproduction, allowing signals to be stored, retrieved and transmitted without any loss of quality. Sampling rates of 44.1 kHz, 48 kHz, or 96 kHz are commonly used for capturing audio within the 20–20,000 Hz range. Higher sampling rates (>96 kHz) are employed to capture ultrasonic species as needed.
 
-A recording is the raw media or audio file. The following data types are supported within `wildRtrax` package. They are implicitly related to how each model and type of ARU records data. See [Wildlife Acoustics](), [Frontier BAR-LT]() and [Audio Moth]() for examples to learn more. 
+![](assets/task.png)
+
+A **recording** is the raw media or audio file. The following data types are supported within `wildRtrax` package. They are implicitly related to how each model and type of ARU records data. See [Wildlife Acoustics](), [Frontier BAR-LT]() and [Audio Moth]() for examples to learn more. 
  
 * **wac** are proprietary, lossless compressed file formats developed by Wildlife Acoustics
 * **wav** is the standard, ubiquitous uncompressed audio file format
@@ -75,27 +77,26 @@ wt_chop(input = files %>% slice(1), segment_length = 60, output_folder = "/my/ou
 
 ```
 
-The *modulo recording* refers to the remaining portion of the recording that is left over after it has been divided into equal intervals of the chosen duration. For example, if a recording is 120 seconds long and it is split into 50-second intervals, the modulo recording would be the final 20 seconds of the recording that does not fit into the final interval (e.g. 50 - 50 - 20). However, if the chosen interval duration is a factor of the total duration of the recording, there will be no modulo recording. For example, if a 120-second recording is divided into 60-second intervals, there will be no modulo recording since 60 seconds is a factor of 120 seconds.
+`wt_chop` will create *modulo recordings* as needed; this refers to the remaining portion of the recording that is left over after it has been divided into equal intervals of the chosen duration. For example, if a recording is 120 seconds long and it is split into 50-second intervals, the modulo recording would be the final 20 seconds (e.g. 50 - 50 - 20). However, if the chosen interval duration is a factor of the total duration of the recording, there will be no modulo recording. For example, if a 120-second recording is divided into 60-second intervals, there will be no modulo recording since 60 is a factor of 120.
 
 At this stage, you can filter recordings from the `wt_audio_scanner` tibble output in order to select the files you're interested in. Here's an example of the ABMI's Stratified Sampling Design for the Ecosystem Health Monitoring program that's used to pick recordings across a breadth of dates and times in order to maximize the species inventory collected at a location.  
 
 ```{r, eval = T, warning = F, message = F, include = T, comment="", prompt=T}
 
-
 abmi_blocks <- as_tibble(data.frame(julian = 90:210) %>%
                      crossing(time_index = 1:4) %>%
-                     mutate(blocks = case_when(julian %in% 90:139 & time_index == 1 ~ 9,
-                                               julian %in% 140:159 & time_index == 1 ~ 10,
-                                               julian %in% 160:179 & time_index == 1 ~ 11,
-                                               julian %in% 180:210 & time_index == 1 ~ 12,
-                                               julian %in% 90:104 & time_index == 3 ~ 1,
-                                               julian %in% 105:119 & time_index == 4 ~ 2,
-                                               julian %in% 120:139 & time_index == 3 ~ 3,
-                                               julian %in% 140:149 & time_index == 3 ~ 4,
-                                               julian %in% 150:159 & time_index == 4 ~ 5,
-                                               julian %in% 160:169 & time_index == 3 ~ 6,
-                                               julian %in% 170:179 & time_index == 4 ~ 7,
-                                               julian %in% 180:210 & time_index == 4 ~ 8,
+                     mutate(blocks = case_when(julian %in% 90:139 & time_index == 1 ~ 9, # Midnights during the spring for owls
+                                               julian %in% 140:159 & time_index == 1 ~ 10, # Midnights for amphibians, nocturnal breeders
+                                               julian %in% 160:179 & time_index == 1 ~ 11, # Midnights for amphibians, nocturnal breeders
+                                               julian %in% 180:210 & time_index == 1 ~ 12, # Midnights for amphibians, nocturnal breeders
+                                               julian %in% 90:104 & time_index == 3 ~ 1, # Dawn in winter-spring for residents
+                                               julian %in% 105:119 & time_index == 4 ~ 2, # Post-dawn in spring for residents, early arrivers
+                                               julian %in% 120:139 & time_index == 3 ~ 3, # Dawn for early arrivers
+                                               julian %in% 140:149 & time_index == 3 ~ 4, # Dawn for breeding bird chorus
+                                               julian %in% 150:159 & time_index == 4 ~ 5, # Post-dawn breeding season
+                                               julian %in% 160:169 & time_index == 3 ~ 6, # Dawn for breeding bird chorus
+                                               julian %in% 170:179 & time_index == 4 ~ 7, # Post-dawn breeding season
+                                               julian %in% 180:210 & time_index == 4 ~ 8, # Post-dawn late breeding season
                                                TRUE ~ NA_real_),
                             recs = case_when(blocks %in% c(4:7) ~ 180,
                                              TRUE ~ 60)))
@@ -216,7 +217,7 @@ wt_glean_ap()
 
 Recorder failure, damaged microphones, or recorders that are placed in an environment where prevailing winds muffle the sounds the ARU can hear, such as in alpine environments, can limit the audio quality in order to process data in an effective way. The recordings on Cirrus by default do not contain information on if the audio was defective and have a high geophonic index. On average, 12% (2015 – 2019 ABMI Ecosystem Health data) of the primary recordings that are selected at the ABMI site level can have a relatively high geophonic index or a malfunction or failure. To limit lost time and determine noise-pollution related effects on the landscape, recordings are processed regardless of anthropogenic noise, but recordings are optimized to omit as much as the geophonic bias as possible. Due to the large volume of data that is handled, it is no longer efficient to do these processes manually and these steps should be automated as much as possible. The goals are to find efficient ways to screen and filter audio data with high geophony or to flag and omit recordings that will not be used for processing. 
 
-```{r, eval=T, include=T, warning=F, message=F}
+```{r, eval=F, include=T, warning=F, message=F}
 
 # Output the results
 aqd <- wt_glean_ap(x = f2, input_dir = "../data", purpose = "abiotic")
@@ -258,9 +259,6 @@ wt_kaleidoscope_tags()
 ```
 
 ### Making tasks
-
-![](assets/task.png)
-
 
 ```{r, include = T, eval=F, warning=F, message=F}
 wt_make_aru_tasks()
