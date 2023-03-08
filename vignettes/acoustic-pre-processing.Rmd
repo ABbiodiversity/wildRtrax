@@ -32,7 +32,7 @@ library(tidyverse)
 ```
 
 ```{r, include=F, eval=F, warning=F, message=F}
-save.image(".Data")
+#save.image(".Data")
 
 # Load example data. Hide this block.
 load(".RData")
@@ -40,10 +40,8 @@ load(".RData")
 ```
 
 ```{r, echo=TRUE, include=TRUE, eval=TRUE, warning = F, message = F}
-
-
 # Scan data
-my_files <- wt_audio_scanner(path = root, file_type = "all", extra_cols = T, tz = "US/Mountain")
+my_files <- wt_audio_scanner(path = root, file_type = "all", extra_cols = T)
 
 # View
 head(my_files)
@@ -55,55 +53,8 @@ You might want to select recordings between certain times of day or year.
 # Filter recordings based on criteria
 my_files %>%
   mutate(hour = lubridate::hour(recording_date_time)) %>%
-  filter(julian %in% c(120:200), hour %in% c(4,9))
-
-```
-
-Or let's say you need to select your recordings by something more specific. What about any recordings that are within civil twilight, i.e. +/- 5 degrees of zenith.
-
-```{r}
-my_files %>%
-  #Add spatial coordinates to the location
-  mutate(latitude = 55.403594,
-         longitude = -113.770721) %>%
-  rowwise() %>%
-  # Get the sun's zenith for each recording
-  mutate(zenith = ((pull(suncalc::getSunlightPosition(date = recording_date_time, lat = location_latitude, lon = location_longitude, keep = c("altitude"))))*180)/pi) %>%
-  ungroup() %>%
-  filter(between(zenith,-5,5)) %>%
-  select(location, recording_date_time, zenith)
-
-```
-
-The goal of subsetting recordings is to achieve the minimum amount of sampling required. Here is the ABMIs stratified sampling design for the [Ecosystem Health Monitoring Program](https://https://www.abmi.ca/home/careers/field-monitoring-positions/Ecosystem-Health-and-Oil-Sands-Monitoring-Programs.html) schedule where ARUs begin recording March 1 and are retrieved after the songbird breeding season. 
-
-```{r}
-#ABMI stratified schedule
-abmib <- as_tibble(data.frame(julian = 90:210) %>%
-                     crossing(time_index = 1:4) %>%
-                     #Create the "blocks"
-                     mutate(blocks = case_when(julian %in% 90:139 & time_index == 1 ~ 9,
-                                               julian %in% 140:159 & time_index == 1 ~ 10,
-                                               julian %in% 160:179 & time_index == 1 ~ 11,
-                                               julian %in% 180:210 & time_index == 1 ~ 12,
-                                               julian %in% 90:104 & time_index == 3 ~ 1,
-                                               julian %in% 105:119 & time_index == 4 ~ 2,
-                                               julian %in% 120:139 & time_index == 3 ~ 3,
-                                               julian %in% 140:149 & time_index == 3 ~ 4,
-                                               julian %in% 150:159 & time_index == 4 ~ 5,
-                                               julian %in% 160:169 & time_index == 3 ~ 6,
-                                               julian %in% 170:179 & time_index == 4 ~ 7,
-                                               julian %in% 180:210 & time_index == 4 ~ 8,
-                                               TRUE ~ NA_real_),
-                            recs = case_when(blocks %in% c(4:7) ~ 180,
-                                             TRUE ~ 60)))
-
-
-my_files %>%
-  inner_join(., abmib, by = c("julian" =  "julian", "time_index" = "time_index")) %>%
-  na.omit(blocks) %>%
-  group_by(location, blocks) %>%
-  sample_n(1, replace = F)
+  filter(julian %in% c(120:200), 
+         hour %in% c(4,9))
 
 ```
 
@@ -114,56 +65,16 @@ The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)
 ```{r echo=TRUE, include=T, eval=F, warning = F, message = F}
 #Use the wt_* tibble to execute the AP on the files
 
-wt_run_ap(x = my_files, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP')
-
-#wt_run_ap(x = d, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/AP')
+wt_run_ap(x = my_files, output_dir = paste0(root, 'ap_outputs'), path_to_ap = )
 
 ```
 
-```{r echo=TRUE, include=T, eval=F, warning = F, message = F} 
-#Return the metadata obtained from AP
-#Extract the index values - find the files
-index_files <- fs::dir_ls(path = '/volumes/GoogleDrive/Shared drives/wildRtrax/data/ap_example',
-                   regexp = '*Towsey.Acoustic.Indices.csv',
-                   #This contains the vector data to the average of each index
-                   recurse = TRUE)
+The use `wt_glean_ap` to plot the acoustic index and LDFC results
 
-#Which acoustic indices do you want to use?
-index_list <-
-  c(
-    'Snr',
-    'BackgroundNoise',
-    'AcousticComplexity',
-    'HighFreqCover',	'MidFreqCover','LowFreqCover',
-    'TemporalEntropy',
-    'Ndsi',
-    'ResultMinute',
-    'FileName'
-  )
+```{r, echo=T, include=T, eval=F, warning=F, message, prompt=T, comment=""}
 
-#vroom together the indices you want from all the csvs
-test_indices <- vroom::vroom(index_files, col_select = index_list, altrep = F)
+wt_glean_ap()
 
-#Join the index values to the wt_audio_scanner tibble
-test_join <-
-  my_files %>% 
-  right_join(., test_indices, by = c('file_name' = 'FileName')) %>%
-  pivot_longer(cols = Snr:Ndsi,
-               names_to = 'index_variable',
-               values_to = 'index_value') %>%
-  distinct() %>%
-  #Plot a graph of the indices
-  ggplot(.,
-         aes(x = ResultMinute, y = index_value, colour = index_variable)) +
-  scale_x_continuous(limits = c(0,9)) +
-  geom_point() +
-  theme_bw() +
-  facet_wrap(~ index_variable, ncol = 1)
-
-```
-
-```{r}
-#test_join
 ```
 
 ### Applying a limited amplitude filter
@@ -191,17 +102,25 @@ s['output']
 
 ```
 
+### Linking files to WildTrax
 
-### Linking files and creating templates for upload to [WildTrax](https://www.wildtrax.ca)
+The function `wt_songscope_tags` reformats the output obtained from a wildlife acoustics songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
 
-There are three phases of getting data into WildTrax once you have your [organization](https://www.wildtrax.ca/home/wildtrax-guide/2-Organizations.html) and [project](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects.html) setup: uploading recordings, uploading tasks and uploading tags (see more in [ARU projects](https://www.wildtrax.ca/home/wildtrax-guide/3-Projects/3.2-ARU-projects.html) in WildTrax: The Definitive Guide).
-
-If you've used `wt_audio_scanner` to scan through a series of nested directories for audio files, link them together.
-
-```{r, eval = F, echo = T, include = T, warning = F, message = F}
-#An example for a unix scneario
-#R.utils::createLink(link = "./my_uploads", target = less, methods="unix-symlink")
+```{r, include = T, eval=F, warning=F, message=F, prompt="", prompt=T}
+wt_songscope_tags()
 
 ```
 
-The next step is to create the tasks and format the columns to the upload template. 
+Similarly, the function `wt_kaleidoscope_tags` performs the same reformatting process, but with Kaleidoscope instead. It is worth noting that this function targeted for sonic and ultrasonic species upload.
+
+```{r, include = T, eval=F, warning=F, message=F}
+wt_kaleidoscope_tags()
+
+```
+
+Make tasks at any time using a `wt_*` standard data set.
+
+```{r, include = T, eval=F, warning=F, message=F}
+wt_make_aru_tasks()
+
+```
