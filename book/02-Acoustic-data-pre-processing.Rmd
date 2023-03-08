@@ -1,4 +1,4 @@
-# Data pre-processing
+# Acoustic data pre-processing
 
 ## Acoustic data basics
 
@@ -33,9 +33,7 @@ Some additional file name recommendations include:
 
 Audio files need to contain both spatial and temporal information which is the minimum required in order to upload media to WildTrax, e.g. `ABMI-538-SW_20220506_050000`, where `ABMI-538-SW` is the location and `20220506_050000` is the timestamp. Both these pieces of information can tell you when and where the recording took place.
 
-## Acoustic data pre-processing
-
-### Reading, filtering and selecting audio recordings
+## Reading, filtering and selecting audio recordings
 
 :::: {.dangerbox data-latex=""}
 ::: {.left data-latex=""}
@@ -50,13 +48,28 @@ Note, if you're not an R user you can stop here and upload all of your recording
 The first step in data pre-processing is to determine what files exist. `wt_audio_scanner` is the function that provides the basis for the rest of the data pre-processing steps. The function recursively scans directories of audio data and returns standard metadata such as the file path, file name, file size, date, time, location name, that will later be used in WildTrax.
 
 ```r
-files <- wt_audio_scanner(path = "/volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE", file_type = "wav", extra_cols = F)
+files <- wt_audio_scanner(path = "../ABMI/ARU/ABMI-EH/2022/V1/228/228-NE", file_type = "wav", extra_cols = F)
 ```
 
 ```{r, warning=F, message=F, comment="", prompt=T}
 head(files)
 
 ```
+
+:::: {.didyouknow data-latex=""}
+::: {.left data-latex=""}
+*Did you know?*: Directories of acoustic data at the ABMI are organized in the following hierarchy.
+
+- [**Organization**](): The institution or organization the data belongs to 
+Sensor type: ARU
+- [**Field Project**](): A field project differs from a [WildTrax project](). A WildTrax project can contain data from any field project whereas a field project is a hierarchical grouping of locations using a common naming convention. e.g. 1004-SW, 3-0-A1, OG-ABMI-EI-241-1 are all different location names from field projects, Ecosystem Health (ABMI-EH), Before-After Dose Response (BADR), Edge-Interior Off-Grids (OG-ABMI-EI)
+- **Deployment Year**: The year the data was collected. Repeat visits of locations are defined in the year. 
+- [**Visit**](): A unique sequential key to define the year and visit the media collection took place, e.g. V1, V2, etc.
+- **Group**: Is the delimited name of a location. It is aggregated in order to represent spatial relationships or clustering within the field project. (e.g. ABMI-1025-SW is the location but ABMI-1025 is the group given it defines a specific clustering of locations for the study design)
+- [**Location**](): is the joining key to WildTrax and also the base directory to the media
+:::
+::::
+
 
 You can choose `extra_cols = T` you'll be supplied with additional columns that can be used to help select recordings, specifically sample rate, length (seconds) and number of channels.
 
@@ -193,9 +206,28 @@ ggplot(bcrs) +
 
 ```
 
-In the end, how recordings are selected is completely dependent on your study design.
+## Other convenience functions: distance between locations
 
-### Using acoustic indices and LDFCs
+As ARUs are placed on the landscape by different organizations, or over time with different projects, it is possible that spatial locations may overlap. `wt_location_distances` takes a list of locations downloaded from WildTrax and calculates the distances between all pairs of points.
+
+```{r, include = T, eval=F, warning=F, message=F, comment="", prompt=T}
+distances <- wt_location_distances()
+
+
+```
+
+From here a user can filter a list of locations by 
+
+```{r, include = T, eval=F, warning=F, message=F, comment="", prompt=T}
+
+
+
+```
+
+
+## Using acoustic indices and LDFCs
+
+![](assets/305-SE.png)
 
 *Acoustic indices* and *long-duration false-colour (LDFC)* spectrograms are two tools used in the analysis of acoustic data developed by the Towsey lab at QUT. Acoustic indices are numerical measurements that quantify various aspects of sound using different measurements that reflect the soundscpe. They are used to identify and track patterns of vocal activity over time, generate soundscape and monitor ecosystem-level patterns and changes. Some commonly known acoustic indices include the Acoustic Complexity Index (ACI), which measures the diversity of sound frequencies and amplitudes, and the Acoustic Diversity Index (ADI), which measures the number and relative abundance of different vocalizations. Long-duration false-color spectrograms are visual representations of acoustic data using index values rather than spectral generation in order to provide detailed views of sound patterns over long periods of time. The use of false-colours allows for easier interpretation of the spectrogram, as different colors can be used to represent different types of sounds. These unique spectrograms are particularly useful in studies of animal vocalizations, as they allow researchers to identify specific vocalizations and track patterns of vocal activity over long periods of time, and determine seasonal phenology patterns. 
 
@@ -213,7 +245,9 @@ wt_glean_ap()
 
 ```
 
-#### Abiotic, geophonic and anthropophonic signal detection
+
+
+### Abiotic, geophonic and anthropophonic signal detection
 
 Recorder failure, damaged microphones, or recorders that are placed in an environment where prevailing winds muffle the sounds the ARU can hear, such as in alpine environments, can limit the audio quality in order to process data in an effective way. The recordings on Cirrus by default do not contain information on if the audio was defective and have a high geophonic index. On average, 12% (2015 – 2019 ABMI Ecosystem Health data) of the primary recordings that are selected at the ABMI site level can have a relatively high geophonic index or a malfunction or failure. To limit lost time and determine noise-pollution related effects on the landscape, recordings are processed regardless of anthropogenic noise, but recordings are optimized to omit as much as the geophonic bias as possible. Due to the large volume of data that is handled, it is no longer efficient to do these processes manually and these steps should be automated as much as possible. The goals are to find efficient ways to screen and filter audio data with high geophony or to flag and omit recordings that will not be used for processing. 
 
@@ -224,12 +258,37 @@ aqd <- wt_glean_ap(x = f2, input_dir = "../data", purpose = "abiotic")
 
 ```
 
-#### Biophonic signal detection
+For example, noise pollution is a pervasive problem in modern society, with detrimental effects on human health and well-being, wildlife, and ecosystems. There is growing interest in the use of acoustic indices for noise mapping applications. This approach has several advantages over traditional noise mapping methods. 
 
-Let's look at the entire seasonal phenology of an ABMI Ecosystem Health site
+Using acoustic sensors at 310 spatial locations in 2021 across a gradient of human footprint. We recorded sounds for 4-5 days at each location betwwen May and July calculated a range of acoustic indices. We also collected human observations of noise levels (ranked 0-3) and other noise sources (wind, rain, other noise and audio quality) using a standardized survey. We compared the acoustic indices to the human observations to determine the accuracy of the noise map generated from the indices.
 
-```{r, eval=F, include=T, message=F, warning=F}
-ran_ap
+```r
+map_badr <- wt_glean(x = badr, input_dir = "../data", purpose = "abiotic")
+
+
+```
+
+### Biophonic signal detection
+
+We can also look at the entire seasonal phenology of an ABMI Ecosystem Health site
+
+```{r, eval=F, include=T, message=F, warning=F, prompt=T, comment=""}
+
+boreal_example <- wt_glean_ap(x = boreal_site, input_dir = "../data")
+
+boreal_example[[2]]
+
+```
+
+![](assets/280-NE.png)
+The great part about having a list of the `.png` files is that you can easily manipulate and generate new LDFCs with other attributes.
+
+```{r, eval=F, include=T, message=F, warning=F, prompt=T, comment=""}
+
+boreal_example[[2]] %>%
+  mutate(hour = lubridate::hour(recording_date_time)) %>%
+  filter(hour == 0) %>% # Look at only midnight LDFCs and acoustic index values
+  map_dfr(~lapply(.))
 
 ```
 
@@ -240,18 +299,28 @@ relative_influence
 
 ```
 
-### Linking acoustic data to WildTrax
+## Linking acoustic data to WildTrax
 
 Wildlife Acoustics offers advanced tools for analyzing wildlife vocalizations. Two of their most popular programs are Songscope and Kaleidoscope that allows users to visualize and identify animal songs and calls and also create and run automated classifiers. The output files from these programs can be transformed into WildTrax tags to be uploaded for verification purposes. This is also the primary mechansim that ultrasonic data makes its way into the system if it is being analyzed in Kaleidoscope. 
 
-#### Sonscope results
+### Sonscope results
 
-```{r, include = T, eval=F, warning=F, message=F}
+The function `wt_songscope_tags` reformats the output obtained from a wildlife acoustics songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
+
+```{r, include = T, eval=F, warning=F, message=F, prompt="", prompt=T}
 wt_songscope_tags()
 
 ```
 
-#### Kaleidoscope results
+:::: {.dangerbox data-latex=""}
+::: {.left data-latex=""}
+For certain monitoring programs that deliberately deploy ARUs over extended periods to detect specific species, a high true negative rate is crucial to confirm the absence of the species when required. This typically involves recording for more extended periods of more than 30 minutes. In such cases, it is advisable to use the `wt_chop` function to segment the media, upload the resulting recordings to WildTrax, generate a task list, and combine it with the results of `wt_songscope_tags` to import all the data into WildTrax.
+:::
+::::
+
+### Kaleidoscope results
+
+Similarly, the function `wt_kaleidoscope_tags` performs the same reformatting process, but with Kaleidoscope instead. It is worth noting that this function targeted for sonic and ultrasonic species upload.
 
 ```{r, include = T, eval=F, warning=F, message=F}
 wt_kaleidoscope_tags()
@@ -265,14 +334,3 @@ wt_make_aru_tasks()
 
 ```
 
-
-## Image data pre-processing
-
-
-## Other convenience functions
-
-```{r, include = T, eval=F, warning=F, message=F}
-wt_location_distances()
-
-
-```

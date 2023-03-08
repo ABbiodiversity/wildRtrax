@@ -2,9 +2,11 @@
 
 ## Environmental sensors
 
+![](assets/arus.png)
+
 Environmental sensors are devices used to measure and record various environmental parameters, such as temperature, humidity, pressure, light, and sound. These sensors can be used to monitor changes in the environment over time and provide valuable information about the conditions that wildlife species experience in their habitats.
 
-In wildlife ecology, environmental sensors are commonly used to study the behavior, habitat preferences, and distribution of wildlife species. For example, temperature sensors can be used to monitor the microclimate of an animal's habitat and determine the effects of temperature on its behavior and physiology. Humidity sensors can be used to study the impact of moisture on the distribution and abundance of species in different ecosystems. Sound sensors, principally, autonomous recording units (or ARUs) can be used to detect and identify the vocalizations of animals, allowing researchers to study communication patterns, behavior, population size, density, habitat preference, movement and many other biological metrics. 
+In wildlife ecology, environmental sensors are commonly used to study the behavior, habitat preferences, and distribution of wildlife species. For example, temperature sensors can be used to monitor the microclimate of an animal's habitat and determine the effects of temperature on its behavior and physiology. Humidity sensors can be used to study the impact of moisture on the distribution and abundance of species in different ecosystems. Sound sensors, principally, autonomous recording units (or ARUs) can be used to detect and identify the vocalizations of animals, allowing researchers to study communication patterns, behavior, population size, density, habitat preference, movement and many other biological metrics. Wildlife cameras, also known as trail cameras or remote cameras, capture images and videos of animals in their natural habitats, providing researchers with valuable information on behavior, population dynamics, habitat use, and other biological metrics.
 
 Environmental sensors can also be used to monitor changes in the environment caused by human activities, such as deforestation, pollution, and climate change. By measuring and recording changes in environmental conditions, researchers can better understand the impact of these activities on wildlife species and develop effective conservation strategies to protect them.
 
@@ -37,6 +39,8 @@ By standardizing these workflows, researchers can ensure that data is collected 
 
 By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of acoustic data from autonomous recording units (ARUs), `wildRtrax` and WildTrax hope to provide open work flows for using ARUs to answer meaningful biological questions in order to inform conservation and decision-making.
 
+Developing parallel-track design between an R package and a web-enabled software like WildTrax can significantly improve the software development process. It allows for simultaneous development and testing of both applications, reducing the chances of errors and incompatibilities, and formalizing data structures and APIs across a network of different applications.
+
 ## Installing the package
 
 You can install `wildRtrax` directly from this repository with:
@@ -55,4 +59,6 @@ remotes::install_github("ABbiodiversity/wildRtrax@development")
 ## Usage
 
 All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis. 
+
+![](assets/arus2.png)
 

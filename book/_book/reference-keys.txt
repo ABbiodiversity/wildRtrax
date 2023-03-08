@@ -10,10 +10,10 @@ what-is-wildtrax
 why-did-you-build-wildrtrax
 installing-the-package
 usage
-data-pre-processing
-acoustic-data-basics
 acoustic-data-pre-processing
+acoustic-data-basics
 reading-filtering-and-selecting-audio-recordings
+other-convenience-functions-distance-between-locations
 using-acoustic-indices-and-ldfcs
 abiotic-geophonic-and-anthropophonic-signal-detection
 biophonic-signal-detection
@@ -21,8 +21,7 @@ linking-acoustic-data-to-wildtrax
 sonscope-results
 kaleidoscope-results
 making-tasks
-image-data-pre-processing
-other-convenience-functions
+camera-data-pre-processing
 acoustic-data-analysis
 biological-metrics
 authorizing-and-downloading-data-from-wildtrax

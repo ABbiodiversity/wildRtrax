@@ -247,28 +247,31 @@ Published with bookdown</a></li>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="2-data-pre-processing.html#cb3-1"></a>files &lt;-<span class="st"> </span><span class="kw">wt_audio_scanner</span>(<span class="dt">path =</span> <span class="st">&quot;/volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE&quot;</span>, <span class="dt">file_type =</span> <span class="st">&quot;wav&quot;</span>, <span class="dt">extra_cols =</span> F)</span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="2-data-pre-processing.html#cb4-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">head</span>(files)</span></code></pre></div>
 <pre><code># A tibble: 6 × 11
-  file_path                                                                      size_Mb unsafe file_name   locat…¹ recording_date_time file_…² julian  year gps_e…³ time_…⁴
-  &lt;chr&gt;                                                                            &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;       &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;     &lt;int&gt;
-1 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-NE_20211121_123549.wav    3.51 Safe   228-NE_202… 228-NE  2021-11-21 12:35:49 wav        325  2021 NA            1
-2 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-NE_20220301_000000.wav  106.   Safe   228-NE_202… 228-NE  2022-03-01 00:00:00 wav         60  2022 NA            1
-3 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-NE_20220301_020000.wav   31.8  Safe   228-NE_202… 228-NE  2022-03-01 02:00:00 wav         60  2022 NA            2
-4 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-NE_20220301_085900.wav  106.   Safe   228-NE_202… 228-NE  2022-03-01 08:59:00 wav         60  2022 NA            3
-5 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-NE_20220301_102900.wav   31.8  Safe   228-NE_202… 228-NE  2022-03-01 10:29:00 wav         60  2022 NA            4
-6 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-NE_20220301_120000.wav   31.8  Safe   228-NE_202… 228-NE  2022-03-01 12:00:00 wav         60  2022 NA            5
-# … with abbreviated variable names ¹​location, ²​file_type, ³​gps_enabled, ⁴​time_index</code></pre>
+  file_path   size_Mb unsafe file_…¹ locat…² recording_date_time file_…³ julian  year gps_e…⁴
+  &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;  
+1 /volumes/b…    3.51 Safe   228-NE… 228-NE  2021-11-21 12:35:49 wav        325  2021 NA     
+2 /volumes/b…  106.   Safe   228-NE… 228-NE  2022-03-01 00:00:00 wav         60  2022 NA     
+3 /volumes/b…   31.8  Safe   228-NE… 228-NE  2022-03-01 02:00:00 wav         60  2022 NA     
+4 /volumes/b…  106.   Safe   228-NE… 228-NE  2022-03-01 08:59:00 wav         60  2022 NA     
+5 /volumes/b…   31.8  Safe   228-NE… 228-NE  2022-03-01 10:29:00 wav         60  2022 NA     
+6 /volumes/b…   31.8  Safe   228-NE… 228-NE  2022-03-01 12:00:00 wav         60  2022 NA     
+# … with 1 more variable: time_index &lt;int&gt;, and abbreviated variable names ¹​file_name,
+#   ²​location, ³​file_type, ⁴​gps_enabled</code></pre>
 <p>You can choose <code>extra_cols = T</code> you’ll be supplied with additional columns that can be used to help select recordings, specifically sample rate, length (seconds) and number of channels.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="2-data-pre-processing.html#cb6-1"></a>files_extra &lt;-<span class="st"> </span><span class="kw">wt_audio_scanner</span>(<span class="dt">path =</span> <span class="st">&quot;/volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE&quot;</span>, <span class="dt">file_type =</span> <span class="st">&quot;wav&quot;</span>, <span class="dt">extra_cols =</span> T)</span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="2-data-pre-processing.html#cb7-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">head</span>(files_extra)</span></code></pre></div>
 <pre><code># A tibble: 6 × 14
-  file_path                                                  size_Mb file_…¹ locat…² recording_date_time file_…³ julian  year gps_e…⁴ time_…⁵ lengt…⁶ sampl…⁷ n_cha…⁸ unsafe
-  &lt;chr&gt;                                                        &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;     &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt; 
-1 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-N…    3.51 228-NE… 228-NE  2021-11-21 12:35:49 wav        325  2021 NA            1    19.9   44100       2 &lt;NA&gt;  
-2 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-N…  106.   228-NE… 228-NE  2022-03-01 00:00:00 wav         60  2022 NA            1   600     44100       2 &lt;NA&gt;  
-3 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-N…   31.8  228-NE… 228-NE  2022-03-01 02:00:00 wav         60  2022 NA            2   180     44100       2 &lt;NA&gt;  
-4 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-N…  106.   228-NE… 228-NE  2022-03-01 08:59:00 wav         60  2022 NA            3   600     44100       2 &lt;NA&gt;  
-5 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-N…   31.8  228-NE… 228-NE  2022-03-01 10:29:00 wav         60  2022 NA            4   180     44100       2 &lt;NA&gt;  
-6 /volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE/228-N…   31.8  228-NE… 228-NE  2022-03-01 12:00:00 wav         60  2022 NA            5   180     44100       2 &lt;NA&gt;  
-# … with abbreviated variable names ¹​file_name, ²​location, ³​file_type, ⁴​gps_enabled, ⁵​time_index, ⁶​length_seconds, ⁷​sample_rate, ⁸​n_channels</code></pre>
+  file_path  size_Mb file_…¹ locat…² recording_date_time file_…³ julian  year gps_e…⁴ time_…⁵
+  &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;     &lt;int&gt;
+1 /volumes/…    3.51 228-NE… 228-NE  2021-11-21 12:35:49 wav        325  2021 NA            1
+2 /volumes/…  106.   228-NE… 228-NE  2022-03-01 00:00:00 wav         60  2022 NA            1
+3 /volumes/…   31.8  228-NE… 228-NE  2022-03-01 02:00:00 wav         60  2022 NA            2
+4 /volumes/…  106.   228-NE… 228-NE  2022-03-01 08:59:00 wav         60  2022 NA            3
+5 /volumes/…   31.8  228-NE… 228-NE  2022-03-01 10:29:00 wav         60  2022 NA            4
+6 /volumes/…   31.8  228-NE… 228-NE  2022-03-01 12:00:00 wav         60  2022 NA            5
+# … with 4 more variables: length_seconds &lt;dbl&gt;, sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;,
+#   unsafe &lt;chr&gt;, and abbreviated variable names ¹​file_name, ²​location, ³​file_type,
+#   ⁴​gps_enabled, ⁵​time_index</code></pre>
 <p>It’s possible that the recordings you have are longer than the maximum length WildTrax can currently import (1800 seconds or 320MB). In this case, you can use <code>wt_chop</code> to create intervals of recordings</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="2-data-pre-processing.html#cb9-1"></a><span class="kw">wt_chop</span>(<span class="dt">input =</span> files <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">slice</span>(<span class="dv">1</span>), <span class="dt">segment_length =</span> <span class="dv">60</span>, <span class="dt">output_folder =</span> <span class="st">&quot;/my/output/folder&quot;</span></span></code></pre></div>
 <p><code>wt_chop</code> will create <em>modulo recordings</em> as needed; this refers to the remaining portion of the recording that is left over after it has been divided into equal intervals of the chosen duration. For example, if a recording is 120 seconds long and it is split into 50-second intervals, the modulo recording would be the final 20 seconds (e.g. 50 - 50 - 20). However, if the chosen interval duration is a factor of the total duration of the recording, there will be no modulo recording. For example, if a 120-second recording is divided into 60-second intervals, there will be no modulo recording since 60 is a factor of 120.</p>
@@ -331,14 +334,17 @@ Published with bookdown</a></li>
 <span id="cb12-27"><a href="2-data-pre-processing.html#cb12-27"></a>bzz &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(bz1, bz2)</span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="2-data-pre-processing.html#cb13-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">head</span>(bzz)</span></code></pre></div>
 <pre><code># A tibble: 5 × 17
-  file_name               location recording_date_time file_t…¹ julian  year latit…² longi…³ eleva…⁴ buffe…⁵ isHid…⁶ trueC…⁷ comme…⁸ inter…⁹ internal_update_ts  angle  hour
-  &lt;chr&gt;                   &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;lgl&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;dttm&gt;              &lt;dbl&gt; &lt;int&gt;
-1 2-0-A25_20210626_212000 2-0-A25  2021-06-26 21:20:00 wav         177  2021    54.9   -112. NA           NA Visible TRUE    &lt;NA&gt;      90114 2021-09-03 17:07:22  4.54    21
-2 2-0-A25_20210629_053800 2-0-A25  2021-06-29 05:38:00 wav         180  2021    54.9   -112. NA           NA Visible TRUE    &lt;NA&gt;      90114 2021-09-03 17:07:22  4.23     5
-3 2-0-A25_20210627_053700 2-0-A25  2021-06-27 05:37:00 wav         178  2021    54.9   -112. NA           NA Visible TRUE    &lt;NA&gt;      90114 2021-09-03 17:07:22  4.25     5
-4 2-0-A25_20210626_053600 2-0-A25  2021-06-26 05:36:00 wav         177  2021    54.9   -112. NA           NA Visible TRUE    &lt;NA&gt;      90114 2021-09-03 17:07:22  4.19     5
-5 2-0-A25_20210630_053900 2-0-A25  2021-06-30 05:39:00 wav         181  2021    54.9   -112. NA           NA Visible TRUE    &lt;NA&gt;      90114 2021-09-03 17:07:22  4.28     5
-# … with abbreviated variable names ¹​file_type, ²​latitude, ³​longitude, ⁴​elevationMeters, ⁵​bufferRadiusMeters, ⁶​isHidden, ⁷​trueCoordinates, ⁸​comments, ⁹​internal_wildtrax_id</code></pre>
+  file_name  locat…¹ recording_date_time file_…² julian  year latit…³ longi…⁴ eleva…⁵ buffe…⁶
+  &lt;chr&gt;      &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt;
+1 2-0-A25_2… 2-0-A25 2021-06-26 21:20:00 wav        177  2021    54.9   -112. NA           NA
+2 2-0-A25_2… 2-0-A25 2021-06-29 05:38:00 wav        180  2021    54.9   -112. NA           NA
+3 2-0-A25_2… 2-0-A25 2021-06-27 05:37:00 wav        178  2021    54.9   -112. NA           NA
+4 2-0-A25_2… 2-0-A25 2021-06-26 05:36:00 wav        177  2021    54.9   -112. NA           NA
+5 2-0-A25_2… 2-0-A25 2021-06-30 05:39:00 wav        181  2021    54.9   -112. NA           NA
+# … with 7 more variables: isHidden &lt;chr&gt;, trueCoordinates &lt;lgl&gt;, comments &lt;chr&gt;,
+#   internal_wildtrax_id &lt;dbl&gt;, internal_update_ts &lt;dttm&gt;, angle &lt;dbl&gt;, hour &lt;int&gt;, and
+#   abbreviated variable names ¹​location, ²​file_type, ³​latitude, ⁴​longitude,
+#   ⁵​elevationMeters, ⁶​bufferRadiusMeters</code></pre>
 <p>Another example of selecting files may be geographic. Here’s an example with selecting recordings with Bird Conservation Regions.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="2-data-pre-processing.html#cb15-1"></a><span class="kw">library</span>(tidyverse)</span>
 <span id="cb15-2"><a href="2-data-pre-processing.html#cb15-2"></a><span class="kw">library</span>(sf)</span>
@@ -395,6 +401,7 @@ Published with bookdown</a></li>
 </div>
 <div id="using-acoustic-indices-and-ldfcs" class="section level3 hasAnchor">
 <h3><span class="header-section-number">2.2.2</span> Using acoustic indices and LDFCs<a href="2-data-pre-processing.html#using-acoustic-indices-and-ldfcs" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><img src="assets/305-SE.png" /></p>
 <p><em>Acoustic indices</em> and <em>long-duration false-colour (LDFC)</em> spectrograms are two tools used in the analysis of acoustic data developed by the Towsey lab at QUT. Acoustic indices are numerical measurements that quantify various aspects of sound using different measurements that reflect the soundscpe. They are used to identify and track patterns of vocal activity over time, generate soundscape and monitor ecosystem-level patterns and changes. Some commonly known acoustic indices include the Acoustic Complexity Index (ACI), which measures the diversity of sound frequencies and amplitudes, and the Acoustic Diversity Index (ADI), which measures the number and relative abundance of different vocalizations. Long-duration false-color spectrograms are visual representations of acoustic data using index values rather than spectral generation in order to provide detailed views of sound patterns over long periods of time. The use of false-colours allows for easier interpretation of the spectrogram, as different colors can be used to represent different types of sounds. These unique spectrograms are particularly useful in studies of animal vocalizations, as they allow researchers to identify specific vocalizations and track patterns of vocal activity over long periods of time, and determine seasonal phenology patterns.</p>
 <p><code>wildRtrax</code> utilizes the results of the AnalysisPrograms software which generates the csv, json and png files associated to the results, and generates tidy versions of the data that can be joined to the media in order to select recordings based on index values and patterns. Let us demonstrate some different examples while introducing the <code>wt_run_ap</code> and <code>wt_glean_ap</code> functions.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="2-data-pre-processing.html#cb19-1"></a><span class="kw">wt_run_ap</span>()</span></code></pre></div>
@@ -404,13 +411,20 @@ Published with bookdown</a></li>
 <p>Recorder failure, damaged microphones, or recorders that are placed in an environment where prevailing winds muffle the sounds the ARU can hear, such as in alpine environments, can limit the audio quality in order to process data in an effective way. The recordings on Cirrus by default do not contain information on if the audio was defective and have a high geophonic index. On average, 12% (2015 – 2019 ABMI Ecosystem Health data) of the primary recordings that are selected at the ABMI site level can have a relatively high geophonic index or a malfunction or failure. To limit lost time and determine noise-pollution related effects on the landscape, recordings are processed regardless of anthropogenic noise, but recordings are optimized to omit as much as the geophonic bias as possible. Due to the large volume of data that is handled, it is no longer efficient to do these processes manually and these steps should be automated as much as possible. The goals are to find efficient ways to screen and filter audio data with high geophony or to flag and omit recordings that will not be used for processing.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="2-data-pre-processing.html#cb21-1"></a><span class="co"># Output the results</span></span>
 <span id="cb21-2"><a href="2-data-pre-processing.html#cb21-2"></a>aqd &lt;-<span class="st"> </span><span class="kw">wt_glean_ap</span>(<span class="dt">x =</span> f2, <span class="dt">input_dir =</span> <span class="st">&quot;../data&quot;</span>, <span class="dt">purpose =</span> <span class="st">&quot;abiotic&quot;</span>)</span></code></pre></div>
+<p>For example, noise pollution is a pervasive problem in modern society, with detrimental effects on human health and well-being, wildlife, and ecosystems. There is growing interest in the use of acoustic indices for noise mapping applications. This approach has several advantages over traditional noise mapping methods.</p>
+<p>Using acoustic sensors at 310 spatial locations in 2021 across a gradient of human footprint. We recorded sounds for 4-5 days at each location betwwen May and July calculated a range of acoustic indices. We also collected human observations of noise levels (ranked 0-3) and other noise sources (wind, rain, other noise and audio quality) using a standardized survey. We compared the acoustic indices to the human observations to determine the accuracy of the noise map generated from the indices.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="2-data-pre-processing.html#cb22-1"></a>map_badr &lt;-<span class="st"> </span><span class="kw">wt_glean</span>(<span class="dt">x =</span> badr, <span class="dt">input_dir =</span> <span class="st">&quot;../data&quot;</span>, <span class="dt">purpose =</span> <span class="st">&quot;abiotic&quot;</span>)</span>
+<span id="cb22-2"><a href="2-data-pre-processing.html#cb22-2"></a></span></code></pre></div>
 </div>
 <div id="biophonic-signal-detection" class="section level4 hasAnchor">
 <h4><span class="header-section-number">2.2.2.2</span> Biophonic signal detection<a href="2-data-pre-processing.html#biophonic-signal-detection" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<p>Let’s look at the entire seasonal phenology of an ABMI Ecosystem Health site</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="2-data-pre-processing.html#cb22-1"></a>ran_ap</span></code></pre></div>
+<p>We can also look at the entire seasonal phenology of an ABMI Ecosystem Health site</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="2-data-pre-processing.html#cb23-1"></a>boreal_example &lt;-<span class="st"> </span><span class="kw">wt_glean_ap</span>(<span class="dt">x =</span> boreal_site, <span class="dt">input_dir =</span> <span class="st">&quot;../data&quot;</span>)</span>
+<span id="cb23-2"><a href="2-data-pre-processing.html#cb23-2"></a></span>
+<span id="cb23-3"><a href="2-data-pre-processing.html#cb23-3"></a>boreal_example[[<span class="dv">2</span>]]</span></code></pre></div>
+<p><img src="assets/280-NE.png" /></p>
 <p>While acoustic indices are good at detecting large scale patterns, it is more difficult to detect rare and elusive signals, especially those that exceed the signal-to-noise threshold to capture the signal. Neverthless, we can look at relative influence plots in order to determine whether or not a signal is occuring over time.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="2-data-pre-processing.html#cb23-1"></a>relative_influence</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="2-data-pre-processing.html#cb24-1"></a>relative_influence</span></code></pre></div>
 </div>
 </div>
 <div id="linking-acoustic-data-to-wildtrax" class="section level3 hasAnchor">
@@ -418,16 +432,16 @@ Published with bookdown</a></li>
 <p>Wildlife Acoustics offers advanced tools for analyzing wildlife vocalizations. Two of their most popular programs are Songscope and Kaleidoscope that allows users to visualize and identify animal songs and calls and also create and run automated classifiers. The output files from these programs can be transformed into WildTrax tags to be uploaded for verification purposes. This is also the primary mechansim that ultrasonic data makes its way into the system if it is being analyzed in Kaleidoscope.</p>
 <div id="sonscope-results" class="section level4 hasAnchor">
 <h4><span class="header-section-number">2.2.3.1</span> Sonscope results<a href="2-data-pre-processing.html#sonscope-results" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="2-data-pre-processing.html#cb24-1"></a><span class="kw">wt_songscope_tags</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="2-data-pre-processing.html#cb25-1"></a><span class="kw">wt_songscope_tags</span>()</span></code></pre></div>
 </div>
 <div id="kaleidoscope-results" class="section level4 hasAnchor">
 <h4><span class="header-section-number">2.2.3.2</span> Kaleidoscope results<a href="2-data-pre-processing.html#kaleidoscope-results" class="anchor-section" aria-label="Anchor link to header"></a></h4>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="2-data-pre-processing.html#cb25-1"></a><span class="kw">wt_kaleidoscope_tags</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="2-data-pre-processing.html#cb26-1"></a><span class="kw">wt_kaleidoscope_tags</span>()</span></code></pre></div>
 </div>
 </div>
 <div id="making-tasks" class="section level3 hasAnchor">
 <h3><span class="header-section-number">2.2.4</span> Making tasks<a href="2-data-pre-processing.html#making-tasks" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="2-data-pre-processing.html#cb26-1"></a><span class="kw">wt_make_aru_tasks</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="2-data-pre-processing.html#cb27-1"></a><span class="kw">wt_make_aru_tasks</span>()</span></code></pre></div>
 </div>
 </div>
 <div id="image-data-pre-processing" class="section level2 hasAnchor">
@@ -435,7 +449,7 @@ Published with bookdown</a></li>
 </div>
 <div id="other-convenience-functions" class="section level2 hasAnchor">
 <h2><span class="header-section-number">2.4</span> Other convenience functions<a href="2-data-pre-processing.html#other-convenience-functions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="2-data-pre-processing.html#cb27-1"></a><span class="kw">wt_location_distances</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="2-data-pre-processing.html#cb28-1"></a><span class="kw">wt_location_distances</span>()</span></code></pre></div>
 
 </div>
 </div>
