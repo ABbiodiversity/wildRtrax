@@ -5,25 +5,25 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 5 Camera data analysis | Environmental sensor data management and analysis with R</title>
-  <meta name="description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
+  <meta name="description" content="wildRtrax helps environmental sensor data users with data management and analytics" />
   <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 5 Camera data analysis | Environmental sensor data management and analysis with R" />
   <meta property="og:type" content="book" />
-  <meta property="og:image" content="https://abbiodiversity.github.io/wildRtrax/book/images/cover.png" />
-  <meta property="og:description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
+  <meta property="og:image" content="https://abbiodiversity.github.io/wildRtrax/book/assets/cover.png" />
+  <meta property="og:description" content="wildRtrax helps environmental sensor data users with data management and analytics" />
   <meta name="github-repo" content="ABbiodiversity/wildRtrax" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Chapter 5 Camera data analysis | Environmental sensor data management and analysis with R" />
   
-  <meta name="twitter:description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
-  <meta name="twitter:image" content="https://abbiodiversity.github.io/wildRtrax/book/images/cover.png" />
+  <meta name="twitter:description" content="wildRtrax helps environmental sensor data users with data management and analytics" />
+  <meta name="twitter:image" content="https://abbiodiversity.github.io/wildRtrax/book/assets/cover.png" />
 
 <meta name="author" content="Alexander G. MacPhail, Marcus Becker, Elly C. Knight" />
 
 
-<meta name="date" content="2023-03-08" />
+<meta name="date" content="2023-03-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -153,9 +153,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.7" data-path="1-introduction.html"><a href="1-introduction.html#usage"><i class="fa fa-check"></i><b>1.7</b> Usage</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html"><i class="fa fa-check"></i><b>2</b> Acoustic data pre-processing</a><ul>
-<li class="chapter" data-level="2.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#acoustic-data-basics"><i class="fa fa-check"></i><b>2.1</b> Acoustic data basics</a></li>
-<li class="chapter" data-level="2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#reading-filtering-and-selecting-audio-recordings"><i class="fa fa-check"></i><b>2.2</b> Reading, filtering and selecting audio recordings</a></li>
-<li class="chapter" data-level="2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#other-convenience-functions-distance-between-locations"><i class="fa fa-check"></i><b>2.3</b> Other convenience functions: distance between locations</a></li>
+<li class="chapter" data-level="2.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#acoustic-data-management-basics"><i class="fa fa-check"></i><b>2.1</b> Acoustic data management basics</a></li>
+<li class="chapter" data-level="2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#reading-filtering-and-selecting-audio-recordings"><i class="fa fa-check"></i><b>2.2</b> Reading, filtering and selecting audio recordings</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#reading-files"><i class="fa fa-check"></i><b>2.2.1</b> Reading files</a></li>
+<li class="chapter" data-level="2.2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#segmenting-longer-files"><i class="fa fa-check"></i><b>2.2.2</b> Segmenting longer files</a></li>
+<li class="chapter" data-level="2.2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#filtering-files"><i class="fa fa-check"></i><b>2.2.3</b> Filtering files</a></li>
+<li class="chapter" data-level="2.2.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#filtering-files-geographically"><i class="fa fa-check"></i><b>2.2.4</b> Filtering files geographically</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#other-convenience-functions-distance-between-locations"><i class="fa fa-check"></i><b>2.3</b> Other convenience functions: distance between locations</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#error-handling-and-file-standardization"><i class="fa fa-check"></i><b>2.3.1</b> Error handling and file standardization</a></li>
+</ul></li>
 <li class="chapter" data-level="2.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#using-acoustic-indices-and-ldfcs"><i class="fa fa-check"></i><b>2.4</b> Using acoustic indices and LDFCs</a><ul>
 <li class="chapter" data-level="2.4.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#abiotic-geophonic-and-anthropophonic-signal-detection"><i class="fa fa-check"></i><b>2.4.1</b> Abiotic, geophonic and anthropophonic signal detection</a></li>
 <li class="chapter" data-level="2.4.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#biophonic-signal-detection"><i class="fa fa-check"></i><b>2.4.2</b> Biophonic signal detection</a></li>

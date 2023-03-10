@@ -6,7 +6,7 @@
   * Addition of *flac* as file type
   * Addition of `extra_cols` argument to enable faster scanning when argument is set to `FALSE`. This also deals with headerless file errors for (#2)
   * Enabled parallel file scanning; microbenchmarked base scanning at 5.6x faster on a dual-core machine
-  * Moved progress bars from `furrr_options` to the `progressr` and `progress` packages
+  * Moved progress bars to the `progressr` and `progress` packages
 * Addition of `wt_glean_ap` function to acoustic pre-processing work flow to extract desired data from a `wt_run_ap` output
 * Addition of linking functions in order to add desired media and metadata to WildTrax: `wt_make_aru_tasks`, `wt_kaleidoscope_tags` and `wt_songscope_tags`
 * Addition of convenience functions: `wt_location_distances` and `wt_chop`

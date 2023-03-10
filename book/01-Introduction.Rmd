@@ -58,7 +58,7 @@ remotes::install_github("ABbiodiversity/wildRtrax@development")
 
 ## Usage
 
-All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis. 
+All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis.
 
 ![](assets/arus2.png)
 

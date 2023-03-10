@@ -1,6 +1,6 @@
 # Acoustic data pre-processing
 
-## Acoustic data basics
+## Acoustic data management basics
 
 The first step after an ARU is retrieved from the field is to promptly download and secure the data to create a redundant backup. Having redundant backups not only protects against data loss but also ensures business continuity and minimizes downtime in the event of a system failure or natural disaster. Furthermore, in case there is an issue with the SD card copy during the quality control process, having a redundant backup ensures that a copy of the data can be restored.
 
@@ -45,6 +45,8 @@ Note, if you're not an R user you can stop here and upload all of your recording
 :::
 ::::
 
+### Reading files
+
 The first step in data pre-processing is to determine what files exist. `wt_audio_scanner` is the function that provides the basis for the rest of the data pre-processing steps. The function recursively scans directories of audio data and returns standard metadata such as the file path, file name, file size, date, time, location name, that will later be used in WildTrax.
 
 ```r
@@ -60,13 +62,13 @@ head(files)
 ::: {.left data-latex=""}
 *Did you know?*: Directories of acoustic data at the ABMI are organized in the following hierarchy.
 
-- [**Organization**](): The institution or organization the data belongs to 
+- [**Organization**](https://www.wildtrax.ca/home/resources/guide/organizations/organization-management.html): The institution or organization the data belongs to 
 Sensor type: ARU
-- [**Field Project**](): A field project differs from a [WildTrax project](). A WildTrax project can contain data from any field project whereas a field project is a hierarchical grouping of locations using a common naming convention. e.g. 1004-SW, 3-0-A1, OG-ABMI-EI-241-1 are all different location names from field projects, Ecosystem Health (ABMI-EH), Before-After Dose Response (BADR), Edge-Interior Off-Grids (OG-ABMI-EI)
-- **Deployment Year**: The year the data was collected. Repeat visits of locations are defined in the year. 
-- [**Visit**](): A unique sequential key to define the year and visit the media collection took place, e.g. V1, V2, etc.
+- **Project**: A [project](https://www.wildtrax.ca/home/resources/guide/projects/project-management.html) is a  grouping of locations and recordings designed to answer an ecologically relevant question. Such programs at the ABMI include, Ecosystem Health (ABMI-EH), Before-After Dose Response (BADR). with location naming conventions such as ABMI-1025-SW and 2-0-A117, respectively.
+- **Deployment Year**: The year the data was collected. Repeat visits of locations are defined in the year for things like trend data sets. 
+- [**Visit**](https://www.wildtrax.ca/home/resources/guide/organizations/visits.html): A unique sequential key to define the year and visit the media collection took place, e.g. V1, V2, etc.
 - **Group**: Is the delimited name of a location. It is aggregated in order to represent spatial relationships or clustering within the field project. (e.g. ABMI-1025-SW is the location but ABMI-1025 is the group given it defines a specific clustering of locations for the study design)
-- [**Location**](): is the joining key to WildTrax and also the base directory to the media
+- [**Location**](https://www.wildtrax.ca/home/resources/guide/organizations/locations.html): is the joining key to WildTrax and also the base directory to the media
 :::
 ::::
 
@@ -74,7 +76,7 @@ Sensor type: ARU
 You can choose `extra_cols = T` you'll be supplied with additional columns that can be used to help select recordings, specifically sample rate, length (seconds) and number of channels.
 
 ```r
-files_extra <- wt_audio_scanner(path = "/volumes/budata/abmi/aru/abmi-eh/2022/v1/228/228-NE", file_type = "wav", extra_cols = T)
+files_extra <- wt_audio_scanner(path = ../ABMI/ARU/ABMI-EH/2022/V1/228/228-NE", file_type = "wav", extra_cols = T)
 ```
 
 ```{r, comment="", prompt=T, warning=F, message=F}
@@ -83,14 +85,19 @@ head(files_extra)
 
 ```
 
+### Segmenting longer files
+
 It's possible that the recordings you have are longer than the maximum length WildTrax can currently import (1800 seconds or 320MB). In this case, you can use `wt_chop` to create intervals of recordings
 
 ```r
+# Select a 10 minute file and chop it into 60 second segments, creating 10 x 60 second files instead of one 10-minute file
 wt_chop(input = files %>% slice(1), segment_length = 60, output_folder = "/my/output/folder"
 
 ```
 
 `wt_chop` will create *modulo recordings* as needed; this refers to the remaining portion of the recording that is left over after it has been divided into equal intervals of the chosen duration. For example, if a recording is 120 seconds long and it is split into 50-second intervals, the modulo recording would be the final 20 seconds (e.g. 50 - 50 - 20). However, if the chosen interval duration is a factor of the total duration of the recording, there will be no modulo recording. For example, if a 120-second recording is divided into 60-second intervals, there will be no modulo recording since 60 is a factor of 120.
+
+### Filtering files
 
 At this stage, you can filter recordings from the `wt_audio_scanner` tibble output in order to select the files you're interested in. Here's an example of the ABMI's Stratified Sampling Design for the Ecosystem Health Monitoring program that's used to pick recordings across a breadth of dates and times in order to maximize the species inventory collected at a location.  
 
@@ -140,14 +147,16 @@ bz <- b %>%
          between(julian,140,210)) %>%
   mutate(hour = hour(recording_date_time))
 
-# Sample on dusk recording
-bz1 <- bz %>% filter(hour %in% c(20:22)) %>%
+# Sample one dusk recording
+bz1 <- bz %>% 
+  filter(hour %in% c(20:22)) %>%
   sample_n(1, replace = F)
 # And four dawn recordings
-bz2 <- bz %>% filter(hour %in% c(4:7)) %>%
+bz2 <- bz %>% 
+  filter(hour %in% c(4:7)) %>%
   sample_n(4, replace = F)
 
-# Bind the data together
+# Bind the dawns and dusks together
 bzz <- bind_rows(bz1, bz2)
 ```
 
@@ -156,9 +165,11 @@ head(bzz)
 
 ```
 
+### Filtering files geographically
+
 Another example of selecting files may be geographic. Here's an example with selecting recordings with Bird Conservation Regions. 
 
-```r
+```{r, eval=F, include=T, warning=F, message=F, comment="", prompt=F}
 library(tidyverse)
 library(sf)
 
@@ -174,19 +185,21 @@ locsset <- st_as_sf(locs_next %>% select(location, latitude, longitude) %>% dist
 locsset <- st_make_valid(locsset)
 locsset <- st_set_crs(locsset, 4269)
 
-# Load a shapefile of Terrestrial BCRs
+# Load a shapefile of Terrestrial BCRs of North America
 bcrs <- read_sf("../BCR_Terrestrial.shp")
 
 # Filter to just Alberta
 bcrs <- st_make_valid(bcrs) %>% filter(PROVINCE_S == "ALBERTA")
 
 # Intersect the location with the BCRs
-out <- st_intersection(locsset, bcrs) %>%
-  as_tibble()
+out <- st_intersection(locsset, bcrs)
 
 # Join it to the original tibble
-locss <- locs %>%
-  inner_join(., out, by = c("location" = "location"))
+locss <- out %>%
+  inner_join(., locs, by = c("location" = "location")) %>%
+  # Now sample 10 locations per BCR 
+  group_by(BCRNAME) %>%
+  sample_n(10, replace = F)
 
 ```
 
@@ -199,7 +212,7 @@ locss %>% select(location, BCRNAME)
 ggplot(bcrs) +
   coord_sf(crs = 4269) +
   geom_sf(aes(fill = BCRNAME)) +
-  geom_sf(locsset, mapping = aes()) +
+  geom_sf(locss, mapping = aes()) +
   theme_bw() +
   theme(legend.position = "none") +
   scale_fill_viridis_d()
@@ -210,20 +223,55 @@ ggplot(bcrs) +
 
 As ARUs are placed on the landscape by different organizations, or over time with different projects, it is possible that spatial locations may overlap. `wt_location_distances` takes a list of locations downloaded from WildTrax and calculates the distances between all pairs of points.
 
-```{r, include = T, eval=F, warning=F, message=F, comment="", prompt=T}
-distances <- wt_location_distances()
-
-
-```
-
-From here a user can filter a list of locations by 
+:::: {.didyouknow data-latex=""}
+::: {.left data-latex=""}
+*Did you know?*: You can go to Manage > Download Locations in either a project or an organization to get a list of locations and their attributes. Remember, you need to be an organization administration to perform this operation since organizations manage locations.
+:::
+::::
 
 ```{r, include = T, eval=F, warning=F, message=F, comment="", prompt=T}
 
+# Control locations from BADR LU 2
+badr2 <- locs %>%
+  filter(grepl('^2-0',location))
 
+# Big Grid 9 (Touchoowd)
+bu_locs <- bu_locs %>%
+  filter(grepl('^BG-9', location))
+
+bu_badr <- bind_rows(badr2, bu_locs) %>%
+  mutate(type = case_when(grepl('^BG-',location) ~ "Big Grids",TRUE ~ "Before-After Dose Response"))
+
+bu_badr_map <- st_as_sf(bu_badr, coords = c("longitude","latitude")) 
+bu_badr_map <- st_make_valid(bu_badr_map)
+bu_badr_map <- st_set_crs(bu_badr_map, 4269)
+```
+
+```{r, warning=F, message=F}
+ggplot() +
+  coord_sf(crs = 4269) +
+  geom_sf(bu_badr_map, mapping = aes(colour = type)) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()
 
 ```
 
+```r
+distances <- wt_location_distances(input_from_tibble = bu_badr)
+
+```
+
+```{r, include = T, eval=T, warning=F, message=F, comment="", prompt=T}
+# Filter points less then 100 meters apart
+distances %>%
+  filter(distance < 100)
+
+```
+
+### Error handling and file standardization
+
+`wt_audio_scanner` will continue to support new file formats and file types. Error handling techniques are being put in place to identify and provide clear messages to users to ensure their data is standard to the WildTrax system before upload. File standardization helps ensure consistency and prevent errors when transferring data across different systems and applications. With these measures, wt_audio_scanner can provide a reliable and versatile tool for working with various audio file formats. Development requests can be submitted as issues to the [GitHub repository](https://github.com/ABbiodiversity/wildRtrax/issues).
 
 ## Using acoustic indices and LDFCs
 
@@ -292,16 +340,11 @@ boreal_example[[2]] %>%
 
 ```
 
-While acoustic indices are good at detecting large scale patterns, it is more difficult to detect rare and elusive signals, especially those that exceed the signal-to-noise threshold to capture the signal. Neverthless, we can look at relative influence plots in order to determine whether or not a signal is occuring over time. 
-
-```{r, eval=F, include=T, message=F, warning=F}
-relative_influence
-
-```
+While acoustic indices are good at detecting large scale patterns, it is more difficult to detect rare and elusive signals, especially those that exceed the signal-to-noise threshold to capture the signal. It is important to use this along with spectral validation in WildTrax to determine the source of the environmental noise.
 
 ## Linking acoustic data to WildTrax
 
-Wildlife Acoustics offers advanced tools for analyzing wildlife vocalizations. Two of their most popular programs are Songscope and Kaleidoscope that allows users to visualize and identify animal songs and calls and also create and run automated classifiers. The output files from these programs can be transformed into WildTrax tags to be uploaded for verification purposes. This is also the primary mechansim that ultrasonic data makes its way into the system if it is being analyzed in Kaleidoscope. 
+Wildlife Acoustics offers advanced tools for analyzing wildlife vocalizations. Two of their most popular programs are Songscope and Kaleidoscope that allows users to visualize and identify animal songs and calls and also create and run automated classifiers. The output files from these programs can be transformed into WildTrax tags to be uploaded for verification purposes. This is also the primary mechanism that ultrasonic data makes its way into the system if it is being analyzed in Kaleidoscope. 
 
 ### Sonscope results
 
