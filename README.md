@@ -13,6 +13,25 @@ status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https
 
 `wildRtrax` (pronounced *‘wilder tracks’*) is an R package to help ecologists create full-cycle environmental sensor data work flows within [WildTrax](https://www.wildtrax.ca/home.html).
 
+## Installation
+
+You can install `wildRtrax` directly from this repository with:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("ABbiodiversity/wildRtrax")
+```
+
+Or the development version with:
+
+``` r
+remotes::install_github("ABbiodiversity/wildRtrax@development")
+```
+
+## Usage
+
+All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis. 
+
 - Pre-process acoustic data
   - `wt_audio_scanner` :sound:
   - `wt_run_ap` :sound:
@@ -35,25 +54,6 @@ status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https
 - Convenience functions
   - `wt_chop` :sound:
   - `wt_location_distances` :sound: :camera: :bird:
-
-## Installation
-
-You can install `wildRtrax` directly from this repository with:
-
-``` r
-# install.packages("remotes")
-remotes::install_github("ABbiodiversity/wildRtrax")
-```
-
-Or the development version with:
-
-``` r
-remotes::install_github("ABbiodiversity/wildRtrax@development")
-```
-
-## Usage
-
-All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis. 
 
 ## Issues
 

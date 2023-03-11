@@ -39,7 +39,7 @@ dn %>%
   ungroup() %>%
   pivot_wider(names_from = tag_clip_status, values_from = n) %>%
   mutate(prop = NEEDS_REVIEW / (`NA` + NEEDS_REVIEW))
-
+# No
 
 
 
