@@ -331,13 +331,12 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
   future::plan(multisession, workers = 2)
 
   # Track progress of run
-  progressr::with_progress({
-    p <- progressr::progressor(steps = nrow(files))
+  # progressr::with_progress({
+  #   p <- progressr::progressor(steps = nrow(files))
     files <- files %>%
       tibble::as_tibble() %>%
       dplyr::rename("file_path" = 1) %>%
-      furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir), invisible = T, intern = T), furrr_options(seed = T))
-  })
+      furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)), furrr_options(seed = T))
 
   return(message('Done!'))
 
@@ -370,8 +369,8 @@ wt_glean_ap <- function(x = NULL, input_dir) {
   # Check to see if the input exists and reading it in
   if (dir.exists(input_dir)) {
     ind <-
-      fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) %>%
-      map_dfr( ~ read_csv(., show_col_types = F, progress = T)) %>%
+      fs::dir_ls("/users/alexandremacphail/desktop/eh19late", regexp = "*.Indices.csv", recurse = T) %>%
+      map_dfr( ~ read_csv(., progress = T)) %>%
       relocate(c(FileName, ResultMinute)) %>%
       select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
       pivot_longer(!c(FileName, ResultMinute),
@@ -379,7 +378,7 @@ wt_glean_ap <- function(x = NULL, input_dir) {
                    values_to = "index_value")
 
     ldfcs <-
-      fs::dir_info(input_dir, regexp = "*__2Maps.png", recurse = T) %>%
+      fs::dir_info("/users/alexandremacphail/desktop/eh19late", regexp = "*__2Maps.png", recurse = T) %>%
       select(path) %>%
       rename("image" = 1) %>%
       mutate(file_name = str_replace(basename(image), '__2Maps.png', ''))
@@ -389,7 +388,7 @@ wt_glean_ap <- function(x = NULL, input_dir) {
   }
 
   # Join the indices and LDFCs to the media
-  joined <- files %>%
+  joined <- late19 %>% filter(location == "ABMI-596-NW") %>% slice(1:120) %>%
     inner_join(., ind, by = c("file_name" = "FileName")) %>%
     inner_join(., ldfcs, by = c("file_name" = "file_name")) %>>%
     "Files joined!"

@@ -91,18 +91,18 @@ abiotic_codes<-c('LIBA','MOBA','HEBA','LITR','MOTR','HETR','LINO','MONO','HENO',
                  'LITN','MOTN','HETN','LIDT','MODT','HEDT','LITF','MOTF','HETF')
 
 # Import the species table
-cls <- read_csv("/users/alexandremacphail/desktop/commonluspp.csv") %>%
+cls <- read_csv("/users/alexandremacphail/desktop/jjj.csv") %>%
   mutate(scientific_name = paste0(species_genus, " ", species_name))
 
 # Setup the data from the report -- change this once wt_auth() is working
 data <-
-  dir_ls(path = "/users/alexandremacphail/desktop/qc", regexp = "*tag_details_report.csv") %>%
+  dir_ls(path = "/users/alexandremacphail/desktop/ab", regexp = "*tag_details_report.csv") %>%
   map(~read_csv(., col_types = list(location = col_character(), abundance = col_character(), verified_by = col_character()))) %>%
   bind_rows()
 
 # Load and prepare the BirdNET data
 
-fn <- dir_ls(path = "/users/alexandremacphail/desktop/qc", regexp = "*recording_birdnet.csv") %>%
+fn <- dir_ls(path = "/users/alexandremacphail/desktop/ab", regexp = "*recording_birdnet.csv") %>%
   map(~read_csv(., col_types = list(location = col_character()))) %>%
   bind_rows()
 
@@ -275,7 +275,7 @@ Now we run the function.
 
 ```{r, eval = T, include = T, warning = F, message = F}
 # Using the most recent quality control
-res <- wt_ord(input = data, min_obs = 11, confidence = 0.67)
+res <- wt_ord(input = data, min_obs = 8, confidence = 0.67)
 
 ```
 
