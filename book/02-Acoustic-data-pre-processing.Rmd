@@ -1,0 +1,379 @@
+# Acoustic data pre-processing
+
+## Acoustic data management basics
+
+The first step after an ARU is retrieved from the field is to promptly download and secure the data to create a redundant backup. Having redundant backups not only protects against data loss but also ensures business continuity and minimizes downtime in the event of a system failure or natural disaster. Furthermore, in case there is an issue with the SD card copy during the quality control process, having a redundant backup ensures that a copy of the data can be restored.
+
+In `wildRtrax` and WildTrax, there are a few essential components and standards that are required in order for the data to be utilized within this context:
+
+- [**Location**](): The physical, geographic place at which environmental sensors were deployed and/or biological data was collected on the landscape. This is how you would associate spatial coordinates to the raw audio data.
+- **Date and time**: The temporal component of the audio recording - when the recording took place. Many time formats are possible but the recommended standard is `YYYY-MM-DD`
+- **Sample rate**: The frequency at which audio waveforms are captured during analog-to-digital conversion in the environment. Digital audio uses pulse-code modulation and digital signals for sound reproduction, allowing signals to be stored, retrieved and transmitted without any loss of quality. Sampling rates of 44.1 kHz, 48 kHz, or 96 kHz are commonly used for capturing audio within the 20–20,000 Hz range. Higher sampling rates (>96 kHz) are employed to capture ultrasonic species as needed.
+
+![](assets/task.png)
+
+A **recording** is the raw media or audio file. The following data types are supported within `wildRtrax` package. They are implicitly related to how each model and type of ARU records data. See [Wildlife Acoustics](), [Frontier BAR-LT]() and [Audio Moth]() for examples to learn more. 
+ 
+* **wac** are proprietary, lossless compressed file formats developed by Wildlife Acoustics
+* **wav** is the standard, ubiquitous uncompressed audio file format
+* **mp3** a lossy compressed audio file format; works by reducing the accuracy of certain sound components, and eliminating others
+* **flac** is a lossless compressed audio file format
+
+:::: {.didyouknow data-latex=""}
+::: {.left data-latex=""}
+*Did you know?*: When data are uploaded to WildTrax, the audio is converted and stored as flac.
+:::
+::::
+
+Some additional file name recommendations include:
+
+* Omitting leading zeros for numeric delimited content, e.g. use `OG-1-3-5` instead of `OG-01-003-05`, unless they serve a identification purpose, e.g. `3-0-A12` where `-0-` indicates the an absence of a treatment 
+* Metadata are also supported for *.dump, .txt, .csv, .fls, and .SM4S files 
+* Delimiters such as “-”, “_”, “@” are supported. Spaces and slashes “/” “\” in location names are not supported “_000” suffixes from Wildlife Acoustics Kaleidoscope output (wac -> wav conversion) are supported
+
+Audio files need to contain both spatial and temporal information which is the minimum required in order to upload media to WildTrax, e.g. `ABMI-538-SW_20220506_050000`, where `ABMI-538-SW` is the location and `20220506_050000` is the timestamp. Both these pieces of information can tell you when and where the recording took place.
+
+## Reading, filtering and selecting audio recordings
+
+:::: {.dangerbox data-latex=""}
+::: {.left data-latex=""}
+Note, if you're not an R user you can stop here and upload all of your recordings directly an organization on WildTrax. WildTrax however does not contain all the necessary data quality control measures to uptake data that are included in ``wildRtrax``
+
+- Go to the organization on WildTrax
+- Go to Manage > Upload Recordings to Organization
+- Follow the steps in WildTrax to finalize data upload
+:::
+::::
+
+### Reading files
+
+The first step in data pre-processing is to determine what files exist. `wt_audio_scanner` is the function that provides the basis for the rest of the data pre-processing steps. The function recursively scans directories of audio data and returns standard metadata such as the file path, file name, file size, date, time, location name, that will later be used in WildTrax.
+
+```r
+files <- wt_audio_scanner(path = "../ABMI/ARU/ABMI-EH/2022/V1/228/228-NE", file_type = "wav", extra_cols = F)
+```
+
+```{r, warning=F, message=F, comment="", prompt=T}
+head(files)
+
+```
+
+:::: {.didyouknow data-latex=""}
+::: {.left data-latex=""}
+*Did you know?*: Directories of acoustic data at the ABMI are organized in the following hierarchy.
+
+- [**Organization**](https://www.wildtrax.ca/home/resources/guide/organizations/organization-management.html): The institution or organization the data belongs to 
+Sensor type: ARU
+- **Project**: A [project](https://www.wildtrax.ca/home/resources/guide/projects/project-management.html) is a  grouping of locations and recordings designed to answer an ecologically relevant question. Such programs at the ABMI include, Ecosystem Health (ABMI-EH), Before-After Dose Response (BADR). with location naming conventions such as ABMI-1025-SW and 2-0-A117, respectively.
+- **Deployment Year**: The year the data was collected. Repeat visits of locations are defined in the year for things like trend data sets. 
+- [**Visit**](https://www.wildtrax.ca/home/resources/guide/organizations/visits.html): A unique sequential key to define the year and visit the media collection took place, e.g. V1, V2, etc.
+- **Group**: Is the delimited name of a location. It is aggregated in order to represent spatial relationships or clustering within the field project. (e.g. ABMI-1025-SW is the location but ABMI-1025 is the group given it defines a specific clustering of locations for the study design)
+- [**Location**](https://www.wildtrax.ca/home/resources/guide/organizations/locations.html): is the joining key to WildTrax and also the base directory to the media
+:::
+::::
+
+
+You can choose `extra_cols = T` you'll be supplied with additional columns that can be used to help select recordings, specifically sample rate, length (seconds) and number of channels.
+
+```r
+files_extra <- wt_audio_scanner(path = ../ABMI/ARU/ABMI-EH/2022/V1/228/228-NE", file_type = "wav", extra_cols = T)
+```
+
+```{r, comment="", prompt=T, warning=F, message=F}
+
+head(files_extra)
+
+```
+
+### Segmenting longer files
+
+It's possible that the recordings you have are longer than the maximum length WildTrax can currently import (1800 seconds or 320MB). In this case, you can use `wt_chop` to create intervals of recordings
+
+```r
+# Select a 10 minute file and chop it into 60 second segments, creating 10 x 60 second files instead of one 10-minute file
+wt_chop(input = files %>% slice(1), segment_length = 60, output_folder = "/my/output/folder"
+
+```
+
+`wt_chop` will create *modulo recordings* as needed; this refers to the remaining portion of the recording that is left over after it has been divided into equal intervals of the chosen duration. For example, if a recording is 120 seconds long and it is split into 50-second intervals, the modulo recording would be the final 20 seconds (e.g. 50 - 50 - 20). However, if the chosen interval duration is a factor of the total duration of the recording, there will be no modulo recording. For example, if a 120-second recording is divided into 60-second intervals, there will be no modulo recording since 60 is a factor of 120.
+
+### Filtering files
+
+At this stage, you can filter recordings from the `wt_audio_scanner` tibble output in order to select the files you're interested in. Here's an example of the ABMI's Stratified Sampling Design for the Ecosystem Health Monitoring program that's used to pick recordings across a breadth of dates and times in order to maximize the species inventory collected at a location.  
+
+```{r, eval = T, warning = F, message = F, include = T, comment="", prompt=T}
+
+abmi_blocks <- as_tibble(data.frame(julian = 90:210) %>%
+                     crossing(time_index = 1:4) %>%
+                     mutate(blocks = case_when(julian %in% 90:139 & time_index == 1 ~ 9, # Midnights during the spring for owls
+                                               julian %in% 140:159 & time_index == 1 ~ 10, # Midnights for amphibians, nocturnal breeders
+                                               julian %in% 160:179 & time_index == 1 ~ 11, # Midnights for amphibians, nocturnal breeders
+                                               julian %in% 180:210 & time_index == 1 ~ 12, # Midnights for amphibians, nocturnal breeders
+                                               julian %in% 90:104 & time_index == 3 ~ 1, # Dawn in winter-spring for residents
+                                               julian %in% 105:119 & time_index == 4 ~ 2, # Post-dawn in spring for residents, early arrivers
+                                               julian %in% 120:139 & time_index == 3 ~ 3, # Dawn for early arrivers
+                                               julian %in% 140:149 & time_index == 3 ~ 4, # Dawn for breeding bird chorus
+                                               julian %in% 150:159 & time_index == 4 ~ 5, # Post-dawn breeding season
+                                               julian %in% 160:169 & time_index == 3 ~ 6, # Dawn for breeding bird chorus
+                                               julian %in% 170:179 & time_index == 4 ~ 7, # Post-dawn breeding season
+                                               julian %in% 180:210 & time_index == 4 ~ 8, # Post-dawn late breeding season
+                                               TRUE ~ NA_real_),
+                            recs = case_when(blocks %in% c(4:7) ~ 180,
+                                             TRUE ~ 60)))
+
+head(abmi_blocks)
+
+
+```
+
+The Before-After Dose-Response program is another example of a sampling design. Here, we select four recordings near dawn and one recording at dusk for each location between Julian date 140 and 210, for a total of 15 audio minutes. Again, this approach allows users to maximize species diversity while accounting for processing effort.
+
+```r
+b <- wt_audio_scanner(path = "../2-0-A25", file_type = "wav", extra_cols = F)
+
+# A list of locations donwload from My Organizations > Manage > Download Locations
+locs <- read_csv("../locations.csv")
+
+bz <- b %>%
+  select(file_name:year) %>%
+  inner_join(., locs, by = c("location")) %>%
+  # Ensure time zone is correct
+  mutate(recording_date_time = force_tz(recording_date_time, "US/Mountain")) %>%
+  rowwise() %>%
+  # Get sun angle, 6 degrees before dawn defines civil twilight period
+  mutate(angle = pull(suncalc::getSunlightPosition(date = recording_date_time, lat = latitude, lon = longitude, keep = c("altitude"))) * (180/pi)) %>%
+  ungroup() %>%
+  filter(between(angle,-6,6),
+         between(julian,140,210)) %>%
+  mutate(hour = hour(recording_date_time))
+
+# Sample one dusk recording
+bz1 <- bz %>% 
+  filter(hour %in% c(20:22)) %>%
+  sample_n(1, replace = F)
+# And four dawn recordings
+bz2 <- bz %>% 
+  filter(hour %in% c(4:7)) %>%
+  sample_n(4, replace = F)
+
+# Bind the dawns and dusks together
+bzz <- bind_rows(bz1, bz2)
+```
+
+```{r, warning=F, message=F, include=T, eval=T, comment="", prompt=T}
+head(bzz)
+
+```
+
+### Filtering files geographically
+
+Another example of selecting files may be geographic. Here's an example with selecting recordings with Bird Conservation Regions. 
+
+```{r, eval=F, include=T, warning=F, message=F, comment="", prompt=F}
+library(tidyverse)
+library(sf)
+
+# Clean up the locations
+locs_next <- locs %>%
+  filter(!is.na(latitude), !is.na(longitude)) %>%
+  select(location, latitude, longitude) %>%
+  distinct() %>%
+  mutate(index = row_number())
+
+# Create a simple features object
+locsset <- st_as_sf(locs_next %>% select(location, latitude, longitude) %>% distinct(), coords = c("longitude","latitude"))
+locsset <- st_make_valid(locsset)
+locsset <- st_set_crs(locsset, 4269)
+
+# Load a shapefile of Terrestrial BCRs of North America
+bcrs <- read_sf("../BCR_Terrestrial.shp")
+
+# Filter to just Alberta
+bcrs <- st_make_valid(bcrs) %>% filter(PROVINCE_S == "ALBERTA")
+
+# Intersect the location with the BCRs
+out <- st_intersection(locsset, bcrs)
+
+# Join it to the original tibble
+locss <- out %>%
+  inner_join(., locs, by = c("location" = "location")) %>%
+  # Now sample 10 locations per BCR 
+  group_by(BCRNAME) %>%
+  sample_n(10, replace = F)
+
+```
+
+```{r, comment="", warning=F, message=F, prompt=T}
+locss %>% select(location, BCRNAME)
+
+```
+
+```{r, eval=T, include=T, warning=F, message=F, comment="", prompt=F}
+ggplot(bcrs) +
+  coord_sf(crs = 4269) +
+  geom_sf(aes(fill = BCRNAME)) +
+  geom_sf(locss, mapping = aes()) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()
+
+```
+
+## Other convenience functions: distance between locations
+
+As ARUs are placed on the landscape by different organizations, or over time with different projects, it is possible that spatial locations may overlap. `wt_location_distances` takes a list of locations downloaded from WildTrax and calculates the distances between all pairs of points.
+
+:::: {.didyouknow data-latex=""}
+::: {.left data-latex=""}
+*Did you know?*: You can go to Manage > Download Locations in either a project or an organization to get a list of locations and their attributes. Remember, you need to be an organization administration to perform this operation since organizations manage locations.
+:::
+::::
+
+```{r, include = T, eval=F, warning=F, message=F, comment="", prompt=T}
+
+# Control locations from BADR LU 2
+badr2 <- locs %>%
+  filter(grepl('^2-0',location))
+
+# Big Grid 9 (Touchoowd)
+bu_locs <- bu_locs %>%
+  filter(grepl('^BG-9', location))
+
+bu_badr <- bind_rows(badr2, bu_locs) %>%
+  mutate(type = case_when(grepl('^BG-',location) ~ "Big Grids",TRUE ~ "Before-After Dose Response"))
+
+bu_badr_map <- st_as_sf(bu_badr, coords = c("longitude","latitude")) 
+bu_badr_map <- st_make_valid(bu_badr_map)
+bu_badr_map <- st_set_crs(bu_badr_map, 4269)
+```
+
+```{r, warning=F, message=F}
+ggplot() +
+  coord_sf(crs = 4269) +
+  geom_sf(bu_badr_map, mapping = aes(colour = type)) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  scale_fill_viridis_d()
+
+```
+
+```r
+distances <- wt_location_distances(input_from_tibble = bu_badr)
+
+```
+
+```{r, include = T, eval=T, warning=F, message=F, comment="", prompt=T}
+# Filter points less then 100 meters apart
+distances %>%
+  filter(distance < 100)
+
+```
+
+### Error handling and file standardization
+
+`wt_audio_scanner` will continue to support new file formats and file types. Error handling techniques are being put in place to identify and provide clear messages to users to ensure their data is standard to the WildTrax system before upload. File standardization helps ensure consistency and prevent errors when transferring data across different systems and applications. With these measures, wt_audio_scanner can provide a reliable and versatile tool for working with various audio file formats. Development requests can be submitted as issues to the [GitHub repository](https://github.com/ABbiodiversity/wildRtrax/issues).
+
+## Using acoustic indices and LDFCs
+
+![](assets/305-SE.png)
+
+*Acoustic indices* and *long-duration false-colour (LDFC)* spectrograms are two tools used in the analysis of acoustic data developed by the Towsey lab at QUT. Acoustic indices are numerical measurements that quantify various aspects of sound using different measurements that reflect the soundscpe. They are used to identify and track patterns of vocal activity over time, generate soundscape and monitor ecosystem-level patterns and changes. Some commonly known acoustic indices include the Acoustic Complexity Index (ACI), which measures the diversity of sound frequencies and amplitudes, and the Acoustic Diversity Index (ADI), which measures the number and relative abundance of different vocalizations. Long-duration false-color spectrograms are visual representations of acoustic data using index values rather than spectral generation in order to provide detailed views of sound patterns over long periods of time. The use of false-colours allows for easier interpretation of the spectrogram, as different colors can be used to represent different types of sounds. These unique spectrograms are particularly useful in studies of animal vocalizations, as they allow researchers to identify specific vocalizations and track patterns of vocal activity over long periods of time, and determine seasonal phenology patterns. 
+
+``wildRtrax`` utilizes the results of the AnalysisPrograms software which generates the csv, json and png files associated to the results, and generates tidy versions of the data that can be joined to the media in order to select recordings based on index values and patterns. Let us demonstrate some different examples while introducing the `wt_run_ap` and `wt_glean_ap` functions.
+
+```{r, include = T, eval=F, warning=F, message=F}
+wt_run_ap()
+
+
+```
+
+```{r, include = T, eval=F, warning=F, message=F}
+wt_glean_ap()
+
+
+```
+
+
+
+### Abiotic, geophonic and anthropophonic signal detection
+
+Recorder failure, damaged microphones, or recorders that are placed in an environment where prevailing winds muffle the sounds the ARU can hear, such as in alpine environments, can limit the audio quality in order to process data in an effective way. The recordings on Cirrus by default do not contain information on if the audio was defective and have a high geophonic index. On average, 12% (2015 – 2019 ABMI Ecosystem Health data) of the primary recordings that are selected at the ABMI site level can have a relatively high geophonic index or a malfunction or failure. To limit lost time and determine noise-pollution related effects on the landscape, recordings are processed regardless of anthropogenic noise, but recordings are optimized to omit as much as the geophonic bias as possible. Due to the large volume of data that is handled, it is no longer efficient to do these processes manually and these steps should be automated as much as possible. The goals are to find efficient ways to screen and filter audio data with high geophony or to flag and omit recordings that will not be used for processing. 
+
+```{r, eval=F, include=T, warning=F, message=F}
+
+# Output the results
+aqd <- wt_glean_ap(x = f2, input_dir = "../data", purpose = "abiotic")
+
+```
+
+For example, noise pollution is a pervasive problem in modern society, with detrimental effects on human health and well-being, wildlife, and ecosystems. There is growing interest in the use of acoustic indices for noise mapping applications. This approach has several advantages over traditional noise mapping methods. 
+
+Using acoustic sensors at 310 spatial locations in 2021 across a gradient of human footprint. We recorded sounds for 4-5 days at each location betwwen May and July calculated a range of acoustic indices. We also collected human observations of noise levels (ranked 0-3) and other noise sources (wind, rain, other noise and audio quality) using a standardized survey. We compared the acoustic indices to the human observations to determine the accuracy of the noise map generated from the indices.
+
+```r
+map_badr <- wt_glean(x = badr, input_dir = "../data", purpose = "abiotic")
+
+
+```
+
+### Biophonic signal detection
+
+We can also look at the entire seasonal phenology of an ABMI Ecosystem Health site
+
+```{r, eval=F, include=T, message=F, warning=F, prompt=T, comment=""}
+
+boreal_example <- wt_glean_ap(x = boreal_site, input_dir = "../data")
+
+boreal_example[[2]]
+
+```
+
+![](assets/280-NE.png)
+The great part about having a list of the `.png` files is that you can easily manipulate and generate new LDFCs with other attributes.
+
+```{r, eval=F, include=T, message=F, warning=F, prompt=T, comment=""}
+
+boreal_example[[2]] %>%
+  mutate(hour = lubridate::hour(recording_date_time)) %>%
+  filter(hour == 0) %>% # Look at only midnight LDFCs and acoustic index values
+  map_dfr(~lapply(.))
+
+```
+
+While acoustic indices are good at detecting large scale patterns, it is more difficult to detect rare and elusive signals, especially those that exceed the signal-to-noise threshold to capture the signal. It is important to use this along with spectral validation in WildTrax to determine the source of the environmental noise.
+
+## Linking acoustic data to WildTrax
+
+Wildlife Acoustics offers advanced tools for analyzing wildlife vocalizations. Two of their most popular programs are Songscope and Kaleidoscope that allows users to visualize and identify animal songs and calls and also create and run automated classifiers. The output files from these programs can be transformed into WildTrax tags to be uploaded for verification purposes. This is also the primary mechanism that ultrasonic data makes its way into the system if it is being analyzed in Kaleidoscope. 
+
+### Sonscope results
+
+The function `wt_songscope_tags` reformats the output obtained from a wildlife acoustics songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
+
+```{r, include = T, eval=F, warning=F, message=F, prompt="", prompt=T}
+wt_songscope_tags()
+
+```
+
+:::: {.dangerbox data-latex=""}
+::: {.left data-latex=""}
+For certain monitoring programs that deliberately deploy ARUs over extended periods to detect specific species, a high true negative rate is crucial to confirm the absence of the species when required. This typically involves recording for more extended periods of more than 30 minutes. In such cases, it is advisable to use the `wt_chop` function to segment the media, upload the resulting recordings to WildTrax, generate a task list, and combine it with the results of `wt_songscope_tags` to import all the data into WildTrax.
+:::
+::::
+
+### Kaleidoscope results
+
+Similarly, the function `wt_kaleidoscope_tags` performs the same reformatting process, but with Kaleidoscope instead. It is worth noting that this function targeted for sonic and ultrasonic species upload.
+
+```{r, include = T, eval=F, warning=F, message=F}
+wt_kaleidoscope_tags()
+
+```
+
+### Making tasks
+
+```{r, include = T, eval=F, warning=F, message=F}
+wt_make_aru_tasks()
+
+```
+

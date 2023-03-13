@@ -6,32 +6,12 @@
 [![Travis build
 status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https://travis-ci.com/ABbiodiversity/wildRtrax)
 [![CRAN status](https://www.r-pkg.org/badges/version/wildRtrax)](https://CRAN.R-project.org/package=wildRtrax)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 ## Overview
 
 `wildRtrax` (pronounced *‘wilder tracks’*) is an R package to help ecologists create full-cycle environmental sensor data work flows within [WildTrax](https://www.wildtrax.ca/home.html).
-
-- Pre-process acoustic data
-  - `wt_audio_scanner` :sound:
-  - `wt_run_ap` :sound:
-  - `wt_glean_ap` :sound:
-  - `wt_signal_level` :sound:
-- Organize acoustic media and metadata for upload to WildTrax
-  - `wt_make_aru_tasks` :sound:
-  - `wt_kaleidoscope_tags` :sound:
-  - `wt_songscope_tags` :sound:
-- Download processed data from WildTrax
-  - `wt_auth`
-  - `wt_get_download_summary` :camera: :sound:
-  - `wt_download_report` :camera: :sound:
-  - `wt_download_tags` :sound:
-- Analyze data
-  - `wt_replace_tmtt` :sound:
-  - `wt_occupancy` :sound:
-  - `wt_summarise_cam` :camera:
-  - `wt_ind_det` :camera:
 
 ## Installation
 
@@ -51,6 +31,29 @@ remotes::install_github("ABbiodiversity/wildRtrax@development")
 ## Usage
 
 All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis. 
+
+- Pre-process acoustic data
+  - `wt_audio_scanner` :sound:
+  - `wt_run_ap` :sound:
+  - `wt_glean_ap` :sound:
+  - `wt_signal_level` :sound:
+- Organize acoustic media and metadata for upload to WildTrax
+  - `wt_make_aru_tasks` :sound:
+  - `wt_kaleidoscope_tags` :sound:
+  - `wt_songscope_tags` :sound:
+- Download processed data from WildTrax
+  - `wt_auth` :camera: :sound: :bird:
+  - `wt_get_download_summary` :camera: :sound: :bird:
+  - `wt_download_report` :camera: :sound: :bird:
+  - `wt_download_tags` :sound:
+- Analyze data
+  - `wt_replace_tmtt` :sound:
+  - `wt_occupancy` :sound: :bird:
+  - `wt_summarise_cam` :camera:
+  - `wt_ind_det` :camera:
+- Convenience functions
+  - `wt_chop` :sound:
+  - `wt_location_distances` :sound: :camera: :bird:
 
 ## Issues
 

@@ -134,7 +134,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       df_flac <- df %>>%
         "Working on flac files..." %>>%
         dplyr::filter(file_type == "flac") %>%
-        dplyr::mutate(data = furrr::future_map(.x = file_path, .f = ~ seewave::wav2flac(.x, reverse = TRUE), .progress = TRUE, .options = furrr_options(seed = TRUE)),
+        dplyr::mutate(data = furrr::future_map(.x = file_path, .f = ~ seewave::wav2flac(.x), .options = furrr_options(seed = TRUE)),
                       sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample_rate"]])),
                       length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
@@ -256,6 +256,19 @@ wt_wac_info <- function(path) {
 
 }
 
+#' @section `wt_flac_info` details:
+#'
+#' @description Scrape relevant information from flac file
+#'
+#' @param path Character; The flac file path
+#'
+#' @import
+#' @export
+#'
+#' @return a list with relevant information
+
+wt_flac_info <- function(path {})
+
 #' @section `wt_run_ap` for generating acoustic indices and false-colour spectrograms using QUT Ecoacoustics **A**nalysis **P**rograms software
 #'
 #' @description See \url{https://github.com/QutEcoacoustics/audio-analysis} for information about usage and installation of the AP software.
@@ -336,7 +349,12 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
     files <- files %>%
       tibble::as_tibble() %>%
       dplyr::rename("file_path" = 1) %>%
+<<<<<<< HEAD
       furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)), furrr_options(seed = T))
+=======
+      furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir), invisible = T), furrr_options(seed = T))
+  # })
+>>>>>>> a82df8dc95fd9a78197e985052db585bbe231dff
 
   return(message('Done!'))
 
@@ -361,10 +379,22 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #'
 #' @return Output will return the merged tibble with all information, the summary plots of the indices and the LDFC
 
-wt_glean_ap <- function(x = NULL, input_dir) {
+wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","biotic")) {
 
   # Check to see if the input exists and reading it in
   files <- x
+
+  #Purpose lists
+  if (purpose == "quality") {
+    purpose_list <- c("Snr","BackgroundNoise")
+  } else if (purpose == "abiotic") {
+    purpose_list <- c("ClippingIndex","TemporalEntropy","Ndsi")
+  } else if (purpose == "biotic") {
+    purpose_list <- c("HighFreqCover","MidFreqCover","LowFreqCover","AcousticComplexity","Ndsi")
+  } else if (purpose == NULL) {
+    purpose_list <- list_all
+  }
+
 
   # Check to see if the input exists and reading it in
   if (dir.exists(input_dir)) {
@@ -393,8 +423,11 @@ wt_glean_ap <- function(x = NULL, input_dir) {
     inner_join(., ldfcs, by = c("file_name" = "file_name")) %>>%
     "Files joined!"
 
+  joined_purpose <- joined %>%
+    filter(index_variable %in% purpose_list)
+
   # Plot a summary of the indices
-  plotted <- joined %>%
+  plotted <- joined_purpose %>%
     ggplot(., aes(x=julian, y=index_value, group=julian, fill=index_variable)) +
     geom_boxplot() +
     scale_fill_viridis_d() +
@@ -408,7 +441,7 @@ wt_glean_ap <- function(x = NULL, input_dir) {
     ggtitle("Summary of indices")
 
   # Plot the LDFC
-  ldfc <- joined %>%
+  ldfc <- joined_purpose %>%
     select(image) %>%
     distinct() %>%
     map(function(x){magick::image_read(x)}) %>%

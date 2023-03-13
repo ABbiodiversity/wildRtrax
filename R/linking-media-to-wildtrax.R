@@ -196,7 +196,7 @@ wt_songscope_tags <- function (input, output, species_code, vocalization_type, t
   }
 
   #Cleaning things up for the tag template
-  in_tbl_wtd <<- in_tbl %>%
+  in_tbl_wtd <- in_tbl %>%
     rename("file_path" = 1) %>%
     rename("startTime" = 2) %>%
     rename("tagLength" = 3) %>%
@@ -206,7 +206,8 @@ wt_songscope_tags <- function (input, output, species_code, vocalization_type, t
     rename("recognizer" = 7) %>%
     rename("comments"= 8) %>%
     mutate(file_name = tools::file_path_sans_ext(basename(file_path))) %>%
-    tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
+    tidyr::separate(file_name, into = c("location", "recording_date_time"),
+                    sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
     mutate(startTime = as.numeric(startTime)) %>%
     tibble::add_column(method = "USPM", .after = "recording_date_time") %>%
     tibble::add_column(taskLength = task_length, .after = "method") %>%
@@ -222,7 +223,9 @@ wt_songscope_tags <- function (input, output, species_code, vocalization_type, t
     tibble::add_column(minFreq = "", .after= "tagLength") %>%
     tibble::add_column(maxFreq = "", .after= "minFreq") %>%
     tibble::add_column(internal_tag_id = "", .after = "maxFreq") %>%
-    select(location, recording_date_time, method, taskLength, transcriber, species, speciesIndividualNumber, vocalization, abundance, startTime, tagLength, minFreq, maxFreq, internal_tag_id, quality, score)
+    select(location, recording_date_time, method, taskLength, transcriber, species,
+           speciesIndividualNumber, vocalization, abundance, startTime, tagLength,
+           minFreq, maxFreq, internal_tag_id, quality, score)
 
   #Write the file
   return(list(in_tbl_wtd, write.csv(in_tbl_wtd, file = output, row.names = F)))

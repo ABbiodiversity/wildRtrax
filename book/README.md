@@ -1,1 +1,1 @@
-# Environmental sensor data analysis with R
+# Environmental sensor data management and analysis with R

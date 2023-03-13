@@ -4,28 +4,26 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 3 Acoustic data analysis | Environmental sensor data analysis with R</title>
+  <title>Chapter 3 Acoustic data analysis | Environmental sensor data management and analysis with R</title>
   <meta name="description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
   <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 3 Acoustic data analysis | Environmental sensor data analysis with R" />
+  <meta property="og:title" content="Chapter 3 Acoustic data analysis | Environmental sensor data management and analysis with R" />
   <meta property="og:type" content="book" />
   <meta property="og:image" content="https://abbiodiversity.github.io/wildRtrax/book/images/cover.png" />
   <meta property="og:description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
   <meta name="github-repo" content="ABbiodiversity/wildRtrax" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 3 Acoustic data analysis | Environmental sensor data analysis with R" />
+  <meta name="twitter:title" content="Chapter 3 Acoustic data analysis | Environmental sensor data management and analysis with R" />
   
   <meta name="twitter:description" content="wildRtrax is for users who want to create full-cycle work flows for their environmental sensor data from either autonomous recording units (ARUs) or remote camera traps" />
   <meta name="twitter:image" content="https://abbiodiversity.github.io/wildRtrax/book/images/cover.png" />
 
-<meta name="author" content="Alexander G. MacPhail" />
-<meta name="author" content="Marcus Becker" />
-<meta name="author" content="Elly C. Knight" />
+<meta name="author" content="Alexander G. MacPhail, Marcus Becker, Elly C. Knight" />
 
 
-<meta name="date" content="2023-01-13" />
+<meta name="date" content="2023-03-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -139,36 +137,42 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Foreword</a></li>
-<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a><ul>
-<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-is-this-book-for"><i class="fa fa-check"></i><b>0.1</b> Who is this book for?</a></li>
-<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-should-i-read-this-book"><i class="fa fa-check"></i><b>0.2</b> How should I read this book?</a></li>
-<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#why-in-r-why-bookdown"><i class="fa fa-check"></i><b>0.3</b> Why in R? Why bookdown?</a></li>
-<li class="chapter" data-level="0.4" data-path="preface.html"><a href="preface.html#impact-and-intentions"><i class="fa fa-check"></i><b>0.4</b> Impact and intentions</a></li>
-<li class="chapter" data-level="0.5" data-path="preface.html"><a href="preface.html#acknowledgements"><i class="fa fa-check"></i><b>0.5</b> Acknowledgements</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a><ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-is-this-book-for"><i class="fa fa-check"></i><b>0.1</b> Who is this book for?</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-should-i-read-this-book"><i class="fa fa-check"></i><b>0.2</b> How should I read this book?</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#impact-and-intentions"><i class="fa fa-check"></i><b>0.3</b> Impact and intentions</a></li>
+<li class="chapter" data-level="0.4" data-path="index.html"><a href="index.html#acknowledgements"><i class="fa fa-check"></i><b>0.4</b> Acknowledgements</a></li>
 </ul></li>
 <li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
-<li class="chapter" data-level="1.1" data-path="1-introduction.html"><a href="1-introduction.html#what-are-environmental-sensors-why-do-we-use-them"><i class="fa fa-check"></i><b>1.1</b> What are environmental sensors? Why do we use them?</a></li>
-<li class="chapter" data-level="1.2" data-path="1-introduction.html"><a href="1-introduction.html#what-is-open-data-why-is-it-important-in-the-context-of-environmental-sensors"><i class="fa fa-check"></i><b>1.2</b> What is open data? Why is it important in the context of environmental sensors?</a></li>
-<li class="chapter" data-level="1.3" data-path="1-introduction.html"><a href="1-introduction.html#why-is-reproducibility-important-for-environmental-sensor-data"><i class="fa fa-check"></i><b>1.3</b> Why is reproducibility important for environmental sensor data?</a></li>
-<li class="chapter" data-level="1.4" data-path="1-introduction.html"><a href="1-introduction.html#how-do-standardized-work-flows-help-with-environmental-sensor-data"><i class="fa fa-check"></i><b>1.4</b> How do standardized work flows help with environmental sensor data?</a></li>
-<li class="chapter" data-level="1.5" data-path="1-introduction.html"><a href="1-introduction.html#what-is-wildtrax"><i class="fa fa-check"></i><b>1.5</b> What is <strong>WildTrax</strong>?</a></li>
-<li class="chapter" data-level="1.6" data-path="1-introduction.html"><a href="1-introduction.html#why-did-you-build-wildrtrax"><i class="fa fa-check"></i><b>1.6</b> Why did you build <code>wildRtrax</code>?</a></li>
+<li class="chapter" data-level="1.1" data-path="1-introduction.html"><a href="1-introduction.html#environmental-sensors"><i class="fa fa-check"></i><b>1.1</b> Environmental sensors</a></li>
+<li class="chapter" data-level="1.2" data-path="1-introduction.html"><a href="1-introduction.html#open-data"><i class="fa fa-check"></i><b>1.2</b> Open data</a></li>
+<li class="chapter" data-level="1.3" data-path="1-introduction.html"><a href="1-introduction.html#standardizing-information-pipelines"><i class="fa fa-check"></i><b>1.3</b> Standardizing information pipelines</a></li>
+<li class="chapter" data-level="1.4" data-path="1-introduction.html"><a href="1-introduction.html#what-is-wildtrax"><i class="fa fa-check"></i><b>1.4</b> What is <strong>WildTrax</strong>?</a></li>
+<li class="chapter" data-level="1.5" data-path="1-introduction.html"><a href="1-introduction.html#why-did-you-build-wildrtrax"><i class="fa fa-check"></i><b>1.5</b> Why did you build <code>wildRtrax</code>?</a></li>
+<li class="chapter" data-level="1.6" data-path="1-introduction.html"><a href="1-introduction.html#installing-the-package"><i class="fa fa-check"></i><b>1.6</b> Installing the package</a></li>
+<li class="chapter" data-level="1.7" data-path="1-introduction.html"><a href="1-introduction.html#usage"><i class="fa fa-check"></i><b>1.7</b> Usage</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html"><i class="fa fa-check"></i><b>2</b> Data pre-processing</a><ul>
-<li class="chapter" data-level="2.1" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#acoustic-data"><i class="fa fa-check"></i><b>2.1</b> Acoustic data</a><ul>
-<li class="chapter" data-level="2.1.1" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#acoustic-data-pre-processing"><i class="fa fa-check"></i><b>2.1.1</b> Acoustic data pre-processing</a></li>
-<li class="chapter" data-level="2.1.2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.1.2</b> Linking acoustic data to WildTrax</a></li>
+<li class="chapter" data-level="2.1" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#acoustic-data-basics"><i class="fa fa-check"></i><b>2.1</b> Acoustic data basics</a></li>
+<li class="chapter" data-level="2.2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#acoustic-data-pre-processing"><i class="fa fa-check"></i><b>2.2</b> Acoustic data pre-processing</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#reading-filtering-and-selecting-audio-recordings"><i class="fa fa-check"></i><b>2.2.1</b> Reading, filtering and selecting audio recordings</a></li>
+<li class="chapter" data-level="2.2.2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#using-acoustic-indices-and-ldfcs"><i class="fa fa-check"></i><b>2.2.2</b> Using acoustic indices and LDFCs</a></li>
+<li class="chapter" data-level="2.2.3" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.2.3</b> Linking acoustic data to WildTrax</a></li>
+<li class="chapter" data-level="2.2.4" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#making-tasks"><i class="fa fa-check"></i><b>2.2.4</b> Making tasks</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#image-data"><i class="fa fa-check"></i><b>2.2</b> Image data</a></li>
+<li class="chapter" data-level="2.3" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#image-data-pre-processing"><i class="fa fa-check"></i><b>2.3</b> Image data pre-processing</a></li>
+<li class="chapter" data-level="2.4" data-path="2-data-pre-processing.html"><a href="2-data-pre-processing.html#other-convenience-functions"><i class="fa fa-check"></i><b>2.4</b> Other convenience functions</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html"><i class="fa fa-check"></i><b>3</b> Acoustic data analysis</a><ul>
-<li class="chapter" data-level="3.1" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax"><i class="fa fa-check"></i><b>3.1</b> Authorizing and downloading data from WildTrax</a></li>
-<li class="chapter" data-level="3.2" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis"><i class="fa fa-check"></i><b>3.2</b> Wrangling data for analysis</a></li>
-<li class="chapter" data-level="3.3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#biological-metrics"><i class="fa fa-check"></i><b>3.3</b> Biological metrics</a></li>
-<li class="chapter" data-level="3.4" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#occupancy-mdoelling"><i class="fa fa-check"></i><b>3.4</b> Occupancy mdoelling</a></li>
-<li class="chapter" data-level="3.5" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis-1"><i class="fa fa-check"></i><b>3.5</b> Wrangling data for analysis</a></li>
-<li class="chapter" data-level="3.6" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#constructing-a-classifier"><i class="fa fa-check"></i><b>3.6</b> Constructing a classifier</a></li>
+<li class="chapter" data-level="3.1" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#biological-metrics"><i class="fa fa-check"></i><b>3.1</b> Biological metrics</a></li>
+<li class="chapter" data-level="3.2" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax"><i class="fa fa-check"></i><b>3.2</b> Authorizing and downloading data from WildTrax</a></li>
+<li class="chapter" data-level="3.3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis"><i class="fa fa-check"></i><b>3.3</b> Wrangling data for analysis</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#species-identification-and-observer-error"><i class="fa fa-check"></i><b>3.3.1</b> Species identification and observer error</a></li>
+<li class="chapter" data-level="3.3.2" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#false-negative-rates-and-birdnet"><i class="fa fa-check"></i><b>3.3.2</b> False negative rates and BirdNET</a></li>
+<li class="chapter" data-level="3.3.3" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#abundance-estimation"><i class="fa fa-check"></i><b>3.3.3</b> Abundance estimation</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#occupancy-modelling"><i class="fa fa-check"></i><b>3.4</b> Occupancy modelling</a></li>
+<li class="chapter" data-level="3.5" data-path="3-acoustic-data-analysis.html"><a href="3-acoustic-data-analysis.html#constructing-a-classifier"><i class="fa fa-check"></i><b>3.5</b> Constructing a classifier</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="4-camera-data-analysis.html"><a href="4-camera-data-analysis.html"><i class="fa fa-check"></i><b>4</b> Camera data analysis</a></li>
 <li class="chapter" data-level="5" data-path="5-conclusions.html"><a href="5-conclusions.html"><i class="fa fa-check"></i><b>5</b> Conclusions</a></li>
@@ -185,7 +189,7 @@ Published with bookdown</a></li>
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Environmental sensor data analysis with R</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Environmental sensor data management and analysis with R</a>
           </h1>
         </div>
 
@@ -195,35 +199,84 @@ Published with bookdown</a></li>
             <section class="normal" id="section-">
 <div id="acoustic-data-analysis" class="section level1 hasAnchor">
 <h1><span class="header-section-number">Chapter 3</span> Acoustic data analysis<a href="3-acoustic-data-analysis.html#acoustic-data-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="authorizing-and-downloading-data-from-wildtrax" class="section level2 hasAnchor">
-<h2><span class="header-section-number">3.1</span> Authorizing and downloading data from WildTrax<a href="3-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="3-acoustic-data-analysis.html#cb5-1"></a><span class="kw">wt_auth</span>()</span>
-<span id="cb5-2"><a href="3-acoustic-data-analysis.html#cb5-2"></a></span>
-<span id="cb5-3"><a href="3-acoustic-data-analysis.html#cb5-3"></a></span>
-<span id="cb5-4"><a href="3-acoustic-data-analysis.html#cb5-4"></a><span class="kw">wt_get_download_summary</span>()</span>
-<span id="cb5-5"><a href="3-acoustic-data-analysis.html#cb5-5"></a></span>
-<span id="cb5-6"><a href="3-acoustic-data-analysis.html#cb5-6"></a></span>
-<span id="cb5-7"><a href="3-acoustic-data-analysis.html#cb5-7"></a></span>
-<span id="cb5-8"><a href="3-acoustic-data-analysis.html#cb5-8"></a><span class="kw">wt_download_report</span>()</span></code></pre></div>
-</div>
-<div id="wrangling-data-for-analysis" class="section level2 hasAnchor">
-<h2><span class="header-section-number">3.2</span> Wrangling data for analysis<a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="3-acoustic-data-analysis.html#cb6-1"></a><span class="kw">wt_replace_tmtt</span>()</span></code></pre></div>
-</div>
 <div id="biological-metrics" class="section level2 hasAnchor">
-<h2><span class="header-section-number">3.3</span> Biological metrics<a href="3-acoustic-data-analysis.html#biological-metrics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<h2><span class="header-section-number">3.1</span> Biological metrics<a href="3-acoustic-data-analysis.html#biological-metrics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>What is abundance, occupancy, etc.</p>
 </div>
-<div id="occupancy-mdoelling" class="section level2 hasAnchor">
-<h2><span class="header-section-number">3.4</span> Occupancy mdoelling<a href="3-acoustic-data-analysis.html#occupancy-mdoelling" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="authorizing-and-downloading-data-from-wildtrax" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.2</span> Authorizing and downloading data from WildTrax<a href="3-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="3-acoustic-data-analysis.html#cb29-1"></a><span class="kw">wt_auth</span>()</span>
+<span id="cb29-2"><a href="3-acoustic-data-analysis.html#cb29-2"></a></span>
+<span id="cb29-3"><a href="3-acoustic-data-analysis.html#cb29-3"></a></span>
+<span id="cb29-4"><a href="3-acoustic-data-analysis.html#cb29-4"></a><span class="kw">wt_get_download_summary</span>()</span>
+<span id="cb29-5"><a href="3-acoustic-data-analysis.html#cb29-5"></a></span>
+<span id="cb29-6"><a href="3-acoustic-data-analysis.html#cb29-6"></a></span>
+<span id="cb29-7"><a href="3-acoustic-data-analysis.html#cb29-7"></a></span>
+<span id="cb29-8"><a href="3-acoustic-data-analysis.html#cb29-8"></a><span class="kw">wt_download_report</span>()</span></code></pre></div>
 </div>
-<div id="wrangling-data-for-analysis-1" class="section level2 hasAnchor">
-<h2><span class="header-section-number">3.5</span> Wrangling data for analysis<a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="3-acoustic-data-analysis.html#cb7-1"></a><span class="kw">wt_occupancy</span>()</span></code></pre></div>
+<div id="wrangling-data-for-analysis" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.3</span> Wrangling data for analysis<a href="3-acoustic-data-analysis.html#wrangling-data-for-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="species-identification-and-observer-error" class="section level3 hasAnchor">
+<h3><span class="header-section-number">3.3.1</span> Species identification and observer error<a href="3-acoustic-data-analysis.html#species-identification-and-observer-error" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Avian count surveys rely on skilled observers to identify species and estimate numbers of individuals using distinct visual or acoustic signals. Since birds rely on acoustic cues to attract mates, defend territory and communicate with one another, humans can take advantage of these unique signatures in order to identify species and individuals. In passive field-based surveys (i.e. “point counts”), human observers use distance and time-interval sampling in order for analysts to incorporate perceptibility and dectectability offsets (Buckland et al. 2001, Farnsworth et al. 2002, Solymos et al. 2013) to accurately calculate meaningful biological metrics such as population size or density which are then are used to make conservation decisions. The accuracy and reliability of these results must be high otherwise incorrect conclusions and flawed decision-making can lead to the improper management of a species or landscape.</p>
+<p>Since the advent of affordable autonomous recording unit (ARU) technology, single-visit human-based surveys have been rapidly replaced by archiveable acoustic recordings of the environment. This has established both the fields of bioacoustics and ecoacoustics, launching ARUs as the new standard for bird population monitoring. The comparison of human-based surveys and acoustic recording technology for monitoring avian populations is well-documented (Shonfield et al. 2017, Van Wilgenburg et al. 2017, Venier et al. 2017, Pankratz et al. 2017, Yip et al. 2019). Factors such as distance from the observer or ARU (Yip et al. 2016, Knight et al. 2020, Van Wilgenburg et al. 2017), frequency range and habitat type (Yip et al. 2016) all play an important role in whether a species is detected (true positive; <em>TP</em>) or not (true negative; <em>TN</em>). Researchers can leverage the acoustic recording data over point counts in order to improve data processing quality and benefit from long-term secure data storage. Ensuring the proper integration of traditional human-collected and acoustic data [REFERENCE] is key to avian monitoring management implications and conservation goals. By creating open data sets, (Docherty et al. 2021) researchers can also merge data sets together allowing for larger coproduced (Westwood et al. 2020) and reproducible analyses.</p>
+<p>False positives (<em>FP</em>) and false negatives (<em>FN</em>) in avian data sets are rarely reported in the scientific literature suggesting that they are either flawlessly collected or species are identified to a high degree of accuracy and / or precision. <em>FP</em>s can increase the count and therefore skew the population estimates for certain species. Morrison (2016) proposes that to avoid observer error in plant identification, additional training including active feedback approaches, continual evaluation and calibration among a multi-observer set are important. Similarly, Dennett and Nielsen (2019) determined that abundance and scale of the survey were the most influential factors in detecting rare species of plants. These types of assessments would be operationally difficult or costly to implement for field-based avian surveys given the mobile nature of birds, however utilizing the ability to return to acoustic recording would show the potential to determine the error in the avian count data. Standardizing multiple observers is known to be effective for correcting inter-observer variability in species detections in a monitoring program [REFERENCE]. While acoustic data excludes any visual cues for species identification, the principal advantage of collecting avian data with ARUs is that a permanent copy of the recording can be kept for future reference.</p>
+<p>A standardized system of reporting, assessing and determining actions to resolve avian identification error is crucial to ensure that reporting meets a high data quality standard and that it can be used comfortably in aggregation with other data to answer a wider range of scientific questions. The goals were to provide a standard way of assessing the prevalence of false positives, false negatives and true negatives in avian datasets, to provide solutions to correct and integrate identification error into analyses, and to provide recommendations for the evaluation, training and development of skilled observers.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="3-acoustic-data-analysis.html#cb30-1"></a><span class="co"># Omit any abiotic data</span></span>
+<span id="cb30-2"><a href="3-acoustic-data-analysis.html#cb30-2"></a>abiotic_codes&lt;-<span class="kw">c</span>(<span class="st">&#39;LIBA&#39;</span>,<span class="st">&#39;MOBA&#39;</span>,<span class="st">&#39;HEBA&#39;</span>,<span class="st">&#39;LITR&#39;</span>,<span class="st">&#39;MOTR&#39;</span>,<span class="st">&#39;HETR&#39;</span>,<span class="st">&#39;LINO&#39;</span>,<span class="st">&#39;MONO&#39;</span>,<span class="st">&#39;HENO&#39;</span>,</span>
+<span id="cb30-3"><a href="3-acoustic-data-analysis.html#cb30-3"></a>                 <span class="st">&#39;LIRA&#39;</span>,<span class="st">&#39;MORA&#39;</span>,<span class="st">&#39;HERA&#39;</span>,<span class="st">&#39;LIWI&#39;</span>,<span class="st">&#39;MOWI&#39;</span>,<span class="st">&#39;HEWI&#39;</span>,<span class="st">&#39;LIAI&#39;</span>,<span class="st">&#39;MOAI&#39;</span>,<span class="st">&#39;HEAI&#39;</span>,</span>
+<span id="cb30-4"><a href="3-acoustic-data-analysis.html#cb30-4"></a>                 <span class="st">&#39;LITN&#39;</span>,<span class="st">&#39;MOTN&#39;</span>,<span class="st">&#39;HETN&#39;</span>,<span class="st">&#39;LIDT&#39;</span>,<span class="st">&#39;MODT&#39;</span>,<span class="st">&#39;HEDT&#39;</span>,<span class="st">&#39;LITF&#39;</span>,<span class="st">&#39;MOTF&#39;</span>,<span class="st">&#39;HETF&#39;</span>)</span>
+<span id="cb30-5"><a href="3-acoustic-data-analysis.html#cb30-5"></a></span>
+<span id="cb30-6"><a href="3-acoustic-data-analysis.html#cb30-6"></a><span class="co"># Import the species table</span></span>
+<span id="cb30-7"><a href="3-acoustic-data-analysis.html#cb30-7"></a>cls &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;/users/alexandremacphail/desktop/commonluspp.csv&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb30-8"><a href="3-acoustic-data-analysis.html#cb30-8"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">scientific_name =</span> <span class="kw">paste0</span>(species_genus, <span class="st">&quot; &quot;</span>, species_name))</span>
+<span id="cb30-9"><a href="3-acoustic-data-analysis.html#cb30-9"></a></span>
+<span id="cb30-10"><a href="3-acoustic-data-analysis.html#cb30-10"></a><span class="co"># Setup the data from the report -- change this once wt_auth() is working</span></span>
+<span id="cb30-11"><a href="3-acoustic-data-analysis.html#cb30-11"></a>data &lt;-</span>
+<span id="cb30-12"><a href="3-acoustic-data-analysis.html#cb30-12"></a><span class="st">  </span><span class="kw">dir_ls</span>(<span class="dt">path =</span> <span class="st">&quot;/users/alexandremacphail/desktop/qc&quot;</span>, <span class="dt">regexp =</span> <span class="st">&quot;*tag_details_report.csv&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb30-13"><a href="3-acoustic-data-analysis.html#cb30-13"></a><span class="st">  </span><span class="kw">map</span>(<span class="op">~</span><span class="kw">read_csv</span>(., <span class="dt">col_types =</span> <span class="kw">list</span>(<span class="dt">location =</span> <span class="kw">col_character</span>(), <span class="dt">abundance =</span> <span class="kw">col_character</span>(), <span class="dt">verified_by =</span> <span class="kw">col_character</span>()))) <span class="op">%&gt;%</span></span>
+<span id="cb30-14"><a href="3-acoustic-data-analysis.html#cb30-14"></a><span class="st">  </span><span class="kw">bind_rows</span>()</span>
+<span id="cb30-15"><a href="3-acoustic-data-analysis.html#cb30-15"></a></span>
+<span id="cb30-16"><a href="3-acoustic-data-analysis.html#cb30-16"></a><span class="kw">head</span>(data)</span></code></pre></div>
+<p>The <code>wildRtrax::wt_ord</code> function conducts a series of steps to return the results of a multi-observer project. The first step in this process involves tidying and preparing the data in a species matrix. The <code>tidyverse</code> familyl of packages is utilized for this process, which is a collection of packages designed for efficient data manipulation and analysis. The <code>wt_ord</code> function then runs a redundancy analysis (RDA) on the observer with recording, in other words, location (spatial component) and recording date (temporal component), as a constrained effect. This statistical technique is commonly used to determine the relationship between a set of response variables and a set of predictor variables. In the context of this analysis, the RDA is used to determine the relationship between the observer and the species detections. The <code>wt_ord</code> function also conducts variance partitioning where necessary to determine the contribution of predictor variables in the RDA. This process helps to identify the factors that have the greatest influence on the relationship between the observer and the species detections. The function also returns results of a <em>PERMANOVA</em>, adjusted <em>R</em>-squared, and <em>F</em>-statistic to provide information on the overall strength and significance of the relationship of the ordination. The <em>PERMANOVA</em> is a non-parametric statistical method used to test the null hypothesis that there is no difference in the means of the groups being compared. The adjusted <em>R</em>-squared and <em>F</em>-statistic provide information on how well the model fits the data, and the significance of the differences observed between the groups.</p>
+<p>In addition to the RDA, the wt_ord function also runs a generalized linear mixed model (GLMM) on the tag start time against observer, with recording as a random effect. GLMMs are widely used in statistical analysis, and are especially useful for analyzing data that has both fixed and random effects. By using a GLMM in this context, the wt_ord function can determine if there are any significant differences between the observers and the mean of the group.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="3-acoustic-data-analysis.html#cb31-1"></a><span class="co"># Using the most recent quality control</span></span>
+<span id="cb31-2"><a href="3-acoustic-data-analysis.html#cb31-2"></a>res &lt;-<span class="st"> </span><span class="kw">wt_ord</span>(<span class="dt">input =</span> data, <span class="dt">min_obs =</span> <span class="dv">11</span>, <span class="dt">confidence =</span> <span class="fl">0.67</span>)</span></code></pre></div>
+</div>
+<div id="false-negative-rates-and-birdnet" class="section level3 hasAnchor">
+<h3><span class="header-section-number">3.3.2</span> False negative rates and BirdNET<a href="3-acoustic-data-analysis.html#false-negative-rates-and-birdnet" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="3-acoustic-data-analysis.html#cb32-1"></a><span class="co"># Load and prepare the BirdNET data</span></span>
+<span id="cb32-2"><a href="3-acoustic-data-analysis.html#cb32-2"></a></span>
+<span id="cb32-3"><a href="3-acoustic-data-analysis.html#cb32-3"></a>fn &lt;-<span class="st"> </span><span class="kw">dir_ls</span>(<span class="dt">path =</span> <span class="st">&quot;/users/alexandremacphail/desktop/qc&quot;</span>, <span class="dt">regexp =</span> <span class="st">&quot;*recording_birdnet.csv&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb32-4"><a href="3-acoustic-data-analysis.html#cb32-4"></a><span class="st">  </span><span class="kw">map</span>(<span class="op">~</span><span class="kw">read_csv</span>(., <span class="dt">col_types =</span> <span class="kw">list</span>(<span class="dt">location =</span> <span class="kw">col_character</span>()))) <span class="op">%&gt;%</span></span>
+<span id="cb32-5"><a href="3-acoustic-data-analysis.html#cb32-5"></a><span class="st">  </span><span class="kw">bind_rows</span>()</span>
+<span id="cb32-6"><a href="3-acoustic-data-analysis.html#cb32-6"></a></span>
+<span id="cb32-7"><a href="3-acoustic-data-analysis.html#cb32-7"></a>nfn &lt;-<span class="st"> </span>fn <span class="op">%&gt;%</span></span>
+<span id="cb32-8"><a href="3-acoustic-data-analysis.html#cb32-8"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>window_start_time <span class="op">&gt;=</span><span class="st"> </span><span class="dv">180</span>) <span class="op">%&gt;%</span></span>
+<span id="cb32-9"><a href="3-acoustic-data-analysis.html#cb32-9"></a><span class="st">  </span><span class="kw">select</span>(location, recording_date, scientific_name, window_start_time, confidence) <span class="op">%&gt;%</span></span>
+<span id="cb32-10"><a href="3-acoustic-data-analysis.html#cb32-10"></a><span class="st">  </span><span class="kw">distinct</span>() <span class="op">%&gt;%</span></span>
+<span id="cb32-11"><a href="3-acoustic-data-analysis.html#cb32-11"></a><span class="st">  </span><span class="kw">inner_join</span>(., cls <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(species_code, species_common_name, scientific_name), <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;scientific_name&quot;</span> =<span class="st"> &quot;scientific_name&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb32-12"><a href="3-acoustic-data-analysis.html#cb32-12"></a><span class="st">  </span><span class="kw">add_column</span>(<span class="dt">observer =</span> <span class="st">&quot;BirdNET&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb32-13"><a href="3-acoustic-data-analysis.html#cb32-13"></a><span class="st">  </span><span class="kw">add_column</span>(<span class="dt">project_name =</span> <span class="st">&quot;BirdNET Output&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb32-14"><a href="3-acoustic-data-analysis.html#cb32-14"></a><span class="st">  </span><span class="kw">select</span>(project_name, location, recording_date, observer, species_code, window_start_time, confidence) <span class="op">%&gt;%</span></span>
+<span id="cb32-15"><a href="3-acoustic-data-analysis.html#cb32-15"></a><span class="st">  </span><span class="kw">rename</span>(<span class="st">&quot;tag_start_s&quot;</span> =<span class="st"> </span><span class="dv">6</span>) <span class="op">%&gt;%</span></span>
+<span id="cb32-16"><a href="3-acoustic-data-analysis.html#cb32-16"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">tag_start_s =</span> <span class="kw">as.double</span>(tag_start_s)) <span class="op">%&gt;%</span></span>
+<span id="cb32-17"><a href="3-acoustic-data-analysis.html#cb32-17"></a><span class="st">  </span><span class="kw">add_column</span>(<span class="dt">abundance =</span> <span class="st">&quot;1&quot;</span>)</span>
+<span id="cb32-18"><a href="3-acoustic-data-analysis.html#cb32-18"></a></span>
+<span id="cb32-19"><a href="3-acoustic-data-analysis.html#cb32-19"></a>data_bn &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(data, nfn)</span></code></pre></div>
+</div>
+<div id="abundance-estimation" class="section level3 hasAnchor">
+<h3><span class="header-section-number">3.3.3</span> Abundance estimation<a href="3-acoustic-data-analysis.html#abundance-estimation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="3-acoustic-data-analysis.html#cb33-1"></a><span class="kw">wt_replace_tmtt</span>()</span></code></pre></div>
+</div>
+</div>
+<div id="occupancy-modelling" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.4</span> Occupancy modelling<a href="3-acoustic-data-analysis.html#occupancy-modelling" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="3-acoustic-data-analysis.html#cb34-1"></a><span class="kw">wt_occupancy</span>()</span></code></pre></div>
 </div>
 <div id="constructing-a-classifier" class="section level2 hasAnchor">
-<h2><span class="header-section-number">3.6</span> Constructing a classifier<a href="3-acoustic-data-analysis.html#constructing-a-classifier" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="3-acoustic-data-analysis.html#cb8-1"></a><span class="kw">wt_download_tag_report</span>()</span></code></pre></div>
+<h2><span class="header-section-number">3.5</span> Constructing a classifier<a href="3-acoustic-data-analysis.html#constructing-a-classifier" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="3-acoustic-data-analysis.html#cb35-1"></a><span class="kw">wt_download_tag_report</span>()</span></code></pre></div>
 
 </div>
 </div>
