@@ -163,6 +163,9 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       select_if(~any(!is.na(unsafe)))
   }
 
+  df_final <- df_final %>%
+    select(-unsafe)
+
   # Return final data frame
   return(df_final)
 
@@ -256,18 +259,18 @@ wt_wac_info <- function(path) {
 
 }
 
-#' @section `wt_flac_info` details:
-#'
-#' @description Scrape relevant information from flac file
-#'
-#' @param path Character; The flac file path
-#'
-#' @import
-#' @export
-#'
-#' @return a list with relevant information
+# @section `wt_flac_info` details:
+#
+# @description Scrape relevant information from flac file
+#
+# @param path Character; The flac file path
+#
+# @import
+# @export
+#
+# @return a list with relevant information
 
-wt_flac_info <- function(path {})
+#wt_flac_info <- function(path {})
 
 #' @section `wt_run_ap` for generating acoustic indices and false-colour spectrograms using QUT Ecoacoustics **A**nalysis **P**rograms software
 #'
@@ -349,13 +352,8 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
     files <- files %>%
       tibble::as_tibble() %>%
       dplyr::rename("file_path" = 1) %>%
-<<<<<<< HEAD
       furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)), furrr_options(seed = T))
-=======
-      furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir), invisible = T), furrr_options(seed = T))
   # })
->>>>>>> a82df8dc95fd9a78197e985052db585bbe231dff
-
   return(message('Done!'))
 
 }

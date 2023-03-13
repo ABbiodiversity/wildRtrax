@@ -95,7 +95,7 @@ wt_make_aru_tasks <- function(input, output, task_method = c("1SPM","1SPT","None
 #'
 #' @examples
 #' \dontrun{
-#' wt_kaleido_tags(input = input.csv, output = tags.csv, tz = "", freq_bump = T)
+#' wt_kaleidoscope_tags(input = input.csv, output = tags.csv, tz = "", freq_bump = T)
 #' }
 #'
 #' @return A csv formatted as a WildTrax tag template

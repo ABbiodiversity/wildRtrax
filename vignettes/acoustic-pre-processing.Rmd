@@ -26,8 +26,8 @@ The `wt_audio_scanner()` function reads in audio files (either wac, wav or flac 
 
 ```{r setup, echo = F, include = T, warning = F, message = F}
 # Attach packages
-library(wildRtrax)
-library(tidyverse)
+#library(wildRtrax)
+#library(tidyverse)
 
 ```
 

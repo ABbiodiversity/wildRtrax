@@ -7,12 +7,22 @@ The first step after an ARU is retrieved from the field is to promptly download 
 In `wildRtrax` and WildTrax, there are a few essential components and standards that are required in order for the data to be utilized within this context:
 
 - [**Location**](): The physical, geographic place at which environmental sensors were deployed and/or biological data was collected on the landscape. This is how you would associate spatial coordinates to the raw audio data.
-- **Date and time**: The temporal component of the audio recording - when the recording took place. Many time formats are possible but the recommended standard is `YYYY-MM-DD`
+- **Date and time**: The temporal component of the audio recording - when the recording took place. Many time formats are possible but the recommended standard is `YYYYMMDD`
 - **Sample rate**: The frequency at which audio waveforms are captured during analog-to-digital conversion in the environment. Digital audio uses pulse-code modulation and digital signals for sound reproduction, allowing signals to be stored, retrieved and transmitted without any loss of quality. Sampling rates of 44.1 kHz, 48 kHz, or 96 kHz are commonly used for capturing audio within the 20–20,000 Hz range. Higher sampling rates (>96 kHz) are employed to capture ultrasonic species as needed.
 
 ![](assets/task.png)
 
-A **recording** is the raw media or audio file. The following data types are supported within `wildRtrax` package. They are implicitly related to how each model and type of ARU records data. See [Wildlife Acoustics](), [Frontier BAR-LT]() and [Audio Moth]() for examples to learn more. 
+A **recording** is the raw media or audio file. The following data types are supported within `wildRtrax` package. They are implicitly related to how each model and type of ARU records data. See [Wildlife Acoustics](https://www.wildlifeacoustics.com/), [Frontier Labs](https://www.frontierlabs.com.au/bar-lt) and [Open Acoustic Devices](https://www.openacousticdevices.info/audiomoth) for examples to learn more. 
+
+<center>
+
+<jargon>ABMI-1025-SW</jargon>
+
+ABMI-1025-SW_20220406_074500.{*wav,wac,flac,mp3*}
+
+ABMI-1025-SW_*0+1*_20220406_074500
+
+</center>
  
 * **wac** are proprietary, lossless compressed file formats developed by Wildlife Acoustics
 * **wav** is the standard, ubiquitous uncompressed audio file format
@@ -21,19 +31,24 @@ A **recording** is the raw media or audio file. The following data types are sup
 
 :::: {.didyouknow data-latex=""}
 ::: {.left data-latex=""}
-*Did you know?*: When data are uploaded to WildTrax, the audio is converted and stored as flac.
+*Did you know?*
+When data are uploaded to WildTrax, the audio is converted and stored as flac.
 :::
 ::::
 
 Some additional file name recommendations include:
 
 * Omitting leading zeros for numeric delimited content, e.g. use `OG-1-3-5` instead of `OG-01-003-05`, unless they serve a identification purpose, e.g. `3-0-A12` where `-0-` indicates the an absence of a treatment 
-* Metadata are also supported for *.dump, .txt, .csv, .fls, and .SM4S files 
-* Delimiters such as “-”, “_”, “@” are supported. Spaces and slashes “/” “\” in location names are not supported “_000” suffixes from Wildlife Acoustics Kaleidoscope output (wac -> wav conversion) are supported
+* Metadata are also supported for .dump, .txt, .csv, .fls, and .SM4S files 
+* Delimiters such as “-”, “_”, “@” are supported
+* Location name strings that appear numeric (35001) should be treated with caution when importing via csv
+* Spaces and slashes “/” “\” in location names are not supported “_000” suffixes from Wildlife Acoustics Kaleidoscope output (wac -> wav conversion) are supported
 
 Audio files need to contain both spatial and temporal information which is the minimum required in order to upload media to WildTrax, e.g. `ABMI-538-SW_20220506_050000`, where `ABMI-538-SW` is the location and `20220506_050000` is the timestamp. Both these pieces of information can tell you when and where the recording took place.
 
 ## Reading, filtering and selecting audio recordings
+
+Monitoring programs often generate an enormous amount of audio data that exceeds human capacity to listen to. To overcome this challenge, we can select specific audio files for upload to WildTrax and processing using predetermined criteria. This approach not only prioritizes important data but also helps minimize data storage costs while maximizing processing power for calculating relevant biological metrics.
 
 :::: {.dangerbox data-latex=""}
 ::: {.left data-latex=""}
@@ -60,7 +75,9 @@ head(files)
 
 :::: {.didyouknow data-latex=""}
 ::: {.left data-latex=""}
-*Did you know?*: Directories of acoustic data at the ABMI are organized in the following hierarchy.
+*Did you know?* 
+<br>
+Directories of acoustic data at the ABMI are organized in the following hierarchy.
 
 - [**Organization**](https://www.wildtrax.ca/home/resources/guide/organizations/organization-management.html): The institution or organization the data belongs to 
 Sensor type: ARU

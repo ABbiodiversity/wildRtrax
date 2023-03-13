@@ -1,10 +1,5 @@
 # Acoustic data analysis
 
-## Biological metrics
-
-What is abundance, occupancy, etc.
-
-
 ## Authorizing and downloading data from WildTrax
 
 ```{r, include = T, eval=F, warning=F, message=F}

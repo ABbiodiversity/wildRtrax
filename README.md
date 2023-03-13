@@ -11,7 +11,7 @@ status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https
 
 ## Overview
 
-`wildRtrax` (pronounced *‘wilder tracks’*) is an R package to help ecologists create full-cycle environmental sensor data work flows within [WildTrax](https://www.wildtrax.ca/home.html).
+`wildRtrax` (pronounced *‘wilder tracks’*) is an R package to help environmental sensor data users to create full-cycle work flows from data management to analytics.
 
 ## Installation
 

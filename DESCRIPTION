@@ -1,28 +1,24 @@
 Package: wildRtrax
-Title: Environmental sensor data analysis with R
+Title: Environmental sensor data management and analytics to and from WildTrax
 Version: 1.0.0
 Authors@R: 
     c(person(given = "Alex",
            family = "MacPhail",
-           role = c("aut","cre"),
+           role = "aut",
            email = "agmacpha@ualberta.ca"),
-           comment = c(ORCID = "0000-0002-7968-6281"),
       person(given = "Marcus",
              family = "Becker",
              role = "cre",
              email = "mabecker@ualberta.ca"),
       person(given = "Elly",
              family = "Knight",
-             role = "cre",
-             email = "ecknight@ualberta.ca"),
-      person(given = "Richard",
-             family = "Hedley",
-             role = "ctb",
-             email = "rhedley@ualberta.ca"))
-Description: wildRtrax is an R package to help ecologists create full-cycle environmental sensor data work flows within the WildTrax framework.
-  It currently support two sensors: autonomous recording units and remote camera traps.
-Depends: R (>= 4.2.0)
-License: MIT + file LICENSE
+             role = "aut",
+             email = "ecknight@ualberta.ca"))
+Maintainer: Marcus Becker <mabecker@ualberta.ca>
+Description: This package provides a set of functions to manage environmental sensor data 
+    to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
+Depends: R (>= 4.0.4)
+License: `use_mit_license`
 Imports:
     dplyr (>= 1.0.0),
     future,
@@ -37,23 +33,25 @@ Imports:
     tuneR,
     purrr,
     rlang,
+    foreach,
+    doParallel,
     unmarked,
     plumber,
     shiny,
     seewave,
-    httr
+    httr,
+    progress,
+    progressr,
 Suggests: 
     testthat,
-    covr,
+    usethis,
     knitr,
     rmarkdown,
-    abmi.themes,
-    learnr
+    abmi.themes
 Remotes:
     mabecker89/abmi.themes
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
-Config/testthat/edition: 3
+RoxygenNote: 7.2.1

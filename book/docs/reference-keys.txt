@@ -5,6 +5,7 @@ acknowledgements
 introduction
 environmental-sensors
 open-data
+biological-metrics
 standardizing-information-pipelines
 what-is-wildtrax
 why-did-you-build-wildrtrax
@@ -28,7 +29,6 @@ kaleidoscope-results
 making-tasks
 camera-data-pre-processing
 acoustic-data-analysis
-biological-metrics
 authorizing-and-downloading-data-from-wildtrax
 wrangling-data-for-analysis
 species-identification-and-observer-error

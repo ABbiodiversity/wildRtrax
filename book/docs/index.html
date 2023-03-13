@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Environmental sensor data management and analysis with R</title>
   <meta name="description" content="wildRtrax helps environmental sensor data users with data management and analytics" />
-  <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Environmental sensor data management and analysis with R" />
   <meta property="og:type" content="book" />
@@ -49,76 +49,11 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 
 
-<style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-</style>
 
 
 <link rel="stylesheet" href="style.css" type="text/css" />
@@ -137,53 +72,62 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a><ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<ul>
 <li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-is-this-book-for"><i class="fa fa-check"></i><b>0.1</b> Who is this book for?</a></li>
 <li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-should-i-read-this-book"><i class="fa fa-check"></i><b>0.2</b> How should I read this book?</a></li>
 <li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#impact-and-intentions"><i class="fa fa-check"></i><b>0.3</b> Impact and intentions</a></li>
 <li class="chapter" data-level="0.4" data-path="index.html"><a href="index.html#acknowledgements"><i class="fa fa-check"></i><b>0.4</b> Acknowledgements</a></li>
 </ul></li>
-<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="1-introduction.html"><a href="1-introduction.html#environmental-sensors"><i class="fa fa-check"></i><b>1.1</b> Environmental sensors</a></li>
 <li class="chapter" data-level="1.2" data-path="1-introduction.html"><a href="1-introduction.html#open-data"><i class="fa fa-check"></i><b>1.2</b> Open data</a></li>
-<li class="chapter" data-level="1.3" data-path="1-introduction.html"><a href="1-introduction.html#standardizing-information-pipelines"><i class="fa fa-check"></i><b>1.3</b> Standardizing information pipelines</a></li>
-<li class="chapter" data-level="1.4" data-path="1-introduction.html"><a href="1-introduction.html#what-is-wildtrax"><i class="fa fa-check"></i><b>1.4</b> What is <strong>WildTrax</strong>?</a></li>
-<li class="chapter" data-level="1.5" data-path="1-introduction.html"><a href="1-introduction.html#why-did-you-build-wildrtrax"><i class="fa fa-check"></i><b>1.5</b> Why did you build <code>wildRtrax</code>?</a></li>
-<li class="chapter" data-level="1.6" data-path="1-introduction.html"><a href="1-introduction.html#installing-the-package"><i class="fa fa-check"></i><b>1.6</b> Installing the package</a></li>
-<li class="chapter" data-level="1.7" data-path="1-introduction.html"><a href="1-introduction.html#usage"><i class="fa fa-check"></i><b>1.7</b> Usage</a></li>
+<li class="chapter" data-level="1.3" data-path="1-introduction.html"><a href="1-introduction.html#biological-metrics"><i class="fa fa-check"></i><b>1.3</b> Biological metrics</a></li>
+<li class="chapter" data-level="1.4" data-path="1-introduction.html"><a href="1-introduction.html#standardizing-information-pipelines"><i class="fa fa-check"></i><b>1.4</b> Standardizing information pipelines</a></li>
+<li class="chapter" data-level="1.5" data-path="1-introduction.html"><a href="1-introduction.html#what-is-wildtrax"><i class="fa fa-check"></i><b>1.5</b> What is <strong>WildTrax</strong>?</a></li>
+<li class="chapter" data-level="1.6" data-path="1-introduction.html"><a href="1-introduction.html#why-did-you-build-wildrtrax"><i class="fa fa-check"></i><b>1.6</b> Why did you build <code>wildRtrax</code>?</a></li>
+<li class="chapter" data-level="1.7" data-path="1-introduction.html"><a href="1-introduction.html#installing-the-package"><i class="fa fa-check"></i><b>1.7</b> Installing the package</a></li>
+<li class="chapter" data-level="1.8" data-path="1-introduction.html"><a href="1-introduction.html#usage"><i class="fa fa-check"></i><b>1.8</b> Usage</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html"><i class="fa fa-check"></i><b>2</b> Acoustic data pre-processing</a><ul>
+<li class="chapter" data-level="2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html"><i class="fa fa-check"></i><b>2</b> Acoustic data pre-processing</a>
+<ul>
 <li class="chapter" data-level="2.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#acoustic-data-management-basics"><i class="fa fa-check"></i><b>2.1</b> Acoustic data management basics</a></li>
-<li class="chapter" data-level="2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#reading-filtering-and-selecting-audio-recordings"><i class="fa fa-check"></i><b>2.2</b> Reading, filtering and selecting audio recordings</a><ul>
+<li class="chapter" data-level="2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#reading-filtering-and-selecting-audio-recordings"><i class="fa fa-check"></i><b>2.2</b> Reading, filtering and selecting audio recordings</a>
+<ul>
 <li class="chapter" data-level="2.2.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#reading-files"><i class="fa fa-check"></i><b>2.2.1</b> Reading files</a></li>
 <li class="chapter" data-level="2.2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#segmenting-longer-files"><i class="fa fa-check"></i><b>2.2.2</b> Segmenting longer files</a></li>
 <li class="chapter" data-level="2.2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#filtering-files"><i class="fa fa-check"></i><b>2.2.3</b> Filtering files</a></li>
 <li class="chapter" data-level="2.2.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#filtering-files-geographically"><i class="fa fa-check"></i><b>2.2.4</b> Filtering files geographically</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#other-convenience-functions-distance-between-locations"><i class="fa fa-check"></i><b>2.3</b> Other convenience functions: distance between locations</a><ul>
+<li class="chapter" data-level="2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#other-convenience-functions-distance-between-locations"><i class="fa fa-check"></i><b>2.3</b> Other convenience functions: distance between locations</a>
+<ul>
 <li class="chapter" data-level="2.3.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#error-handling-and-file-standardization"><i class="fa fa-check"></i><b>2.3.1</b> Error handling and file standardization</a></li>
 </ul></li>
-<li class="chapter" data-level="2.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#using-acoustic-indices-and-ldfcs"><i class="fa fa-check"></i><b>2.4</b> Using acoustic indices and LDFCs</a><ul>
+<li class="chapter" data-level="2.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#using-acoustic-indices-and-ldfcs"><i class="fa fa-check"></i><b>2.4</b> Using acoustic indices and LDFCs</a>
+<ul>
 <li class="chapter" data-level="2.4.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#abiotic-geophonic-and-anthropophonic-signal-detection"><i class="fa fa-check"></i><b>2.4.1</b> Abiotic, geophonic and anthropophonic signal detection</a></li>
 <li class="chapter" data-level="2.4.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#biophonic-signal-detection"><i class="fa fa-check"></i><b>2.4.2</b> Biophonic signal detection</a></li>
 </ul></li>
-<li class="chapter" data-level="2.5" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.5</b> Linking acoustic data to WildTrax</a><ul>
+<li class="chapter" data-level="2.5" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.5</b> Linking acoustic data to WildTrax</a>
+<ul>
 <li class="chapter" data-level="2.5.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#sonscope-results"><i class="fa fa-check"></i><b>2.5.1</b> Sonscope results</a></li>
 <li class="chapter" data-level="2.5.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#kaleidoscope-results"><i class="fa fa-check"></i><b>2.5.2</b> Kaleidoscope results</a></li>
 <li class="chapter" data-level="2.5.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#making-tasks"><i class="fa fa-check"></i><b>2.5.3</b> Making tasks</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="3-camera-data-pre-processing.html"><a href="3-camera-data-pre-processing.html"><i class="fa fa-check"></i><b>3</b> Camera data pre-processing</a></li>
-<li class="chapter" data-level="4" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html"><i class="fa fa-check"></i><b>4</b> Acoustic data analysis</a><ul>
-<li class="chapter" data-level="4.1" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#biological-metrics"><i class="fa fa-check"></i><b>4.1</b> Biological metrics</a></li>
-<li class="chapter" data-level="4.2" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax"><i class="fa fa-check"></i><b>4.2</b> Authorizing and downloading data from WildTrax</a></li>
-<li class="chapter" data-level="4.3" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#wrangling-data-for-analysis"><i class="fa fa-check"></i><b>4.3</b> Wrangling data for analysis</a><ul>
-<li class="chapter" data-level="4.3.1" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#species-identification-and-observer-error"><i class="fa fa-check"></i><b>4.3.1</b> Species identification and observer error</a></li>
-<li class="chapter" data-level="4.3.2" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#false-negative-rates-and-birdnet"><i class="fa fa-check"></i><b>4.3.2</b> False negative rates and BirdNET</a></li>
-<li class="chapter" data-level="4.3.3" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#abundance-estimation"><i class="fa fa-check"></i><b>4.3.3</b> Abundance estimation</a></li>
+<li class="chapter" data-level="4" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html"><i class="fa fa-check"></i><b>4</b> Acoustic data analysis</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax"><i class="fa fa-check"></i><b>4.1</b> Authorizing and downloading data from WildTrax</a></li>
+<li class="chapter" data-level="4.2" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#wrangling-data-for-analysis"><i class="fa fa-check"></i><b>4.2</b> Wrangling data for analysis</a>
+<ul>
+<li class="chapter" data-level="4.2.1" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#species-identification-and-observer-error"><i class="fa fa-check"></i><b>4.2.1</b> Species identification and observer error</a></li>
+<li class="chapter" data-level="4.2.2" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#false-negative-rates-and-birdnet"><i class="fa fa-check"></i><b>4.2.2</b> False negative rates and BirdNET</a></li>
+<li class="chapter" data-level="4.2.3" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#abundance-estimation"><i class="fa fa-check"></i><b>4.2.3</b> Abundance estimation</a></li>
 </ul></li>
-<li class="chapter" data-level="4.4" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#occupancy-modelling"><i class="fa fa-check"></i><b>4.4</b> Occupancy modelling</a></li>
-<li class="chapter" data-level="4.5" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#constructing-a-classifier"><i class="fa fa-check"></i><b>4.5</b> Constructing a classifier</a></li>
+<li class="chapter" data-level="4.3" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#occupancy-modelling"><i class="fa fa-check"></i><b>4.3</b> Occupancy modelling</a></li>
+<li class="chapter" data-level="4.4" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#constructing-a-classifier"><i class="fa fa-check"></i><b>4.4</b> Constructing a classifier</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="5-camera-data-analysis.html"><a href="5-camera-data-analysis.html"><i class="fa fa-check"></i><b>5</b> Camera data analysis</a></li>
 <li class="chapter" data-level="6" data-path="6-conclusions.html"><a href="6-conclusions.html"><i class="fa fa-check"></i><b>6</b> Conclusions</a></li>
@@ -217,34 +161,42 @@ Published with bookdown</a></li>
 <h1>Preface<a href="index.html#preface" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p><code>wildRtrax</code> (pronounced <em>‘wilder tracks’</em>) is an R package to help environmental sensor data users to create full-cycle work flows from data management to analytics.</p>
 <p><img src="assets/cover.png" /></p>
-<div id="who-is-this-book-for" class="section level2 hasAnchor">
+<div id="who-is-this-book-for" class="section level2 hasAnchor" number="0.1">
 <h2><span class="header-section-number">0.1</span> Who is this book for?<a href="index.html#who-is-this-book-for" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This book is a valuable resource for anyone working with environmental sensor data and seeking to manage it using R. It is suitable for both experienced users and those new to the subject, as it is written in a clear and accessible style. While the book is designed to be user-friendly, it also contains advanced concepts and functions that may require additional reading to fully understand. The authors encourage readers to engage and provide feedback, as the book and workflows will continue to evolve. The content relies on understand of the following R packages:</p>
 <ul>
-<li><a href=""><code>tidyverse</code></a> mainly <code>dplyr</code> and <code>purrr</code> for data tidying and functional programming</li>
-<li><a href=""><code>fs</code></a> for file reading</li>
-<li><a href=""><code>lubridate</code></a> for dealing with dates and times</li>
-<li><a href=""><code>sf</code></a> for mapping spatial objects</li>
+<li><a href="https://www.tidyverse.org/"><code>tidyverse</code></a> mainly <code>dplyr</code> and <code>purrr</code> for data tidying and functional programming</li>
+<li><a href="https://www.tidyverse.org/blog/2018/01/fs-1.0.0/"><code>fs</code></a> for file system operations</li>
+<li><a href="https://lubridate.tidyverse.org/"><code>lubridate</code></a> for dealing with dates and times</li>
+<li><a href="https://r-spatial.github.io/sf/"><code>sf</code></a> for simple features mapping</li>
 </ul>
 </div>
-<div id="how-should-i-read-this-book" class="section level2 hasAnchor">
+<div id="how-should-i-read-this-book" class="section level2 hasAnchor" number="0.2">
 <h2><span class="header-section-number">0.2</span> How should I read this book?<a href="index.html#how-should-i-read-this-book" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>To effectively use this book to manage environmental sensor data, follow these steps:</p>
 <p>For any given environmental sensor, the general workflow is outlined below and how this book fits into the bigger picture of environmental sensor data management.</p>
 <ol style="list-style-type: decimal">
-<li><a href=""><strong>Understanding the basics</strong></a></li>
+<li><a href="2-acoustic-data-pre-processing.html#acoustic-data-management-basics"><strong>Understanding the basics</strong></a></li>
 <li>Collecting data</li>
-<li><a href=""><strong>Data pre-processing</strong></a></li>
-<li><a href="">Data processing and verification using WildTrax</a></li>
-<li><a href=""><strong>Data analysis</strong></a></li>
+<li><a href="2-acoustic-data-pre-processing.html#acoustic-data-pre-processing"><strong>Data pre-processing</strong></a></li>
+<li><a href="https://www.wildtrax.ca/home/resources/guide/acoustic-data/acoustic-tagging-methods.html">Data processing</a> and <a href="https://www.wildtrax.ca/home/resources/guide/acoustic-data/species-verification.html">verification</a> using WildTrax</li>
+<li><a href="4-acoustic-data-analysis.html#acoustic-data-analysis"><strong>Data analysis</strong></a></li>
 <li>Reporting</li>
 </ol>
+<p>To effectively read this book, keep the following tips in mind:</p>
+<ul>
+<li>Start with the basics and build upon them as you progress through the book.</li>
+<li>Use the headings to guide your reading and keep you organized.</li>
+<li>Take notes and jot down questions as you read to ensure that you fully understand the concepts and techniques presented.</li>
+<li>Review the information periodically to reinforce your understanding and keep the information fresh in your mind.</li>
+</ul>
 </div>
-<div id="impact-and-intentions" class="section level2 hasAnchor">
+<div id="impact-and-intentions" class="section level2 hasAnchor" number="0.3">
 <h2><span class="header-section-number">0.3</span> Impact and intentions<a href="index.html#impact-and-intentions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><code>wildRtrax</code> strives to maintain independent, scientifically credible, relevant, accessible, and transparent language and code. By doing so, we hope to provide unbiased and accurate information products that are easily understood by anyone. Our values are grounded in leadership, accuracy, ingenuity, passion, personal initiative and teamwork in the field of environmental sensor data as we seek to inspire ecologists to engage in responsible resource management. Our team values personal initiative and teamwork, and we encourage learning, feedback, to its shared success. We are passionate about our work and the impact it has on the environment, and we continuously work to fuel better products and processes through innovative ideas.</p>
 <p>You can visit the <a href="https://abmi.ca/home/about-us/our-vision-mission.html">Alberta Biodiversity Monitoring Institute</a> for more information.</p>
 </div>
-<div id="acknowledgements" class="section level2 hasAnchor">
+<div id="acknowledgements" class="section level2 hasAnchor" number="0.4">
 <h2><span class="header-section-number">0.4</span> Acknowledgements<a href="index.html#acknowledgements" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <ul>
 <li>The <a href="https://abmi.ca">Alberta Biodiversity Monitoring Institute</a> supports and funds all operations surrounding <code>wildRtrax</code> and <a href="https://www.wildtrax.ca">WildTrax</a>.</li>
