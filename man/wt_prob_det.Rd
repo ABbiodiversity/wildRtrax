@@ -29,15 +29,10 @@ Valid values for species_code currently include:
 \item "TEWA" (Tennessee Warbler)
 \item "WTSP" (White-throated Sparrow)
 \item "ALFL" (Alder Flycatcher)
-\item "LISP" (Lincolns Sparrow)
+\item "LISP" (Lincoln's Sparrow)
 \item "YRWA" (Yellow-rumped Warbler)
 \item "CONI" (Common Nighthawk)
-\item "SWTH" (Swainsons Thrush)
-\item "WOLF" (Gray Wolf)
-\item "GGOW" (Great Gray Owl)
-\item "GHOW" (Great Horned Owl)
-\item "NSWO" (Northern Saw-whet Owl)
-\item "SEOW" (Short-eared Owl)
+\item "SWTH" (Swainson's Thrush)
 }
 }
 \examples{

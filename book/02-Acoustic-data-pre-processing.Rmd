@@ -4,6 +4,8 @@
 
 The first step after an ARU is retrieved from the field is to promptly download and secure the data to create a redundant backup. Having redundant backups not only protects against data loss but also ensures business continuity and minimizes downtime in the event of a system failure or natural disaster. Furthermore, in case there is an issue with the SD card copy during the quality control process, having a redundant backup ensures that a copy of the data can be restored.
 
+![](assets/sds.png)
+
 In `wildRtrax` and WildTrax, there are a few essential components and standards that are required in order for the data to be utilized within this context:
 
 - [**Location**](): The physical, geographic place at which environmental sensors were deployed and/or biological data was collected on the landscape. This is how you would associate spatial coordinates to the raw audio data.
@@ -31,7 +33,7 @@ ABMI-1025-SW_*0+1*_20220406_074500
 
 :::: {.didyouknow data-latex=""}
 ::: {.left data-latex=""}
-*Did you know?*
+*Did you know?*<br>
 When data are uploaded to WildTrax, the audio is converted and stored as flac.
 :::
 ::::
@@ -46,13 +48,14 @@ Some additional file name recommendations include:
 
 Audio files need to contain both spatial and temporal information which is the minimum required in order to upload media to WildTrax, e.g. `ABMI-538-SW_20220506_050000`, where `ABMI-538-SW` is the location and `20220506_050000` is the timestamp. Both these pieces of information can tell you when and where the recording took place.
 
-## Reading, filtering and selecting audio recordings
+## Manipulating recordings
 
 Monitoring programs often generate an enormous amount of audio data that exceeds human capacity to listen to. To overcome this challenge, we can select specific audio files for upload to WildTrax and processing using predetermined criteria. This approach not only prioritizes important data but also helps minimize data storage costs while maximizing processing power for calculating relevant biological metrics.
 
 :::: {.dangerbox data-latex=""}
 ::: {.left data-latex=""}
-Note, if you're not an R user you can stop here and upload all of your recordings directly an organization on WildTrax. WildTrax however does not contain all the necessary data quality control measures to uptake data that are included in ``wildRtrax``
+*Keep in mind*<br>
+If you're not an R user you can stop here and upload all of your recordings directly an organization on WildTrax. WildTrax however does not contain all the necessary data quality control measures to uptake data that are included in `wildRtrax`.
 
 - Go to the organization on WildTrax
 - Go to Manage > Upload Recordings to Organization
@@ -73,10 +76,11 @@ head(files)
 
 ```
 
+The columns from `wt_audio_scanner` are generated from the raw media file name in order to associate a file prefix to a location, the time stamp to a date and time, and so on. 
+
 :::: {.didyouknow data-latex=""}
 ::: {.left data-latex=""}
-*Did you know?* 
-<br>
+*Did you know?*<br>
 Directories of acoustic data at the ABMI are organized in the following hierarchy.
 
 - [**Organization**](https://www.wildtrax.ca/home/resources/guide/organizations/organization-management.html): The institution or organization the data belongs to 
@@ -98,25 +102,41 @@ files_extra <- wt_audio_scanner(path = ../ABMI/ARU/ABMI-EH/2022/V1/228/228-NE", 
 
 ```{r, comment="", prompt=T, warning=F, message=F}
 
-head(files_extra)
+files_extra
 
 ```
 
-### Segmenting longer files
+:::: {.dangerbox data-latex=""}
+::: {.left data-latex=""}
+*Keep in mind*<br>
+Using the file name and file path from the output of `wt_audio_scanner` will determine what the location name and time stamp of the recording will be. If you notice that the location name or time stamp is incorrect, you should re-visit the raw audio and determine if it is correct. See the section [Linking acoustic data to WildTrax](#linking-acoustic-data-to-wildtrax) for more information.
+:::
+::::
 
-It's possible that the recordings you have are longer than the maximum length WildTrax can currently import (1800 seconds or 320MB). In this case, you can use `wt_chop` to create intervals of recordings
+### Segmenting audio files
+
+It's possible that recordings are longer than the maximum length WildTrax can currently import (1800 seconds or 320MB). In this case, you can use `wt_chop` to create intervals of recordings.
+
+```{r}
+
+files_extra %>%
+  select(location, recording_date_time, length_seconds) %>%
+  slice(2) 
+
+```
+
 
 ```r
 # Select a 10 minute file and chop it into 60 second segments, creating 10 x 60 second files instead of one 10-minute file
-wt_chop(input = files %>% slice(1), segment_length = 60, output_folder = "/my/output/folder"
+wt_chop(input = fe, segment_length = 60, output_folder = "/my/output/folder")
 
 ```
 
-`wt_chop` will create *modulo recordings* as needed; this refers to the remaining portion of the recording that is left over after it has been divided into equal intervals of the chosen duration. For example, if a recording is 120 seconds long and it is split into 50-second intervals, the modulo recording would be the final 20 seconds (e.g. 50 - 50 - 20). However, if the chosen interval duration is a factor of the total duration of the recording, there will be no modulo recording. For example, if a 120-second recording is divided into 60-second intervals, there will be no modulo recording since 60 is a factor of 120.
+`wt_chop` will create *modulo recordings* as needed; this refers to the remaining portion of the recording that is left over after it has been divided into equal intervals of the chosen duration. For example, if a recording is 120 seconds long and `segment_length = 50`, the modulo recording would be the final 20 seconds since 50 + 50 + 20 = 120. However, if the chosen interval duration is a factor of the total duration of the recording, there will be no modulo recording. For example, if a 120-second recording is divided into 60-second intervals, there will be no modulo recording since 60 is a factor of 120.
 
-### Filtering files
+### Filtering audio files
 
-At this stage, you can filter recordings from the `wt_audio_scanner` tibble output in order to select the files you're interested in. Here's an example of the ABMI's Stratified Sampling Design for the Ecosystem Health Monitoring program that's used to pick recordings across a breadth of dates and times in order to maximize the species inventory collected at a location.  
+At this stage, you can use the results from the `wt_audio_scanner` tibble output in order to select the files you're interested in. Filtering and selecting files generally aligns with the study design or species you're interested in capturing. Here's an example of the ABMI's Stratified Sampling Design for the Ecosystem Health Monitoring program that's used to pick recordings across a breadth of dates and times in order to maximize the species inventory collected at a location.  
 
 ```{r, eval = T, warning = F, message = F, include = T, comment="", prompt=T}
 
@@ -140,6 +160,18 @@ abmi_blocks <- as_tibble(data.frame(julian = 90:210) %>%
 
 head(abmi_blocks)
 
+```
+
+Now we can apply these blocks to a set of audio files and filter the desired recordings to the stratified design.
+
+```{r, warning=F, message=F, prompt=T, comment=""}
+
+files %>%
+  inner_join(., abmi_blocks, by = c("julian" = "julian", "time_index" = "time_index")) %>%
+  filter(!is.na(blocks)) %>% # Filter out recordings that don't fit in a block
+  group_by(location, blocks) %>%
+  sample_n(1, replace = F) %>%
+  select(location, recording_date_time)
 
 ```
 
@@ -182,9 +214,18 @@ head(bzz)
 
 ```
 
-### Filtering files geographically
+### Geographic filtering
 
-Another example of selecting files may be geographic. Here's an example with selecting recordings with Bird Conservation Regions. 
+Another example of selecting files may be geographic.
+
+:::: {.dangerbox data-latex=""}
+::: {.left data-latex=""}
+*Keep in mind*<br>
+That you need to manage spatial coordinates along with your locations in order to use these workflows.
+:::
+::::
+
+Here's an example with selecting recordings with Bird Conservation Regions. 
 
 ```{r, eval=F, include=T, warning=F, message=F, comment="", prompt=F}
 library(tidyverse)
@@ -192,12 +233,11 @@ library(sf)
 
 # Clean up the locations
 locs_next <- locs %>%
-  filter(!is.na(latitude), !is.na(longitude)) %>%
+  filter(if_all(c(latitude, longitude), ~ !is.na(.))) %>%
   select(location, latitude, longitude) %>%
-  distinct() %>%
-  mutate(index = row_number())
+  distinct()
 
-# Create a simple features object
+# Create a simple features object. Make it valid and set the CRS.
 locsset <- st_as_sf(locs_next %>% select(location, latitude, longitude) %>% distinct(), coords = c("longitude","latitude"))
 locsset <- st_make_valid(locsset)
 locsset <- st_set_crs(locsset, 4269)
@@ -206,9 +246,10 @@ locsset <- st_set_crs(locsset, 4269)
 bcrs <- read_sf("../BCR_Terrestrial.shp")
 
 # Filter to just Alberta
-bcrs <- st_make_valid(bcrs) %>% filter(PROVINCE_S == "ALBERTA")
+bcrs <- st_make_valid(bcrs) %>% 
+  filter(PROVINCE_S == "ALBERTA")
 
-# Intersect the location with the BCRs
+# Intersect the locations with the BCRs
 out <- st_intersection(locsset, bcrs)
 
 # Join it to the original tibble
@@ -242,13 +283,15 @@ As ARUs are placed on the landscape by different organizations, or over time wit
 
 :::: {.didyouknow data-latex=""}
 ::: {.left data-latex=""}
-*Did you know?*: You can go to Manage > Download Locations in either a project or an organization to get a list of locations and their attributes. Remember, you need to be an organization administration to perform this operation since organizations manage locations.
+*Did you know?*<br>
+You can go to Manage > Download Locations in either a project or an organization to get a list of locations and their attributes. Remember, you need to be an organization administration to perform this operation since organizations manage locations.
+![]()
 :::
 ::::
 
 ```{r, include = T, eval=F, warning=F, message=F, comment="", prompt=T}
 
-# Control locations from BADR LU 2
+# Control locations from the Before-After Dose-Response Landscape Unit #2
 badr2 <- locs %>%
   filter(grepl('^2-0',location))
 
@@ -282,21 +325,33 @@ distances <- wt_location_distances(input_from_tibble = bu_badr)
 ```{r, include = T, eval=T, warning=F, message=F, comment="", prompt=T}
 # Filter points less then 100 meters apart
 distances %>%
-  filter(distance < 100)
+  filter(distance < 100) %>%
+  arrange(distance)
 
 ```
 
 ### Error handling and file standardization
 
-`wt_audio_scanner` will continue to support new file formats and file types. Error handling techniques are being put in place to identify and provide clear messages to users to ensure their data is standard to the WildTrax system before upload. File standardization helps ensure consistency and prevent errors when transferring data across different systems and applications. With these measures, wt_audio_scanner can provide a reliable and versatile tool for working with various audio file formats. Development requests can be submitted as issues to the [GitHub repository](https://github.com/ABbiodiversity/wildRtrax/issues).
+`wt_audio_scanner` will continue to support new file formats and file types. Error handling techniques are being put in place to identify and provide clear messages to users to ensure their data is standard to the WildTrax system before upload. [File standardization](#acoustic-data-management-basics) helps ensure consistency and prevent errors when transferring data across different systems and applications. With these measures, wt_audio_scanner can provide a reliable and versatile tool for working with various audio file formats. Development requests can be submitted as issues to the [GitHub repository](https://github.com/ABbiodiversity/wildRtrax/issues).
 
 ## Using acoustic indices and LDFCs
 
 ![](assets/305-SE.png)
 
-*Acoustic indices* and *long-duration false-colour (LDFC)* spectrograms are two tools used in the analysis of acoustic data developed by the Towsey lab at QUT. Acoustic indices are numerical measurements that quantify various aspects of sound using different measurements that reflect the soundscpe. They are used to identify and track patterns of vocal activity over time, generate soundscape and monitor ecosystem-level patterns and changes. Some commonly known acoustic indices include the Acoustic Complexity Index (ACI), which measures the diversity of sound frequencies and amplitudes, and the Acoustic Diversity Index (ADI), which measures the number and relative abundance of different vocalizations. Long-duration false-color spectrograms are visual representations of acoustic data using index values rather than spectral generation in order to provide detailed views of sound patterns over long periods of time. The use of false-colours allows for easier interpretation of the spectrogram, as different colors can be used to represent different types of sounds. These unique spectrograms are particularly useful in studies of animal vocalizations, as they allow researchers to identify specific vocalizations and track patterns of vocal activity over long periods of time, and determine seasonal phenology patterns. 
+*Acoustic indices* and *long-duration false-colour (LDFC)* spectrograms are two tools used in the analysis of acoustic data developed by the [Towsey Lab at QUT](https://www.qut.edu.au/about/our-people/academic-profiles/m.towsey). 
 
-``wildRtrax`` utilizes the results of the AnalysisPrograms software which generates the csv, json and png files associated to the results, and generates tidy versions of the data that can be joined to the media in order to select recordings based on index values and patterns. Let us demonstrate some different examples while introducing the `wt_run_ap` and `wt_glean_ap` functions.
+Acoustic indices are numerical measurements that quantify various aspects of sound using different measurements that reflect the soundscpe. They are used to identify and track patterns of vocal activity over time, generate soundscape and monitor ecosystem-level patterns and changes. Some commonly known acoustic indices include the Acoustic Complexity Index (ACI), which measures the diversity of sound frequencies and amplitudes, and the Normalized Differenced Soundscape Index (NDSI), which measures the relative different between anthropophonic and biophonic sounds. 
+
+Long-duration false-color spectrograms are visual representations of acoustic data using index values rather than spectral generation in order to provide detailed views of sound patterns over long periods of time. The use of false-colours allows for easier interpretation of the spectrogram, as different colors can be used to represent different types of sounds. These unique spectrograms are particularly useful in studies of animal vocalizations, as they allow researchers to identify specific vocalizations and track patterns of vocal activity over long periods of time, and determine seasonal phenology patterns. 
+
+:::: {.dangerbox data-latex=""}
+::: {.left data-latex=""}
+*Keep in mind*
+It's important to familiarize yourself with the **AP** software before continuing. See [here](https://ap.qut.ecoacoustics.info/) for full installation and support.
+:::
+::::
+
+`wildRtrax` utilizes the results of the **AnalysisPrograms** software which generates the csv, json and png files associated to the results, and generates tidy versions of the data that can be joined to the media in order to select recordings based on index values and patterns. Let us demonstrate some different examples while introducing the `wt_run_ap` and `wt_glean_ap` functions.
 
 ```{r, include = T, eval=F, warning=F, message=F}
 wt_run_ap()
@@ -314,7 +369,7 @@ wt_glean_ap()
 
 ### Abiotic, geophonic and anthropophonic signal detection
 
-Recorder failure, damaged microphones, or recorders that are placed in an environment where prevailing winds muffle the sounds the ARU can hear, such as in alpine environments, can limit the audio quality in order to process data in an effective way. The recordings on Cirrus by default do not contain information on if the audio was defective and have a high geophonic index. On average, 12% (2015 – 2019 ABMI Ecosystem Health data) of the primary recordings that are selected at the ABMI site level can have a relatively high geophonic index or a malfunction or failure. To limit lost time and determine noise-pollution related effects on the landscape, recordings are processed regardless of anthropogenic noise, but recordings are optimized to omit as much as the geophonic bias as possible. Due to the large volume of data that is handled, it is no longer efficient to do these processes manually and these steps should be automated as much as possible. The goals are to find efficient ways to screen and filter audio data with high geophony or to flag and omit recordings that will not be used for processing. 
+Recorder failure, damaged microphones, or recorders that are placed in an environment where prevailing winds muffle the sounds the ARU can hear, such as in alpine environments, can limit the audio quality in order to process data in an effective way. ~12% of the acoustic data collected by the ABMI between 2015 - 2019 (~12TB / 100TB) had a relatively high geophonic index or a malfunction or failure. Due to the large volume of data that is handled, it is no longer efficient to do these processes manually and these steps should be automated as much as possible. The goals are to find efficient ways to screen and filter audio data with high geophony or to flag and omit recordings that will not be used for processing. 
 
 ```{r, eval=F, include=T, warning=F, message=F}
 
@@ -323,9 +378,9 @@ aqd <- wt_glean_ap(x = f2, input_dir = "../data", purpose = "abiotic")
 
 ```
 
-For example, noise pollution is a pervasive problem in modern society, with detrimental effects on human health and well-being, wildlife, and ecosystems. There is growing interest in the use of acoustic indices for noise mapping applications. This approach has several advantages over traditional noise mapping methods. 
+In contrast, noise pollution is a pervasive problem in modern society, with detrimental effects on human health and well-being, wildlife, and ecosystems. There is growing interest in the use of acoustic indices for noise mapping applications. This approach has several advantages over traditional noise mapping methods. 
 
-Using acoustic sensors at 310 spatial locations in 2021 across a gradient of human footprint. We recorded sounds for 4-5 days at each location betwwen May and July calculated a range of acoustic indices. We also collected human observations of noise levels (ranked 0-3) and other noise sources (wind, rain, other noise and audio quality) using a standardized survey. We compared the acoustic indices to the human observations to determine the accuracy of the noise map generated from the indices.
+Using acoustic sensors at 310 spatial locations in 2021 across a gradient of human footprint. We recorded sounds for 4-5 days at each location between May and July calculated a range of acoustic indices. We also collected human observations of noise levels (ranked 0-3) and other noise sources (wind, rain, other noise and audio quality) using a standardized survey. We compared the acoustic indices to the human observations to determine the accuracy of the noise map generated from the indices.
 
 ```r
 map_badr <- wt_glean(x = badr, input_dir = "../data", purpose = "abiotic")
@@ -374,18 +429,37 @@ wt_songscope_tags()
 
 :::: {.dangerbox data-latex=""}
 ::: {.left data-latex=""}
+*Keep in mind*<br>
 For certain monitoring programs that deliberately deploy ARUs over extended periods to detect specific species, a high true negative rate is crucial to confirm the absence of the species when required. This typically involves recording for more extended periods of more than 30 minutes. In such cases, it is advisable to use the `wt_chop` function to segment the media, upload the resulting recordings to WildTrax, generate a task list, and combine it with the results of `wt_songscope_tags` to import all the data into WildTrax.
 :::
 ::::
 
 ### Kaleidoscope results
 
-Similarly, the function `wt_kaleidoscope_tags` performs the same reformatting process, but with Kaleidoscope instead. It is worth noting that this function targeted for sonic and ultrasonic species upload.
+[Kaleidoscope Pro](https://www.wildlifeacoustics.com/products/kaleidoscope-pro) is a software package that includes a collection of tools designed specifically for bioacoustics analysis work flows. It can be used to automatically identify bat calls and perform cluster analysis (which involves grouping similar calls together), and it also allows the creation and use of classifiers. Once you have used Kaleidoscope to analyze your audio recordings and identify bat calls, you can use the output from Kaleidoscope and transform them into tags using the `wt_kaleidoscope_tags` function. These tags can then be imported into WildTrax along with the media. 
 
 ```{r, include = T, eval=F, warning=F, message=F}
+
+
+
 wt_kaleidoscope_tags()
 
 ```
+
+It's also recommended to make a list of unique media associated to the tags so WildTrax can merge the audio and tags together.
+
+```{r}
+
+
+```
+
+Once you have your formatted tags and audio prepared:
+
+* Go to a project on WildTrax
+* Click Manage > Upload Recordings to upload the media and generate the tasks
+* Once the recordings are uploaded, click Manage > Upload Tags using the csv output from the `wt_kaleidoscope_tags` function. 
+
+Note that `wt_kaleidoscope_tags`'s data wrangling is "lazy" in that it will attempt the enclose the majority of the signal detected from Kaleidoscope, and assign vocalization types globally. Users are encourage to use [Species Verification](https://www.wildtrax.ca/home/resources/guide/acoustic-data/species-verification.html) later in WildTrax in order to make the subsequent batch edits needed to the tags as needed. 
 
 ### Making tasks
 

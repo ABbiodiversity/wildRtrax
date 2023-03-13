@@ -289,8 +289,7 @@ wt_wac_info <- function(path) {
 #' @import dplyr
 #' @importFrom stringr str_detect
 #' @importFrom furrr future_map
-#' @importFrom progress progressor with progress
-#' @importFrom shiny with_progress
+#' @importFrom progressr with_progress progressor
 #' @export
 #'
 #' @examples
@@ -389,7 +388,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
     purpose_list <- c("ClippingIndex","TemporalEntropy","Ndsi")
   } else if (purpose == "biotic") {
     purpose_list <- c("HighFreqCover","MidFreqCover","LowFreqCover","AcousticComplexity","Ndsi")
-  } else if (purpose == NULL) {
+  } else if (is.null(purpose)) {
     purpose_list <- list_all
   }
 

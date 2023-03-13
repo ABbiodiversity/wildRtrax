@@ -9,16 +9,13 @@ wt_auth(force = FALSE)
 \arguments{
 \item{force}{Logical; whether or not the force re-authentication even if token has not expired. Defaults to FALSE.}
 }
-\value{
-
-}
 \description{
 Obtain Auth0 credentials using WT_USERNAME and WT_PASSWORD stored as environment variables
 }
 \examples{
 \dontrun{
 # Authenticate first:
-wt_auth(force = FALSE)
+wt_auth(type = c("google", "env"), force = FALSE)
 }
 
 }

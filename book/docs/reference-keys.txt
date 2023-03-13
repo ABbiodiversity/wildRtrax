@@ -13,11 +13,11 @@ installing-the-package
 usage
 acoustic-data-pre-processing
 acoustic-data-management-basics
-reading-filtering-and-selecting-audio-recordings
+manipulating-recordings
 reading-files
-segmenting-longer-files
-filtering-files
-filtering-files-geographically
+segmenting-audio-files
+filtering-audio-files
+geographic-filtering
 other-convenience-functions-distance-between-locations
 error-handling-and-file-standardization
 using-acoustic-indices-and-ldfcs

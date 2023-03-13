@@ -97,14 +97,26 @@ To effectively read this book, keep the following tips in mind:
 * Take notes and jot down questions as you read to ensure that you fully understand the concepts and techniques presented.
 * Review the information periodically to reinforce your understanding and keep the information fresh in your mind.
 
+:::: {.didyouknow data-latex=""}
+::: {.left data-latex=""}
+The *Did you know?* sections will provide additional information about a function or work flow.
+:::
+::::
+
+:::: {.dangerbox data-latex=""}
+::: {.left data-latex=""}
+The *Keep in mind* sections will warn you when there is something you should think about before running a function or designing a study, for example.
+:::
+::::
+
 ## Impact and intentions
 
-`wildRtrax` strives to maintain independent, scientifically credible, relevant, accessible, and transparent language and code. By doing so, we hope to provide unbiased and accurate information products that are easily understood by anyone. Our values are grounded in leadership, accuracy, ingenuity, passion, personal initiative and teamwork in the field of environmental sensor data as we seek to inspire ecologists to engage in responsible resource management. Our team values personal initiative and teamwork, and we encourage learning, feedback, to its shared success. We are passionate about our work and the impact it has on the environment, and we continuously work to fuel better products and processes through innovative ideas.
+`wildRtrax` strives to maintain independent, scientifically credible, relevant, accessible, and transparent language and code. By doing so, we hope to provide unbiased and accurate information products that are easily understood by anyone. Our values are grounded in leadership, accuracy, ingenuity, passion, personal initiative and teamwork in the field of environmental sensor data as we seek to inspire users to engage in responsible resource management. Our team values personal initiative and teamwork, and we encourage learning, feedback, to its shared success. We are passionate about our work and the impact it has on the environment, and we continuously work to fuel better products and processes through innovative ideas.
 
 You can visit the [Alberta Biodiversity Monitoring Institute](https://abmi.ca/home/about-us/our-vision-mission.html) for more information.
 
 ## Acknowledgements
 
 * The [Alberta Biodiversity Monitoring Institute](https://abmi.ca) supports and funds all operations surrounding `wildRtrax` and [WildTrax](https://www.wildtrax.ca).
-* Many thanks to [Dr. Richard Hedley](https://richardwhedley.wordpress.com/) for providing the basis for the `wt_wac_info` internal function for *wac* file support.
+* Many thanks to [Dr. Richard Hedley](https://richardwhedley.wordpress.com/) for providing the basis for the `wt_wac_info` internal function for wac file support.
 
