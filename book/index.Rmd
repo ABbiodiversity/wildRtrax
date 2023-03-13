@@ -64,9 +64,9 @@ knitr::opts_chunk$set(engine.opts = list(bash = "-l"))
 
 # Preface {-}
 
-![](assets/cover.png)
-
 `wildRtrax` (pronounced *‘wilder tracks’*) is an R package to help environmental sensor data users to create full-cycle work flows from data management to analytics.
+
+![](assets/cover.png)
 
 ## Who is this book for?
 
@@ -81,11 +81,11 @@ This book is a valuable resource for anyone working with environmental sensor da
 
 For any given environmental sensor, the general workflow is outlined below and how this book fits into the bigger picture of environmental sensor data management. 
 
-1. **Understanding the basics**
+1. [**Understanding the basics**]()
 2. Collecting data
-3. **Data pre-processing** 
-4. Data processing and verification
-5. **Data analysis**
+3. [**Data pre-processing**]()
+4. [Data processing and verification using WildTrax]()
+5. [**Data analysis**]()
 6. Reporting
 
 ## Impact and intentions
