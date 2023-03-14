@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 1 Introduction | Environmental sensor data management and analysis with R</title>
   <meta name="description" content="wildRtrax helps environmental sensor data users with data management and analytics" />
-  <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.30 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 1 Introduction | Environmental sensor data management and analysis with R" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Alexander G. MacPhail, Marcus Becker, Elly C. Knight" />
 
 
-<meta name="date" content="2023-03-13" />
+<meta name="date" content="2023-03-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -49,24 +49,25 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
 
 
 <style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -86,7 +87,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -136,15 +137,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
-<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a><ul>
 <li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-is-this-book-for"><i class="fa fa-check"></i><b>0.1</b> Who is this book for?</a></li>
 <li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-should-i-read-this-book"><i class="fa fa-check"></i><b>0.2</b> How should I read this book?</a></li>
 <li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#impact-and-intentions"><i class="fa fa-check"></i><b>0.3</b> Impact and intentions</a></li>
 <li class="chapter" data-level="0.4" data-path="index.html"><a href="index.html#acknowledgements"><i class="fa fa-check"></i><b>0.4</b> Acknowledgements</a></li>
 </ul></li>
-<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
-<ul>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
 <li class="chapter" data-level="1.1" data-path="1-introduction.html"><a href="1-introduction.html#environmental-sensors"><i class="fa fa-check"></i><b>1.1</b> Environmental sensors</a></li>
 <li class="chapter" data-level="1.2" data-path="1-introduction.html"><a href="1-introduction.html#open-data"><i class="fa fa-check"></i><b>1.2</b> Open data</a></li>
 <li class="chapter" data-level="1.3" data-path="1-introduction.html"><a href="1-introduction.html#biological-metrics"><i class="fa fa-check"></i><b>1.3</b> Biological metrics</a></li>
@@ -154,38 +153,31 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="1.7" data-path="1-introduction.html"><a href="1-introduction.html#installing-the-package"><i class="fa fa-check"></i><b>1.7</b> Installing the package</a></li>
 <li class="chapter" data-level="1.8" data-path="1-introduction.html"><a href="1-introduction.html#usage"><i class="fa fa-check"></i><b>1.8</b> Usage</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html"><i class="fa fa-check"></i><b>2</b> Acoustic data pre-processing</a>
-<ul>
+<li class="chapter" data-level="2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html"><i class="fa fa-check"></i><b>2</b> Acoustic data pre-processing</a><ul>
 <li class="chapter" data-level="2.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#acoustic-data-management-basics"><i class="fa fa-check"></i><b>2.1</b> Acoustic data management basics</a></li>
-<li class="chapter" data-level="2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#manipulating-recordings"><i class="fa fa-check"></i><b>2.2</b> Manipulating recordings</a>
-<ul>
+<li class="chapter" data-level="2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#manipulating-recordings"><i class="fa fa-check"></i><b>2.2</b> Manipulating recordings</a><ul>
 <li class="chapter" data-level="2.2.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#reading-files"><i class="fa fa-check"></i><b>2.2.1</b> Reading files</a></li>
 <li class="chapter" data-level="2.2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#segmenting-audio-files"><i class="fa fa-check"></i><b>2.2.2</b> Segmenting audio files</a></li>
 <li class="chapter" data-level="2.2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#filtering-audio-files"><i class="fa fa-check"></i><b>2.2.3</b> Filtering audio files</a></li>
 <li class="chapter" data-level="2.2.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#geographic-filtering"><i class="fa fa-check"></i><b>2.2.4</b> Geographic filtering</a></li>
 </ul></li>
-<li class="chapter" data-level="2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#other-convenience-functions-distance-between-locations"><i class="fa fa-check"></i><b>2.3</b> Other convenience functions: distance between locations</a>
-<ul>
+<li class="chapter" data-level="2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#other-convenience-functions-distance-between-locations"><i class="fa fa-check"></i><b>2.3</b> Other convenience functions: distance between locations</a><ul>
 <li class="chapter" data-level="2.3.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#error-handling-and-file-standardization"><i class="fa fa-check"></i><b>2.3.1</b> Error handling and file standardization</a></li>
 </ul></li>
-<li class="chapter" data-level="2.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#using-acoustic-indices-and-ldfcs"><i class="fa fa-check"></i><b>2.4</b> Using acoustic indices and LDFCs</a>
-<ul>
+<li class="chapter" data-level="2.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#using-acoustic-indices-and-ldfcs"><i class="fa fa-check"></i><b>2.4</b> Using acoustic indices and LDFCs</a><ul>
 <li class="chapter" data-level="2.4.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#abiotic-geophonic-and-anthropophonic-signal-detection"><i class="fa fa-check"></i><b>2.4.1</b> Abiotic, geophonic and anthropophonic signal detection</a></li>
 <li class="chapter" data-level="2.4.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#biophonic-signal-detection"><i class="fa fa-check"></i><b>2.4.2</b> Biophonic signal detection</a></li>
 </ul></li>
-<li class="chapter" data-level="2.5" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.5</b> Linking acoustic data to WildTrax</a>
-<ul>
+<li class="chapter" data-level="2.5" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.5</b> Linking acoustic data to WildTrax</a><ul>
 <li class="chapter" data-level="2.5.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#sonscope-results"><i class="fa fa-check"></i><b>2.5.1</b> Sonscope results</a></li>
 <li class="chapter" data-level="2.5.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#kaleidoscope-results"><i class="fa fa-check"></i><b>2.5.2</b> Kaleidoscope results</a></li>
 <li class="chapter" data-level="2.5.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#making-tasks"><i class="fa fa-check"></i><b>2.5.3</b> Making tasks</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="3-camera-data-pre-processing.html"><a href="3-camera-data-pre-processing.html"><i class="fa fa-check"></i><b>3</b> Camera data pre-processing</a></li>
-<li class="chapter" data-level="4" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html"><i class="fa fa-check"></i><b>4</b> Acoustic data analysis</a>
-<ul>
+<li class="chapter" data-level="4" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html"><i class="fa fa-check"></i><b>4</b> Acoustic data analysis</a><ul>
 <li class="chapter" data-level="4.1" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#authorizing-and-downloading-data-from-wildtrax"><i class="fa fa-check"></i><b>4.1</b> Authorizing and downloading data from WildTrax</a></li>
-<li class="chapter" data-level="4.2" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#wrangling-data-for-analysis"><i class="fa fa-check"></i><b>4.2</b> Wrangling data for analysis</a>
-<ul>
+<li class="chapter" data-level="4.2" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#wrangling-data-for-analysis"><i class="fa fa-check"></i><b>4.2</b> Wrangling data for analysis</a><ul>
 <li class="chapter" data-level="4.2.1" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#species-identification-and-observer-error"><i class="fa fa-check"></i><b>4.2.1</b> Species identification and observer error</a></li>
 <li class="chapter" data-level="4.2.2" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#false-negative-rates-and-birdnet"><i class="fa fa-check"></i><b>4.2.2</b> False negative rates and BirdNET</a></li>
 <li class="chapter" data-level="4.2.3" data-path="4-acoustic-data-analysis.html"><a href="4-acoustic-data-analysis.html#abundance-estimation"><i class="fa fa-check"></i><b>4.2.3</b> Abundance estimation</a></li>
@@ -216,26 +208,26 @@ Published with bookdown</a></li>
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="introduction" class="section level1 hasAnchor" number="1">
+<div id="introduction" class="section level1 hasAnchor">
 <h1><span class="header-section-number">Chapter 1</span> Introduction<a href="1-introduction.html#introduction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="environmental-sensors" class="section level2 hasAnchor" number="1.1">
+<div id="environmental-sensors" class="section level2 hasAnchor">
 <h2><span class="header-section-number">1.1</span> Environmental sensors<a href="1-introduction.html#environmental-sensors" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><img src="assets/arus.png" /></p>
 <p>Environmental sensors are devices used to measure and record various environmental parameters, such as temperature, humidity, pressure, light, and sound. These sensors can be used to monitor changes in the environment over time and provide valuable information about the conditions that wildlife species experience in their habitats.</p>
 <p>In wildlife ecology, environmental sensors are commonly used to study the behavior, habitat preferences, and distribution of wildlife species. For example, temperature sensors can be used to monitor the microclimate of an animal’s habitat and determine the effects of temperature on its behavior and physiology. Humidity sensors can be used to study the impact of moisture on the distribution and abundance of species in different ecosystems. Sound sensors, principally, autonomous recording units (or ARUs) can be used to detect and identify the vocalizations of animals, allowing researchers to study communication patterns, behavior, population size, density, habitat preference, movement and many other biological metrics. Wildlife cameras, also known as trail cameras or remote cameras, capture images and videos of animals in their natural habitats, providing researchers with valuable information on behavior, population dynamics, habitat use, and other biological metrics.</p>
 <p>Environmental sensors can also be used to monitor changes in the environment caused by human activities, such as deforestation, pollution, and climate change. By measuring and recording changes in environmental conditions, researchers can better understand the impact of these activities on wildlife species and develop effective conservation strategies to protect them.</p>
 </div>
-<div id="open-data" class="section level2 hasAnchor" number="1.2">
+<div id="open-data" class="section level2 hasAnchor">
 <h2><span class="header-section-number">1.2</span> Open data<a href="1-introduction.html#open-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Open data refers to data that is freely available for anyone to access, use, and share. Open data is important in the context of environmental sensors because it allows researchers, scientists, and policymakers to access and use data collected by sensors to gain insights into environmental conditions and make informed decisions.</p>
 <p>Environmental sensors generate large amounts of data on various environmental parameters such as audio recordings and images. By making this data openly available, researchers can analyze it to gain insights into patterns and trends over time, leading to a better understanding of environmental conditions and the impact of human activities on the environment. Open data also promotes transparency and accountability in environmental research. It allows the public to access and understand the data used to inform decisions about environmental management and conservation. Additionally, open data can lead to the development of innovative solutions and technologies that can help address environmental challenges.</p>
 <p>Open data also helps promote reproducibility ensuring independent verification of the data. Reproducibility ensures that the methods used to collect and analyze the data are transparent and can be independently verified by other researchers, ensuring that the results are reliable and accurate, establishing scientific validity.</p>
 </div>
-<div id="biological-metrics" class="section level2 hasAnchor" number="1.3">
+<div id="biological-metrics" class="section level2 hasAnchor">
 <h2><span class="header-section-number">1.3</span> Biological metrics<a href="1-introduction.html#biological-metrics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Biological metrics are measurements used to evaluate the health and function of ecosystems. They include measures of biodiversity, abundance, and other ecological parameters such as population density, community composition, and functional traits of species. To ensure effective environmental monitoring programs, it is crucial to select appropriate biological metrics that align with the specific goals and objectives of the program. Feasibility and efficiency of data collection and analysis are also important factors to consider. Using well-established and widely used biological metrics can enhance comparability of results across different data sets, studies, and regions. Long-term monitoring is essential for detecting trends and early warning signs of potential environmental problems. Therefore, selecting metrics that are sensitive to changes over time and that can be measured consistently over a long period is essential. The time and resources required for data collection and analysis must be considered when selecting biological metrics as some may require more time and resources than others, while some may be easier to interpret and communicate to stakeholders.</p>
 </div>
-<div id="standardizing-information-pipelines" class="section level2 hasAnchor" number="1.4">
+<div id="standardizing-information-pipelines" class="section level2 hasAnchor">
 <h2><span class="header-section-number">1.4</span> Standardizing information pipelines<a href="1-introduction.html#standardizing-information-pipelines" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Standardized workflows can help with environmental sensor data by ensuring that data is collected, processed, and analyzed in a consistent and transparent manner. This helps to ensure that the data is reliable and accurate, and can be easily compared and combined with other data sets. Standardized workflows typically involve a series of steps that are designed to ensure that data is collected and analyzed consistently across different research projects and sites. These steps may include:</p>
 <ul>
@@ -248,24 +240,24 @@ Published with bookdown</a></li>
 </ul>
 <p>By standardizing these workflows, researchers can ensure that data is collected and analyzed consistently across different projects and organizations, reducing the risk of errors or inconsistencies. This helps to ensure that the data is reliable and accurate, and can be used to inform decisions related to environmental management and conservation. In addition, standardized workflows can facilitate data sharing and collaboration among researchers, as it ensures that data is collected and processed in a manner that is consistent with best practices and widely accepted standards. This can help to promote data integration and interoperability, enabling researchers to combine data from different sources to gain a more comprehensive understanding of environmental conditions and the impact of human activities on the environment.</p>
 </div>
-<div id="what-is-wildtrax" class="section level2 hasAnchor" number="1.5">
+<div id="what-is-wildtrax" class="section level2 hasAnchor">
 <h2><span class="header-section-number">1.5</span> What is <strong>WildTrax</strong>?<a href="1-introduction.html#what-is-wildtrax" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><a href="https://www.wildtrax.ca"><strong>WildTrax</strong></a> is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the <strong>biological data</strong> extracted from the media. WildTrax was developed by the <a href="https://abmi.ca">Alberta Biodiversity Monitoring Institute</a>. <code>wildRtrax</code> serves as a parallel design and indicator to WildTrax for future analytics and functionalities.</p>
 </div>
-<div id="why-did-you-build-wildrtrax" class="section level2 hasAnchor" number="1.6">
+<div id="why-did-you-build-wildrtrax" class="section level2 hasAnchor">
 <h2><span class="header-section-number">1.6</span> Why did you build <code>wildRtrax</code>?<a href="1-introduction.html#why-did-you-build-wildrtrax" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of acoustic data from autonomous recording units (ARUs), <code>wildRtrax</code> and WildTrax hope to provide open work flows for using ARUs to answer meaningful biological questions in order to inform conservation and decision-making.</p>
 <p>Developing parallel-track design between an R package and a web-enabled software like WildTrax can significantly improve the software development process. It allows for simultaneous development and testing of both applications, reducing the chances of errors and incompatibilities, and formalizing data structures and APIs across a network of different applications.</p>
 </div>
-<div id="installing-the-package" class="section level2 hasAnchor" number="1.7">
+<div id="installing-the-package" class="section level2 hasAnchor">
 <h2><span class="header-section-number">1.7</span> Installing the package<a href="1-introduction.html#installing-the-package" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>You can install <code>wildRtrax</code> directly from this repository with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="1-introduction.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
-<span id="cb1-2"><a href="1-introduction.html#cb1-2" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;ABbiodiversity/wildRtrax&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="1-introduction.html#cb1-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
+<span id="cb1-2"><a href="1-introduction.html#cb1-2"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;ABbiodiversity/wildRtrax&quot;</span>)</span></code></pre></div>
 <p>Or the development version with:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="1-introduction.html#cb2-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;ABbiodiversity/wildRtrax@development&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="1-introduction.html#cb2-1"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;ABbiodiversity/wildRtrax@development&quot;</span>)</span></code></pre></div>
 </div>
-<div id="usage" class="section level2 hasAnchor" number="1.8">
+<div id="usage" class="section level2 hasAnchor">
 <h2><span class="header-section-number">1.8</span> Usage<a href="1-introduction.html#usage" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>All functions begin with a <code>wt_*</code> prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis.</p>
 <p><img src="assets/arus2.png" /></p>
