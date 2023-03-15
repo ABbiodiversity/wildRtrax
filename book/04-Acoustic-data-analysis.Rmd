@@ -127,8 +127,9 @@ data_logistic_wtsp <- raw_basic_data %>%
   filter(!species_code %in% abiotic_codes,
          !grepl('^U',species_code)) %>%
   mutate(present = case_when(species_code == "WTSP" ~ 1, TRUE ~ 0)) %>%
-  select(location, latitude, longitude, species_code, present) %>%
+  select(location, latitude, longitude, recording_date, species_code, present) %>%
   distinct() %>%
+  mutate(hour = hour(recording_date)) %>%
   pivot_wider(names_from = species_code, values_from = present, values_fill = 0)
          
          

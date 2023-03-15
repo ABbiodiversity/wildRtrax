@@ -23,7 +23,7 @@
 <meta name="author" content="Alexander G. MacPhail, Marcus Becker, Elly C. Knight" />
 
 
-<meta name="date" content="2023-03-14" />
+<meta name="date" content="2023-03-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -245,21 +245,21 @@ Published with bookdown</a></li>
 <div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="4-acoustic-data-analysis.html#cb47-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="co"># Import the species table</span></span>
 <span id="cb47-2"><a href="4-acoustic-data-analysis.html#cb47-2"></a><span class="er">&gt;</span><span class="st"> </span><span class="kw">head</span>(cls)</span></code></pre></div>
 <pre><code># A tibble: 6 × 33
-  speci…¹ speci…² speci…³ speci…⁴ speci…⁵ speci…⁶ species_date_added  speci…⁷ speci…⁸
-  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;dttm&gt;              &lt;lgl&gt;   &lt;chr&gt;  
-1 SHEP    Bovidae Ovis    aries   Domest… Artiod… 2020-10-09 15:05:58 FALSE   Mammal…
-2 THYVEL  Didelp… Thylam… veluti… Dwarf … Didelp… 2022-07-25 00:00:00 FALSE   Mammal…
-3 FISH    Mustel… Martes  pennan… Fisher  Carniv… 2020-10-09 15:05:58 FALSE   Mammal…
-4 BOTSTE  Ardeid… Botaur… stella… Great … Peleac… 2022-07-28 00:00:00 FALSE   Aves   
-5 CALIRR  Didelp… Caluro… irrupta Black-… Didelp… 2022-07-25 00:00:00 FALSE   Mammal…
-6 LESC    Anatid… Aythya  affinis Lesser… Anseri… 2021-11-02 11:07:20 FALSE   Aves   
-# … with 24 more variables: species_has_call &lt;lgl&gt;, species_has_nv &lt;lgl&gt;,
-#   species_has_song &lt;lgl&gt;, species_french_name &lt;chr&gt;, species_tsn_id &lt;chr&gt;,
-#   species_allow_multiple_individuals &lt;lgl&gt;, species_id &lt;dbl&gt;,
-#   species_french_code &lt;chr&gt;, species_parent_id &lt;chr&gt;, species_status &lt;chr&gt;,
-#   species_has_feeding_buzz &lt;lgl&gt;, species_use_in_aru &lt;lgl&gt;,
-#   species_use_in_cam &lt;lgl&gt;, species_is_domestic &lt;lgl&gt;,
-#   species_class_english &lt;chr&gt;, species_aep_code &lt;chr&gt;, …</code></pre>
+  species_c…¹ speci…² speci…³ speci…⁴ speci…⁵ speci…⁶ species_date_added  speci…⁷ speci…⁸ speci…⁹ speci…˟ speci…˟
+  &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;dttm&gt;              &lt;lgl&gt;   &lt;chr&gt;   &lt;lgl&gt;   &lt;lgl&gt;   &lt;lgl&gt;  
+1 SHEP        Bovidae Ovis    aries   Domest… Artiod… 2020-10-09 15:05:58 FALSE   Mammal… TRUE    TRUE    TRUE   
+2 THYVEL      Didelp… Thylam… veluti… Dwarf … Didelp… 2022-07-25 00:00:00 FALSE   Mammal… TRUE    TRUE    FALSE  
+3 FISH        Mustel… Martes  pennan… Fisher  Carniv… 2020-10-09 15:05:58 FALSE   Mammal… TRUE    TRUE    TRUE   
+4 BOTSTE      Ardeid… Botaur… stella… Great … Peleac… 2022-07-28 00:00:00 FALSE   Aves    TRUE    TRUE    TRUE   
+5 CALIRR      Didelp… Caluro… irrupta Black-… Didelp… 2022-07-25 00:00:00 FALSE   Mammal… TRUE    TRUE    FALSE  
+6 LESC        Anatid… Aythya  affinis Lesser… Anseri… 2021-11-02 11:07:20 FALSE   Aves    TRUE    TRUE    TRUE   
+# … with 21 more variables: species_french_name &lt;chr&gt;, species_tsn_id &lt;chr&gt;,
+#   species_allow_multiple_individuals &lt;lgl&gt;, species_id &lt;dbl&gt;, species_french_code &lt;chr&gt;,
+#   species_parent_id &lt;chr&gt;, species_status &lt;chr&gt;, species_has_feeding_buzz &lt;lgl&gt;, species_use_in_aru &lt;lgl&gt;,
+#   species_use_in_cam &lt;lgl&gt;, species_is_domestic &lt;lgl&gt;, species_class_english &lt;chr&gt;, species_aep_code &lt;chr&gt;,
+#   species_order_english &lt;chr&gt;, species_authority &lt;chr&gt;, species_verify_y_pixels_per_khz &lt;dbl&gt;,
+#   species_verify_x_pixels_per_sec &lt;dbl&gt;, species_verify_use_monochrome &lt;lgl&gt;, species_has_night_flight &lt;lgl&gt;,
+#   species_use_abundance_calling_index &lt;lgl&gt;, scientific_name &lt;chr&gt;, and abbreviated variable names …</code></pre>
 <p>The <code>wildRtrax::wt_ord</code> function conducts a series of steps to return the results of a multi-observer project. The first step in this process involves tidying and preparing the data in a species matrix. The function then runs a redundancy analysis (RDA) on the observer with recording, in other words, location (spatial component) and recording date (temporal component), as a constrained effect. This statistical technique is commonly used to determine the relationship between a set of response variables and a set of predictor variables. In the context of this analysis, the RDA is used to determine the relationship between the observer and the species detections.</p>
 <p>The <code>wt_ord</code> function also conducts variance partitioning where necessary to determine the contribution of predictor variables in the RDA. This process helps to identify the factors that have the greatest influence on the relationship between the observer and the species detections, such as the geographic region or habitat type determined by the locations used in the analysis. The function also returns results of a <em>PERMANOVA</em>, adjusted <em>R</em>-squared, and <em>F</em>-statistic to provide information on the overall strength and significance of the relationship of the ordination. The <em>PERMANOVA</em> is a non-parametric statistical method used to test the null hypothesis that there is no difference in the means of the groups being compared. The adjusted <em>R</em>-squared and <em>F</em>-statistic provide information on how well the model fits the data, and the significance of the differences observed between the groups.</p>
 <p>In addition to the RDA, the <code>wt_ord</code> function also runs a generalized linear mixed model (GLMM) on the tag start time against observer, with recording as a random effect. GLMMs are widely used in statistical analysis, and are especially useful for analyzing data that has both fixed and random effects. By using a GLMM in this context, the <code>wt_ord</code> function can determine if there are any significant differences between the observers and the mean of the group.</p>
@@ -274,20 +274,19 @@ Published with bookdown</a></li>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="4-acoustic-data-analysis.html#cb50-1"></a><span class="co"># Load and prepare the BirdNET data</span></span>
 <span id="cb50-2"><a href="4-acoustic-data-analysis.html#cb50-2"></a>raw_data</span></code></pre></div>
 <pre><code>## # A tibble: 33,048 × 8
-##    organization location recording_date      audio_…¹ scien…² windo…³ windo…⁴ confi…⁵
-##    &lt;chr&gt;        &lt;chr&gt;    &lt;dttm&gt;                 &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-##  1 ABMI         1081-NE  2021-04-06 07:29:00      600 Branta…      51      54    71.7
-##  2 ABMI         1081-NE  2021-04-06 07:29:00      600 Branta…     201     204    45.4
-##  3 ABMI         1081-NE  2021-04-06 07:29:00      600 Branta…     207     210    40.4
-##  4 ABMI         1081-NE  2021-04-06 07:29:00      600 Branta…     210     213    45.6
-##  5 ABMI         1081-NE  2021-04-06 07:29:00      600 Poecil…     561     564    51.1
-##  6 ABMI         1081-NE  2021-04-06 07:29:00      600 Poecil…     564     567    44.4
-##  7 ABMI         1081-NE  2021-04-06 07:29:00      600 Poecil…     567     570    44.2
-##  8 ABMI         1081-NE  2021-04-06 07:29:00      600 Poecil…     570     573    73.7
-##  9 ABMI         1081-NE  2021-04-06 07:29:00      600 Poecil…     573     576    51.3
-## 10 ABMI         1081-NE  2021-04-06 07:29:00      600 Poecil…     576     579    86.1
-## # … with 33,038 more rows, and abbreviated variable names ¹​audio_length,
-## #   ²​scientific_name, ³​window_start_time, ⁴​window_end_time, ⁵​confidence</code></pre>
+##    organization location recording_date      audio_length scientific_name      window_start_time window…¹ confi…²
+##    &lt;chr&gt;        &lt;chr&gt;    &lt;dttm&gt;                     &lt;dbl&gt; &lt;chr&gt;                            &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+##  1 ABMI         1081-NE  2021-04-06 07:29:00          600 Branta canadensis                   51       54    71.7
+##  2 ABMI         1081-NE  2021-04-06 07:29:00          600 Branta canadensis                  201      204    45.4
+##  3 ABMI         1081-NE  2021-04-06 07:29:00          600 Branta canadensis                  207      210    40.4
+##  4 ABMI         1081-NE  2021-04-06 07:29:00          600 Branta canadensis                  210      213    45.6
+##  5 ABMI         1081-NE  2021-04-06 07:29:00          600 Poecile atricapillus               561      564    51.1
+##  6 ABMI         1081-NE  2021-04-06 07:29:00          600 Poecile atricapillus               564      567    44.4
+##  7 ABMI         1081-NE  2021-04-06 07:29:00          600 Poecile atricapillus               567      570    44.2
+##  8 ABMI         1081-NE  2021-04-06 07:29:00          600 Poecile atricapillus               570      573    73.7
+##  9 ABMI         1081-NE  2021-04-06 07:29:00          600 Poecile atricapillus               573      576    51.3
+## 10 ABMI         1081-NE  2021-04-06 07:29:00          600 Poecile atricapillus               576      579    86.1
+## # … with 33,038 more rows, and abbreviated variable names ¹​window_end_time, ²​confidence</code></pre>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="4-acoustic-data-analysis.html#cb52-1"></a>fn &lt;-<span class="st"> </span>raw_data <span class="op">%&gt;%</span><span class="st"> </span></span>
 <span id="cb52-2"><a href="4-acoustic-data-analysis.html#cb52-2"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>window_start_time <span class="op">&gt;=</span><span class="st"> </span><span class="dv">180</span>) <span class="op">%&gt;%</span></span>
 <span id="cb52-3"><a href="4-acoustic-data-analysis.html#cb52-3"></a><span class="st">  </span><span class="kw">select</span>(location, recording_date, scientific_name, window_start_time, confidence) <span class="op">%&gt;%</span></span>
@@ -301,20 +300,19 @@ Published with bookdown</a></li>
 <span id="cb52-11"><a href="4-acoustic-data-analysis.html#cb52-11"></a><span class="st">  </span><span class="kw">add_column</span>(<span class="dt">abundance =</span> <span class="st">&quot;1&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="4-acoustic-data-analysis.html#cb53-1"></a>fn</span></code></pre></div>
 <pre><code>## # A tibble: 8,834 × 8
-##    project_name   locat…¹ recording_date      obser…² speci…³ tag_s…⁴ confi…⁵ abund…⁶
-##    &lt;chr&gt;          &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;  
-##  1 BirdNET Output 1081-NE 2021-04-06 07:29:00 BirdNET CANG         51    71.7 1      
-##  2 BirdNET Output 1081-NE 2021-05-14 06:06:00 BirdNET LEFL          0    94   1      
-##  3 BirdNET Output 1081-NE 2021-05-14 06:06:00 BirdNET LEFL          3    92.1 1      
-##  4 BirdNET Output 1081-NE 2021-05-14 06:06:00 BirdNET LEFL          6    77.3 1      
-##  5 BirdNET Output 1081-NE 2021-05-14 06:06:00 BirdNET LEFL          9    92.5 1      
-##  6 BirdNET Output 1081-NE 2021-05-14 06:06:00 BirdNET LEFL         12    92.3 1      
-##  7 BirdNET Output 1081-NE 2021-05-14 06:06:00 BirdNET LEFL         15    94.2 1      
-##  8 BirdNET Output 1081-NE 2021-05-14 06:06:00 BirdNET LEFL         18    91.4 1      
-##  9 BirdNET Output 1081-NE 2021-05-14 06:06:00 BirdNET LEFL         21    89.4 1      
-## 10 BirdNET Output 1081-NE 2021-05-14 06:06:00 BirdNET LEFL         24    92.7 1      
-## # … with 8,824 more rows, and abbreviated variable names ¹​location, ²​observer,
-## #   ³​species_code, ⁴​tag_start_s, ⁵​confidence, ⁶​abundance</code></pre>
+##    project_name   location recording_date      observer species_code tag_start_s confidence abundance
+##    &lt;chr&gt;          &lt;chr&gt;    &lt;dttm&gt;              &lt;chr&gt;    &lt;chr&gt;              &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;    
+##  1 BirdNET Output 1081-NE  2021-04-06 07:29:00 BirdNET  CANG                  51       71.7 1        
+##  2 BirdNET Output 1081-NE  2021-05-14 06:06:00 BirdNET  LEFL                   0       94   1        
+##  3 BirdNET Output 1081-NE  2021-05-14 06:06:00 BirdNET  LEFL                   3       92.1 1        
+##  4 BirdNET Output 1081-NE  2021-05-14 06:06:00 BirdNET  LEFL                   6       77.3 1        
+##  5 BirdNET Output 1081-NE  2021-05-14 06:06:00 BirdNET  LEFL                   9       92.5 1        
+##  6 BirdNET Output 1081-NE  2021-05-14 06:06:00 BirdNET  LEFL                  12       92.3 1        
+##  7 BirdNET Output 1081-NE  2021-05-14 06:06:00 BirdNET  LEFL                  15       94.2 1        
+##  8 BirdNET Output 1081-NE  2021-05-14 06:06:00 BirdNET  LEFL                  18       91.4 1        
+##  9 BirdNET Output 1081-NE  2021-05-14 06:06:00 BirdNET  LEFL                  21       89.4 1        
+## 10 BirdNET Output 1081-NE  2021-05-14 06:06:00 BirdNET  LEFL                  24       92.7 1        
+## # … with 8,824 more rows</code></pre>
 </div>
 <div id="abundance-estimation" class="section level3 hasAnchor">
 <h3><span class="header-section-number">4.2.3</span> Abundance estimation<a href="4-acoustic-data-analysis.html#abundance-estimation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -337,16 +335,17 @@ Published with bookdown</a></li>
 <span id="cb56-5"><a href="4-acoustic-data-analysis.html#cb56-5"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>species_code <span class="op">%in%</span><span class="st"> </span>abiotic_codes,</span>
 <span id="cb56-6"><a href="4-acoustic-data-analysis.html#cb56-6"></a>         <span class="op">!</span><span class="kw">grepl</span>(<span class="st">&#39;^U&#39;</span>,species_code)) <span class="op">%&gt;%</span></span>
 <span id="cb56-7"><a href="4-acoustic-data-analysis.html#cb56-7"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">present =</span> <span class="kw">case_when</span>(species_code <span class="op">==</span><span class="st"> &quot;WTSP&quot;</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>)) <span class="op">%&gt;%</span></span>
-<span id="cb56-8"><a href="4-acoustic-data-analysis.html#cb56-8"></a><span class="st">  </span><span class="kw">select</span>(location, latitude, longitude, species_code, present) <span class="op">%&gt;%</span></span>
+<span id="cb56-8"><a href="4-acoustic-data-analysis.html#cb56-8"></a><span class="st">  </span><span class="kw">select</span>(location, latitude, longitude, recording_date, species_code, present) <span class="op">%&gt;%</span></span>
 <span id="cb56-9"><a href="4-acoustic-data-analysis.html#cb56-9"></a><span class="st">  </span><span class="kw">distinct</span>() <span class="op">%&gt;%</span></span>
-<span id="cb56-10"><a href="4-acoustic-data-analysis.html#cb56-10"></a><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> species_code, <span class="dt">values_from =</span> present, <span class="dt">values_fill =</span> <span class="dv">0</span>)</span>
-<span id="cb56-11"><a href="4-acoustic-data-analysis.html#cb56-11"></a>         </span>
+<span id="cb56-10"><a href="4-acoustic-data-analysis.html#cb56-10"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">hour</span>(recording_date)) <span class="op">%&gt;%</span></span>
+<span id="cb56-11"><a href="4-acoustic-data-analysis.html#cb56-11"></a><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> species_code, <span class="dt">values_from =</span> present, <span class="dt">values_fill =</span> <span class="dv">0</span>)</span>
 <span id="cb56-12"><a href="4-acoustic-data-analysis.html#cb56-12"></a>         </span>
-<span id="cb56-13"><a href="4-acoustic-data-analysis.html#cb56-13"></a><span class="co"># create a logistic regression model</span></span>
-<span id="cb56-14"><a href="4-acoustic-data-analysis.html#cb56-14"></a>mylogit &lt;-<span class="st"> </span><span class="kw">glm</span>(species_presence <span class="op">~</span><span class="st"> </span>location <span class="op">+</span><span class="st"> </span>recording_date_time <span class="op">+</span><span class="st"> </span>forest_type, <span class="dt">data =</span> data_logistic_wtsp, <span class="dt">family =</span> binomial)</span>
-<span id="cb56-15"><a href="4-acoustic-data-analysis.html#cb56-15"></a></span>
-<span id="cb56-16"><a href="4-acoustic-data-analysis.html#cb56-16"></a><span class="co"># summary of the model</span></span>
-<span id="cb56-17"><a href="4-acoustic-data-analysis.html#cb56-17"></a><span class="kw">summary</span>(mylogit)</span></code></pre></div>
+<span id="cb56-13"><a href="4-acoustic-data-analysis.html#cb56-13"></a>         </span>
+<span id="cb56-14"><a href="4-acoustic-data-analysis.html#cb56-14"></a><span class="co"># create a logistic regression model</span></span>
+<span id="cb56-15"><a href="4-acoustic-data-analysis.html#cb56-15"></a>mylogit &lt;-<span class="st"> </span><span class="kw">glm</span>(species_presence <span class="op">~</span><span class="st"> </span>location <span class="op">+</span><span class="st"> </span>recording_date_time <span class="op">+</span><span class="st"> </span>forest_type, <span class="dt">data =</span> data_logistic_wtsp, <span class="dt">family =</span> binomial)</span>
+<span id="cb56-16"><a href="4-acoustic-data-analysis.html#cb56-16"></a></span>
+<span id="cb56-17"><a href="4-acoustic-data-analysis.html#cb56-17"></a><span class="co"># summary of the model</span></span>
+<span id="cb56-18"><a href="4-acoustic-data-analysis.html#cb56-18"></a><span class="kw">summary</span>(mylogit)</span></code></pre></div>
 </div>
 <div id="species-accumulation-and-rarefaction" class="section level3 hasAnchor">
 <h3><span class="header-section-number">4.3.2</span> Species accumulation and rarefaction<a href="4-acoustic-data-analysis.html#species-accumulation-and-rarefaction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
