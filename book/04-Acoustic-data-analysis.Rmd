@@ -1,5 +1,7 @@
 # Acoustic data analysis
 
+Now that we transformed raw sensor data into biological detections using Wildtrax we can use this to inform the metrics we're wishing to calculate.
+
 ## Authorizing and downloading data from WildTrax
 
 To access WildTrax data using R, you need to follow a series of initial steps.
@@ -37,21 +39,15 @@ A standardized system of reporting, assessing and determining actions to resolve
 ```{r, include = T, eval=F, warning=F, message=F}
 
 # Omit any abiotic data
-abiotic_codes<-c('LIBA','MOBA','HEBA','LITR','MOTR','HETR','LINO','MONO','HENO',
+abiotic_codes <- c('LIBA','MOBA','HEBA','LITR','MOTR','HETR','LINO','MONO','HENO',
                  'LIRA','MORA','HERA','LIWI','MOWI','HEWI','LIAI','MOAI','HEAI',
                  'LITN','MOTN','HETN','LIDT','MODT','HEDT','LITF','MOTF','HETF')
 
+```
+
+```{r, include=T, eval=T, warning=F, message=F, prompt=T, comment=""}
 # Import the species table
-cls <- read_csv("/users/alexandremacphail/desktop/commonluspp.csv") %>%
-  mutate(scientific_name = paste0(species_genus, " ", species_name))
-
-# Setup the data from the report -- change this once wt_auth() is working
-data <-
-  dir_ls(path = "/users/alexandremacphail/desktop/qc", regexp = "*tag_details_report.csv") %>%
-  map(~read_csv(., col_types = list(location = col_character(), abundance = col_character(), verified_by = col_character()))) %>%
-  bind_rows()
-
-head(data)
+head(cls)
 
 ```
 
@@ -69,34 +65,37 @@ res <- wt_ord(input = data, min_obs = 11, confidence = 0.67)
 
 ### False negative rates and BirdNET
 
-When recording a species, it is possible for an observer to miss its presence, which can be addressed by utilizing [BirdNET](https://birdnet.cornell.edu/?repeat=w3tc), a software tool that detects the species in 3-second intervals and intersects it with the tag, resulting in a maximum probability score ranging from 0 to 1. WildTrax, which utilizes the BirdNET API, can extract the maximum probability score exclusively for the species in question from all 3-second intervals that intersect with the tag, returning it as a result. This probability score indicates the likelihood of BirdNET detecting the species in that specific interval, and if BirdNET fails to detect the species, the probability score will be 0.
+When processing a task, it is possible for an observer to miss an individual. This *false negative* (FN) state can be addressed by utilizing [BirdNET](https://birdnet.cornell.edu/?repeat=w3tc), a software tool that detects the species in 3-second intervals and intersects it with the tag, resulting in a maximum probability score ranging from 0 to 1. WildTrax, which utilizes the BirdNET API, can extract the maximum probability score exclusively for the species in question from all 3-second intervals that intersect with the tag, returning it as a result. This probability score indicates the likelihood of BirdNET detecting the species in that specific interval, and if BirdNET fails to detect the species, the probability score will be 0.
 
 ![](assets/oven-birdnet.png)
 
-Once all tasks are transcribed, access the [Data Downloads](https://www.wildtrax.ca/home/projects/data-download.html) page and extract the zip file to obtain the summary report and **_recording_birdnet_summary.csv*. These files will be used to intersect the human-created tags with the results obtained from BirdNET.
+Once all tasks are transcribed, access the [Data Downloads](https://www.wildtrax.ca/home/projects/data-download.html) page and extract the zip file to obtain the summary report and *_recording_birdnet_summary.csv*. These files will be used to intersect the human-created tags with the results obtained from BirdNET.
 
-```{r, include = T, eval=F, warning=F, message=F}
+```{r, include = T, eval=T, warning=F, message=F}
 # Load and prepare the BirdNET data
+raw_data
 
-fn <- dir_ls(path = "/users/alexandremacphail/desktop/qc", regexp = "*recording_birdnet.csv") %>%
-  map(~read_csv(., col_types = list(location = col_character()))) %>%
-  bind_rows()
+```
 
-nfn <- fn %>%
+```r
+fn <- raw_data %>% 
   filter(!window_start_time >= 180) %>%
   select(location, recording_date, scientific_name, window_start_time, confidence) %>%
   distinct() %>%
   inner_join(., cls %>% select(species_code, species_common_name, scientific_name), by = c("scientific_name" = "scientific_name")) %>%
-  add_column(observer = "BirdNET") %>%
+  add_column(observer = "BirdNET") %>%s
   add_column(project_name = "BirdNET Output") %>%
   select(project_name, location, recording_date, observer, species_code, window_start_time, confidence) %>%
   rename("tag_start_s" = 6) %>%
   mutate(tag_start_s = as.double(tag_start_s)) %>%
   add_column(abundance = "1")
-
-data_bn <- bind_rows(data, nfn)
-
 ```
+
+```{r, include = T, eval=T, warning=F, message=F}
+fn
+```
+
+
 
 ### Abundance estimation
 
@@ -113,21 +112,59 @@ wt_replace_tmtt()
 
 ```
 
-## Occupancy modelling
+## Basic analysis
+
+Wildtrax provides the basis for a variety of different biological metrics and data, which can be analyzed using basic statistical techniques to gain insights into wildlife populations and their distribution.
+
+### Species presence
 
 ```{r, include = T, eval=F, warning=F, message=F}
 
-wt_occupancy()
+raw_basic_data <- dir_ls(path = "/users/alexandremacphail/desktop/fn", regexp = "*basic_summary.csv") %>%
+  map_df(~read_csv(., col_types = cols(recording_date  = col_character())))
 
+data_logistic_wtsp <- raw_basic_data %>% 
+  filter(!species_code %in% abiotic_codes,
+         !grepl('^U',species_code)) %>%
+  mutate(present = case_when(species_code == "WTSP" ~ 1, TRUE ~ 0)) %>%
+  select(location, latitude, longitude, species_code, present) %>%
+  distinct() %>%
+  pivot_wider(names_from = species_code, values_from = present, values_fill = 0)
+         
+         
+# create a logistic regression model
+mylogit <- glm(species_presence ~ location + recording_date_time + forest_type, data = data_logistic_wtsp, family = binomial)
+
+# summary of the model
+summary(mylogit)
+```
+
+### Species accumulation and rarefaction
+
+Species accumulation refers to the process of counting the number of different species present in a sample of a particular size. The idea is to keep adding new samples until the total number of species observed reaches a plateau or levels off. The curve that results from plotting the number of species against the number of samples is called a species accumulation curve, and it provides information about the rate of species discovery and the completeness of sampling.
+
+```r
 
 ```
 
-## Constructing a classifier
+Rarefaction is a statistical method used to estimate the expected number of species in a community, given a fixed number of individuals or samples. This technique is particularly useful when comparing the diversity of different communities that have been sampled unevenly, i.e., with different sample sizes. The rarefaction curve represents the expected number of species in a community as a function of the number of individuals or samples, and it can help researchers make fair comparisons of diversity between communities.
+
+```r
+
+```
+
+## Advanced analysis
+
+### Occupancy modelling
 
 ```{r, include = T, eval=F, warning=F, message=F}
+wt_occupancy()
 
+```
 
+### Constructing a classifier
+
+```{r, include = T, eval=F, warning=F, message=F}
 wt_download_tag_report()
-
 
 ```

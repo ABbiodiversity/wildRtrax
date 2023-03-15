@@ -6,6 +6,8 @@ The first step after an ARU is retrieved from the field is to promptly download 
 
 ![](assets/sds.png)
 
+### Acoustic metadata
+
 In `wildRtrax` and WildTrax, there are a few essential components and standards that are required in order for the data to be utilized within this context:
 
 - [**Location**](): The physical, geographic place at which environmental sensors were deployed and/or biological data was collected on the landscape. This is how you would associate spatial coordinates to the raw audio data.
@@ -25,6 +27,18 @@ ABMI-1025-SW_20220406_074500.{*wav,wac,flac,mp3*}
 ABMI-1025-SW_*0+1*_20220406_074500
 
 </center>
+
+Some additional file name recommendations include:
+
+* Omitting leading zeros for numeric delimited content, e.g. use `OG-1-3-5` instead of `OG-01-003-05`, unless they serve a identification purpose, e.g. `3-0-A12` where `-0-` indicates the an absence of a treatment 
+* Metadata are also supported for .dump, .txt, .csv, .fls, and .SM4S files 
+* Delimiters such as “-”, “_”, “@” are supported
+* Location name strings that appear numeric (35001) should be treated with caution when importing via csv
+* Spaces and slashes “/” “\” in location names are not supported “_000” suffixes from Wildlife Acoustics Kaleidoscope output (wac -> wav conversion) are supported
+
+Audio files need to contain both spatial and temporal information which is the minimum required in order to upload media to WildTrax, e.g. `ABMI-538-SW_20220506_050000`, where `ABMI-538-SW` is the location and `20220506_050000` is the timestamp. Both these pieces of information can tell you when and where the recording took place.
+
+### Acoustic file types
  
 * **wac** are proprietary, lossless compressed file formats developed by Wildlife Acoustics
 * **wav** is the standard, ubiquitous uncompressed audio file format
@@ -37,16 +51,6 @@ ABMI-1025-SW_*0+1*_20220406_074500
 When data are uploaded to WildTrax, the audio is converted and stored as flac.
 :::
 ::::
-
-Some additional file name recommendations include:
-
-* Omitting leading zeros for numeric delimited content, e.g. use `OG-1-3-5` instead of `OG-01-003-05`, unless they serve a identification purpose, e.g. `3-0-A12` where `-0-` indicates the an absence of a treatment 
-* Metadata are also supported for .dump, .txt, .csv, .fls, and .SM4S files 
-* Delimiters such as “-”, “_”, “@” are supported
-* Location name strings that appear numeric (35001) should be treated with caution when importing via csv
-* Spaces and slashes “/” “\” in location names are not supported “_000” suffixes from Wildlife Acoustics Kaleidoscope output (wac -> wav conversion) are supported
-
-Audio files need to contain both spatial and temporal information which is the minimum required in order to upload media to WildTrax, e.g. `ABMI-538-SW_20220506_050000`, where `ABMI-538-SW` is the location and `20220506_050000` is the timestamp. Both these pieces of information can tell you when and where the recording took place.
 
 ## Manipulating recordings
 
@@ -248,6 +252,18 @@ bcrs <- read_sf("../BCR_Terrestrial.shp")
 # Filter to just Alberta
 bcrs <- st_make_valid(bcrs) %>% 
   filter(PROVINCE_S == "ALBERTA")
+```
+
+```{r, comment="", warning=F, message=F, prompt=T}
+ggplot(bcrs) +
+  coord_sf(crs = 4269) +
+  geom_sf(aes(fill = BCRNAME)) +
+  theme_bw() +
+  scale_fill_viridis_d()
+
+```
+
+```{r, eval=F, include=T, warning=F, message=F, comment="", prompt=F}
 
 # Intersect the locations with the BCRs
 out <- st_intersection(locsset, bcrs)
@@ -257,12 +273,13 @@ locss <- out %>%
   inner_join(., locs, by = c("location" = "location")) %>%
   # Now sample 10 locations per BCR 
   group_by(BCRNAME) %>%
-  sample_n(10, replace = F)
+  sample_n(10, replace = F) %>%
+  select(location, BCRNAME)
 
 ```
 
 ```{r, comment="", warning=F, message=F, prompt=T}
-locss %>% select(location, BCRNAME)
+locss
 
 ```
 
@@ -274,6 +291,17 @@ ggplot(bcrs) +
   theme_bw() +
   theme(legend.position = "none") +
   scale_fill_viridis_d()
+
+```
+
+### Collecting files for upload to WildTrax
+
+To organize the process of uploading files to WildTrax smoother, it's recommended to collect all recordings into a single folder, regardless of where they are stored. Whether you've saved them on a server, hard drive, or local drive, this approach can help streamline the uploading process and save you time.
+
+Depending on the operating system you're using, there are two common ways to handle your files: linking or copying. Linking involves creating a shortcut to the original file, while copying creates a new, duplicate file. Both options can be beneficial, especially if you have files stored in complex, nested structures.
+
+```r
+
 
 ```
 
@@ -300,7 +328,7 @@ bu_locs <- bu_locs %>%
   filter(grepl('^BG-9', location))
 
 bu_badr <- bind_rows(badr2, bu_locs) %>%
-  mutate(type = case_when(grepl('^BG-',location) ~ "Big Grids",TRUE ~ "Before-After Dose Response"))
+  mutate(Project = case_when(grepl('^BG-',location) ~ "Big Grids",TRUE ~ "Before-After Dose Response"))
 
 bu_badr_map <- st_as_sf(bu_badr, coords = c("longitude","latitude")) 
 bu_badr_map <- st_make_valid(bu_badr_map)
@@ -310,10 +338,9 @@ bu_badr_map <- st_set_crs(bu_badr_map, 4269)
 ```{r, warning=F, message=F}
 ggplot() +
   coord_sf(crs = 4269) +
-  geom_sf(bu_badr_map, mapping = aes(colour = type)) +
+  geom_sf(bu_badr_map, mapping = aes(colour = Project)) +
   theme_bw() +
-  theme(legend.position = "none") +
-  scale_fill_viridis_d()
+  scale_colour_viridis_d()
 
 ```
 
@@ -326,7 +353,8 @@ distances <- wt_location_distances(input_from_tibble = bu_badr)
 # Filter points less then 100 meters apart
 distances %>%
   filter(distance < 100) %>%
-  arrange(distance)
+  arrange(distance) %>%
+  filter(location_from < distance_to)
 
 ```
 
@@ -468,3 +496,26 @@ wt_make_aru_tasks()
 
 ```
 
+Tasks don't always have to be recording or community based. Output from tags from Kaleidoscope or Songscope can also be used to generate tasks.
+
+```r
+
+```
+
+Once your task csvs are created. Go to the desired project and begin the process up uploading them. 
+
+:::: {.dangerbox data-latex=""}
+::: {.left data-latex=""}
+*Keep in mind*<br>
+If you haven't uploaded recordings to WildTrax yet, you may as well just filter a set of desired files and upload them while generating this task, skipping this step.
+:::
+::::
+
+```r
+
+
+```
+
+### Avoiding conflict errors
+
+When you upload a recording to WildTrax, it will be permanently stored in the organization in its native length, regardless of whether you generated a task shorter than the recording duration during the initial upload. If you attempt to upload the same recording again, a conflict will arise. To avoid this, it is necessary to first download the list of recordings from the organization, filter out the recordings you plan to upload, and then create a filtering protocol for the remaining recordings. By following this process, you can ensure that there are no conflicts and that all of your recordings are properly organized and managed within WildTrax.

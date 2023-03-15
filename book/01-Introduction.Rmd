@@ -35,34 +35,5 @@ Standardized workflows can help with environmental sensor data by ensuring that 
 
 By standardizing these workflows, researchers can ensure that data is collected and analyzed consistently across different projects and organizations, reducing the risk of errors or inconsistencies. This helps to ensure that the data is reliable and accurate, and can be used to inform decisions related to environmental management and conservation. In addition, standardized workflows can facilitate data sharing and collaboration among researchers, as it ensures that data is collected and processed in a manner that is consistent with best practices and widely accepted standards. This can help to promote data integration and interoperability, enabling researchers to combine data from different sources to gain a more comprehensive understanding of environmental conditions and the impact of human activities on the environment.
 
-## What is **WildTrax**?
-
-[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the  **biological data** extracted from the media. WildTrax was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca). `wildRtrax` serves as a parallel design and indicator to WildTrax for future analytics and functionalities.
-
-## Why did you build `wildRtrax`?
-
-By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of acoustic data from autonomous recording units (ARUs), `wildRtrax` and WildTrax hope to provide open work flows for using ARUs to answer meaningful biological questions in order to inform conservation and decision-making.
-
-Developing parallel-track design between an R package and a web-enabled software like WildTrax can significantly improve the software development process. It allows for simultaneous development and testing of both applications, reducing the chances of errors and incompatibilities, and formalizing data structures and APIs across a network of different applications.
-
-## Installing the package
-
-You can install `wildRtrax` directly from this repository with:
-
-```r
-install.packages("remotes")
-remotes::install_github("ABbiodiversity/wildRtrax")
-```
-
-Or the development version with:
-
-```r
-remotes::install_github("ABbiodiversity/wildRtrax@development")
-```
-
-## Usage
-
-All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis.
-
 ![](assets/arus2.png)
 

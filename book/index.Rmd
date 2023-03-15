@@ -105,11 +105,40 @@ The *Keep in mind* sections will warn you when there is something you should thi
 :::
 ::::
 
+## What is **WildTrax**?
+
+[**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the  **biological data** extracted from the media. WildTrax was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca). `wildRtrax` serves as a parallel design and indicator to WildTrax for future analytics and functionalities.
+
+## Why did you build `wildRtrax`?
+
+By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of acoustic data from autonomous recording units (ARUs), `wildRtrax` and WildTrax hope to provide open work flows for using ARUs to answer meaningful biological questions in order to inform conservation and decision-making.
+
+Developing parallel-track design between an R package and a web-enabled software like WildTrax can significantly improve the software development process. It allows for simultaneous development and testing of both applications, reducing the chances of errors and incompatibilities, and formalizing data structures and APIs across a network of different applications.
+
 ## Impact and intentions
 
 `wildRtrax` strives to maintain independent, scientifically credible, relevant, accessible, and transparent language and code. By doing so, we hope to provide unbiased and accurate information products that are easily understood by anyone. Our values are grounded in leadership, accuracy, ingenuity, passion, personal initiative and teamwork in the field of environmental sensor data as we seek to inspire users to engage in responsible resource management. Our team values personal initiative and teamwork, and we encourage learning, feedback, to its shared success. We are passionate about our work and the impact it has on the environment, and we continuously work to fuel better products and processes through innovative ideas.
 
 You can visit the [Alberta Biodiversity Monitoring Institute](https://abmi.ca/home/about-us/our-vision-mission.html) for more information.
+
+## Installing the package
+
+You can install `wildRtrax` directly from this repository with:
+
+```r
+install.packages("remotes")
+remotes::install_github("ABbiodiversity/wildRtrax")
+```
+
+Or the development version with:
+
+```r
+remotes::install_github("ABbiodiversity/wildRtrax@development")
+```
+
+## Usage
+
+All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis.
 
 ## Acknowledgements
 
