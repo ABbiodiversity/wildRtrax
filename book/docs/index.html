@@ -23,7 +23,7 @@
 <meta name="author" content="Alexander G. MacPhail, Marcus Becker, Elly C. Knight" />
 
 
-<meta name="date" content="2023-03-15" />
+<meta name="date" content="2023-03-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -163,7 +163,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#segmenting-audio-files"><i class="fa fa-check"></i><b>2.2.2</b> Segmenting audio files</a></li>
 <li class="chapter" data-level="2.2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#filtering-audio-files"><i class="fa fa-check"></i><b>2.2.3</b> Filtering audio files</a></li>
 <li class="chapter" data-level="2.2.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#geographic-filtering"><i class="fa fa-check"></i><b>2.2.4</b> Geographic filtering</a></li>
-<li class="chapter" data-level="2.2.5" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#collecting-files-for-upload-to-wildtrax"><i class="fa fa-check"></i><b>2.2.5</b> Collecting files for upload to WildTrax</a></li>
 </ul></li>
 <li class="chapter" data-level="2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#other-convenience-functions-distance-between-locations"><i class="fa fa-check"></i><b>2.3</b> Other convenience functions: distance between locations</a><ul>
 <li class="chapter" data-level="2.3.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#error-handling-and-file-standardization"><i class="fa fa-check"></i><b>2.3.1</b> Error handling and file standardization</a></li>
@@ -173,8 +172,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.4.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#biophonic-signal-detection"><i class="fa fa-check"></i><b>2.4.2</b> Biophonic signal detection</a></li>
 </ul></li>
 <li class="chapter" data-level="2.5" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.5</b> Linking acoustic data to WildTrax</a><ul>
-<li class="chapter" data-level="2.5.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#sonscope-results"><i class="fa fa-check"></i><b>2.5.1</b> Sonscope results</a></li>
-<li class="chapter" data-level="2.5.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#kaleidoscope-results"><i class="fa fa-check"></i><b>2.5.2</b> Kaleidoscope results</a></li>
+<li class="chapter" data-level="2.5.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#collecting-files-for-upload-to-wildtrax"><i class="fa fa-check"></i><b>2.5.1</b> Collecting files for upload to WildTrax</a></li>
+<li class="chapter" data-level="2.5.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#recognizer-results-transforming-hits-to-tags"><i class="fa fa-check"></i><b>2.5.2</b> Recognizer results: transforming hits to tags</a></li>
 <li class="chapter" data-level="2.5.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#making-tasks"><i class="fa fa-check"></i><b>2.5.3</b> Making tasks</a></li>
 <li class="chapter" data-level="2.5.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#avoiding-conflict-errors"><i class="fa fa-check"></i><b>2.5.4</b> Avoiding conflict errors</a></li>
 </ul></li>
@@ -222,7 +221,7 @@ Published with bookdown</a></li>
 <div id="header">
 <h1 class="title">Environmental sensor data management and analysis with R</h1>
 <p class="author"><em>Alexander G. MacPhail, Marcus Becker, Elly C. Knight</em></p>
-<p class="date"><em>2023-03-15</em></p>
+<p class="date"><em>2023-03-21</em></p>
 </div>
 <div id="preface" class="section level1 unnumbered hasAnchor">
 <h1>Preface<a href="index.html#preface" class="anchor-section" aria-label="Anchor link to header"></a></h1>
@@ -230,7 +229,7 @@ Published with bookdown</a></li>
 <p><img src="assets/cover.png" /></p>
 <div id="who-is-this-book-for" class="section level2 hasAnchor">
 <h2><span class="header-section-number">0.1</span> Who is this book for?<a href="index.html#who-is-this-book-for" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>This book is a valuable resource for anyone working with environmental sensor data and seeking to manage it using R. It is suitable for both experienced users and those new to the subject, as it is written in a clear and accessible style. While the book is designed to be user-friendly, it also contains advanced concepts and functions that may require additional reading to fully understand. The authors encourage readers to engage and provide feedback, as the book and work flows will continue to evolve with the software. The content relies on understand of the following R packages:</p>
+<p>This book is intended to be a valuable resource for anyone working with environmental sensor data and seeking to manage it using R. It is suitable for both experienced users and those new to the subject, as it is written in a clear and accessible style. While the book is designed to be user-friendly, it also contains advanced concepts and functions that may require additional reading to fully understand. The authors encourage readers to engage and provide feedback, as the book and work flows will continue to evolve with the software. The content relies on understand of the following R packages:</p>
 <ul>
 <li><a href="https://www.tidyverse.org/"><code>tidyverse</code></a> mainly <code>dplyr</code> and <code>purrr</code> for data tidying and functional programming</li>
 <li><a href="https://www.tidyverse.org/blog/2018/01/fs-1.0.0/"><code>fs</code></a> for file system operations</li>
@@ -240,7 +239,7 @@ Published with bookdown</a></li>
 </div>
 <div id="how-should-i-read-this-book" class="section level2 hasAnchor">
 <h2><span class="header-section-number">0.2</span> How should I read this book?<a href="index.html#how-should-i-read-this-book" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>For any given environmental sensor, the general workflow is outlined below and how this book fits into the bigger picture of environmental sensor data management. To effectively use this book to manage environmental sensor data, follow these steps:</p>
+<p>For any given environmental sensor, the general workflow is outlined below and how this book fits into the bigger picture of environmental sensor data management are bolded. To effectively use this book to manage environmental sensor data, follow these steps:</p>
 <ol style="list-style-type: decimal">
 <li><a href="2-acoustic-data-pre-processing.html#acoustic-data-management-basics"><strong>Understanding the basics</strong></a></li>
 <li>Collecting data</li>

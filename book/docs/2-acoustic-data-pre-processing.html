@@ -23,7 +23,7 @@
 <meta name="author" content="Alexander G. MacPhail, Marcus Becker, Elly C. Knight" />
 
 
-<meta name="date" content="2023-03-15" />
+<meta name="date" content="2023-03-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -163,7 +163,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.2.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#segmenting-audio-files"><i class="fa fa-check"></i><b>2.2.2</b> Segmenting audio files</a></li>
 <li class="chapter" data-level="2.2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#filtering-audio-files"><i class="fa fa-check"></i><b>2.2.3</b> Filtering audio files</a></li>
 <li class="chapter" data-level="2.2.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#geographic-filtering"><i class="fa fa-check"></i><b>2.2.4</b> Geographic filtering</a></li>
-<li class="chapter" data-level="2.2.5" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#collecting-files-for-upload-to-wildtrax"><i class="fa fa-check"></i><b>2.2.5</b> Collecting files for upload to WildTrax</a></li>
 </ul></li>
 <li class="chapter" data-level="2.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#other-convenience-functions-distance-between-locations"><i class="fa fa-check"></i><b>2.3</b> Other convenience functions: distance between locations</a><ul>
 <li class="chapter" data-level="2.3.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#error-handling-and-file-standardization"><i class="fa fa-check"></i><b>2.3.1</b> Error handling and file standardization</a></li>
@@ -173,8 +172,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.4.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#biophonic-signal-detection"><i class="fa fa-check"></i><b>2.4.2</b> Biophonic signal detection</a></li>
 </ul></li>
 <li class="chapter" data-level="2.5" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#linking-acoustic-data-to-wildtrax"><i class="fa fa-check"></i><b>2.5</b> Linking acoustic data to WildTrax</a><ul>
-<li class="chapter" data-level="2.5.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#sonscope-results"><i class="fa fa-check"></i><b>2.5.1</b> Sonscope results</a></li>
-<li class="chapter" data-level="2.5.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#kaleidoscope-results"><i class="fa fa-check"></i><b>2.5.2</b> Kaleidoscope results</a></li>
+<li class="chapter" data-level="2.5.1" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#collecting-files-for-upload-to-wildtrax"><i class="fa fa-check"></i><b>2.5.1</b> Collecting files for upload to WildTrax</a></li>
+<li class="chapter" data-level="2.5.2" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#recognizer-results-transforming-hits-to-tags"><i class="fa fa-check"></i><b>2.5.2</b> Recognizer results: transforming hits to tags</a></li>
 <li class="chapter" data-level="2.5.3" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#making-tasks"><i class="fa fa-check"></i><b>2.5.3</b> Making tasks</a></li>
 <li class="chapter" data-level="2.5.4" data-path="2-acoustic-data-pre-processing.html"><a href="2-acoustic-data-pre-processing.html#avoiding-conflict-errors"><i class="fa fa-check"></i><b>2.5.4</b> Avoiding conflict errors</a></li>
 </ul></li>
@@ -286,15 +285,16 @@ If you’re not an R user you can stop here and upload all of your recordings di
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="2-acoustic-data-pre-processing.html#cb3-1"></a>files &lt;-<span class="st"> </span><span class="kw">wt_audio_scanner</span>(<span class="dt">path =</span> <span class="st">&quot;../ABMI/ARU/ABMI-EH/2022/V1/228/228-NE&quot;</span>, <span class="dt">file_type =</span> <span class="st">&quot;wav&quot;</span>, <span class="dt">extra_cols =</span> F)</span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="2-acoustic-data-pre-processing.html#cb4-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">head</span>(files)</span></code></pre></div>
 <pre><code># A tibble: 6 × 11
-  file_path               size_Mb unsafe file_…¹ locat…² recording_date_time file_…³ julian  year gps_e…⁴ time_…⁵
-  &lt;chr&gt;                     &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;     &lt;int&gt;
-1 /volumes/budata/abmi/a…    3.51 Safe   228-NE… 228-NE  2021-11-21 12:35:49 wav        325  2021 NA            1
-2 /volumes/budata/abmi/a…  106.   Safe   228-NE… 228-NE  2022-03-01 00:00:00 wav         60  2022 NA            1
-3 /volumes/budata/abmi/a…   31.8  Safe   228-NE… 228-NE  2022-03-01 02:00:00 wav         60  2022 NA            2
-4 /volumes/budata/abmi/a…  106.   Safe   228-NE… 228-NE  2022-03-01 08:59:00 wav         60  2022 NA            3
-5 /volumes/budata/abmi/a…   31.8  Safe   228-NE… 228-NE  2022-03-01 10:29:00 wav         60  2022 NA            4
-6 /volumes/budata/abmi/a…   31.8  Safe   228-NE… 228-NE  2022-03-01 12:00:00 wav         60  2022 NA            5
-# … with abbreviated variable names ¹​file_name, ²​location, ³​file_type, ⁴​gps_enabled, ⁵​time_index</code></pre>
+  file_…¹ size_Mb unsafe file_…² locat…³ recording_date_time file_…⁴ julian  year gps_e…⁵
+  &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;  
+1 /volum…    3.51 Safe   228-NE… 228-NE  2021-11-21 12:35:49 wav        325  2021 NA     
+2 /volum…  106.   Safe   228-NE… 228-NE  2022-03-01 00:00:00 wav         60  2022 NA     
+3 /volum…   31.8  Safe   228-NE… 228-NE  2022-03-01 02:00:00 wav         60  2022 NA     
+4 /volum…  106.   Safe   228-NE… 228-NE  2022-03-01 08:59:00 wav         60  2022 NA     
+5 /volum…   31.8  Safe   228-NE… 228-NE  2022-03-01 10:29:00 wav         60  2022 NA     
+6 /volum…   31.8  Safe   228-NE… 228-NE  2022-03-01 12:00:00 wav         60  2022 NA     
+# … with 1 more variable: time_index &lt;int&gt;, and abbreviated variable names ¹​file_path,
+#   ²​file_name, ³​location, ⁴​file_type, ⁵​gps_enabled</code></pre>
 <p>The columns from <code>wt_audio_scanner</code> are generated from the raw media file name in order to associate a file prefix to a location, the time stamp to a date and time, and so on.</p>
 <div class="didyouknow">
 <div class="left">
@@ -315,20 +315,21 @@ Sensor type: ARU</li>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="2-acoustic-data-pre-processing.html#cb6-1"></a>files_extra &lt;-<span class="st"> </span><span class="kw">wt_audio_scanner</span>(<span class="dt">path =</span> ..<span class="op">/</span>ABMI<span class="op">/</span>ARU<span class="op">/</span>ABMI<span class="op">-</span>EH<span class="op">/</span><span class="dv">2022</span><span class="op">/</span>V1<span class="op">/</span><span class="dv">228</span><span class="op">/</span><span class="dv">228</span><span class="op">-</span>NE<span class="st">&quot;, file_type = &quot;</span>wav<span class="st">&quot;, extra_cols = T)</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="2-acoustic-data-pre-processing.html#cb7-1"></a><span class="op">&gt;</span><span class="st"> </span>files_extra</span></code></pre></div>
 <pre><code># A tibble: 1,041 × 14
-   file_path     size_Mb file_…¹ locat…² recording_date_time file_…³ julian  year gps_e…⁴ time_…⁵ lengt…⁶ sampl…⁷
-   &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;     &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;
- 1 /volumes/bud…    3.51 228-NE… 228-NE  2021-11-21 12:35:49 wav        325  2021 NA            1    19.9   44100
- 2 /volumes/bud…  106.   228-NE… 228-NE  2022-03-01 00:00:00 wav         60  2022 NA            1   600     44100
- 3 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 02:00:00 wav         60  2022 NA            2   180     44100
- 4 /volumes/bud…  106.   228-NE… 228-NE  2022-03-01 08:59:00 wav         60  2022 NA            3   600     44100
- 5 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 10:29:00 wav         60  2022 NA            4   180     44100
- 6 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 12:00:00 wav         60  2022 NA            5   180     44100
- 7 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 15:00:00 wav         60  2022 NA            6   180     44100
- 8 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 18:17:00 wav         60  2022 NA            7   180     44100
- 9 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 20:17:00 wav         60  2022 NA            8   180     44100
-10 /volumes/bud…  106.   228-NE… 228-NE  2022-03-02 00:00:00 wav         61  2022 NA            1   600     44100
-# … with 1,031 more rows, 2 more variables: n_channels &lt;dbl&gt;, unsafe &lt;chr&gt;, and abbreviated variable names
-#   ¹​file_name, ²​location, ³​file_type, ⁴​gps_enabled, ⁵​time_index, ⁶​length_seconds, ⁷​sample_rate</code></pre>
+   file_path     size_Mb file_…¹ locat…² recording_date_time file_…³ julian  year gps_e…⁴
+   &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;  
+ 1 /volumes/bud…    3.51 228-NE… 228-NE  2021-11-21 12:35:49 wav        325  2021 NA     
+ 2 /volumes/bud…  106.   228-NE… 228-NE  2022-03-01 00:00:00 wav         60  2022 NA     
+ 3 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 02:00:00 wav         60  2022 NA     
+ 4 /volumes/bud…  106.   228-NE… 228-NE  2022-03-01 08:59:00 wav         60  2022 NA     
+ 5 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 10:29:00 wav         60  2022 NA     
+ 6 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 12:00:00 wav         60  2022 NA     
+ 7 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 15:00:00 wav         60  2022 NA     
+ 8 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 18:17:00 wav         60  2022 NA     
+ 9 /volumes/bud…   31.8  228-NE… 228-NE  2022-03-01 20:17:00 wav         60  2022 NA     
+10 /volumes/bud…  106.   228-NE… 228-NE  2022-03-02 00:00:00 wav         61  2022 NA     
+# … with 1,031 more rows, 5 more variables: time_index &lt;int&gt;, length_seconds &lt;dbl&gt;,
+#   sample_rate &lt;dbl&gt;, n_channels &lt;dbl&gt;, unsafe &lt;chr&gt;, and abbreviated variable names
+#   ¹​file_name, ²​location, ³​file_type, ⁴​gps_enabled</code></pre>
 <div class="dangerbox">
 <div class="left">
 <p><em>Keep in mind</em><br>
@@ -392,18 +393,18 @@ Using the file name and file path from the output of <code>wt_audio_scanner</cod
 # Groups:   location, blocks [12]
    blocks location recording_date_time
     &lt;dbl&gt; &lt;chr&gt;    &lt;dttm&gt;             
- 1      1 228-NE   2022-04-08 07:25:00
- 2      2 228-NE   2022-04-17 08:33:00
- 3      3 228-NE   2022-05-15 06:05:00
- 4      4 228-NE   2022-05-23 05:52:00
- 5      5 228-NE   2022-06-02 12:00:00
- 6      6 228-NE   2022-06-10 05:35:00
- 7      7 228-NE   2022-06-20 07:04:00
- 8      8 228-NE   2022-07-08 07:16:00
- 9      9 228-NE   2022-04-05 00:00:00
-10     10 228-NE   2022-05-23 00:00:00
-11     11 228-NE   2022-06-17 00:00:00
-12     12 228-NE   2022-07-08 00:00:00</code></pre>
+ 1      1 228-NE   2022-04-05 07:32:00
+ 2      2 228-NE   2022-04-22 08:21:00
+ 3      3 228-NE   2022-05-19 05:58:00
+ 4      4 228-NE   2022-05-28 05:46:00
+ 5      5 228-NE   2022-06-01 07:12:00
+ 6      6 228-NE   2022-06-18 05:34:00
+ 7      7 228-NE   2022-06-24 07:05:00
+ 8      8 228-NE   2022-06-29 07:08:00
+ 9      9 228-NE   2022-04-13 00:00:00
+10     10 228-NE   2022-05-25 00:00:00
+11     11 228-NE   2022-06-27 00:00:00
+12     12 228-NE   2022-07-05 00:00:00</code></pre>
 <p>The Before-After Dose-Response program is another example of a sampling design. Here, we select four recordings near dawn and one recording at dusk for each location between Julian date 140 and 210, for a total of 15 audio minutes. Again, this approach allows users to maximize species diversity while accounting for processing effort.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="2-acoustic-data-pre-processing.html#cb16-1"></a>b &lt;-<span class="st"> </span><span class="kw">wt_audio_scanner</span>(<span class="dt">path =</span> <span class="st">&quot;../2-0-A25&quot;</span>, <span class="dt">file_type =</span> <span class="st">&quot;wav&quot;</span>, <span class="dt">extra_cols =</span> F)</span>
 <span id="cb16-2"><a href="2-acoustic-data-pre-processing.html#cb16-2"></a></span>
@@ -436,16 +437,17 @@ Using the file name and file path from the output of <code>wt_audio_scanner</cod
 <span id="cb16-29"><a href="2-acoustic-data-pre-processing.html#cb16-29"></a>bzz &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(bz1, bz2)</span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="2-acoustic-data-pre-processing.html#cb17-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">head</span>(bzz)</span></code></pre></div>
 <pre><code># A tibble: 5 × 17
-  file_name      locat…¹ recording_date_time file_…² julian  year latit…³ longi…⁴ eleva…⁵ buffe…⁶ isHid…⁷ trueC…⁸
-  &lt;chr&gt;          &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;lgl&gt;  
-1 2-0-A25_20210… 2-0-A25 2021-06-26 21:20:00 wav        177  2021    54.9   -112. NA           NA Visible TRUE   
-2 2-0-A25_20210… 2-0-A25 2021-06-29 05:38:00 wav        180  2021    54.9   -112. NA           NA Visible TRUE   
-3 2-0-A25_20210… 2-0-A25 2021-06-27 05:37:00 wav        178  2021    54.9   -112. NA           NA Visible TRUE   
-4 2-0-A25_20210… 2-0-A25 2021-06-26 05:36:00 wav        177  2021    54.9   -112. NA           NA Visible TRUE   
-5 2-0-A25_20210… 2-0-A25 2021-06-30 05:39:00 wav        181  2021    54.9   -112. NA           NA Visible TRUE   
-# … with 5 more variables: comments &lt;chr&gt;, internal_wildtrax_id &lt;dbl&gt;, internal_update_ts &lt;dttm&gt;, angle &lt;dbl&gt;,
-#   hour &lt;int&gt;, and abbreviated variable names ¹​location, ²​file_type, ³​latitude, ⁴​longitude, ⁵​elevationMeters,
-#   ⁶​bufferRadiusMeters, ⁷​isHidden, ⁸​trueCoordinates</code></pre>
+  file_name      locat…¹ recording_date_time file_…² julian  year latit…³ longi…⁴ eleva…⁵
+  &lt;chr&gt;          &lt;chr&gt;   &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;lgl&gt;  
+1 2-0-A25_20210… 2-0-A25 2021-06-26 21:20:00 wav        177  2021    54.9   -112. NA     
+2 2-0-A25_20210… 2-0-A25 2021-06-29 05:38:00 wav        180  2021    54.9   -112. NA     
+3 2-0-A25_20210… 2-0-A25 2021-06-27 05:37:00 wav        178  2021    54.9   -112. NA     
+4 2-0-A25_20210… 2-0-A25 2021-06-26 05:36:00 wav        177  2021    54.9   -112. NA     
+5 2-0-A25_20210… 2-0-A25 2021-06-30 05:39:00 wav        181  2021    54.9   -112. NA     
+# … with 8 more variables: bufferRadiusMeters &lt;dbl&gt;, isHidden &lt;chr&gt;,
+#   trueCoordinates &lt;lgl&gt;, comments &lt;chr&gt;, internal_wildtrax_id &lt;dbl&gt;,
+#   internal_update_ts &lt;dttm&gt;, angle &lt;dbl&gt;, hour &lt;int&gt;, and abbreviated variable names
+#   ¹​location, ²​file_type, ³​latitude, ⁴​longitude, ⁵​elevationMeters</code></pre>
 </div>
 <div id="geographic-filtering" class="section level3 hasAnchor">
 <h3><span class="header-section-number">2.2.4</span> Geographic filtering<a href="2-acoustic-data-pre-processing.html#geographic-filtering" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -469,20 +471,23 @@ That you need to manage spatial coordinates along with your locations in order t
 <span id="cb19-10"><a href="2-acoustic-data-pre-processing.html#cb19-10"></a><span class="co"># Create a simple features object. Make it valid and set the CRS.</span></span>
 <span id="cb19-11"><a href="2-acoustic-data-pre-processing.html#cb19-11"></a>locsset &lt;-<span class="st"> </span><span class="kw">st_as_sf</span>(locs_next <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(location, latitude, longitude) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">distinct</span>(), <span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>,<span class="st">&quot;latitude&quot;</span>))</span>
 <span id="cb19-12"><a href="2-acoustic-data-pre-processing.html#cb19-12"></a>locsset &lt;-<span class="st"> </span><span class="kw">st_make_valid</span>(locsset)</span>
-<span id="cb19-13"><a href="2-acoustic-data-pre-processing.html#cb19-13"></a>locsset &lt;-<span class="st"> </span><span class="kw">st_set_crs</span>(locsset, <span class="dv">4269</span>)</span>
-<span id="cb19-14"><a href="2-acoustic-data-pre-processing.html#cb19-14"></a></span>
-<span id="cb19-15"><a href="2-acoustic-data-pre-processing.html#cb19-15"></a><span class="co"># Load a shapefile of Terrestrial BCRs of North America</span></span>
-<span id="cb19-16"><a href="2-acoustic-data-pre-processing.html#cb19-16"></a>bcrs &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;../BCR_Terrestrial.shp&quot;</span>)</span>
-<span id="cb19-17"><a href="2-acoustic-data-pre-processing.html#cb19-17"></a></span>
-<span id="cb19-18"><a href="2-acoustic-data-pre-processing.html#cb19-18"></a><span class="co"># Filter to just Alberta</span></span>
-<span id="cb19-19"><a href="2-acoustic-data-pre-processing.html#cb19-19"></a>bcrs &lt;-<span class="st"> </span><span class="kw">st_make_valid</span>(bcrs) <span class="op">%&gt;%</span><span class="st"> </span></span>
-<span id="cb19-20"><a href="2-acoustic-data-pre-processing.html#cb19-20"></a><span class="st">  </span><span class="kw">filter</span>(PROVINCE_S <span class="op">==</span><span class="st"> &quot;ALBERTA&quot;</span>)</span></code></pre></div>
+<span id="cb19-13"><a href="2-acoustic-data-pre-processing.html#cb19-13"></a></span>
+<span id="cb19-14"><a href="2-acoustic-data-pre-processing.html#cb19-14"></a><span class="co"># Set to NAD83</span></span>
+<span id="cb19-15"><a href="2-acoustic-data-pre-processing.html#cb19-15"></a>locsset &lt;-<span class="st"> </span><span class="kw">st_set_crs</span>(locsset, <span class="dv">4269</span>)</span>
+<span id="cb19-16"><a href="2-acoustic-data-pre-processing.html#cb19-16"></a></span>
+<span id="cb19-17"><a href="2-acoustic-data-pre-processing.html#cb19-17"></a><span class="co"># Load a shapefile of Terrestrial BCRs of North America</span></span>
+<span id="cb19-18"><a href="2-acoustic-data-pre-processing.html#cb19-18"></a>bcrs &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;../BCR_Terrestrial.shp&quot;</span>)</span>
+<span id="cb19-19"><a href="2-acoustic-data-pre-processing.html#cb19-19"></a></span>
+<span id="cb19-20"><a href="2-acoustic-data-pre-processing.html#cb19-20"></a><span class="co"># Filter to just Alberta</span></span>
+<span id="cb19-21"><a href="2-acoustic-data-pre-processing.html#cb19-21"></a>bcrs &lt;-<span class="st"> </span><span class="kw">st_make_valid</span>(bcrs)</span>
+<span id="cb19-22"><a href="2-acoustic-data-pre-processing.html#cb19-22"></a>bcrs &lt;-<span class="st"> </span>bcrs <span class="op">%&gt;%</span></span>
+<span id="cb19-23"><a href="2-acoustic-data-pre-processing.html#cb19-23"></a><span class="st">  </span><span class="kw">filter</span>(PROVINCE_S <span class="op">==</span><span class="st"> &quot;ALBERTA&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="2-acoustic-data-pre-processing.html#cb20-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">ggplot</span>(bcrs) <span class="op">+</span></span>
 <span id="cb20-2"><a href="2-acoustic-data-pre-processing.html#cb20-2"></a><span class="op">+</span><span class="st">   </span><span class="kw">coord_sf</span>(<span class="dt">crs =</span> <span class="dv">4269</span>) <span class="op">+</span></span>
 <span id="cb20-3"><a href="2-acoustic-data-pre-processing.html#cb20-3"></a><span class="op">+</span><span class="st">   </span><span class="kw">geom_sf</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> BCRNAME)) <span class="op">+</span></span>
 <span id="cb20-4"><a href="2-acoustic-data-pre-processing.html#cb20-4"></a><span class="op">+</span><span class="st">   </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
 <span id="cb20-5"><a href="2-acoustic-data-pre-processing.html#cb20-5"></a><span class="op">+</span><span class="st">   </span><span class="kw">scale_fill_viridis_d</span>()</span></code></pre></div>
-<p><img src="Environmental-sensor-data-analysis-with-R_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="Environmental-sensor-data-analysis-with-R_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="2-acoustic-data-pre-processing.html#cb21-1"></a><span class="co"># Intersect the locations with the BCRs</span></span>
 <span id="cb21-2"><a href="2-acoustic-data-pre-processing.html#cb21-2"></a>out &lt;-<span class="st"> </span><span class="kw">st_intersection</span>(locsset, bcrs)</span>
 <span id="cb21-3"><a href="2-acoustic-data-pre-processing.html#cb21-3"></a></span>
@@ -493,30 +498,29 @@ That you need to manage spatial coordinates along with your locations in order t
 <span id="cb21-8"><a href="2-acoustic-data-pre-processing.html#cb21-8"></a><span class="st">  </span><span class="kw">group_by</span>(BCRNAME) <span class="op">%&gt;%</span></span>
 <span id="cb21-9"><a href="2-acoustic-data-pre-processing.html#cb21-9"></a><span class="st">  </span><span class="kw">sample_n</span>(<span class="dv">10</span>, <span class="dt">replace =</span> F) <span class="op">%&gt;%</span></span>
 <span id="cb21-10"><a href="2-acoustic-data-pre-processing.html#cb21-10"></a><span class="st">  </span><span class="kw">select</span>(location, BCRNAME)</span></code></pre></div>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="2-acoustic-data-pre-processing.html#cb22-1"></a><span class="op">&gt;</span><span class="st"> </span>locss</span></code></pre></div>
-<pre><code>Simple feature collection with 50 features and 21 fields
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="2-acoustic-data-pre-processing.html#cb22-1"></a><span class="op">&gt;</span><span class="st"> </span>locss <span class="op">%&gt;%</span></span>
+<span id="cb22-2"><a href="2-acoustic-data-pre-processing.html#cb22-2"></a><span class="op">+</span><span class="st">   </span><span class="kw">select</span>(location, BCRNAME) <span class="op">%&gt;%</span></span>
+<span id="cb22-3"><a href="2-acoustic-data-pre-processing.html#cb22-3"></a><span class="op">+</span><span class="st">   </span><span class="kw">arrange</span>(location)</span></code></pre></div>
+<pre><code>Simple feature collection with 50 features and 2 fields
 Geometry type: POINT
 Dimension:     XY
 Bounding box:  xmin: -118.4339 ymin: 49.20788 xmax: -110.1006 ymax: 59.94313
 Geodetic CRS:  NAD83
-# A tibble: 50 × 22
+# A tibble: 50 × 3
 # Groups:   BCRNAME [5]
-   location OBJECTID   BCR BCRNAME                PROVINCE_S COUNTRY REGION WATER    Area Perim…¹ Shape…² Shape…³
- * &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;                  &lt;chr&gt;      &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
- 1 270-NE         48     8 BOREAL SOFTWOOD SHIELD ALBERTA    CANADA  CANADA     3  4.63e9 588862.    7.44   0.709
- 2 182-SE         48     8 BOREAL SOFTWOOD SHIELD ALBERTA    CANADA  CANADA     3  4.63e9 588862.    7.44   0.709
- 3 272-NE         48     8 BOREAL SOFTWOOD SHIELD ALBERTA    CANADA  CANADA     3  4.63e9 588862.    7.44   0.709
- 4 182-NE         48     8 BOREAL SOFTWOOD SHIELD ALBERTA    CANADA  CANADA     3  4.63e9 588862.    7.44   0.709
- 5 242-SE         48     8 BOREAL SOFTWOOD SHIELD ALBERTA    CANADA  CANADA     3  4.63e9 588862.    7.44   0.709
- 6 154-SE         48     8 BOREAL SOFTWOOD SHIELD ALBERTA    CANADA  CANADA     3  4.63e9 588862.    7.44   0.709
- 7 272-NW         48     8 BOREAL SOFTWOOD SHIELD ALBERTA    CANADA  CANADA     3  4.63e9 588862.    7.44   0.709
- 8 272-SW         48     8 BOREAL SOFTWOOD SHIELD ALBERTA    CANADA  CANADA     3  4.63e9 588862.    7.44   0.709
- 9 241-NW         48     8 BOREAL SOFTWOOD SHIELD ALBERTA    CANADA  CANADA     3  4.63e9 588862.    7.44   0.709
-10 270-SW         48     8 BOREAL SOFTWOOD SHIELD ALBERTA    CANADA  CANADA     3  4.63e9 588862.    7.44   0.709
-# … with 40 more rows, 10 more variables: geometry &lt;POINT [°]&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;,
-#   elevationMeters &lt;lgl&gt;, bufferRadiusMeters &lt;dbl&gt;, isHidden &lt;chr&gt;, trueCoordinates &lt;lgl&gt;, comments &lt;chr&gt;,
-#   internal_wildtrax_id &lt;dbl&gt;, internal_update_ts &lt;dttm&gt;, and abbreviated variable names ¹​Perimeter,
-#   ²​Shape_Leng, ³​Shape_Area</code></pre>
+   location BCRNAME                                    geometry
+   &lt;chr&gt;    &lt;chr&gt;                                   &lt;POINT [°]&gt;
+ 1 1-SW     TAIGA SHIELD AND HUDSON PLAINS (-110.2824 59.94313)
+ 2 1034-NE  NORTHERN ROCKIES               (-118.4339 54.11292)
+ 3 1061-NE  PRAIRIE POTHOLES               (-110.3721 53.32069)
+ 4 1080-NW  BOREAL TAIGA PLAINS            (-114.5621 53.66429)
+ 5 1178-NW  BOREAL TAIGA PLAINS             (-114.7144 53.1047)
+ 6 1183-SE  PRAIRIE POTHOLES                (-113.2496 52.9434)
+ 7 1228-SW  NORTHERN ROCKIES               (-118.3432 53.04099)
+ 8 1230-NW  NORTHERN ROCKIES               (-117.8028 52.98812)
+ 9 1329-SW  PRAIRIE POTHOLES               (-114.1482 52.16412)
+10 1401-NE  NORTHERN ROCKIES               (-115.4333 51.72854)
+# … with 40 more rows</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="2-acoustic-data-pre-processing.html#cb24-1"></a><span class="kw">ggplot</span>(bcrs) <span class="op">+</span></span>
 <span id="cb24-2"><a href="2-acoustic-data-pre-processing.html#cb24-2"></a><span class="st">  </span><span class="kw">coord_sf</span>(<span class="dt">crs =</span> <span class="dv">4269</span>) <span class="op">+</span></span>
 <span id="cb24-3"><a href="2-acoustic-data-pre-processing.html#cb24-3"></a><span class="st">  </span><span class="kw">geom_sf</span>(<span class="kw">aes</span>(<span class="dt">fill =</span> BCRNAME)) <span class="op">+</span></span>
@@ -524,13 +528,96 @@ Geodetic CRS:  NAD83
 <span id="cb24-5"><a href="2-acoustic-data-pre-processing.html#cb24-5"></a><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
 <span id="cb24-6"><a href="2-acoustic-data-pre-processing.html#cb24-6"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>) <span class="op">+</span></span>
 <span id="cb24-7"><a href="2-acoustic-data-pre-processing.html#cb24-7"></a><span class="st">  </span><span class="kw">scale_fill_viridis_d</span>()</span></code></pre></div>
-<p><img src="Environmental-sensor-data-analysis-with-R_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="Environmental-sensor-data-analysis-with-R_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<div id="landcover-proportions" class="section level4 hasAnchor">
+<h4><span class="header-section-number">2.2.4.1</span> Landcover proportions<a href="2-acoustic-data-pre-processing.html#landcover-proportions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Ecologists often study the spatial proportions of different landcover types within a given area to understand the distribution and diversity of species, as well as the functioning of ecosystems. Spatial proportions can influence ecosystem processes such as nutrient cycling, water availability, and habitat fragmentation, which can in turn affect biodiversity and ecosystem services. Landcover change, driven by human activities such as land use conversion and climate change, can alter spatial proportions and have significant impacts on ecosystem dynamics and services, highlighting the importance of monitoring and managing landcover patterns.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="2-acoustic-data-pre-processing.html#cb25-1"></a><span class="co"># ABMI 2010 W2W Landcover</span></span>
+<span id="cb25-2"><a href="2-acoustic-data-pre-processing.html#cb25-2"></a>LP &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;.../Lancover_Polygons_2010.shp&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb25-3"><a href="2-acoustic-data-pre-processing.html#cb25-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">LC_name =</span> <span class="kw">case_when</span>(LC_class <span class="op">==</span><span class="st"> </span><span class="dv">20</span> <span class="op">~</span><span class="st"> &quot;Water&quot;</span>,</span>
+<span id="cb25-4"><a href="2-acoustic-data-pre-processing.html#cb25-4"></a>                             LC_class <span class="op">==</span><span class="st"> </span><span class="dv">31</span> <span class="op">~</span><span class="st"> &quot;Snow/Ice&quot;</span>,</span>
+<span id="cb25-5"><a href="2-acoustic-data-pre-processing.html#cb25-5"></a>                             LC_class <span class="op">==</span><span class="st">  </span><span class="dv">32</span> <span class="op">~</span><span class="st"> &quot;Rock/Rubble&quot;</span>,</span>
+<span id="cb25-6"><a href="2-acoustic-data-pre-processing.html#cb25-6"></a>                             LC_class <span class="op">==</span><span class="st"> </span><span class="dv">33</span> <span class="op">~</span><span class="st"> &quot;Exposed Land&quot;</span>,</span>
+<span id="cb25-7"><a href="2-acoustic-data-pre-processing.html#cb25-7"></a>                             LC_class <span class="op">==</span><span class="st"> </span><span class="dv">34</span> <span class="op">~</span><span class="st"> &quot;Developed&quot;</span>,</span>
+<span id="cb25-8"><a href="2-acoustic-data-pre-processing.html#cb25-8"></a>                             LC_class <span class="op">==</span><span class="st"> </span><span class="dv">50</span> <span class="op">~</span><span class="st"> &quot;Shrubland&quot;</span>,</span>
+<span id="cb25-9"><a href="2-acoustic-data-pre-processing.html#cb25-9"></a>                             LC_class <span class="op">==</span><span class="st">  </span><span class="dv">110</span> <span class="op">~</span><span class="st"> &quot;Grassland&quot;</span>,</span>
+<span id="cb25-10"><a href="2-acoustic-data-pre-processing.html#cb25-10"></a>                             LC_class <span class="op">==</span><span class="st"> </span><span class="dv">120</span> <span class="op">~</span><span class="st"> &quot;Agriculture&quot;</span>,</span>
+<span id="cb25-11"><a href="2-acoustic-data-pre-processing.html#cb25-11"></a>                             LC_class <span class="op">==</span><span class="st">  </span><span class="dv">210</span> <span class="op">~</span><span class="st"> &quot;Coniferous Forest&quot;</span>,</span>
+<span id="cb25-12"><a href="2-acoustic-data-pre-processing.html#cb25-12"></a>                             LC_class <span class="op">==</span><span class="st">  </span><span class="dv">220</span> <span class="op">~</span><span class="st"> &quot;Broadleaf Forest&quot;</span>,</span>
+<span id="cb25-13"><a href="2-acoustic-data-pre-processing.html#cb25-13"></a>                             LC_class <span class="op">==</span><span class="st"> </span><span class="dv">230</span> <span class="op">~</span><span class="st"> &quot;Mixed Forest&quot;</span>))</span>
+<span id="cb25-14"><a href="2-acoustic-data-pre-processing.html#cb25-14"></a></span>
+<span id="cb25-15"><a href="2-acoustic-data-pre-processing.html#cb25-15"></a>colours &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Water&quot;</span> =<span class="st"> &quot;#00BFFF&quot;</span>, </span>
+<span id="cb25-16"><a href="2-acoustic-data-pre-processing.html#cb25-16"></a>             <span class="st">&quot;Snow/Ice&quot;</span> =<span class="st"> &quot;#FFFFFF&quot;</span>, </span>
+<span id="cb25-17"><a href="2-acoustic-data-pre-processing.html#cb25-17"></a>             <span class="st">&quot;Rock/Rubble&quot;</span> =<span class="st"> &quot;#D3D3D3&quot;</span>,</span>
+<span id="cb25-18"><a href="2-acoustic-data-pre-processing.html#cb25-18"></a>             <span class="st">&quot;Exposed Land&quot;</span> =<span class="st"> &quot;#8B4513&quot;</span>, </span>
+<span id="cb25-19"><a href="2-acoustic-data-pre-processing.html#cb25-19"></a>             <span class="st">&quot;Developed&quot;</span> =<span class="st"> &quot;#9400D3&quot;</span>,</span>
+<span id="cb25-20"><a href="2-acoustic-data-pre-processing.html#cb25-20"></a>             <span class="st">&quot;Shrubland&quot;</span> =<span class="st"> &quot;#008000&quot;</span>,</span>
+<span id="cb25-21"><a href="2-acoustic-data-pre-processing.html#cb25-21"></a>             <span class="st">&quot;Grassland&quot;</span> =<span class="st"> &quot;#ADFF2F&quot;</span>,</span>
+<span id="cb25-22"><a href="2-acoustic-data-pre-processing.html#cb25-22"></a>             <span class="st">&quot;Agriculture&quot;</span> =<span class="st"> &quot;#FFFF00&quot;</span>,</span>
+<span id="cb25-23"><a href="2-acoustic-data-pre-processing.html#cb25-23"></a>             <span class="st">&quot;Coniferous Forest&quot;</span> =<span class="st"> &quot;#006400&quot;</span>,</span>
+<span id="cb25-24"><a href="2-acoustic-data-pre-processing.html#cb25-24"></a>             <span class="st">&quot;Broadleaf Forest&quot;</span> =<span class="st"> &quot;#32CD32&quot;</span>,</span>
+<span id="cb25-25"><a href="2-acoustic-data-pre-processing.html#cb25-25"></a>             <span class="st">&quot;Mixed Forest&quot;</span> =<span class="st"> &quot;#808000&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="2-acoustic-data-pre-processing.html#cb26-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="co"># Control locations from the Before-After Dose-Response Landscape Unit #2</span></span>
+<span id="cb26-2"><a href="2-acoustic-data-pre-processing.html#cb26-2"></a><span class="er">&gt;</span><span class="st"> </span>badr2 &lt;-<span class="st"> </span>locs <span class="op">%&gt;%</span></span>
+<span id="cb26-3"><a href="2-acoustic-data-pre-processing.html#cb26-3"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(<span class="kw">grepl</span>(<span class="st">&#39;^2-0&#39;</span>,location))</span>
+<span id="cb26-4"><a href="2-acoustic-data-pre-processing.html#cb26-4"></a><span class="op">&gt;</span><span class="st"> </span></span>
+<span id="cb26-5"><a href="2-acoustic-data-pre-processing.html#cb26-5"></a><span class="er">&gt;</span><span class="st"> </span><span class="co"># Big Grid 9 (Touchwood)</span></span>
+<span id="cb26-6"><a href="2-acoustic-data-pre-processing.html#cb26-6"></a><span class="er">&gt;</span><span class="st"> </span>bu_locs &lt;-<span class="st"> </span>bu_locs <span class="op">%&gt;%</span></span>
+<span id="cb26-7"><a href="2-acoustic-data-pre-processing.html#cb26-7"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(<span class="kw">grepl</span>(<span class="st">&#39;^BG-9&#39;</span>, location))</span>
+<span id="cb26-8"><a href="2-acoustic-data-pre-processing.html#cb26-8"></a><span class="op">&gt;</span><span class="st"> </span></span>
+<span id="cb26-9"><a href="2-acoustic-data-pre-processing.html#cb26-9"></a><span class="er">&gt;</span><span class="st"> </span>bu_badr &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(badr2, bu_locs) <span class="op">%&gt;%</span></span>
+<span id="cb26-10"><a href="2-acoustic-data-pre-processing.html#cb26-10"></a><span class="op">+</span><span class="st">   </span><span class="kw">mutate</span>(<span class="dt">Project =</span> <span class="kw">case_when</span>(<span class="kw">grepl</span>(<span class="st">&#39;^BG-&#39;</span>,location) <span class="op">~</span><span class="st"> &quot;Big Grids&quot;</span>,<span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;Before-After Dose Response&quot;</span>))</span>
+<span id="cb26-11"><a href="2-acoustic-data-pre-processing.html#cb26-11"></a><span class="op">&gt;</span><span class="st"> </span></span>
+<span id="cb26-12"><a href="2-acoustic-data-pre-processing.html#cb26-12"></a><span class="er">&gt;</span><span class="st"> </span>bu_badr_map &lt;-<span class="st"> </span><span class="kw">st_as_sf</span>(bu_badr, <span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>,<span class="st">&quot;latitude&quot;</span>)) </span>
+<span id="cb26-13"><a href="2-acoustic-data-pre-processing.html#cb26-13"></a><span class="op">&gt;</span><span class="st"> </span>bu_badr_map &lt;-<span class="st"> </span><span class="kw">st_make_valid</span>(bu_badr_map)</span>
+<span id="cb26-14"><a href="2-acoustic-data-pre-processing.html#cb26-14"></a><span class="op">&gt;</span><span class="st"> </span>bu_badr_map &lt;-<span class="st"> </span><span class="kw">st_set_crs</span>(bu_badr_map, <span class="dv">4269</span>)</span>
+<span id="cb26-15"><a href="2-acoustic-data-pre-processing.html#cb26-15"></a><span class="op">&gt;</span><span class="st"> </span>bu_badr_map &lt;-<span class="st"> </span><span class="kw">st_transform</span>(bu_badr_map, <span class="dv">3400</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="2-acoustic-data-pre-processing.html#cb27-1"></a><span class="op">&gt;</span><span class="st"> </span>onebadr &lt;-<span class="st"> </span>bu_badr_map <span class="op">%&gt;%</span></span>
+<span id="cb27-2"><a href="2-acoustic-data-pre-processing.html#cb27-2"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(<span class="kw">grepl</span>(<span class="st">&#39;^BG-9&#39;</span>,location))</span>
+<span id="cb27-3"><a href="2-acoustic-data-pre-processing.html#cb27-3"></a><span class="op">&gt;</span><span class="st"> </span></span>
+<span id="cb27-4"><a href="2-acoustic-data-pre-processing.html#cb27-4"></a><span class="er">&gt;</span><span class="st"> </span>onebadr_buff &lt;-<span class="st"> </span><span class="kw">st_buffer</span>(onebadr, <span class="dv">150</span>)</span>
+<span id="cb27-5"><a href="2-acoustic-data-pre-processing.html#cb27-5"></a><span class="op">&gt;</span><span class="st"> </span>onebadr_buff &lt;-<span class="st"> </span><span class="kw">st_transform</span>(onebadr_buff, <span class="dv">3400</span>)</span>
+<span id="cb27-6"><a href="2-acoustic-data-pre-processing.html#cb27-6"></a><span class="op">&gt;</span><span class="st"> </span></span>
+<span id="cb27-7"><a href="2-acoustic-data-pre-processing.html#cb27-7"></a><span class="er">&gt;</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb27-8"><a href="2-acoustic-data-pre-processing.html#cb27-8"></a><span class="op">+</span><span class="st">   </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> <span class="kw">st_crop</span>(LPP_c, <span class="dt">xmin =</span> <span class="dv">723300</span>, <span class="dt">xmax =</span> <span class="dv">729250</span>, <span class="dt">ymin =</span> <span class="dv">6076950</span>, <span class="dt">ymax =</span> <span class="dv">6083050</span>), <span class="kw">aes</span>(<span class="dt">fill=</span>LC_name)) <span class="op">+</span></span>
+<span id="cb27-9"><a href="2-acoustic-data-pre-processing.html#cb27-9"></a><span class="op">+</span><span class="st">   </span><span class="kw">geom_sf</span>(onebadr_buff, <span class="dt">mapping =</span> <span class="kw">aes</span>(), <span class="dt">fill =</span> <span class="ot">NA</span>, <span class="dt">colour=</span><span class="st">&quot;white&quot;</span>) <span class="op">+</span></span>
+<span id="cb27-10"><a href="2-acoustic-data-pre-processing.html#cb27-10"></a><span class="op">+</span><span class="st">   </span><span class="kw">geom_sf</span>(onebadr, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">colour =</span> Project)) <span class="op">+</span></span>
+<span id="cb27-11"><a href="2-acoustic-data-pre-processing.html#cb27-11"></a><span class="op">+</span><span class="st">   </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
+<span id="cb27-12"><a href="2-acoustic-data-pre-processing.html#cb27-12"></a><span class="op">+</span><span class="st">   </span><span class="kw">scale_colour_viridis_d</span>() <span class="op">+</span></span>
+<span id="cb27-13"><a href="2-acoustic-data-pre-processing.html#cb27-13"></a><span class="op">+</span><span class="st">   </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> colours)</span></code></pre></div>
+<p><img src="Environmental-sensor-data-analysis-with-R_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="2-acoustic-data-pre-processing.html#cb28-1"></a><span class="op">&gt;</span><span class="st"> </span>inp &lt;-<span class="st"> </span><span class="kw">st_intersection</span>(LPP_c, onebadr_buff) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb28-2"><a href="2-acoustic-data-pre-processing.html#cb28-2"></a><span class="op">+</span><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">intersect_area =</span> <span class="kw">st_area</span>(.)) <span class="op">%&gt;%</span><span class="st">   </span><span class="co"># create new column with shape area</span></span>
+<span id="cb28-3"><a href="2-acoustic-data-pre-processing.html#cb28-3"></a><span class="op">+</span><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">select</span>(location, LC_name, intersect_area) <span class="op">%&gt;%</span><span class="st">   </span><span class="co"># only select columns needed to merge</span></span>
+<span id="cb28-4"><a href="2-acoustic-data-pre-processing.html#cb28-4"></a><span class="op">+</span><span class="st">    </span><span class="kw">st_drop_geometry</span>() <span class="op">%&gt;%</span></span>
+<span id="cb28-5"><a href="2-acoustic-data-pre-processing.html#cb28-5"></a><span class="op">+</span><span class="st">    </span><span class="kw">group_by</span>(location, LC_name) <span class="op">%&gt;%</span></span>
+<span id="cb28-6"><a href="2-acoustic-data-pre-processing.html#cb28-6"></a><span class="op">+</span><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">intersect_area =</span> <span class="kw">sum</span>(intersect_area)) <span class="op">%&gt;%</span></span>
+<span id="cb28-7"><a href="2-acoustic-data-pre-processing.html#cb28-7"></a><span class="op">+</span><span class="st">    </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
+<span id="cb28-8"><a href="2-acoustic-data-pre-processing.html#cb28-8"></a><span class="op">+</span><span class="st">    </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> LC_name, <span class="dt">values_from =</span> intersect_area) <span class="op">%&gt;%</span></span>
+<span id="cb28-9"><a href="2-acoustic-data-pre-processing.html#cb28-9"></a><span class="op">+</span><span class="st">    </span><span class="kw">mutate_all</span>(<span class="op">~</span><span class="kw">replace</span>(., <span class="kw">is.na</span>(.), <span class="dv">0</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb28-10"><a href="2-acoustic-data-pre-processing.html#cb28-10"></a><span class="op">+</span><span class="st">    </span><span class="kw">mutate</span>(<span class="kw">across</span>(<span class="op">-</span>location, <span class="op">~</span><span class="kw">as.numeric</span>(.x))) <span class="op">%&gt;%</span></span>
+<span id="cb28-11"><a href="2-acoustic-data-pre-processing.html#cb28-11"></a><span class="op">+</span><span class="st">    </span><span class="kw">rowwise</span>() <span class="op">%&gt;%</span></span>
+<span id="cb28-12"><a href="2-acoustic-data-pre-processing.html#cb28-12"></a><span class="op">+</span><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">total =</span> <span class="kw">sum</span>(<span class="kw">c_across</span>(<span class="op">-</span>location))) <span class="op">%&gt;%</span></span>
+<span id="cb28-13"><a href="2-acoustic-data-pre-processing.html#cb28-13"></a><span class="op">+</span><span class="st">    </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span></span>
+<span id="cb28-14"><a href="2-acoustic-data-pre-processing.html#cb28-14"></a><span class="op">+</span><span class="st">    </span><span class="kw">mutate</span>(<span class="kw">across</span>(<span class="op">-</span><span class="kw">c</span>(location,total), <span class="op">~</span><span class="st"> </span>.x <span class="op">/</span><span class="st"> </span>total)) <span class="op">%&gt;%</span></span>
+<span id="cb28-15"><a href="2-acoustic-data-pre-processing.html#cb28-15"></a><span class="op">+</span><span class="st">    </span><span class="kw">select</span>(<span class="op">-</span>total)</span>
+<span id="cb28-16"><a href="2-acoustic-data-pre-processing.html#cb28-16"></a><span class="op">&gt;</span><span class="st"> </span></span>
+<span id="cb28-17"><a href="2-acoustic-data-pre-processing.html#cb28-17"></a><span class="er">&gt;</span><span class="st"> </span>inp</span></code></pre></div>
+<pre><code># A tibble: 101 × 7
+   location `Broadleaf Forest` `Coniferous Forest` `Mixed Forest` Develo…¹  Water Shrub…²
+   &lt;chr&gt;                 &lt;dbl&gt;               &lt;dbl&gt;          &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+ 1 BG-9-1               0.0128              0.525          0.463     0     0            0
+ 2 BG-9-10              0.681               0              0.319     0     0            0
+ 3 BG-9-100             0                   0.0172         0         0.965 0.0176       0
+ 4 BG-9-101             0                   0.584          0         0.416 0            0
+ 5 BG-9-11              0.540               0.207          0         0     0.253        0
+ 6 BG-9-12              0                   0              1         0     0            0
+ 7 BG-9-13              0.553               0              0.0528    0     0.394        0
+ 8 BG-9-14              0.978               0              0.0216    0     0            0
+ 9 BG-9-15              0.213               0              0.787     0     0            0
+10 BG-9-16              0.475               0              0         0     0.525        0
+# … with 91 more rows, and abbreviated variable names ¹​Developed, ²​Shrubland</code></pre>
 </div>
-<div id="collecting-files-for-upload-to-wildtrax" class="section level3 hasAnchor">
-<h3><span class="header-section-number">2.2.5</span> Collecting files for upload to WildTrax<a href="2-acoustic-data-pre-processing.html#collecting-files-for-upload-to-wildtrax" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>To organize the process of uploading files to WildTrax smoother, it’s recommended to collect all recordings into a single folder, regardless of where they are stored. Whether you’ve saved them on a server, hard drive, or local drive, this approach can help streamline the uploading process and save you time.</p>
-<p>Depending on the operating system you’re using, there are two common ways to handle your files: linking or copying. Linking involves creating a shortcut to the original file, while copying creates a new, duplicate file. Both options can be beneficial, especially if you have files stored in complex, nested structures.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="2-acoustic-data-pre-processing.html#cb25-1"></a></span></code></pre></div>
 </div>
 </div>
 <div id="other-convenience-functions-distance-between-locations" class="section level2 hasAnchor">
@@ -543,32 +630,20 @@ You can go to Manage &gt; Download Locations in either a project or an organizat
 <img src="" /></p>
 </div>
 </div>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="2-acoustic-data-pre-processing.html#cb26-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="co"># Control locations from the Before-After Dose-Response Landscape Unit #2</span></span>
-<span id="cb26-2"><a href="2-acoustic-data-pre-processing.html#cb26-2"></a><span class="er">&gt;</span><span class="st"> </span>badr2 &lt;-<span class="st"> </span>locs <span class="op">%&gt;%</span></span>
-<span id="cb26-3"><a href="2-acoustic-data-pre-processing.html#cb26-3"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(<span class="kw">grepl</span>(<span class="st">&#39;^2-0&#39;</span>,location))</span>
-<span id="cb26-4"><a href="2-acoustic-data-pre-processing.html#cb26-4"></a><span class="op">&gt;</span><span class="st"> </span></span>
-<span id="cb26-5"><a href="2-acoustic-data-pre-processing.html#cb26-5"></a><span class="er">&gt;</span><span class="st"> </span><span class="co"># Big Grid 9 (Touchoowd)</span></span>
-<span id="cb26-6"><a href="2-acoustic-data-pre-processing.html#cb26-6"></a><span class="er">&gt;</span><span class="st"> </span>bu_locs &lt;-<span class="st"> </span>bu_locs <span class="op">%&gt;%</span></span>
-<span id="cb26-7"><a href="2-acoustic-data-pre-processing.html#cb26-7"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(<span class="kw">grepl</span>(<span class="st">&#39;^BG-9&#39;</span>, location))</span>
-<span id="cb26-8"><a href="2-acoustic-data-pre-processing.html#cb26-8"></a><span class="op">&gt;</span><span class="st"> </span></span>
-<span id="cb26-9"><a href="2-acoustic-data-pre-processing.html#cb26-9"></a><span class="er">&gt;</span><span class="st"> </span>bu_badr &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(badr2, bu_locs) <span class="op">%&gt;%</span></span>
-<span id="cb26-10"><a href="2-acoustic-data-pre-processing.html#cb26-10"></a><span class="op">+</span><span class="st">   </span><span class="kw">mutate</span>(<span class="dt">Project =</span> <span class="kw">case_when</span>(<span class="kw">grepl</span>(<span class="st">&#39;^BG-&#39;</span>,location) <span class="op">~</span><span class="st"> &quot;Big Grids&quot;</span>,<span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;Before-After Dose Response&quot;</span>))</span>
-<span id="cb26-11"><a href="2-acoustic-data-pre-processing.html#cb26-11"></a><span class="op">&gt;</span><span class="st"> </span></span>
-<span id="cb26-12"><a href="2-acoustic-data-pre-processing.html#cb26-12"></a><span class="er">&gt;</span><span class="st"> </span>bu_badr_map &lt;-<span class="st"> </span><span class="kw">st_as_sf</span>(bu_badr, <span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>,<span class="st">&quot;latitude&quot;</span>)) </span>
-<span id="cb26-13"><a href="2-acoustic-data-pre-processing.html#cb26-13"></a><span class="op">&gt;</span><span class="st"> </span>bu_badr_map &lt;-<span class="st"> </span><span class="kw">st_make_valid</span>(bu_badr_map)</span>
-<span id="cb26-14"><a href="2-acoustic-data-pre-processing.html#cb26-14"></a><span class="op">&gt;</span><span class="st"> </span>bu_badr_map &lt;-<span class="st"> </span><span class="kw">st_set_crs</span>(bu_badr_map, <span class="dv">4269</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="2-acoustic-data-pre-processing.html#cb27-1"></a><span class="kw">ggplot</span>() <span class="op">+</span></span>
-<span id="cb27-2"><a href="2-acoustic-data-pre-processing.html#cb27-2"></a><span class="st">  </span><span class="kw">coord_sf</span>(<span class="dt">crs =</span> <span class="dv">4269</span>) <span class="op">+</span></span>
-<span id="cb27-3"><a href="2-acoustic-data-pre-processing.html#cb27-3"></a><span class="st">  </span><span class="kw">geom_sf</span>(bu_badr_map, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">colour =</span> Project)) <span class="op">+</span></span>
-<span id="cb27-4"><a href="2-acoustic-data-pre-processing.html#cb27-4"></a><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
-<span id="cb27-5"><a href="2-acoustic-data-pre-processing.html#cb27-5"></a><span class="st">  </span><span class="kw">scale_colour_viridis_d</span>()</span></code></pre></div>
-<p><img src="Environmental-sensor-data-analysis-with-R_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="2-acoustic-data-pre-processing.html#cb28-1"></a>distances &lt;-<span class="st"> </span><span class="kw">wt_location_distances</span>(<span class="dt">input_from_tibble =</span> bu_badr)</span></code></pre></div>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="2-acoustic-data-pre-processing.html#cb29-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="co"># Filter points less then 100 meters apart</span></span>
-<span id="cb29-2"><a href="2-acoustic-data-pre-processing.html#cb29-2"></a><span class="er">&gt;</span><span class="st"> </span>distances <span class="op">%&gt;%</span></span>
-<span id="cb29-3"><a href="2-acoustic-data-pre-processing.html#cb29-3"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(distance <span class="op">&lt;</span><span class="st"> </span><span class="dv">100</span>) <span class="op">%&gt;%</span></span>
-<span id="cb29-4"><a href="2-acoustic-data-pre-processing.html#cb29-4"></a><span class="op">+</span><span class="st">   </span><span class="kw">arrange</span>(distance) <span class="op">%&gt;%</span></span>
-<span id="cb29-5"><a href="2-acoustic-data-pre-processing.html#cb29-5"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(location_from <span class="op">&lt;</span><span class="st"> </span>distance_to)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="2-acoustic-data-pre-processing.html#cb30-1"></a><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb30-2"><a href="2-acoustic-data-pre-processing.html#cb30-2"></a><span class="st">  </span><span class="kw">geom_sf</span>(bu_badr_map, <span class="dt">mapping =</span> <span class="kw">aes</span>(<span class="dt">colour =</span> Project)) <span class="op">+</span></span>
+<span id="cb30-3"><a href="2-acoustic-data-pre-processing.html#cb30-3"></a><span class="st">  </span><span class="kw">coord_sf</span>(<span class="dt">crs =</span> <span class="dv">4269</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb30-4"><a href="2-acoustic-data-pre-processing.html#cb30-4"></a><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
+<span id="cb30-5"><a href="2-acoustic-data-pre-processing.html#cb30-5"></a><span class="st">  </span><span class="kw">scale_colour_viridis_d</span>() <span class="op">+</span></span>
+<span id="cb30-6"><a href="2-acoustic-data-pre-processing.html#cb30-6"></a><span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> colours) <span class="op">+</span></span>
+<span id="cb30-7"><a href="2-acoustic-data-pre-processing.html#cb30-7"></a><span class="st">  </span><span class="kw">guides</span>(<span class="dt">shape =</span> <span class="kw">guide_legend</span>(<span class="dt">override.aes =</span> <span class="kw">list</span>(<span class="dt">alpha =</span> <span class="fl">0.2</span>)))</span></code></pre></div>
+<p><img src="Environmental-sensor-data-analysis-with-R_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="2-acoustic-data-pre-processing.html#cb31-1"></a>distances &lt;-<span class="st"> </span><span class="kw">wt_location_distances</span>(<span class="dt">input_from_tibble =</span> bu_badr)</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="2-acoustic-data-pre-processing.html#cb32-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="co"># Filter points less then 100 meters apart</span></span>
+<span id="cb32-2"><a href="2-acoustic-data-pre-processing.html#cb32-2"></a><span class="er">&gt;</span><span class="st"> </span>distances <span class="op">%&gt;%</span></span>
+<span id="cb32-3"><a href="2-acoustic-data-pre-processing.html#cb32-3"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(distance <span class="op">&lt;</span><span class="st"> </span><span class="dv">100</span>) <span class="op">%&gt;%</span></span>
+<span id="cb32-4"><a href="2-acoustic-data-pre-processing.html#cb32-4"></a><span class="op">+</span><span class="st">   </span><span class="kw">arrange</span>(distance) <span class="op">%&gt;%</span></span>
+<span id="cb32-5"><a href="2-acoustic-data-pre-processing.html#cb32-5"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(location_from <span class="op">&lt;</span><span class="st"> </span>distance_to)</span></code></pre></div>
 <pre><code># A tibble: 13 × 3
    location_from distance_to distance
    &lt;chr&gt;         &lt;chr&gt;          &lt;dbl&gt;
@@ -585,6 +660,7 @@ You can go to Manage &gt; Download Locations in either a project or an organizat
 11 2-0-MA49A     2-0-MA49B      46.2 
 12 2-0-A30       BG-9-83        74.0 
 13 2-0-A85       BG-9-97        93.3 </code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="2-acoustic-data-pre-processing.html#cb34-1"></a></span></code></pre></div>
 <div id="error-handling-and-file-standardization" class="section level3 hasAnchor">
 <h3><span class="header-section-number">2.3.1</span> Error handling and file standardization<a href="2-acoustic-data-pre-processing.html#error-handling-and-file-standardization" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><code>wt_audio_scanner</code> will continue to support new file formats and file types. Error handling techniques are being put in place to identify and provide clear messages to users to ensure their data is standard to the WildTrax system before upload. <a href="2-acoustic-data-pre-processing.html#acoustic-data-management-basics">File standardization</a> helps ensure consistency and prevent errors when transferring data across different systems and applications. With these measures, wt_audio_scanner can provide a reliable and versatile tool for working with various audio file formats. Development requests can be submitted as issues to the <a href="https://github.com/ABbiodiversity/wildRtrax/issues">GitHub repository</a>.</p>
@@ -603,40 +679,83 @@ It’s important to familiarize yourself with the <strong>AP</strong> software b
 </div>
 </div>
 <p><code>wildRtrax</code> utilizes the results of the <strong>AnalysisPrograms</strong> software which generates the csv, json and png files associated to the results, and generates tidy versions of the data that can be joined to the media in order to select recordings based on index values and patterns. Let us demonstrate some different examples while introducing the <code>wt_run_ap</code> and <code>wt_glean_ap</code> functions.</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="2-acoustic-data-pre-processing.html#cb31-1"></a><span class="kw">wt_run_ap</span>()</span></code></pre></div>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="2-acoustic-data-pre-processing.html#cb32-1"></a><span class="kw">wt_glean_ap</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="2-acoustic-data-pre-processing.html#cb35-1"></a><span class="kw">wt_run_ap</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="2-acoustic-data-pre-processing.html#cb36-1"></a><span class="kw">wt_glean_ap</span>()</span></code></pre></div>
 <div id="abiotic-geophonic-and-anthropophonic-signal-detection" class="section level3 hasAnchor">
 <h3><span class="header-section-number">2.4.1</span> Abiotic, geophonic and anthropophonic signal detection<a href="2-acoustic-data-pre-processing.html#abiotic-geophonic-and-anthropophonic-signal-detection" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Recorder failure, damaged microphones, or recorders that are placed in an environment where prevailing winds muffle the sounds the ARU can hear, such as in alpine environments, can limit the audio quality in order to process data in an effective way. ~12% of the acoustic data collected by the ABMI between 2015 - 2019 (~12TB / 100TB) had a relatively high geophonic index or a malfunction or failure. Due to the large volume of data that is handled, it is no longer efficient to do these processes manually and these steps should be automated as much as possible. The goals are to find efficient ways to screen and filter audio data with high geophony or to flag and omit recordings that will not be used for processing.</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="2-acoustic-data-pre-processing.html#cb33-1"></a><span class="co"># Output the results</span></span>
-<span id="cb33-2"><a href="2-acoustic-data-pre-processing.html#cb33-2"></a>aqd &lt;-<span class="st"> </span><span class="kw">wt_glean_ap</span>(<span class="dt">x =</span> f2, <span class="dt">input_dir =</span> <span class="st">&quot;../data&quot;</span>, <span class="dt">purpose =</span> <span class="st">&quot;abiotic&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="2-acoustic-data-pre-processing.html#cb37-1"></a><span class="co"># Output the results</span></span>
+<span id="cb37-2"><a href="2-acoustic-data-pre-processing.html#cb37-2"></a>aqd &lt;-<span class="st"> </span><span class="kw">wt_glean_ap</span>(<span class="dt">x =</span> f2, <span class="dt">input_dir =</span> <span class="st">&quot;../data&quot;</span>, <span class="dt">purpose =</span> <span class="st">&quot;abiotic&quot;</span>)</span></code></pre></div>
 <p>In contrast, noise pollution is a pervasive problem in modern society, with detrimental effects on human health and well-being, wildlife, and ecosystems. There is growing interest in the use of acoustic indices for noise mapping applications. This approach has several advantages over traditional noise mapping methods.</p>
 <p>Using acoustic sensors at 310 spatial locations in 2021 across a gradient of human footprint. We recorded sounds for 4-5 days at each location between May and July calculated a range of acoustic indices. We also collected human observations of noise levels (ranked 0-3) and other noise sources (wind, rain, other noise and audio quality) using a standardized survey. We compared the acoustic indices to the human observations to determine the accuracy of the noise map generated from the indices.</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="2-acoustic-data-pre-processing.html#cb34-1"></a>map_badr &lt;-<span class="st"> </span><span class="kw">wt_glean</span>(<span class="dt">x =</span> badr, <span class="dt">input_dir =</span> <span class="st">&quot;../data&quot;</span>, <span class="dt">purpose =</span> <span class="st">&quot;abiotic&quot;</span>)</span>
-<span id="cb34-2"><a href="2-acoustic-data-pre-processing.html#cb34-2"></a></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="2-acoustic-data-pre-processing.html#cb38-1"></a>map_badr &lt;-<span class="st"> </span><span class="kw">wt_glean</span>(<span class="dt">x =</span> badr, <span class="dt">input_dir =</span> <span class="st">&quot;../data&quot;</span>, <span class="dt">purpose =</span> <span class="st">&quot;abiotic&quot;</span>)</span>
+<span id="cb38-2"><a href="2-acoustic-data-pre-processing.html#cb38-2"></a></span></code></pre></div>
 </div>
 <div id="biophonic-signal-detection" class="section level3 hasAnchor">
 <h3><span class="header-section-number">2.4.2</span> Biophonic signal detection<a href="2-acoustic-data-pre-processing.html#biophonic-signal-detection" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>We can also look at the entire seasonal phenology of an ABMI Ecosystem Health site</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="2-acoustic-data-pre-processing.html#cb35-1"></a><span class="op">&gt;</span><span class="st"> </span>boreal_example &lt;-<span class="st"> </span><span class="kw">wt_glean_ap</span>(<span class="dt">x =</span> boreal_site, <span class="dt">input_dir =</span> <span class="st">&quot;../data&quot;</span>)</span>
-<span id="cb35-2"><a href="2-acoustic-data-pre-processing.html#cb35-2"></a><span class="op">&gt;</span><span class="st"> </span></span>
-<span id="cb35-3"><a href="2-acoustic-data-pre-processing.html#cb35-3"></a><span class="er">&gt;</span><span class="st"> </span>boreal_example[[<span class="dv">2</span>]]</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="2-acoustic-data-pre-processing.html#cb39-1"></a><span class="op">&gt;</span><span class="st"> </span>boreal_example &lt;-<span class="st"> </span><span class="kw">wt_glean_ap</span>(<span class="dt">x =</span> boreal_site, <span class="dt">input_dir =</span> <span class="st">&quot;../data&quot;</span>)</span>
+<span id="cb39-2"><a href="2-acoustic-data-pre-processing.html#cb39-2"></a><span class="op">&gt;</span><span class="st"> </span></span>
+<span id="cb39-3"><a href="2-acoustic-data-pre-processing.html#cb39-3"></a><span class="er">&gt;</span><span class="st"> </span>boreal_example[[<span class="dv">2</span>]]</span></code></pre></div>
 <p><img src="assets/280-NE.png" />
 The great part about having a list of the <code>.png</code> files is that you can easily manipulate and generate new LDFCs with other attributes.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="2-acoustic-data-pre-processing.html#cb36-1"></a><span class="op">&gt;</span><span class="st"> </span>boreal_example[[<span class="dv">2</span>]] <span class="op">%&gt;%</span></span>
-<span id="cb36-2"><a href="2-acoustic-data-pre-processing.html#cb36-2"></a><span class="op">+</span><span class="st">   </span><span class="kw">mutate</span>(<span class="dt">hour =</span> lubridate<span class="op">::</span><span class="kw">hour</span>(recording_date_time)) <span class="op">%&gt;%</span></span>
-<span id="cb36-3"><a href="2-acoustic-data-pre-processing.html#cb36-3"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(hour <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Look at only midnight LDFCs and acoustic index values</span></span>
-<span id="cb36-4"><a href="2-acoustic-data-pre-processing.html#cb36-4"></a><span class="op">+</span><span class="st">   </span><span class="kw">map_dfr</span>(<span class="op">~</span><span class="kw">lapply</span>(.))</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="2-acoustic-data-pre-processing.html#cb40-1"></a><span class="op">&gt;</span><span class="st"> </span>boreal_example[[<span class="dv">2</span>]] <span class="op">%&gt;%</span></span>
+<span id="cb40-2"><a href="2-acoustic-data-pre-processing.html#cb40-2"></a><span class="op">+</span><span class="st">   </span><span class="kw">mutate</span>(<span class="dt">hour =</span> lubridate<span class="op">::</span><span class="kw">hour</span>(recording_date_time)) <span class="op">%&gt;%</span></span>
+<span id="cb40-3"><a href="2-acoustic-data-pre-processing.html#cb40-3"></a><span class="op">+</span><span class="st">   </span><span class="kw">filter</span>(hour <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="co"># Look at only midnight LDFCs and acoustic index values</span></span>
+<span id="cb40-4"><a href="2-acoustic-data-pre-processing.html#cb40-4"></a><span class="op">+</span><span class="st">   </span><span class="kw">map_dfr</span>(<span class="op">~</span><span class="kw">lapply</span>(.))</span></code></pre></div>
 <p>While acoustic indices are good at detecting large scale patterns, it is more difficult to detect rare and elusive signals, especially those that exceed the signal-to-noise threshold to capture the signal. It is important to use this along with spectral validation in WildTrax to determine the source of the environmental noise.</p>
 </div>
 </div>
 <div id="linking-acoustic-data-to-wildtrax" class="section level2 hasAnchor">
 <h2><span class="header-section-number">2.5</span> Linking acoustic data to WildTrax<a href="2-acoustic-data-pre-processing.html#linking-acoustic-data-to-wildtrax" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="collecting-files-for-upload-to-wildtrax" class="section level3 hasAnchor">
+<h3><span class="header-section-number">2.5.1</span> Collecting files for upload to WildTrax<a href="2-acoustic-data-pre-processing.html#collecting-files-for-upload-to-wildtrax" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>To organize the process of uploading files to WildTrax smoother, it’s recommended to collect all recordings into a single folder, regardless of where they are stored. Whether you’ve saved them on a server, hard drive, or local drive, this approach can help streamline the uploading process and save you time.</p>
+<p>Depending on the operating system you’re using, there are two common ways to handle your files: linking or copying. Linking involves creating a shortcut to the original file, while copying creates a new, duplicate file. Both options can be beneficial, especially if you have files stored in complex, nested structures.</p>
+</div>
+<div id="recognizer-results-transforming-hits-to-tags" class="section level3 hasAnchor">
+<h3><span class="header-section-number">2.5.2</span> Recognizer results: transforming hits to tags<a href="2-acoustic-data-pre-processing.html#recognizer-results-transforming-hits-to-tags" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Wildlife Acoustics offers advanced tools for analyzing wildlife vocalizations. Two of their most popular programs are Songscope and Kaleidoscope that allows users to visualize and identify animal songs and calls and also create and run automated classifiers. The output files from these programs can be transformed into WildTrax tags to be uploaded for verification purposes. This is also the primary mechanism that ultrasonic data makes its way into the system if it is being analyzed in Kaleidoscope.</p>
-<div id="sonscope-results" class="section level3 hasAnchor">
-<h3><span class="header-section-number">2.5.1</span> Sonscope results<a href="2-acoustic-data-pre-processing.html#sonscope-results" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The function <code>wt_songscope_tags</code> reformats the output obtained from a wildlife acoustics songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="2-acoustic-data-pre-processing.html#cb37-1"></a><span class="op">&gt;</span><span class="st"> </span><span class="kw">wt_songscope_tags</span>()</span></code></pre></div>
+<div id="sonscope-results" class="section level4 hasAnchor">
+<h4><span class="header-section-number">2.5.2.1</span> Sonscope results<a href="2-acoustic-data-pre-processing.html#sonscope-results" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The function <code>wt_songscope_tags</code> reformats the output obtained from a Wildlife Acoustics Songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="2-acoustic-data-pre-processing.html#cb41-1"></a>  </span>
+<span id="cb41-2"><a href="2-acoustic-data-pre-processing.html#cb41-2"></a><span class="kw">wt_songscope_tags</span>(<span class="dt">input =</span> <span class="st">&quot;.../ABMI-0585_CONIPeent3.4_20_50_results.txt&quot;</span>,</span>
+<span id="cb41-3"><a href="2-acoustic-data-pre-processing.html#cb41-3"></a>                  <span class="dt">output =</span> <span class="st">&quot;env&quot;</span>, <span class="co"># Choosing env will save the output as a environment object called &quot;songscope_tags&quot;</span></span>
+<span id="cb41-4"><a href="2-acoustic-data-pre-processing.html#cb41-4"></a>                  <span class="dt">species_code =</span> <span class="st">&quot;CONI&quot;</span>,</span>
+<span id="cb41-5"><a href="2-acoustic-data-pre-processing.html#cb41-5"></a>                  <span class="dt">method =</span> <span class="st">&quot;1SPT&quot;</span>,</span>
+<span id="cb41-6"><a href="2-acoustic-data-pre-processing.html#cb41-6"></a>                  <span class="dt">score_filter =</span> <span class="dv">60</span>,</span>
+<span id="cb41-7"><a href="2-acoustic-data-pre-processing.html#cb41-7"></a>                  <span class="dt">vocalization_type =</span> <span class="st">&quot;Call&quot;</span>,</span>
+<span id="cb41-8"><a href="2-acoustic-data-pre-processing.html#cb41-8"></a>                  <span class="dt">task_length =</span> <span class="dv">180</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="2-acoustic-data-pre-processing.html#cb42-1"></a><span class="op">&gt;</span><span class="st"> </span>songscope_tags</span></code></pre></div>
+<pre><code># A tibble: 139 × 16
+# Groups:   location, recordingDate, taskLength, species [139]
+   location    recordingDate       method taskL…¹ trans…² species speci…³ vocal…⁴ abund…⁵
+   &lt;chr&gt;       &lt;dttm&gt;              &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;     &lt;dbl&gt;
+ 1 ABMI-0585-… 2016-03-03 12:00:00 1SPT       180 Not As… CONI          1 Call          1
+ 2 ABMI-0585-… 2016-03-14 15:00:00 1SPT       180 Not As… CONI          1 Call          1
+ 3 ABMI-0585-… 2016-03-18 08:16:00 1SPT       180 Not As… CONI          1 Call          1
+ 4 ABMI-0585-… 2016-03-26 07:56:00 1SPT       180 Not As… CONI          1 Call          1
+ 5 ABMI-0585-… 2016-03-30 12:00:00 1SPT       180 Not As… CONI          1 Call          1
+ 6 ABMI-0585-… 2016-04-04 07:33:00 1SPT       180 Not As… CONI          1 Call          1
+ 7 ABMI-0585-… 2016-04-15 07:07:00 1SPT       180 Not As… CONI          1 Call          1
+ 8 ABMI-0585-… 2016-04-27 06:39:00 1SPT       180 Not As… CONI          1 Call          1
+ 9 ABMI-0585-… 2016-04-27 12:00:00 1SPT       180 Not As… CONI          1 Call          1
+10 ABMI-0585-… 2016-04-28 08:07:00 1SPT       180 Not As… CONI          1 Call          1
+# … with 129 more rows, 7 more variables: startTime &lt;dbl&gt;, tagLength &lt;dbl&gt;,
+#   minFreq &lt;chr&gt;, maxFreq &lt;chr&gt;, internal_tag_id &lt;chr&gt;, Quality &lt;dbl&gt;, Score &lt;dbl&gt;, and
+#   abbreviated variable names ¹​taskLength, ²​transcriber, ³​speciesIndividualNumber,
+#   ⁴​vocalization, ⁵​abundance</code></pre>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="2-acoustic-data-pre-processing.html#cb44-1"></a><span class="op">&gt;</span><span class="st"> </span>songscope_tags <span class="op">%&gt;%</span></span>
+<span id="cb44-2"><a href="2-acoustic-data-pre-processing.html#cb44-2"></a><span class="op">+</span><span class="st">   </span><span class="kw">pivot_longer</span>(<span class="dt">cols =</span> Quality<span class="op">:</span>Score, <span class="dt">names_to =</span> <span class="st">&quot;Recognizer Variable&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb44-3"><a href="2-acoustic-data-pre-processing.html#cb44-3"></a><span class="op">+</span><span class="st">   </span><span class="kw">ggplot</span>(., <span class="kw">aes</span>(<span class="dt">x=</span>recordingDate,<span class="dt">y=</span>value)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb44-4"><a href="2-acoustic-data-pre-processing.html#cb44-4"></a><span class="op">+</span><span class="st">   </span><span class="kw">geom_point</span>(<span class="dt">alpha =</span> <span class="fl">0.1</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb44-5"><a href="2-acoustic-data-pre-processing.html#cb44-5"></a><span class="op">+</span><span class="st">   </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span><span class="st">&quot;loess&quot;</span>, <span class="kw">aes</span>(<span class="dt">colour=</span><span class="st">`</span><span class="dt">Recognizer Variable</span><span class="st">`</span>)) <span class="op">+</span></span>
+<span id="cb44-6"><a href="2-acoustic-data-pre-processing.html#cb44-6"></a><span class="op">+</span><span class="st">   </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st">`</span><span class="dt">Recognizer Variable</span><span class="st">`</span>, <span class="dt">scales=</span><span class="st">&quot;free_y&quot;</span>) <span class="op">+</span></span>
+<span id="cb44-7"><a href="2-acoustic-data-pre-processing.html#cb44-7"></a><span class="op">+</span><span class="st">   </span><span class="kw">theme_bw</span>() <span class="op">+</span></span>
+<span id="cb44-8"><a href="2-acoustic-data-pre-processing.html#cb44-8"></a><span class="op">+</span><span class="st">   </span><span class="kw">scale_colour_viridis_d</span>() <span class="op">+</span></span>
+<span id="cb44-9"><a href="2-acoustic-data-pre-processing.html#cb44-9"></a><span class="op">+</span><span class="st">   </span><span class="kw">ggtitle</span>(<span class="st">&quot;Quality and Score Results&quot;</span>)</span></code></pre></div>
+<p><img src="Environmental-sensor-data-analysis-with-R_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
 <div class="dangerbox">
 <div class="left">
 <p><em>Keep in mind</em><br>
@@ -644,10 +763,10 @@ For certain monitoring programs that deliberately deploy ARUs over extended peri
 </div>
 </div>
 </div>
-<div id="kaleidoscope-results" class="section level3 hasAnchor">
-<h3><span class="header-section-number">2.5.2</span> Kaleidoscope results<a href="2-acoustic-data-pre-processing.html#kaleidoscope-results" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="kaleidoscope-results" class="section level4 hasAnchor">
+<h4><span class="header-section-number">2.5.2.2</span> Kaleidoscope results<a href="2-acoustic-data-pre-processing.html#kaleidoscope-results" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p><a href="https://www.wildlifeacoustics.com/products/kaleidoscope-pro">Kaleidoscope Pro</a> is a software package that includes a collection of tools designed specifically for bioacoustics analysis work flows. It can be used to automatically identify bat calls and perform cluster analysis (which involves grouping similar calls together), and it also allows the creation and use of classifiers. Once you have used Kaleidoscope to analyze your audio recordings and identify bat calls, you can use the output from Kaleidoscope and transform them into tags using the <code>wt_kaleidoscope_tags</code> function. These tags can then be imported into WildTrax along with the media.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="2-acoustic-data-pre-processing.html#cb38-1"></a><span class="kw">wt_kaleidoscope_tags</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="2-acoustic-data-pre-processing.html#cb45-1"></a><span class="kw">wt_kaleidoscope_tags</span>()</span></code></pre></div>
 <p>It’s also recommended to make a list of unique media associated to the tags so WildTrax can merge the audio and tags together.</p>
 <p>Once you have your formatted tags and audio prepared:</p>
 <ul>
@@ -657,11 +776,12 @@ For certain monitoring programs that deliberately deploy ARUs over extended peri
 </ul>
 <p>Note that <code>wt_kaleidoscope_tags</code>’s data wrangling is “lazy” in that it will attempt the enclose the majority of the signal detected from Kaleidoscope, and assign vocalization types globally. Users are encourage to use <a href="https://www.wildtrax.ca/home/resources/guide/acoustic-data/species-verification.html">Species Verification</a> later in WildTrax in order to make the subsequent batch edits needed to the tags as needed.</p>
 </div>
+</div>
 <div id="making-tasks" class="section level3 hasAnchor">
 <h3><span class="header-section-number">2.5.3</span> Making tasks<a href="2-acoustic-data-pre-processing.html#making-tasks" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="2-acoustic-data-pre-processing.html#cb39-1"></a><span class="kw">wt_make_aru_tasks</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="2-acoustic-data-pre-processing.html#cb46-1"></a><span class="kw">wt_make_aru_tasks</span>()</span></code></pre></div>
 <p>Tasks don’t always have to be recording or community based. Output from tags from Kaleidoscope or Songscope can also be used to generate tasks.</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"></code></pre></div>
 <p>Once your task csvs are created. Go to the desired project and begin the process up uploading them.</p>
 <div class="dangerbox">
 <div class="left">
@@ -669,7 +789,7 @@ For certain monitoring programs that deliberately deploy ARUs over extended peri
 If you haven’t uploaded recordings to WildTrax yet, you may as well just filter a set of desired files and upload them while generating this task, skipping this step.</p>
 </div>
 </div>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="2-acoustic-data-pre-processing.html#cb41-1"></a></span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="2-acoustic-data-pre-processing.html#cb48-1"></a></span></code></pre></div>
 </div>
 <div id="avoiding-conflict-errors" class="section level3 hasAnchor">
 <h3><span class="header-section-number">2.5.4</span> Avoiding conflict errors<a href="2-acoustic-data-pre-processing.html#avoiding-conflict-errors" class="anchor-section" aria-label="Anchor link to header"></a></h3>

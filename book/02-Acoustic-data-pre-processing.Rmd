@@ -244,13 +244,16 @@ locs_next <- locs %>%
 # Create a simple features object. Make it valid and set the CRS.
 locsset <- st_as_sf(locs_next %>% select(location, latitude, longitude) %>% distinct(), coords = c("longitude","latitude"))
 locsset <- st_make_valid(locsset)
+
+# Set to NAD83
 locsset <- st_set_crs(locsset, 4269)
 
 # Load a shapefile of Terrestrial BCRs of North America
 bcrs <- read_sf("../BCR_Terrestrial.shp")
 
 # Filter to just Alberta
-bcrs <- st_make_valid(bcrs) %>% 
+bcrs <- st_make_valid(bcrs)
+bcrs <- bcrs %>%
   filter(PROVINCE_S == "ALBERTA")
 ```
 
@@ -279,7 +282,9 @@ locss <- out %>%
 ```
 
 ```{r, comment="", warning=F, message=F, prompt=T}
-locss
+locss %>%
+  select(location, BCRNAME) %>%
+  arrange(location)
 
 ```
 
@@ -294,14 +299,92 @@ ggplot(bcrs) +
 
 ```
 
-### Collecting files for upload to WildTrax
+#### Landcover proportions
 
-To organize the process of uploading files to WildTrax smoother, it's recommended to collect all recordings into a single folder, regardless of where they are stored. Whether you've saved them on a server, hard drive, or local drive, this approach can help streamline the uploading process and save you time.
-
-Depending on the operating system you're using, there are two common ways to handle your files: linking or copying. Linking involves creating a shortcut to the original file, while copying creates a new, duplicate file. Both options can be beneficial, especially if you have files stored in complex, nested structures.
+Ecologists often study the spatial proportions of different landcover types within a given area to understand the distribution and diversity of species, as well as the functioning of ecosystems. Spatial proportions can influence ecosystem processes such as nutrient cycling, water availability, and habitat fragmentation, which can in turn affect biodiversity and ecosystem services. Landcover change, driven by human activities such as land use conversion and climate change, can alter spatial proportions and have significant impacts on ecosystem dynamics and services, highlighting the importance of monitoring and managing landcover patterns.
 
 ```r
+# ABMI 2010 W2W Landcover
+LP <- read_sf(".../Lancover_Polygons_2010.shp") %>%
+  mutate(LC_name = case_when(LC_class == 20 ~ "Water",
+                             LC_class == 31 ~ "Snow/Ice",
+                             LC_class ==  32 ~ "Rock/Rubble",
+                             LC_class == 33 ~ "Exposed Land",
+                             LC_class == 34 ~ "Developed",
+                             LC_class == 50 ~ "Shrubland",
+                             LC_class ==  110 ~ "Grassland",
+                             LC_class == 120 ~ "Agriculture",
+                             LC_class ==  210 ~ "Coniferous Forest",
+                             LC_class ==  220 ~ "Broadleaf Forest",
+                             LC_class == 230 ~ "Mixed Forest"))
 
+colours <- c("Water" = "#00BFFF", 
+             "Snow/Ice" = "#FFFFFF", 
+             "Rock/Rubble" = "#D3D3D3",
+             "Exposed Land" = "#8B4513", 
+             "Developed" = "#9400D3",
+             "Shrubland" = "#008000",
+             "Grassland" = "#ADFF2F",
+             "Agriculture" = "#FFFF00",
+             "Coniferous Forest" = "#006400",
+             "Broadleaf Forest" = "#32CD32",
+             "Mixed Forest" = "#808000")
+```
+```{r, include = T, eval=F, warning=F, message=F, comment="", prompt=T}
+
+# Control locations from the Before-After Dose-Response Landscape Unit #2
+badr2 <- locs %>%
+  filter(grepl('^2-0',location))
+
+# Big Grid 9 (Touchwood)
+bu_locs <- bu_locs %>%
+  filter(grepl('^BG-9', location))
+
+bu_badr <- bind_rows(badr2, bu_locs) %>%
+  mutate(Project = case_when(grepl('^BG-',location) ~ "Big Grids",TRUE ~ "Before-After Dose Response"))
+
+bu_badr_map <- st_as_sf(bu_badr, coords = c("longitude","latitude")) 
+bu_badr_map <- st_make_valid(bu_badr_map)
+bu_badr_map <- st_set_crs(bu_badr_map, 4269)
+bu_badr_map <- st_transform(bu_badr_map, 3400)
+```
+
+```{r, include = T, eval=T, warning=F, message=F, comment="", prompt=T}
+onebadr <- bu_badr_map %>%
+  filter(grepl('^BG-9',location))
+
+onebadr_buff <- st_buffer(onebadr, 150)
+onebadr_buff <- st_transform(onebadr_buff, 3400)
+
+ggplot() +
+  geom_sf(data = st_crop(LPP_c, xmin = 723300, xmax = 729250, ymin = 6076950, ymax = 6083050), aes(fill=LC_name)) +
+  geom_sf(onebadr_buff, mapping = aes(), fill = NA, colour="white") +
+  geom_sf(onebadr, mapping = aes(colour = Project)) +
+  theme_bw() +
+  scale_colour_viridis_d() +
+  scale_fill_manual(values = colours)
+
+```
+
+```{r, include = T, eval=T, warning=F, message=F, comment="", prompt=T}
+
+inp <- st_intersection(LPP_c, onebadr_buff) %>% 
+   mutate(intersect_area = st_area(.)) %>%   # create new column with shape area
+   dplyr::select(location, LC_name, intersect_area) %>%   # only select columns needed to merge
+   st_drop_geometry() %>%
+   group_by(location, LC_name) %>%
+   summarise(intersect_area = sum(intersect_area)) %>%
+   ungroup() %>%
+   pivot_wider(names_from = LC_name, values_from = intersect_area) %>%
+   mutate_all(~replace(., is.na(.), 0)) %>%
+   mutate(across(-location, ~as.numeric(.x))) %>%
+   rowwise() %>%
+   mutate(total = sum(c_across(-location))) %>%
+   ungroup() %>%
+   mutate(across(-c(location,total), ~ .x / total)) %>%
+   select(-total)
+
+inp
 
 ```
 
@@ -317,30 +400,14 @@ You can go to Manage > Download Locations in either a project or an organization
 :::
 ::::
 
-```{r, include = T, eval=F, warning=F, message=F, comment="", prompt=T}
-
-# Control locations from the Before-After Dose-Response Landscape Unit #2
-badr2 <- locs %>%
-  filter(grepl('^2-0',location))
-
-# Big Grid 9 (Touchoowd)
-bu_locs <- bu_locs %>%
-  filter(grepl('^BG-9', location))
-
-bu_badr <- bind_rows(badr2, bu_locs) %>%
-  mutate(Project = case_when(grepl('^BG-',location) ~ "Big Grids",TRUE ~ "Before-After Dose Response"))
-
-bu_badr_map <- st_as_sf(bu_badr, coords = c("longitude","latitude")) 
-bu_badr_map <- st_make_valid(bu_badr_map)
-bu_badr_map <- st_set_crs(bu_badr_map, 4269)
-```
-
 ```{r, warning=F, message=F}
 ggplot() +
-  coord_sf(crs = 4269) +
   geom_sf(bu_badr_map, mapping = aes(colour = Project)) +
+  coord_sf(crs = 4269) + 
   theme_bw() +
-  scale_colour_viridis_d()
+  scale_colour_viridis_d() +
+  scale_fill_manual(values = colours) +
+  guides(shape = guide_legend(override.aes = list(alpha = 0.2)))
 
 ```
 
@@ -355,6 +422,12 @@ distances %>%
   filter(distance < 100) %>%
   arrange(distance) %>%
   filter(location_from < distance_to)
+
+```
+
+
+```r
+
 
 ```
 
@@ -444,16 +517,53 @@ While acoustic indices are good at detecting large scale patterns, it is more di
 
 ## Linking acoustic data to WildTrax
 
+
+### Collecting files for upload to WildTrax
+
+To organize the process of uploading files to WildTrax smoother, it's recommended to collect all recordings into a single folder, regardless of where they are stored. Whether you've saved them on a server, hard drive, or local drive, this approach can help streamline the uploading process and save you time.
+
+Depending on the operating system you're using, there are two common ways to handle your files: linking or copying. Linking involves creating a shortcut to the original file, while copying creates a new, duplicate file. Both options can be beneficial, especially if you have files stored in complex, nested structures.
+
+### Recognizer results: transforming hits to tags
+
 Wildlife Acoustics offers advanced tools for analyzing wildlife vocalizations. Two of their most popular programs are Songscope and Kaleidoscope that allows users to visualize and identify animal songs and calls and also create and run automated classifiers. The output files from these programs can be transformed into WildTrax tags to be uploaded for verification purposes. This is also the primary mechanism that ultrasonic data makes its way into the system if it is being analyzed in Kaleidoscope. 
 
-### Sonscope results
 
-The function `wt_songscope_tags` reformats the output obtained from a wildlife acoustics songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
+#### Sonscope results
 
-```{r, include = T, eval=F, warning=F, message=F, prompt="", prompt=T}
-wt_songscope_tags()
+The function `wt_songscope_tags` reformats the output obtained from a Wildlife Acoustics Songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
+
+```r
+  
+wt_songscope_tags(input = ".../ABMI-0585_CONIPeent3.4_20_50_results.txt",
+                  output = "env", # Choosing env will save the output as a environment object called "songscope_tags"
+                  species_code = "CONI",
+                  method = "1SPT",
+                  score_filter = 60,
+                  vocalization_type = "Call",
+                  task_length = 180)
 
 ```
+
+```{r, eval=T, include=T, message=F, warning=F, prompt=T, comment=""}
+songscope_tags
+
+```
+
+```{r, eval=T, include=T, message=F, warning=F, prompt=T, comment=""}
+
+songscope_tags %>%
+  pivot_longer(cols = Quality:Score, names_to = "Recognizer Variable") %>%
+  ggplot(., aes(x=recordingDate,y=value)) + 
+  geom_point(alpha = 0.1) + 
+  geom_smooth(method="loess", aes(colour=`Recognizer Variable`)) +
+  facet_wrap(~`Recognizer Variable`, scales="free_y") +
+  theme_bw() +
+  scale_colour_viridis_d() +
+  ggtitle("Quality and Score Results")
+
+```
+
 
 :::: {.dangerbox data-latex=""}
 ::: {.left data-latex=""}
@@ -462,7 +572,7 @@ For certain monitoring programs that deliberately deploy ARUs over extended peri
 :::
 ::::
 
-### Kaleidoscope results
+#### Kaleidoscope results
 
 [Kaleidoscope Pro](https://www.wildlifeacoustics.com/products/kaleidoscope-pro) is a software package that includes a collection of tools designed specifically for bioacoustics analysis work flows. It can be used to automatically identify bat calls and perform cluster analysis (which involves grouping similar calls together), and it also allows the creation and use of classifiers. Once you have used Kaleidoscope to analyze your audio recordings and identify bat calls, you can use the output from Kaleidoscope and transform them into tags using the `wt_kaleidoscope_tags` function. These tags can then be imported into WildTrax along with the media. 
 

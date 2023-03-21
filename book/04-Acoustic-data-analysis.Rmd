@@ -77,25 +77,54 @@ raw_data
 
 ```
 
-```r
-fn <- raw_data %>% 
-  filter(!window_start_time >= 180) %>%
+```{r, include = T, eval=T, warning=F, message=F}
+fn <- raw_data %>%
   select(location, recording_date, scientific_name, window_start_time, confidence) %>%
   distinct() %>%
   inner_join(., cls %>% select(species_code, species_common_name, scientific_name), by = c("scientific_name" = "scientific_name")) %>%
-  add_column(observer = "BirdNET") %>%s
+  add_column(observer = "BirdNET") %>%
   add_column(project_name = "BirdNET Output") %>%
-  select(project_name, location, recording_date, observer, species_code, window_start_time, confidence) %>%
-  rename("tag_start_s" = 6) %>%
-  mutate(tag_start_s = as.double(tag_start_s)) %>%
-  add_column(abundance = "1")
+  select(project_name, location, recording_date, observer, species_code, species_common_name, window_start_time, confidence) %>%
+  rename("tag_start_s" = 7,
+         "is_verified" = 8) %>%
+  select(location, recording_date, observer, species_code, species_common_name, tag_start_s, is_verified) %>%
+  distinct() %>%
+  add_column(project_name = "Ecosystem Health 2021") %>%
+  relocate(project_name) %>%
+  relocate(is_verified, .before = tag_start_s) %>%
+  filter(species_code == "LCSP",
+         !grepl("^2022-",recording_date),
+         tag_start_s <= 60) %>%
+  select(-tag_start_s) %>%
+  group_by(project_name, location, recording_date, observer, species_code, species_common_name) %>%
+  summarise(is_verified = max(is_verified)) %>%
+  ungroup()
+
 ```
 
 ```{r, include = T, eval=T, warning=F, message=F}
-fn
+hh <- read_csv("/users/alexandremacphail/desktop/abmieco21/basic_summary.csv") %>%
+  filter(status == "Transcribed") %>%
+  mutate(length = as.numeric(str_extract(method, '^[^s]*'))) %>%
+  select(project_name, location, recording_date, length, observer, species_code, species_common_name, is_verified) %>%
+  distinct() %>%
+  mutate(is_verified = case_when(TRUE ~ 100, TRUE ~ 0)) %>%
+  filter(species_code == "LCSP") %>%
+  select(-length) %>%
+  distinct()
+
+bind_rows(fn, hh) %>%
+  pivot_wider(names_from = observer, values_from = is_verified) %>%
+  rowwise() %>%
+  mutate(diff = max(c_across(!project_name:BirdNET), na.rm=T),
+         diff = case_when(is.infinite(diff) ~ 0, TRUE ~ diff)) %>%
+  ungroup() %>%
+  select(project_name, location, recording_date, species_code, species_common_name, BirdNET, diff) %>%
+  filter(diff == 0)
+  
 ```
 
-
+So we have one potential false negative WTSP:
 
 ### Abundance estimation
 
@@ -118,26 +147,76 @@ Wildtrax provides the basis for a variety of different biological metrics and da
 
 ### Species presence
 
-```{r, include = T, eval=F, warning=F, message=F}
+Species presence refers to the occurrence or existence of a species within the sampling radius of a given geographic location. In ecology, understanding species presence is crucial for analyzing the distribution and abundance of species and for identifying factors that affect their survival and persistence.
 
-raw_basic_data <- dir_ls(path = "/users/alexandremacphail/desktop/fn", regexp = "*basic_summary.csv") %>%
-  map_df(~read_csv(., col_types = cols(recording_date  = col_character())))
+Presence is usually defined as a binary variable (*0*, *1*) where *0* is the absence of the species during an observation, and *1* indicates presence.
 
-data_logistic_wtsp <- raw_basic_data %>% 
+```{r, include = T, eval=T, warning=F, message=F}
+
+data_summary <- raw_basic_data %>% 
   filter(!species_code %in% abiotic_codes,
          !grepl('^U',species_code)) %>%
-  mutate(present = case_when(species_code == "WTSP" ~ 1, TRUE ~ 0)) %>%
-  select(location, latitude, longitude, recording_date, species_code, present) %>%
+  mutate(present = case_when(species_code == "SOSP" ~ 1, TRUE ~ 0)) %>%
+  select(location, latitude, longitude, recording_date, species_code, individual_appearance_order, present) %>%
   distinct() %>%
-  mutate(hour = hour(recording_date)) %>%
-  pivot_wider(names_from = species_code, values_from = present, values_fill = 0)
-         
-         
+  mutate(hour = hour(recording_date),
+         julian = yday(recording_date)) %>%
+  inner_join(., inp, by = c("location" = "location")) %>%
+  relocate(-(location:julian), .after = longitude) %>%
+  relocate(present:julian, .after = recording_date) %>%
+  group_by_at(vars(location:species_code)) %>%
+  summarise(abundance = max(individual_appearance_order)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = species_code, values_from = abundance, values_fill = 0) %>%
+  mutate(id = row_number())
+
+dp <- data_summary %>%
+  select(location, latitude, longitude, present) %>%
+  distinct() %>%
+  filter(present == 1) %>%
+  st_as_sf(coords = c("longitude","latitude"))
+
+dp <- st_set_crs(dp, 4269)
+
+ggplot() +
+  geom_sf(data = st_crop(LPP_c, xmin = 723300, xmax = 729250, ymin = 6076950, ymax = 6083050), aes(fill=LC_name)) +
+  geom_sf(dp, mapping = aes(), colour= "red") +
+  geom_sf(onebadr_buff, mapping = aes(), fill = NA, colour="black") +
+  theme_bw() +
+  scale_colour_viridis_d() +
+  scale_fill_manual(values = colours)
+
+```
+
+```{r}
+
+#Create training set
+train <- data_summary %>% sample_frac(.70)
+#Create test set
+test  <- anti_join(data_summary, train, by = 'id')
+
+data_summary %>%
+  ggplot(., aes(x=Water, y=present)) +
+  geom_point(alpha = 0.2) +
+  theme_bw() +
+  geom_smooth(method = "glm", method.args = list(family = "binomial")) +
+  labs(title = "Regression Model") +
+  theme(axis.text.x = element_blank())
+
 # create a logistic regression model
-mylogit <- glm(species_presence ~ location + recording_date_time + forest_type, data = data_logistic_wtsp, family = binomial)
+mypoisson <- glm(present ~ `Broadleaf Forest` + julian, data = train, family = binomial)
 
 # summary of the model
-summary(mylogit)
+summary(mypoisson)
+
+# Make predictions
+probabilities <- mypoisson %>% predict(test, type = "response")
+
+#Predict
+predicted.classes <- ifelse(probabilities > 0.5, "pos", "neg")
+
+# Model accuracy. If 1 = 100% prediction accuracy
+mean(predicted.classes == test$MOWA)
 ```
 
 ### Species accumulation and rarefaction

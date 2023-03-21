@@ -172,8 +172,11 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
 #'
 #' @param input Character; The path to the input csv
 #' @param output Character; Path where the output file will be stored
+#' @param my_output_file
 #' @param species_code Character;
 #' @param vocalization_type Character;
+#' @param method
+#' @param score_filter
 #' @param task_length Numeric;
 #'
 #' @import dplyr tidyr readr pipeR stringr lubridate tibble
@@ -181,12 +184,14 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
 #'
 #' @examples
 #' \dontrun{
-#' wt_songscope_tags(input = input.csv, output = tags.csv, species_code, vocalization_type = "Call", task_length = 180)
+#' wt_songscope_tags(input = input.csv, output = tags.csv, species_code, = "CONI", method = "1SPT", vocalization_type = "Call", task_length = 180)
 #' }
 #'
 #' @return A csv formatted as a WildTrax tag template
 
-wt_songscope_tags <- function (input, output, species_code, vocalization_type, task_length) {
+wt_songscope_tags <- function (input, output = c("env","csv"),
+                               my_output_file=NULL, species_code, vocalization_type,
+                               score_filter, method = c("USPM","1SPT"), task_length) {
 
   #Check to see if the input exists and reading it in
   if (file.exists(input)) {
@@ -195,42 +200,85 @@ wt_songscope_tags <- function (input, output, species_code, vocalization_type, t
     stop ("File cannot be found")
   }
 
+  if ((output == "csv") & is.null(my_output_file)) {
+    stop("Specify an output file name for the tag csv")
+  } else if (output == "env") {
+    print("Reading file...")
+  }
+
   #Cleaning things up for the tag template
   in_tbl_wtd <- in_tbl %>%
     rename("file_path" = 1) %>%
     rename("startTime" = 2) %>%
     rename("tagLength" = 3) %>%
     rename("level" = 4) %>%
-    rename("quality" = 5) %>%
-    rename("score" = 6) %>%
+    rename("Quality" = 5) %>%
+    rename("Score" = 6) %>%
     rename("recognizer" = 7) %>%
     rename("comments"= 8) %>%
-    mutate(file_name = tools::file_path_sans_ext(basename(file_path))) %>%
-    tidyr::separate(file_name, into = c("location", "recording_date_time"),
+    mutate(file_name = tools::file_path_sans_ext(gsub("^.*(\\\\|/)", "", file_path))) %>%
+    tidyr::separate(file_name, into = c("location", "recordingDate"),
                     sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
-    mutate(startTime = as.numeric(startTime)) %>%
-    tibble::add_column(method = "USPM", .after = "recording_date_time") %>%
-    tibble::add_column(taskLength = task_length, .after = "method") %>%
-    tibble::add_column(transcriber = "Not Assigned", .after = "taskLength") %>%
-    tibble::add_column(species = species_code, .after = "transcriber") %>%
-    dplyr::group_by(location, recording_date_time, taskLength, species) %>%
-    dplyr::mutate(speciesIndividualNumber = row_number()) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(vocalization = vocalization_type) %>%
-    tibble::add_column(abundance = 1, .after= "vocalization") %>%
-    relocate(startTime, .after = abundance) %>%
-    relocate(tagLength, .after = startTime) %>%
-    tibble::add_column(minFreq = "", .after= "tagLength") %>%
-    tibble::add_column(maxFreq = "", .after= "minFreq") %>%
-    tibble::add_column(internal_tag_id = "", .after = "maxFreq") %>%
-    select(location, recording_date_time, method, taskLength, transcriber, species,
-           speciesIndividualNumber, vocalization, abundance, startTime, tagLength,
-           minFreq, maxFreq, internal_tag_id, quality, score)
+    dplyr::mutate(startTime = as.numeric(startTime)) %>%
+    dplyr::mutate(recordingDate = str_remove(recordingDate, '.+?(?:__)')) %>%
+    dplyr::mutate(recordingDate = lubridate::ymd_hms(recordingDate))
+
+  if (method == "USPM") {
+    in_tbl_wtd <- in_tbl_wtd %>%
+      tibble::add_column(method = "USPM", .after = "recordingDate") %>%
+      tibble::add_column(taskLength = task_length, .after = "method") %>%
+      tibble::add_column(transcriber = "Not Assigned", .after = "taskLength") %>%
+      tibble::add_column(species = species_code, .after = "transcriber") %>%
+      dplyr::group_by(location, recordingDate, taskLength, species) %>%
+      dplyr::mutate(speciesIndividualNumber = row_number()) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(vocalization = vocalization_type) %>%
+      tibble::add_column(abundance = 1, .after= "vocalization") %>%
+      relocate(startTime, .after = abundance) %>%
+      relocate(tagLength, .after = startTime) %>%
+      tibble::add_column(minFreq = "", .after= "tagLength") %>%
+      tibble::add_column(maxFreq = "", .after= "minFreq") %>%
+      tibble::add_column(internal_tag_id = "", .after = "maxFreq") %>%
+      select(location, recordingDate, method, taskLength, transcriber, species,
+             speciesIndividualNumber, vocalization, abundance, startTime, tagLength,
+             minFreq, maxFreq, internal_tag_id, Quality, Score) %>%
+      filter(Score >= score_filter)
+  } else if (method == "1SPT") {
+    in_tbl_wtd <- in_tbl_wtd %>%
+      tibble::add_column(method = "1SPT", .after = "recordingDate") %>%
+      tibble::add_column(taskLength = task_length, .after = "method") %>%
+      tibble::add_column(transcriber = "Not Assigned", .after = "taskLength") %>%
+      tibble::add_column(species = "CONI", .after = "transcriber") %>%
+      dplyr::group_by(location, recordingDate, taskLength, species) %>%
+      dplyr::mutate(speciesIndividualNumber = row_number()) %>%
+      dplyr::filter(!speciesIndividualNumber > 1) %>%
+      dplyr::mutate(vocalization = vocalization_type) %>%
+      tibble::add_column(abundance = 1, .after= "vocalization") %>%
+      relocate(startTime, .after = abundance) %>%
+      relocate(tagLength, .after = startTime) %>%
+      tibble::add_column(minFreq = "", .after= "tagLength") %>%
+      tibble::add_column(maxFreq = "", .after= "minFreq") %>%
+      tibble::add_column(internal_tag_id = "", .after = "maxFreq") %>%
+      select(location, recordingDate, method, taskLength, transcriber, species,
+             speciesIndividualNumber, vocalization, abundance, startTime, tagLength,
+             minFreq, maxFreq, internal_tag_id, Quality, Score) %>%
+      filter(Score >= score_filter)
+  } else {
+    stop("Only USPM and 1SPT uploads are supported at this time")
+  }
+
+  if (max(in_tbl_wtd$startTime > task_length)) {
+    print("A heads up there are tags outside the length of the chosen task...")
+  }
 
   #Write the file
-  return(list(in_tbl_wtd, write.csv(in_tbl_wtd, file = output, row.names = F)))
-
-  print("Converted to WildTrax tags. Go to your WildTrax project > Manage > Upload Tags.")
+  if (output == "env") {
+    songscope_tags <<- in_tbl_wtd
+    print("Converted to WildTrax tags. Review the output then go to your WildTrax project > Manage > Upload Tags.")
+  } else if (output == "csv") {
+    return(list(in_tbl_wtd, write.csv(in_tbl_wtd, file = my_output_file, row.names = F)))
+    print("Converted to WildTrax tags. Go to your WildTrax project > Manage > Upload Tags.")
+  }
 
 }
 

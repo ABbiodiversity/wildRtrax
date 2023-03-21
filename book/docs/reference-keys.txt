@@ -20,13 +20,15 @@ reading-files
 segmenting-audio-files
 filtering-audio-files
 geographic-filtering
-collecting-files-for-upload-to-wildtrax
+landcover-proportions
 other-convenience-functions-distance-between-locations
 error-handling-and-file-standardization
 using-acoustic-indices-and-ldfcs
 abiotic-geophonic-and-anthropophonic-signal-detection
 biophonic-signal-detection
 linking-acoustic-data-to-wildtrax
+collecting-files-for-upload-to-wildtrax
+recognizer-results-transforming-hits-to-tags
 sonscope-results
 kaleidoscope-results
 making-tasks

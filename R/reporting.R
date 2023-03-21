@@ -1,4 +1,4 @@
-#' Ttitle
+#' Build automatic reports from analyzed data in wildRtrax
 #' Description of family
 #'
 #' @section `wt_report` details:
@@ -17,9 +17,9 @@
 #' wt_report(data = my_data, type = c("basic", "advanced"), style = "gitbook")
 #' }
 #'
-#' @return A pdf document with the report
+#' @return A document with the report. Either pdf or html depending on user choice
 
-wt_report <- function (data, output_file = "report.html", output_dir = getwd(), open) {
+wt_report <- function (data, output_file = "report.html", output_dir = getwd(), open=NULL) {
 
   in_tbl_wtd <- raw_basic_data
 
@@ -35,7 +35,7 @@ wt_report <- function (data, output_file = "report.html", output_dir = getwd(), 
 
   save(aplot,"aplot.R")
 
-  stitch(aplot, system.file("misc", "knitr-template.Rmd", package = "knitr"))
+  knitr::stitch(load("aplot.R"), system.file("misc", "knitr-template.Rmd", package = "knitr"))
 
   report_path <- path.expand(file.path(output_dir, output_file))
 
