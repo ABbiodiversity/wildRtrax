@@ -10,39 +10,52 @@ The first step after an ARU is retrieved from the field is to promptly download 
 
 In `wildRtrax` and WildTrax, there are a few essential components and standards that are required in order for the data to be utilized within this context:
 
-- [**Location**](): The physical, geographic place at which environmental sensors were deployed and/or biological data was collected on the landscape. This is how you would associate spatial coordinates to the raw audio data.
-- **Date and time**: The temporal component of the audio recording - when the recording took place. Many time formats are possible but the recommended standard is `YYYYMMDD`
-- **Sample rate**: The frequency at which audio waveforms are captured during analog-to-digital conversion in the environment. Digital audio uses pulse-code modulation and digital signals for sound reproduction, allowing signals to be stored, retrieved and transmitted without any loss of quality. Sampling rates of 44.1 kHz, 48 kHz, or 96 kHz are commonly used for capturing audio within the 20–20,000 Hz range. Higher sampling rates (>96 kHz) are employed to capture ultrasonic species as needed.
+- [**Location**](https://www.wildtrax.ca/home/resources/guide/organizations/locations.html): The physical, geographic place at which environmental sensors were deployed and/or biological data was collected on the landscape. This is how you associate spatial coordinates to the raw audio data (see [Geographic filtering](#geographic-filtering)). 
+- **Date and time**: The temporal component of the audio recording. This is when the recording took place. Many time formats are possible but the recommended standard is `YYYYMMDDHHMMSSTZ` wherever possible.
+- **Sample rate**: The frequency at which audio waveforms are captured during analog-to-digital conversion in the environment. Sampling rates of 44.1 kHz, 48 kHz, or 96 kHz are commonly used for capturing audio within the 20–20,000 Hz range. Higher sampling rates (>96 kHz) are employed to capture [ultrasonic species](#ultrasonic-data) as needed.
 
 ![](assets/task.png)
 
 A **recording** is the raw media or audio file. The following data types are supported within `wildRtrax` package. They are implicitly related to how each model and type of ARU records data. See [Wildlife Acoustics](https://www.wildlifeacoustics.com/), [Frontier Labs](https://www.frontierlabs.com.au/bar-lt) and [Open Acoustic Devices](https://www.openacousticdevices.info/audiomoth) for examples to learn more. 
 
-<center>
+Audio files need to contain both spatial and temporal information which is the minimum required in order to upload media to WildTrax, e.g. `ABMI-538-SW_20220506_050000`, where `ABMI-538-SW` is the location and `20220506_050000` is the timestamp. Both these pieces of information can tell you when and where the recording took place.
 
-<jargon>ABMI-1025-SW</jargon>
+:::: {.dangerbox data-latex=""}
+::: {.left data-latex=""}
+*Keep in mind*<br>
+If the timestamp does not contain a timezone, you can add one if your location has spatial coordinates using `wt_audio_scanner`.
+:::
+::::
 
-ABMI-1025-SW_20220406_074500.{*wav,wac,flac,mp3*}
+```{r}
 
-ABMI-1025-SW_*0+1*_20220406_074500
+location_name <- "ABMI-1025-SW"
+timestamp <- "20220406_074500"
+file_type <- ".wav"
 
-</center>
+# A standard file name from the ABMI
+paste0(location_name, "_", timestamp, file_type)
+
+```
 
 Some additional file name recommendations include:
 
 * Omitting leading zeros for numeric delimited content, e.g. use `OG-1-3-5` instead of `OG-01-003-05`, unless they serve a identification purpose, e.g. `3-0-A12` where `-0-` indicates the an absence of a treatment 
-* Metadata are also supported for .dump, .txt, .csv, .fls, and .SM4S files 
 * Delimiters such as “-”, “_”, “@” are supported
-* Location name strings that appear numeric (35001) should be treated with caution when importing via csv
-* Spaces and slashes “/” “\” in location names are not supported “_000” suffixes from Wildlife Acoustics Kaleidoscope output (wac -> wav conversion) are supported
+* Location name strings that appear numeric (e.g. 35001) should be treated with caution when importing via csv
+* Spaces and slashes “/” “\” in location names are not supported 
+* “_000” suffixes from Wildlife Acoustics Kaleidoscope output (wac -> wav conversion) are supported
 
-Audio files need to contain both spatial and temporal information which is the minimum required in order to upload media to WildTrax, e.g. `ABMI-538-SW_20220506_050000`, where `ABMI-538-SW` is the location and `20220506_050000` is the timestamp. Both these pieces of information can tell you when and where the recording took place.
+### Acoustic file formats
 
-### Acoustic file types
+An audio file format is a digital file format used to store and transmit audio data. It defines how the audio data is organized, compressed, and encoded. Audio file formats can be categorized as uncompressed, lossless compressed, and lossy compressed formats.
+
+Uncompressed formats, such as WAV store audio data without any compression, resulting in high-quality audio but larger file sizes. Lossless compressed formats, such as FLAC, compress the audio data without losing any information, resulting in smaller file sizes without any loss in quality. Lossy compressed formats, such as MP3, use data compression algorithms to reduce the file size by discarding some of the audio data, resulting in a lower-quality audio file.
+
+Different audio file formats have different advantages and disadvantages, and their use depends on the intended application and specific requirements. `wildRtrax` strongly recommends recording raw audio data either in following formats:
  
 * **wac** are proprietary, lossless compressed file formats developed by Wildlife Acoustics
 * **wav** is the standard, ubiquitous uncompressed audio file format
-* **mp3** a lossy compressed audio file format; works by reducing the accuracy of certain sound components, and eliminating others
 * **flac** is a lossless compressed audio file format
 
 :::: {.didyouknow data-latex=""}
@@ -51,6 +64,8 @@ Audio files need to contain both spatial and temporal information which is the m
 When data are uploaded to WildTrax, the audio is converted and stored as flac.
 :::
 ::::
+
+**mp3** is a lossy compressed audio file format and works by reducing the accuracy of certain sound components, and eliminating others. It is not typically recommended for raw audio recordings (see [MacPhail et al. 2023]()). 
 
 ## Manipulating recordings
 
@@ -80,15 +95,13 @@ head(files)
 
 ```
 
-The columns from `wt_audio_scanner` are generated from the raw media file name in order to associate a file prefix to a location, the time stamp to a date and time, and so on. 
-
 :::: {.didyouknow data-latex=""}
 ::: {.left data-latex=""}
 *Did you know?*<br>
 Directories of acoustic data at the ABMI are organized in the following hierarchy.
 
 - [**Organization**](https://www.wildtrax.ca/home/resources/guide/organizations/organization-management.html): The institution or organization the data belongs to 
-Sensor type: ARU
+- **Sensor type**: ARU
 - **Project**: A [project](https://www.wildtrax.ca/home/resources/guide/projects/project-management.html) is a  grouping of locations and recordings designed to answer an ecologically relevant question. Such programs at the ABMI include, Ecosystem Health (ABMI-EH), Before-After Dose Response (BADR). with location naming conventions such as ABMI-1025-SW and 2-0-A117, respectively.
 - **Deployment Year**: The year the data was collected. Repeat visits of locations are defined in the year for things like trend data sets. 
 - [**Visit**](https://www.wildtrax.ca/home/resources/guide/organizations/visits.html): A unique sequential key to define the year and visit the media collection took place, e.g. V1, V2, etc.
@@ -244,8 +257,6 @@ locs_next <- locs %>%
 # Create a simple features object. Make it valid and set the CRS.
 locsset <- st_as_sf(locs_next %>% select(location, latitude, longitude) %>% distinct(), coords = c("longitude","latitude"))
 locsset <- st_make_valid(locsset)
-
-# Set to NAD83
 locsset <- st_set_crs(locsset, 4269)
 
 # Load a shapefile of Terrestrial BCRs of North America
@@ -259,7 +270,6 @@ bcrs <- bcrs %>%
 
 ```{r, comment="", warning=F, message=F, prompt=T}
 ggplot(bcrs) +
-  coord_sf(crs = 4269) +
   geom_sf(aes(fill = BCRNAME)) +
   theme_bw() +
   scale_fill_viridis_d()
@@ -301,7 +311,7 @@ ggplot(bcrs) +
 
 #### Landcover proportions
 
-Ecologists often study the spatial proportions of different landcover types within a given area to understand the distribution and diversity of species, as well as the functioning of ecosystems. Spatial proportions can influence ecosystem processes such as nutrient cycling, water availability, and habitat fragmentation, which can in turn affect biodiversity and ecosystem services. Landcover change, driven by human activities such as land use conversion and climate change, can alter spatial proportions and have significant impacts on ecosystem dynamics and services, highlighting the importance of monitoring and managing landcover patterns.
+Ecologists often study the spatial proportions of different landcover types within a given area to understand the distribution and diversity of species, as well as the functioning of ecosystems. Landcover change, driven by human activities such as land use conversion and climate change, can alter spatial proportions and have significant impacts on ecosystem dynamics and services, highlighting the importance of monitoring and managing landcover patterns.
 
 ```r
 # ABMI 2010 W2W Landcover

@@ -25,6 +25,11 @@ pre code {
 header-section-number::after {
     content: ".";
 }
+.jargon {
+  font-weight: bold;
+  font-style: italic;
+  color: #A5E3E0;
+}
 .dangerbox {
   border: 4px #A19E99;
   padding: 1em;
@@ -34,7 +39,7 @@ header-section-number::after {
   background-repeat: no-repeat;
   background-position: 15px center;
   color: #C7641F;
-  background-color: #fcf2f8;
+  background-color: #fcf2f8 ;
 }
 .didyouknow {
   border: 4px #3F3D56;

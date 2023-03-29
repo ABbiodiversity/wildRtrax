@@ -14,7 +14,7 @@ standardizing-information-pipelines
 acoustic-data-pre-processing
 acoustic-data-management-basics
 acoustic-metadata
-acoustic-file-types
+acoustic-file-formats
 manipulating-recordings
 reading-files
 segmenting-audio-files
@@ -43,6 +43,7 @@ abundance-estimation
 basic-analysis
 species-presence
 species-accumulation-and-rarefaction
+diversity-indices
 advanced-analysis
 occupancy-modelling
 constructing-a-classifier

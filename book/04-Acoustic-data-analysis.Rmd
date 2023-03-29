@@ -199,37 +199,85 @@ data_summary %>%
   ggplot(., aes(x=Water, y=present)) +
   geom_point(alpha = 0.2) +
   theme_bw() +
-  geom_smooth(method = "glm", method.args = list(family = "binomial")) +
+  geom_smooth(method = "glm", method.args = list(family = "gaussian")) +
   labs(title = "Regression Model") +
   theme(axis.text.x = element_blank())
 
 # create a logistic regression model
-mypoisson <- glm(present ~ `Broadleaf Forest` + julian, data = train, family = binomial)
+model <- glm(present ~ Water + julian, data = train, family="gaussian")
 
 # summary of the model
-summary(mypoisson)
+summary(model)
 
 # Make predictions
-probabilities <- mypoisson %>% predict(test, type = "response")
+probabilities <- model %>% predict(test, type = "response")
 
 #Predict
-predicted.classes <- ifelse(probabilities > 0.5, "pos", "neg")
+predicted.classes <- ifelse(probabilities > 0, 1, 0)
 
 # Model accuracy. If 1 = 100% prediction accuracy
-mean(predicted.classes == test$MOWA)
+mean(predicted.classes == test$SOSP)
 ```
+The model therefore has a probability of 41.6% of detecting SOSP near water.
 
 ### Species accumulation and rarefaction
 
 Species accumulation refers to the process of counting the number of different species present in a sample of a particular size. The idea is to keep adding new samples until the total number of species observed reaches a plateau or levels off. The curve that results from plotting the number of species against the number of samples is called a species accumulation curve, and it provides information about the rate of species discovery and the completeness of sampling.
 
-```r
+```{r}
+
+dj <- data %>% 
+  select(location, recording_date, species_code, individual_appearance_order, abundance) %>%
+  mutate(abundance = case_when(abundance == "TMTT" ~ "4", abundance == "CI 1" ~ "1", abundance == "CI 2" ~ "2", abundance == "CI 3" ~ "3", TRUE ~ abundance),
+           abundance = as.numeric(abundance)) %>%
+    group_by(location, recording_date, species_code) %>%
+    mutate(indvs = max(individual_appearance_order)) %>%
+    ungroup() %>%
+  group_by(location, recording_date, species_code) %>%
+    summarise(abundance = case_when(max(abundance) > max(individual_appearance_order) ~ max(abundance), TRUE ~ max(individual_appearance_order))) %>%
+    ungroup()
+
+ddj <- dj %>%
+  filter(!species_code %in% abiotic_codes, !species_code == "NONE") %>%
+  mutate(abundance = as.numeric(abundance)) %>%
+  pivot_wider(names_from = species_code, values_from = abundance, values_fill = 0) %>%
+  as.data.frame()
+
+x <- vegan::specaccum(ddj[,3:228], method = "random")
+boxplot(x)
 
 ```
 
 Rarefaction is a statistical method used to estimate the expected number of species in a community, given a fixed number of individuals or samples. This technique is particularly useful when comparing the diversity of different communities that have been sampled unevenly, i.e., with different sample sizes. The rarefaction curve represents the expected number of species in a community as a function of the number of individuals or samples, and it can help researchers make fair comparisons of diversity between communities.
 
-```r
+```{r}
+
+vegan::rarecurve(ddj[,3:228])
+
+```
+
+### Diversity indices
+
+We can also interpret certain ecological diversity indices from other functions in the `vegan` package.
+
+```{r}
+
+diversity(ddj[,3:228], index="shannon") %>%
+  as_tibble() %>%
+  bind_cols(., ddj %>% select(location)) %>%
+  inner_join(., out %>% st_drop_geometry() %>% select(location, BCRNAME), by = c("location" = "location")) %>%
+  group_by(BCRNAME) %>%
+  add_tally() %>%
+  ungroup() %>%
+  ggplot(., aes(x=BCRNAME,y=value,group=BCRNAME,fill=BCRNAME)) + 
+  geom_boxplot(aes(weight=n)) + 
+  theme_bw() +
+  scale_fill_viridis_d() +
+  theme(axis.text.x = element_blank()) +
+  xlab("Bird Conservation Region") +
+  ylab("Shannon Diversity") +
+  ggtitle("Shannon Diversity Index across Bird Conservation Regions of Alberta")
+
 
 ```
 
