@@ -260,7 +260,15 @@ locsset <- st_make_valid(locsset)
 locsset <- st_set_crs(locsset, 4269)
 
 # Load a shapefile of Terrestrial BCRs of North America
-bcrs <- read_sf("../BCR_Terrestrial.shp")
+#bcrs <- read_sf("../BCR_Terrestrial.shp")
+
+# LUs 
+LUs <- read_sf("/users/alexandremacphail/wildRtrax/data/OSR_LU_fxd/OSR_LUs_fxd.shp") %>%
+  st_make_valid() %>%
+  mutate(year = case_when(OBJECTID %in% c(2,4,6,8) ~ "2021",
+                          OBJECTID %in% c(1, 13, 15, 21) ~ "2022",
+                          OBJECTID %in% c(9, 22, 14, 16) ~ "2023",
+                          TRUE ~ NA_character_))
 
 # Filter to just Alberta
 bcrs <- st_make_valid(bcrs)
@@ -270,7 +278,17 @@ bcrs <- bcrs %>%
 
 ```{r, comment="", warning=F, message=F, prompt=T}
 ggplot(bcrs) +
-  geom_sf(aes(fill = BCRNAME)) +
+  coord_sf(4269) +
+  geom_sf(aes(fill=BCRNAME)) +
+  theme_bw() +
+  scale_fill_viridis_d()
+```
+
+```{r, comment="", warning=F, message=F, prompt=T}
+ggplot(LUs) +
+  geom_sf(data = bcrs %>% filter(BCRNAME == "BOREAL TAIGA PLAINS"), mapping = aes(), fill = NA) +
+  geom_sf(mapping = aes(fill = year)) +
+  geom_sf_text(aes(label = ifelse(is.na(year), "", OBJECTID)), colour = "black") +
   theme_bw() +
   scale_fill_viridis_d()
 
@@ -342,6 +360,8 @@ colours <- c("Water" = "#00BFFF",
 ```
 ```{r, include = T, eval=F, warning=F, message=F, comment="", prompt=T}
 
+#read_sf("")
+
 # Control locations from the Before-After Dose-Response Landscape Unit #2
 badr2 <- locs %>%
   filter(grepl('^2-0',location))
@@ -353,10 +373,10 @@ bu_locs <- bu_locs %>%
 bu_badr <- bind_rows(badr2, bu_locs) %>%
   mutate(Project = case_when(grepl('^BG-',location) ~ "Big Grids",TRUE ~ "Before-After Dose Response"))
 
-bu_badr_map <- st_as_sf(bu_badr, coords = c("longitude","latitude")) 
-bu_badr_map <- st_make_valid(bu_badr_map)
-bu_badr_map <- st_set_crs(bu_badr_map, 4269)
-bu_badr_map <- st_transform(bu_badr_map, 3400)
+bu_badr_map <- st_as_sf(bu_badr, coords = c("longitude","latitude")) %>%
+  st_make_valid() %>%
+  st_set_crs(4269) %>%
+  st_transform(3400)
 ```
 
 ```{r, include = T, eval=T, warning=F, message=F, comment="", prompt=T}
@@ -476,8 +496,6 @@ wt_glean_ap()
 
 ```
 
-
-
 ### Abiotic, geophonic and anthropophonic signal detection
 
 Recorder failure, damaged microphones, or recorders that are placed in an environment where prevailing winds muffle the sounds the ARU can hear, such as in alpine environments, can limit the audio quality in order to process data in an effective way. ~12% of the acoustic data collected by the ABMI between 2015 - 2019 (~12TB / 100TB) had a relatively high geophonic index or a malfunction or failure. Due to the large volume of data that is handled, it is no longer efficient to do these processes manually and these steps should be automated as much as possible. The goals are to find efficient ways to screen and filter audio data with high geophony or to flag and omit recordings that will not be used for processing. 
@@ -498,6 +516,15 @@ map_badr <- wt_glean(x = badr, input_dir = "../data", purpose = "abiotic")
 
 
 ```
+
+#### Inclement weather
+
+```{r}
+
+
+
+```
+
 
 ### Biophonic signal detection
 
@@ -527,6 +554,7 @@ While acoustic indices are good at detecting large scale patterns, it is more di
 
 ## Linking acoustic data to WildTrax
 
+Once your acoustic recordings are organized and files chosen for processing, the next step is to upload them to WildTrax for processing.
 
 ### Collecting files for upload to WildTrax
 
@@ -538,13 +566,11 @@ Depending on the operating system you're using, there are two common ways to han
 
 Wildlife Acoustics offers advanced tools for analyzing wildlife vocalizations. Two of their most popular programs are Songscope and Kaleidoscope that allows users to visualize and identify animal songs and calls and also create and run automated classifiers. The output files from these programs can be transformed into WildTrax tags to be uploaded for verification purposes. This is also the primary mechanism that ultrasonic data makes its way into the system if it is being analyzed in Kaleidoscope. 
 
-
 #### Sonscope results
 
 The function `wt_songscope_tags` reformats the output obtained from a Wildlife Acoustics Songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
 
 ```r
-  
 wt_songscope_tags(input = ".../ABMI-0585_CONIPeent3.4_20_50_results.txt",
                   output = "env", # Choosing env will save the output as a environment object called "songscope_tags"
                   species_code = "CONI",
@@ -555,12 +581,12 @@ wt_songscope_tags(input = ".../ABMI-0585_CONIPeent3.4_20_50_results.txt",
 
 ```
 
-```{r, eval=T, include=T, message=F, warning=F, prompt=T, comment=""}
+```{r, eval=F, include=T, message=F, warning=F, prompt=T, comment=""}
 songscope_tags
 
 ```
 
-```{r, eval=T, include=T, message=F, warning=F, prompt=T, comment=""}
+```{r, eval=F, include=T, message=F, warning=F, prompt=T, comment=""}
 
 songscope_tags %>%
   pivot_longer(cols = Quality:Score, names_to = "Recognizer Variable") %>%
@@ -588,18 +614,11 @@ For certain monitoring programs that deliberately deploy ARUs over extended peri
 
 ```{r, include = T, eval=F, warning=F, message=F}
 
-
-
 wt_kaleidoscope_tags()
 
 ```
 
 It's also recommended to make a list of unique media associated to the tags so WildTrax can merge the audio and tags together.
-
-```{r}
-
-
-```
 
 Once you have your formatted tags and audio prepared:
 

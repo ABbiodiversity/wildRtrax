@@ -1,6 +1,24 @@
-book_filename: "Environmental sensor data analysis with R"
+book_filename: "Environmental sensor data management and analysis with R"
 language:
   ui:
-    chapter_name: "Chapter "
-delete_merged_file: true
+    chapter_name: ""
 output_dir: "docs"
+delete_merged_file: true
+new_session: yes
+
+rmd_files:
+  [
+    "index.Rmd",
+
+    "01-Introduction.Rmd",
+
+    "02-Acoustic-data-pre-processing.Rmd",
+
+    "03-Camera-data-pre-processing.Rmd",
+
+    "04-Acoustic-data-analysis.Rmd",
+
+    "05-Camera-data-analysis.Rmd",
+
+    "06-Conclusion.Rmd"
+  ]

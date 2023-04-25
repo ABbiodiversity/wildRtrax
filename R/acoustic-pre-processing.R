@@ -396,7 +396,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   # Check to see if the input exists and reading it in
   if (dir.exists(input_dir)) {
     ind <-
-      fs::dir_ls("/users/alexandremacphail/desktop/eh19late", regexp = "*.Indices.csv", recurse = T) %>%
+      fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) %>%
       map_dfr( ~ read_csv(., progress = T)) %>%
       relocate(c(FileName, ResultMinute)) %>%
       select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
@@ -405,7 +405,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
                    values_to = "index_value")
 
     ldfcs <-
-      fs::dir_info("/users/alexandremacphail/desktop/eh19late", regexp = "*__2Maps.png", recurse = T) %>%
+      fs::dir_info(input_dir, regexp = "*__2Maps.png", recurse = T) %>%
       select(path) %>%
       rename("image" = 1) %>%
       mutate(file_name = str_replace(basename(image), '__2Maps.png', ''))

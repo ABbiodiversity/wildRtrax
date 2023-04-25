@@ -2,15 +2,15 @@
 title: "Environmental sensor data management and analysis with R"
 author: 
 - "Alexander G. MacPhail, Marcus Becker, Elly C. Knight"
-date: "`r Sys.Date()`"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+site: bookdown::bookdown_site
 output: bookdown::bs4_book
+url: https://abbiodiversity.github.io/wildRtrax
 description: "wildRtrax helps environmental sensor data users with data management and analytics"
 github-repo: ABbiodiversity/wildRtrax
 cover-image: "/book/assets/cover.png"
-url: https://abbiodiversity.github.io/wildRtrax
 link-citations: yes
 graphics: yes
-site: bookdown::bookdown_site
 header-includes:
 - \usepackage{graphicx}
 - \usepackage{float}
@@ -47,23 +47,31 @@ library(progressr)
 library(plotly)
 library(fs)
 library(lme4)
+library(lutz)
 library(lmerTest)
 library(vctrs)
 library(extraDistr)
+library(broom)
 
 #save.image("book.RData")
 load("book.RData")
-```
 
-```{r include=FALSE}
-# Knitr setup for markdown chunks
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_chunk$set(engine.opts = list(bash = "-l"))
+knitr::is_html_output()
 ```
 
 # Preface {-}
 
 `wildRtrax` (pronounced *‘wilder tracks’*) is an R package to help environmental sensor data users to create full-cycle work flows from data management to analytics.
+
+`wildRtrax` is a versatile R package that is specifically designed for users of environmental sensor data. The name `wildRtrax` is a playful nod to the wild nature of environmental data and the tracks or paths that users can create with this package to manage and analyze their data.
+
+With `wildRtrax`, users can easily create end-to-end workflows for managing and analyzing environmental sensor data. The package provides a wide range of tools and functions that streamline the entire data lifecycle, from data import and cleaning to data visualization and statistical analysis.
+
+One of the key strengths of `wildRtrax` is its flexibility, allowing users to work with diverse types of environmental sensor data, such as autonomous recording units and remote cameras. The package includes a set of functions for data manipulation, data visualization, and data analysis, making it a comprehensive toolkit for environmental sensor data users.
+
+`wildRtrax` also promotes reproducibility in data analysis by providing a consistent and organized framework for managing data and analysis workflows. This helps users to maintain transparency and integrity in their research, making it easier to share and reproduce results.
 
 ![](assets/cover.png)
 

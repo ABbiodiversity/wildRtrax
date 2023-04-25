@@ -1,6 +1,6 @@
 # Acoustic data analysis
 
-Now that we transformed raw sensor data into biological detections using Wildtrax we can use this to inform the metrics we're wishing to calculate.
+Now that we transformed raw sensor data into biological detections using WildTrax we can use this to inform the metrics we're wishing to calculate.
 
 ## Authorizing and downloading data from WildTrax
 
@@ -69,7 +69,7 @@ When processing a task, it is possible for an observer to miss an individual. Th
 
 ![](assets/oven-birdnet.png)
 
-Once all tasks are transcribed, access the [Data Downloads](https://www.wildtrax.ca/home/projects/data-download.html) page and extract the zip file to obtain the summary report and *_recording_birdnet_summary.csv*. These files will be used to intersect the human-created tags with the results obtained from BirdNET.
+Once all tasks are transcribed, access the [Data Downloads](https://www.WildTrax.ca/home/projects/data-download.html) page and extract the zip file to obtain the summary report and *_recording_birdnet_summary.csv*. These files will be used to intersect the human-created tags with the results obtained from BirdNET.
 
 ```{r, include = T, eval=T, warning=F, message=F}
 # Load and prepare the BirdNET data
@@ -143,7 +143,7 @@ wt_replace_tmtt()
 
 ## Basic analysis
 
-Wildtrax provides the basis for a variety of different biological metrics and data, which can be analyzed using basic statistical techniques to gain insights into wildlife populations and their distribution.
+WildTrax provides the basis for a variety of different biological metrics and data, which can be analyzed using basic statistical techniques to gain insights into wildlife populations and their distribution.
 
 ### Species presence
 
@@ -174,9 +174,8 @@ dp <- data_summary %>%
   select(location, latitude, longitude, present) %>%
   distinct() %>%
   filter(present == 1) %>%
-  st_as_sf(coords = c("longitude","latitude"))
-
-dp <- st_set_crs(dp, 4269)
+  st_as_sf(coords = c("longitude","latitude")) %>%
+  st_set_crs(4269)
 
 ggplot() +
   geom_sf(data = st_crop(LPP_c, xmin = 723300, xmax = 729250, ymin = 6076950, ymax = 6083050), aes(fill=LC_name)) +
@@ -189,11 +188,18 @@ ggplot() +
 ```
 
 ```{r}
-
 #Create training set
-train <- data_summary %>% sample_frac(.70)
+train <- data_summary %>% 
+  sample_frac(.70)
+
 #Create test set
 test  <- anti_join(data_summary, train, by = 'id')
+
+# create a linear regression model
+model <- glm(present ~ Water + julian, data = train, family="gaussian")
+
+# summary of the model
+tidy(model)
 
 data_summary %>%
   ggplot(., aes(x=Water, y=present)) +
@@ -203,22 +209,20 @@ data_summary %>%
   labs(title = "Regression Model") +
   theme(axis.text.x = element_blank())
 
-# create a logistic regression model
-model <- glm(present ~ Water + julian, data = train, family="gaussian")
-
-# summary of the model
-summary(model)
-
 # Make predictions
-probabilities <- model %>% predict(test, type = "response")
+probabilities <- model %>% 
+  predict(test, type = "response")
 
-#Predict
+# Predict
 predicted.classes <- ifelse(probabilities > 0, 1, 0)
 
 # Model accuracy. If 1 = 100% prediction accuracy
-mean(predicted.classes == test$SOSP)
+model_acc <- mean(predicted.classes == test$SOSP)
+
+model_acc
 ```
-The model therefore has a probability of 41.6% of detecting SOSP near water.
+
+The model therefore has a probability of `r percent(model_acc)` of detecting presence of Song Sparrows near water taking into account julian date.
 
 ### Species accumulation and rarefaction
 
@@ -235,15 +239,13 @@ dj <- data %>%
     ungroup() %>%
   group_by(location, recording_date, species_code) %>%
     summarise(abundance = case_when(max(abundance) > max(individual_appearance_order) ~ max(abundance), TRUE ~ max(individual_appearance_order))) %>%
-    ungroup()
-
-ddj <- dj %>%
+    ungroup() %>%
   filter(!species_code %in% abiotic_codes, !species_code == "NONE") %>%
   mutate(abundance = as.numeric(abundance)) %>%
   pivot_wider(names_from = species_code, values_from = abundance, values_fill = 0) %>%
   as.data.frame()
 
-x <- vegan::specaccum(ddj[,3:228], method = "random")
+x <- vegan::specaccum(dj[,3:228], method = "random")
 boxplot(x)
 
 ```
@@ -252,7 +254,7 @@ Rarefaction is a statistical method used to estimate the expected number of spec
 
 ```{r}
 
-vegan::rarecurve(ddj[,3:228])
+vegan::rarecurve(dj[,3:228])
 
 ```
 
@@ -262,15 +264,15 @@ We can also interpret certain ecological diversity indices from other functions 
 
 ```{r}
 
-diversity(ddj[,3:228], index="shannon") %>%
+diversity(dj[,3:228], index="shannon") %>%
   as_tibble() %>%
-  bind_cols(., ddj %>% select(location)) %>%
+  bind_cols(., dj %>% select(location)) %>%
   inner_join(., out %>% st_drop_geometry() %>% select(location, BCRNAME), by = c("location" = "location")) %>%
   group_by(BCRNAME) %>%
   add_tally() %>%
   ungroup() %>%
   ggplot(., aes(x=BCRNAME,y=value,group=BCRNAME,fill=BCRNAME)) + 
-  geom_boxplot(aes(weight=n)) + 
+  geom_boxplot() + 
   theme_bw() +
   scale_fill_viridis_d() +
   theme(axis.text.x = element_blank()) +

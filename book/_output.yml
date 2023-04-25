@@ -1,3 +1,9 @@
+bookdown::bs4_book:
+  theme:
+    primary: "#637238"
+  repo:
+    base: https://github.com/ABbiodiversity/ndpc
+    branch: main
 bookdown::gitbook:
   split_by: chapter+number
   image:
@@ -11,13 +17,19 @@ bookdown::gitbook:
       after: |
         <li><a href="https://github.com/abbiodiversity/wildRtrax/book" target="blank">
         Published with bookdown</a></li>
-    edit: https://github.com/abbiodiversity/wildRtrax/book/edit/master/%s
-    view: https://github.com/abbiodiversity/wildRtrax/book/blob/master/%s
+    edit: https://github.com/abbiodiversity/wildRtrax/book/edit/main/%s
+    view: https://github.com/abbiodiversity/wildRtrax/book/blob/main/%s
     sharing:
       facebook: yes
       twitter: yes
       github: yes
       linkedin: yes
+      all: []
     download: ["pdf"]
 bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
   keep_tex: yes
+bookdown::epub_book: default

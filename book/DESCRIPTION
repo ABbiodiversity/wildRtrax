@@ -1,5 +1,5 @@
 Package: wildRtrax
-Title: Environmental sensor data management and analytics to and from WildTrax
+Title: Environmental sensor data management and analytics with R
 Version: 1.0.0
 Authors@R: 
     c(person(given = "Alex",
@@ -14,8 +14,7 @@ Authors@R:
              family = "Knight",
              role = "cre",
              email = "ecknight@ualberta.ca"))
-Description: This package provides a set of functions to manage environmental sensor data 
-    to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
+Description: wildRtrax is an R package to help environmental sensor data users to create full-cycle work flows from data management to analytics.
 Depends: R (>= 3.5.0)
 License: `use_mit_license`
 Imports:
