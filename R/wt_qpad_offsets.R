@@ -20,7 +20,7 @@
 #' }
 #' @return An object of class unmarkedFrameOccu. See `?unmarked::unmarkedFrameOccu` for details.
 
-wt_qpad_offsets <- function(data, species = "all", version = 3, output = "together"){
+wt_qpad_offsets <- function(data, species = "all", version = 3, together=TRUE){
 
   #Make prediction object
   cat("Extracting covariates for offset calculation - be patient")
