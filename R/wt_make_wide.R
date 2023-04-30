@@ -3,20 +3,20 @@
 #' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values. This function is best preceded by the`wt_tidy_species` and `wt_replace_tmtt` functions  to ensure 'TMTT' and amphibian calling index values are not converted to zeros.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report` function.
-#' @param sound Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections.
+#' @param sound Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).
 #' @import dplyr
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' dat.tidy <- wt_filter_species(dat)
-#' dat.tmtt <- wt_replace_tmtt(dat.tidy)
-#' dat.wide <- wt_make_wide(dat.tmtt)
+#' dat.clean <- wt_clean_species(dat)
+#' dat.tmtt <- wt_replace_tmtt(dat.clean)
+#' dat.wide <- wt_make_wide(dat.tmtt, sound="all")
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
 
-wt_make_wide <- function(data, sound=c("all", "song", "call", "non-vocal")){
+wt_make_wide <- function(data, sound="all"){
 
   #Filter to first detection per individual
   summed <- dat %>%
