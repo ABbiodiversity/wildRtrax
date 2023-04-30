@@ -2,7 +2,7 @@
 #'
 #' @description This function formats the summary report from the `wt_download_report` function into an unmarked object for occupancy modelling. The current version only includes formatting for the ARU sensor and for single species single season models.
 #'
-#' @param data WildTrax main report or tag report from the `wt_download_report` function. Summary report of WildTrax observations from the `wt_download_report` function. Currently only functioning for the ARU sensor.
+#' @param data WildTrax main report or tag report from the `wt_download_report` function. Currently only functioning for the ARU sensor.
 #' @param species Character; four-letter alpha code for the species desired for occupancy modelling.
 #' @param siteCovs Optional dataframe of site covariates. Must contain a column with the same values as the location field in the data, with one row per unique value of location (i.e., one row per site).
 #' @import dplyr lubridate
