@@ -1,10 +1,10 @@
 #' Download clips of WildTrax annotations.
 #'
-#' @description This function downloads annotations from WildTrax either as sound files or spectrograms. Using this function requires obtaining the urls for the objects using the `wt_download_tagreport` function.
+#' @description This function downloads annotations from WildTrax either as sound files or spectrograms. Using this function requires obtaining the urls for the objects using the `wt_download_report` function.
 #'
 #' @param data WildTrax tag report from the `wt_download_report` function.
 #' @param filepath Character; folder to download objects into.
-#' @param object Character; the format requested for the clips; either "soundfile", or "spectrogram".
+#' @param object Character; the format requested for the clips ("soundfile", or "spectrogram").
 #' @param quiet Logical; suppress download details for each object.
 #' @import dplyr
 #' @importFrom purrr map2
