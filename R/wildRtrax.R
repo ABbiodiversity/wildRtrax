@@ -19,5 +19,5 @@ utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext"
                          "method", "proj4string<-",
                          "species_class", "species_common_name", "individual_appearance_order", "tag_start_s",
                          "vocalization", "species_Comments", "is_verified", "organization", "project_name",
-                         "organization", "project_name", "method", "observer",
+                         "organization", "project_name", "method", "observer", "species_comments",
                          "observer_id"))
