@@ -2,10 +2,15 @@
 % Please edit documentation in R/utils_qpad.R
 \name{.make_off}
 \alias{.make_off}
-\title{Design matrices for singing rates (\code{Xp}) and for EDR (\code{Xq})}
+\title{QPAD offsets, wrapped by the \code{wt_qpad_offsets} function.}
 \usage{
-.make_off(spp, x, useMethod = "y")
+.make_off(spp, x)
+}
+\arguments{
+\item{spp}{species for offset calculation.}
+
+\item{x}{Dataframe out from the \code{.make_x} function.}
 }
 \description{
-Design matrices for singing rates (\code{Xp}) and for EDR (\code{Xq})
+Functions to get the offsets.
 }

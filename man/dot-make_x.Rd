@@ -6,9 +6,16 @@
 \usage{
 .make_x(data, tz = "local", check_xy = TRUE)
 }
+\arguments{
+\item{data}{Dataframe output from the \code{wt_format_wide} function.}
+
+\item{tz}{Character; whether or not the data is in local or UTC time ("local", or "utc"). Defaults to "local".}
+
+\item{check_xy}{Logical; check whether coordinates are within the range that QPAD offsets are valid for.}
+}
 \description{
-Functions to format reports for qpad offset calculation, and then get the offsets. Wrapped by the \code{wt_qpad_offsets} function.
+Functions to format reports for qpad offset calculation.
 }
 \details{
-QPAD offsets
+QPAD offsets, wrapped by the \code{wt_qpad_offsets} function.
 }
