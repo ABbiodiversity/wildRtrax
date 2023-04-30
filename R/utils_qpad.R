@@ -138,8 +138,7 @@
     LCC4=lcc4,
     TREE=TREE,
     MAXDUR=MAXDUR,
-    MAXDIS=MAXDIS,
-    TM=TM)
+    MAXDIS=MAXDIS)
   out$TSSR[!ok_xy | !ok_dt] <- NA
   out$DSLS[!ok_xy] <- NA
   out$LCC2[!ok_xy] <- NA
