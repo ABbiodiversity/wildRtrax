@@ -37,6 +37,10 @@ Imports:
     plumber,
     shiny,
     seewave,
+    raster,
+    intrval,
+    maptools,
+    QPAD,
     httr
 Suggests: 
     testthat,
