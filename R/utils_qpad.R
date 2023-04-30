@@ -16,7 +16,7 @@
 
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
-  #Get the gis data - raster won't read out of GD?
+  #Get the gis data
   .rlcc <- raster(system.file("lcc.tif"), package="wildRTrax")
   .rtree <- raster(system.file("tree.tif"), package="wildRTrax")
   .rd1 <- raster(system.file("seedgrow.tif"), package="wildRTrax")
