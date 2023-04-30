@@ -41,7 +41,8 @@ Imports:
     intrval,
     maptools,
     QPAD,
-    httr
+    httr,
+    sp
 Suggests: 
     testthat,
     knitr,
