@@ -15,4 +15,9 @@ utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext"
                          "presence", "tasks", "report", "|>", "cam", "aru", "pc",
                          "dat", "tag_start", "tag_clip_url", "species", "filetype",
                          "abundance", "species_code", "user_id",
-                         "occur", "recording_date", "visit"))
+                         "occur", "recording_date", "visit",
+                         "method", "proj4string<-",
+                         "species_class", "species_common_name", "individual_appearance_order", "tag_start_s",
+                         "vocalization", "species_Comments", "is_verified", "organization", "project_name",
+                         "organization", "project_name", "method", "observer",
+                         "observer_id"))
