@@ -48,7 +48,7 @@ All functions begin with a wt_* prefix. Column names and metadata align with the
 
 This R package is licensed under [MIT
 license](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE)
-© 2020 Marcus Becker, Alex MacPhail, and the [ABMI](http://https://abmi.ca/home.html).
+© 2020 Marcus Becker, Alex MacPhail, Elly Knight, and the [ABMI](http://https://abmi.ca/home.html).
 
 
 

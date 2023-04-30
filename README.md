@@ -40,5 +40,5 @@ Marcus Becker <mabecker@ualberta.ca>.
 
 This R package is licensed under [MIT
 license](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE)
-© 2020 Marcus Becker, Alex MacPhail, and the
+© 2020 Marcus Becker, Alex MacPhail, Elly Knight, and the
 [ABMI](http://https://abmi.ca/home.html).
