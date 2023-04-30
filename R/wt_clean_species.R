@@ -10,12 +10,12 @@
 #'
 #' @examples
 #' \dontrun{
-#' dat.tmtt <- replace_tmtt(dat, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE)
+#' dat.tmtt <- wt_clean_species(dat, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE)
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
 
-wt_tidy_species <- function(dat, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE){
+wt_clean_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE){
 
   #Convert to the sql database labels for species class
   remove <- case_when(remove=="mammal" ~ "Mammalia",
