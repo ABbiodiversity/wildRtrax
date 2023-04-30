@@ -1,26 +1,30 @@
 #' Get QPAD offsets.
 #'
-#' @description This function formats the summary report from the `wt_download_report` function into an unmarked object for occupancy modelling. The current version only includes formatting for the ARU sensor and for single species single season models.
+#' @description This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds, as per 'Solymos et al. 2013. Calibrating indices of avian density from non-standardized survey data: making the most of a messy situation Methods in Ecology and Evolution, 4, 1047-1058.' This function requires download of the `QPAD` R package and should be used on the output of the `wt_make_wide` function.
 #'
-#' @param data WildTrax main report or tag report from the `wt_download_report` function. Summary report of WildTrax observations from the `wt_download_report` function. Currently only functioning for the ARU sensor.
-#' @param species Character; four-letter alpha code for the species desired for occupancy modelling.
-#' @param siteCovs Optional dataframe of site covariates. Must contain a column with the same values as the location field in the data, with one row per unique value of location (i.e., one row per site).
-#' @import dplyr lubridate
-#' @importFrom unmarked unmarkedFrameOccu
+#' @param data Dataframe output from the `wt_make_wide` function.
+#' @param species Character; species for offset calculation. Can be a list of 4-letter AOU codes (e.g., c("TEWA", "OSFL", "OVEN")) or "all" to calculate offsets for every species in the input dataframe for which offsets are available. Defaults to "all".
+#' @param version Numeric; version of QPAD offsets to use (2, or 3). Defaults to 3.
+#' @param together Logical; whether or not offsets should be bound to the input dataframe or returned as a separate object.
+#' @import QPAD raster maptools intrval dplyr
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' dat.occu <- wt_format_occupancy(dat, species="CONI", siteCovs=NULL)
-#' mod <- occu(~ 1 ~ 1, dat.occu)
+#' devtools::install_github("borealbirds/QPAD")
+#'
+#' dat.clean <- wt_clean_species(dat)
+#' dat.tmtt <- wt_replace_tmtt(dat.clean)
+#' dat.wide <- wt_make_wide(dat.tmtt, sound="all")
+#' dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE)
 #' }
 #' @return An object of class unmarkedFrameOccu. See `?unmarked::unmarkedFrameOccu` for details.
 
-wt_qpad_offsets <- function(data, species = "all", version = 3, useMethod = "y", output = "together"){
+wt_qpad_offsets <- function(data, species = "all", version = 3, output = "together"){
 
   #Make prediction object
   cat("Extracting covariates for offset calculation - be patient")
-  x <- make_x(dat)
+  x <- .make_x(dat)
 
   #Load QPAD estimates
   cat("\nLoading QPAD estimates: ")
@@ -38,17 +42,17 @@ wt_qpad_offsets <- function(data, species = "all", version = 3, useMethod = "y",
   for (i in 1:length(spp)){
     cat(spp[i], "\n")
     flush.console()
-    o <- make_off(spp[i], x, useMethod=useMethod)
+    o <- .make_off(spp[i], x, useMethod=useMethod)
     off[,i] <- o$offset
   }
 
   #Return output as dataframe if separate output requested
-  if(output=="separate"){
+  if(together==TRUE){
     return(data.frame(off))
   }
 
   #Put together if requested
-  if(output=="together"){
+  if(together==FALSE){
     out <- cbind(dat,
                  data.frame(off) %>%
                    rename_with(.fn=~paste0(.x, ".off")))
