@@ -29,7 +29,7 @@
     mutate(duration = as.numeric(str_sub(duration, -100, -2)))
   options(warn = 0)
 
-  ## get vars
+  #get vars
   date <- str_sub(dat.meth$recording_date, 1, 10)
   time <- str_sub(dat.meth$recording_date, 12, 19)
   lon <- as.numeric(dat.meth$longitude)
@@ -37,7 +37,7 @@
   dur <- as.numeric(dat.meth$duration)
   dis <- Inf
 
-  ## parse date+time into POSIXlt
+  #parse date+time into POSIXlt
   if(tz=="local"){
     dtm <- strptime(paste0(date, " ", time, ":00"),
                     format="%Y-%m-%d %H:%M:%S", tz="America/Edmonton")
@@ -49,13 +49,13 @@
   day <- as.integer(dtm$yday)
   hour <- as.numeric(round(dtm$hour + dtm$min/60, 2))
 
-  ## checks
+  #checks
   checkfun <- function(x, name="", range=c(-Inf, Inf)) {
     if (any(x[!is.na(x)] %)(% range))
       stop(sprintf("Parameter %s is out of range [%.0f, %.0f]", name, range[1], range[2]))
     invisible(NULL)
   }
-  ## Coordinates
+  #Coordinates
   if (check_xy) {
     checkfun(lon, "lon", c(-164, -52))
     checkfun(lat, "lat", c(39, 69))
@@ -64,14 +64,15 @@
     stop("Parameter lon must be finite")
   if (any(is.infinite(lat)))
     stop("Parameter lat must be finite")
-  ## handling missing values
+
+  #handling missing values
   ok_xy <- !is.na(lon) & !is.na(lat)
-  ## Other fields
+  #Other fields
   checkfun(day, "day", c(0, 365))
   checkfun(hour, "hour", c(0, 24))
   checkfun(dur, "dur", c(0, Inf))
 
-  ## intersect here
+  #intersect here
   xy <- data.frame(x=lon, y=lat)
   xy$x[is.na(xy$x)] <- mean(xy$x, na.rm=TRUE)
   xy$y[is.na(xy$y)] <- mean(xy$y, na.rm=TRUE)
@@ -79,7 +80,7 @@
   proj4string(xy) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
   xy <- invisible(spTransform(xy, crs))
 
-  ## LCC4 and LCC2
+  #LCC4 and LCC2
   vlcc <- raster::extract(.rlcc, xy)
   lcclevs <- c("0"="", "1"="Conif", "2"="Conif", "3"="", "4"="",
                "5"="DecidMixed", "6"="DecidMixed", "7"="", "8"="Open", "9"="",
@@ -89,15 +90,15 @@
   lcc2 <- lcc4
   levels(lcc2) <- c("Forest", "Forest", "OpenWet", "OpenWet")
 
-  ## TREE
+  #TREE
   vtree <- raster::extract(.rtree, xy)
   TREE <- vtree / 100
   TREE[TREE %)(% c(0, 1)] <- 0
 
-  ## raster::extract seedgrow value (this is rounded)
+  #raster::extract seedgrow value (this is rounded)
   d1 <- raster::extract(.rd1, xy)
 
-  ## UTC offset + 7 makes Alberta 0 (MDT offset) for local times
+  #UTC offset + 7 makes Alberta 0 (MDT offset) for local times
   if(tz=="local"){
     ltz <- raster::extract(.rtz, xy) + 7
   }
@@ -105,7 +106,7 @@
     ltz <- 0
   }
 
-  ## sunrise time adjusted by offset
+  #sunrise time adjusted by offset
   ok_dt <- !is.na(dtm)
   dtm[is.na(dtm)] <- mean(dtm, na.rm=TRUE)
   if(tz=="local"){
@@ -120,10 +121,10 @@
   }
   TSSR <- round(unname((hour - sr + ltz) / 24), 4)
 
-  ## days since local spring
+  #days since local spring
   DSLS <- (day - d1) / 365
 
-  ## transform the rest
+  #transform the rest
   JDAY <- round(day / 365, 4) # 0-365
   TREE <- round(vtree / 100, 4)
   MAXDIS <- round(dis / 100, 4)
@@ -148,8 +149,7 @@
   return(out)
 
 }
-#' Internal functions
-#'
+
 #' QPAD offsets, wrapped by the `wt_qpad_offsets` function.
 #'
 #' @description Functions to get the offsets.
@@ -165,14 +165,15 @@
   if (length(spp) > 1L)
     stop("spp argument must be length 1, please loop or map for multiple species")
   spp <- as.character(spp)
-  ## checks
+
+  #checks
   if (!(spp %in% getBAMspecieslist()))
     stop(sprintf("Species %s has no QPAD estimate", spp))
 
-  ## constant for NA cases
+  #constant for NA cases
   cf0 <- exp(unlist(coefBAMspecies(spp, 0, 0)))
 
-  ## best model
+  #best model
   mi <- bestmodelBAMspecies(spp, type="BIC", TM=0)
   cfi <- coefBAMspecies(spp, mi$sra, mi$edr)
 
@@ -186,8 +187,7 @@
   MAXDIS <- x$MAXDIS
   n <- nrow(x)
 
-  ## make Xp and Xq
-  #' Design matrices for singing rates (`Xp`) and for EDR (`Xq`)
+  #Design matrices for singing rates (`Xp`) and for EDR (`Xq`)
   Xp <- cbind(
     "(Intercept)"=1,
     "TSSR"=TSSR,
@@ -196,6 +196,7 @@
     "JDAY2"=JDAY^2,
     "DSLS"=DSLS,
     "DSLS2"=DSLS^2)
+
   Xq <- cbind("(Intercept)"=1,
               "TREE"=TREE,
               "LCC2OpenWet"=ifelse(lcc4 %in% c("Open", "Wet"), 1, 0),
@@ -206,19 +207,19 @@
   p <- rep(NA, n)
   A <- q <- p
 
-  ## design matrices matching the coefs
+  #design matrices matching the coefs
   Xp2 <- Xp[,names(cfi$sra),drop=FALSE]
   OKp <- rowSums(is.na(Xp2)) == 0
   Xq2 <- Xq[,names(cfi$edr),drop=FALSE]
   OKq <- rowSums(is.na(Xq2)) == 0
 
-  ## calculate p, q, and A based on constant phi and tau for the respective NAs
+  #calculate p, q, and A based on constant phi and tau for the respective NAs
   p[!OKp] <- sra_fun(MAXDUR[!OKp], cf0[1])
   unlim <- ifelse(MAXDIS[!OKq] == Inf, TRUE, FALSE)
   A[!OKq] <- ifelse(unlim, pi * cf0[2]^2, pi * MAXDIS[!OKq]^2)
   q[!OKq] <- ifelse(unlim, 1, edr_fun(MAXDIS[!OKq], cf0[2]))
 
-  ## calculate time/lcc varying phi and tau for non-NA cases
+  #calculate time/lcc varying phi and tau for non-NA cases
   phi1 <- exp(drop(Xp2[OKp,,drop=FALSE] %*% cfi$sra))
   tau1 <- exp(drop(Xq2[OKq,,drop=FALSE] %*% cfi$edr))
   p[OKp] <- sra_fun(MAXDUR[OKp], phi1)
@@ -226,10 +227,11 @@
   A[OKq] <- ifelse(unlim, pi * tau1^2, pi * MAXDIS[OKq]^2)
   q[OKq] <- ifelse(unlim, 1, edr_fun(MAXDIS[OKq], tau1))
 
-  ## log(0) is not a good thing, apply constant instead
+  #log(0) is not a good thing, apply constant instead
   ii <- which(p == 0)
   p[ii] <- sra_fun(MAXDUR[ii], cf0[1])
 
+  #package output
   data.frame(
     p=p,
     q=q,
