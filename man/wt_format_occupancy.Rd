@@ -7,7 +7,7 @@
 wt_format_occupancy(data, species, siteCovs = NULL)
 }
 \arguments{
-\item{data}{Summary report of WildTrax observations from the \code{wt_download_report} function. Currently only functioning for the ARU sensor.}
+\item{data}{WildTrax main report or tag report from the \code{wt_download_report} function. Currently only functioning for the ARU sensor.}
 
 \item{species}{Character; four-letter alpha code for the species desired for occupancy modelling.}
 

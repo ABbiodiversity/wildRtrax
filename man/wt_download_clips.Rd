@@ -7,11 +7,11 @@
 wt_download_clips(data, filepath, object = "soundfile", quiet = FALSE)
 }
 \arguments{
-\item{data}{Dataframe of annotations obtained from the wt_download_tagreport function.}
+\item{data}{WildTrax tag report from the \code{wt_download_report} function.}
 
 \item{filepath}{Character; folder to download objects into.}
 
-\item{object}{Character; the format requested for the clips; either "soundfile", or "spectrogram".}
+\item{object}{Character; the format requested for the clips ("soundfile", or "spectrogram").}
 
 \item{quiet}{Logical; suppress download details for each object.}
 }
@@ -19,7 +19,7 @@ wt_download_clips(data, filepath, object = "soundfile", quiet = FALSE)
 A dataframe identical to input but including ID and filepath for each downloaded object.
 }
 \description{
-This function downloads annotations from WildTrax either as sound files or spectrograms. Using this function requires obtaining the urls for the objects using the wt_download_tagreport function.
+This function downloads annotations from WildTrax either as sound files or spectrograms. Using this function requires obtaining the urls for the objects using the \code{wt_download_report} function.
 }
 \examples{
 \dontrun{
