@@ -4,7 +4,7 @@
 \alias{wt_qpad_offsets}
 \title{Get QPAD offsets.}
 \usage{
-wt_qpad_offsets(data, species = "all", version = 3, output = "together")
+wt_qpad_offsets(data, species = "all", version = 3, together = TRUE)
 }
 \arguments{
 \item{data}{Dataframe output from the \code{wt_format_wide} function.}
