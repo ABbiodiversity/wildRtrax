@@ -41,8 +41,7 @@ wt_qpad_offsets <- function(data, species = "all", version = 3, together=TRUE){
   #Make the offsets
   for (i in 1:length(spp)){
     cat(spp[i], "\n")
-    flush.console()
-    o <- .make_off(spp[i], x, useMethod=useMethod)
+    o <- .make_off(spp[i], x)
     off[,i] <- o$offset
   }
 
