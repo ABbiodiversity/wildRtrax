@@ -2,13 +2,10 @@
 #'
 #' QPAD offsets
 #'
-#' @description Functions to format reports for qpad offset calculation, and then get the offsets,
+#' @description Functions to format reports for qpad offset calculation, and then get the offsets. Wrapped by the `wt_qpad_offsets` function.
 #'
-#' @import QPAD
-#' @import raster
-#' @import maptools
-#' @import intrval
-#' @import dplyr
+#' @import QPAD raster maptools intrval dplyr
+#'
 
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
