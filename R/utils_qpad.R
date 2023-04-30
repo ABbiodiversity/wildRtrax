@@ -4,6 +4,12 @@
 #'
 #' @description Functions to format reports for qpad offset calculation, and then get the offsets. Wrapped by the `wt_qpad_offsets` function.
 #'
+#' @param data Dataframe output from the `wt_format_wide` function.
+#' @param tz Character; whether or not the data is in local or UTC time ("local", or "utc"). Defaults to "local".
+#' @param check_xy Logical; check whether coordinates are within the range that QPAD offsets are valid for.
+#' @param spp species for offset calculation.
+#' @param x Dataframe out from the `.make_x` function.
+#'
 #' @import QPAD raster maptools intrval dplyr
 #'
 
@@ -29,7 +35,6 @@
   lat <- as.numeric(dat.meth$latitude)
   dur <- as.numeric(dat.meth$duration)
   dis <- Inf
-  tagmeth <- as.character(dat.meth$tagmeth)
 
   ## parse date+time into POSIXlt
   if(tz=="local"){
@@ -123,9 +128,6 @@
   MAXDIS <- round(dis / 100, 4)
   MAXDUR <- round(dur, 4)
 
-  ## TMmethod
-  TM <- ifelse(tagmeth %in% c("PC", "1SPT", "1SPM"), tagmeth, ifelse(tagmeth=="ARU", "1SPT", NA))
-
   out <- data.frame(
     TSSR=TSSR,
     JDAY=JDAY,
@@ -146,8 +148,7 @@
 
 }
 
-#8. Insert make offsets function----
-.make_off <- function(spp, x, useMethod="y"){
+.make_off <- function(spp, x){
 
   if (length(spp) > 1L)
     stop("spp argument must be length 1, please loop or map for multiple species")
@@ -158,17 +159,10 @@
 
   ## constant for NA cases
   cf0 <- exp(unlist(coefBAMspecies(spp, 0, 0)))
+
   ## best model
-  if(useMethod=="n"){
-    ### no TM method
-    mi <- bestmodelBAMspecies(spp, type="BIC", TM=0)
-    cfi <- coefBAMspecies(spp, mi$sra, mi$edr)
-  }
-  if(useMethod=="y"){
-    ### TM method
-    mi <- bestmodelBAMspecies(spp, type="BIC", TM=1)
-    cfi <- coefBAMspecies(spp, mi$sra, mi$edr)
-  }
+  mi <- bestmodelBAMspecies(spp, type="BIC", TM=0)
+  cfi <- coefBAMspecies(spp, mi$sra, mi$edr)
 
   TSSR <- x$TSSR
   DSLS <- x$DSLS
@@ -176,7 +170,6 @@
   lcc2 <- x$LCC2
   lcc4 <- x$LCC4
   TREE <- x$TREE
-  TM <- x$TM
   MAXDUR <- x$MAXDUR
   MAXDIS <- x$MAXDIS
   n <- nrow(x)
@@ -190,9 +183,7 @@
     "TSSR2"=TSSR^2,
     "JDAY2"=JDAY^2,
     "DSLS"=DSLS,
-    "DSLS2"=DSLS^2,
-    "TM1SPT"=ifelse(TM=="TM1SPT", 1, 0),
-    "TM1SPM"=ifelse(TM=="TM1SPM", 1, 0))
+    "DSLS2"=DSLS^2)
   Xq <- cbind("(Intercept)"=1,
               "TREE"=TREE,
               "LCC2OpenWet"=ifelse(lcc4 %in% c("Open", "Wet"), 1, 0),
@@ -202,16 +193,19 @@
 
   p <- rep(NA, n)
   A <- q <- p
+
   ## design matrices matching the coefs
   Xp2 <- Xp[,names(cfi$sra),drop=FALSE]
   OKp <- rowSums(is.na(Xp2)) == 0
   Xq2 <- Xq[,names(cfi$edr),drop=FALSE]
   OKq <- rowSums(is.na(Xq2)) == 0
+
   ## calculate p, q, and A based on constant phi and tau for the respective NAs
   p[!OKp] <- sra_fun(MAXDUR[!OKp], cf0[1])
   unlim <- ifelse(MAXDIS[!OKq] == Inf, TRUE, FALSE)
   A[!OKq] <- ifelse(unlim, pi * cf0[2]^2, pi * MAXDIS[!OKq]^2)
   q[!OKq] <- ifelse(unlim, 1, edr_fun(MAXDIS[!OKq], cf0[2]))
+
   ## calculate time/lcc varying phi and tau for non-NA cases
   phi1 <- exp(drop(Xp2[OKp,,drop=FALSE] %*% cfi$sra))
   tau1 <- exp(drop(Xq2[OKq,,drop=FALSE] %*% cfi$edr))
@@ -219,6 +213,7 @@
   unlim <- ifelse(MAXDIS[OKq] == Inf, TRUE, FALSE)
   A[OKq] <- ifelse(unlim, pi * tau1^2, pi * MAXDIS[OKq]^2)
   q[OKq] <- ifelse(unlim, 1, edr_fun(MAXDIS[OKq], tau1))
+
   ## log(0) is not a good thing, apply constant instead
   ii <- which(p == 0)
   p[ii] <- sra_fun(MAXDUR[ii], cf0[1])
