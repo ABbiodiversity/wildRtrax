@@ -6,7 +6,7 @@
 #' @param species Character; species for offset calculation. Can be a list of 4-letter AOU codes (e.g., c("TEWA", "OSFL", "OVEN")) or "all" to calculate offsets for every species in the input dataframe for which offsets are available. Defaults to "all".
 #' @param version Numeric; version of QPAD offsets to use (2, or 3). Defaults to 3.
 #' @param together Logical; whether or not offsets should be bound to the input dataframe or returned as a separate object.
-#' @import QPAD raster maptools intrval dplyr
+#' @import QPAD dplyr
 #' @export
 #'
 #' @examples

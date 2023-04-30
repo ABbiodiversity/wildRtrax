@@ -1,16 +1,17 @@
 #' Internal functions
 #'
-#' QPAD offsets
+#' QPAD offsets, wrapped by the `wt_qpad_offsets` function.
 #'
-#' @description Functions to format reports for qpad offset calculation, and then get the offsets. Wrapped by the `wt_qpad_offsets` function.
+#' @description Functions to format reports for qpad offset calculation.
 #'
 #' @param data Dataframe output from the `wt_format_wide` function.
 #' @param tz Character; whether or not the data is in local or UTC time ("local", or "utc"). Defaults to "local".
 #' @param check_xy Logical; check whether coordinates are within the range that QPAD offsets are valid for.
-#' @param spp species for offset calculation.
-#' @param x Dataframe out from the `.make_x` function.
 #'
-#' @import QPAD raster maptools intrval dplyr
+#' @import QPAD dplyr intrval maptools
+#' @importFrom raster raster proj4string coordinates extract
+#' @importFrom maptools sunriset
+#' @importFrom sp spTransform
 #'
 
 .make_x <- function(data, tz="local", check_xy=TRUE) {
@@ -74,12 +75,12 @@
   xy <- data.frame(x=lon, y=lat)
   xy$x[is.na(xy$x)] <- mean(xy$x, na.rm=TRUE)
   xy$y[is.na(xy$y)] <- mean(xy$y, na.rm=TRUE)
-  coordinates(xy) <- ~ x + y
+  raster::coordinates(xy) <- ~ x + y
   proj4string(xy) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
   xy <- invisible(spTransform(xy, crs))
 
   ## LCC4 and LCC2
-  vlcc <- extract(.rlcc, xy)
+  vlcc <- raster::extract(.rlcc, xy)
   lcclevs <- c("0"="", "1"="Conif", "2"="Conif", "3"="", "4"="",
                "5"="DecidMixed", "6"="DecidMixed", "7"="", "8"="Open", "9"="",
                "10"="Open", "11"="Open", "12"="Open", "13"="Open", "14"="Wet",
@@ -89,16 +90,16 @@
   levels(lcc2) <- c("Forest", "Forest", "OpenWet", "OpenWet")
 
   ## TREE
-  vtree <- extract(.rtree, xy)
+  vtree <- raster::extract(.rtree, xy)
   TREE <- vtree / 100
   TREE[TREE %)(% c(0, 1)] <- 0
 
-  ## extract seedgrow value (this is rounded)
-  d1 <- extract(.rd1, xy)
+  ## raster::extract seedgrow value (this is rounded)
+  d1 <- raster::extract(.rd1, xy)
 
   ## UTC offset + 7 makes Alberta 0 (MDT offset) for local times
   if(tz=="local"){
-    ltz <- extract(.rtz, xy) + 7
+    ltz <- raster::extract(.rtz, xy) + 7
   }
   if(tz=="utc"){
     ltz <- 0
@@ -147,6 +148,17 @@
   return(out)
 
 }
+#' Internal functions
+#'
+#' QPAD offsets, wrapped by the `wt_qpad_offsets` function.
+#'
+#' @description Functions to get the offsets.
+#'
+#' @param spp species for offset calculation.
+#' @param x Dataframe out from the `.make_x` function.
+#'
+#' @import QPAD dplyr intrval
+#'
 
 .make_off <- function(spp, x){
 
