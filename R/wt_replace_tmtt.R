@@ -2,7 +2,7 @@
 #'
 #' @description This function uses a lookup table of model-predicted values to replace 'TMTT' entries in listener-processed ARU data from WildTrax. The model-predicted values were produced using estimated abundances for 'TMTT' entries in mixed effects model with a Poisson distribution and random effects for species and observer.
 #'
-#' @param data Dataframe of WildTrax observations, for example the summary report.
+#' @param data WildTrax main report or tag report.
 #' @param calc Character; method to convert model predictions to integer ("round", "ceiling", or "floor"). See `?round()` for details.
 #' @import dplyr
 #' @export
