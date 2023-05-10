@@ -4,7 +4,7 @@ Version: 1.0.0
 Authors@R: 
     c(person(given = "Alex",
            family = "MacPhail",
-           role = "aut",
+           role = c("aut","cre"),
            email = "agmacpha@ualberta.ca"),
       person(given = "Marcus",
              family = "Becker",
@@ -12,7 +12,7 @@ Authors@R:
              email = "mabecker@ualberta.ca"),
       person(given = "Elly",
              family = "Knight",
-             role = "aut",
+             role = "cre",
              email = "ecknight@ualberta.ca"))
 Maintainer: Marcus Becker <mabecker@ualberta.ca>
 Description: This package provides a set of functions to manage environmental sensor data 
