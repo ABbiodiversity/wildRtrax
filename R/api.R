@@ -76,7 +76,7 @@ wt_get_download_summary <- function(sensor_id) {
 #' }
 #' @details Valid values for argument \code{report} when \code{sensor_id} = "ARU" currently are:
 #' \itemize{
-#'  \item summary
+#'  \item main
 #'  \item birdnet
 #'  \item task
 #'  \item tag
@@ -124,9 +124,9 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   }
 
   # Allowable reports for each sensor
-  cam <- c("image", "tag", "megadetector", "definitions")
-  aru <- c("summary", "birdnet", "task", "tag", "definitions")
-  pc <- c("report", "definitions")
+  cam <- c("main", "project", "location", "image", "tag", "megadetector", "megaclassifier", "definitions")
+  aru <- c("main", "project", "location", "birdnet", "task", "tag", "definitions")
+  pc <- c("main", "project", "location", "point count", "definitions")
 
   # Check that the user supplied a valid report type depending on the sensor
   if(sensor_id == "CAM" & !all(report %in% cam)) {
