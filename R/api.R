@@ -9,7 +9,7 @@
 #' @examples
 #' \dontrun{
 #' # Authenticate first:
-#' wt_auth(type = c("google", "env"), force = FALSE)
+#' wt_auth(force = FALSE)
 #' }
 #'
 #' @return

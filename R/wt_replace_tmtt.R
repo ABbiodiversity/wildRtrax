@@ -17,7 +17,7 @@
 wt_replace_tmtt <- function(data, calc="round"){
 
   #load tmtt lookup table
-  .tmtt <- read.csv(system.file("tmtt_predictions", package="wildRtrax"))
+  .tmtt <- read.csv(system.file("data", "tmtt_predictions.csv", package="wildRtrax"))
 
   #wrangle to tmtts only
   dat.tmtt <- data %>%
