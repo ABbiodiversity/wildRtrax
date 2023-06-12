@@ -72,14 +72,15 @@ wt_get_download_summary <- function(sensor_id) {
 #'  \item image
 #'  \item tag
 #'  \item megadetector
+#'  \item megaclassifier
 #'  \item definitions
 #' }
 #' @details Valid values for argument \code{report} when \code{sensor_id} = "ARU" currently are:
 #' \itemize{
-#'  \item main
-#'  \item birdnet
+#'  \item summary
 #'  \item task
 #'  \item tag
+#'  \item birdnet
 #'  \item definitions
 #' }
 #' @details Valid values for argument \code{report} when \code{sensor_id} = "PC" currently are:
@@ -124,9 +125,9 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   }
 
   # Allowable reports for each sensor
-  cam <- c("main", "project", "location", "image", "tag", "megadetector", "megaclassifier", "definitions")
-  aru <- c("main", "project", "location", "birdnet", "task", "tag", "definitions")
-  pc <- c("main", "project", "location", "point count", "definitions")
+  cam <- c("image", "tag", "megadetector", "megaclassifier", "definitions")
+  aru <- c("summary", "birdnet", "task", "tag", "definitions")
+  pc <- c("report", "definitions")
 
   # Check that the user supplied a valid report type depending on the sensor
   if(sensor_id == "CAM" & !all(report %in% cam)) {
@@ -190,7 +191,7 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   # List data files, read into R as a list
   files <- gsub(".csv", "", list.files(td, pattern = ".csv"))
   files.full <- list.files(td, pattern = ".csv", full.names = TRUE)
-  x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) |>
+  x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) %>%
     purrr::set_names(files)
 
   # Remove weather columns, if desired
