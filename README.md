@@ -11,11 +11,7 @@ status](https://travis-ci.com/ABbiodiversity/wildRtrax.svg?branch=master)](https
 
 ## Overview
 
-`wildRtrax` (pronounced *‘wilder tracks’*) is an R package to help environmental sensor data users to create full-cycle work flows from data management to analytics.
-
-With `wildRtrax`, users can easily create end-to-end workflows for managing and analyzing environmental sensor data. The package provides a wide range of tools and functions that streamline the entire data lifecycle, from data import and cleaning to data visualization and statistical analysis.
-
-`wildRtrax` also promotes reproducibility in data analysis by providing a consistent and organized framework for managing data and analysis workflows. This helps users to maintain transparency and integrity in their research, making it easier to share and reproduce results.
+`wildRtrax` (pronounced *‘wilder tracks’*) is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data. It simplifies the entire data life cycle by offering tools for data pre-processing, cleaning and analysis using data to and from [WildTrax](https://www.wildtrax.ca/home.html). With `wildRtrax`, users can easily establish end-to-end work flows and ensure reproducibility in their analyses. By providing a consistent and organized framework, the package facilitates transparency and integrity in research, making it effortless to share and replicate results.
 
 ## Installation
 
@@ -41,6 +37,7 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_run_ap` :sound:
   - `wt_glean_ap` :sound:
   - `wt_signal_level` :sound:
+  - `wt_chop` :sound:
 - Organize acoustic media and metadata for upload to WildTrax
   - `wt_make_aru_tasks` :sound:
   - `wt_kaleidoscope_tags` :sound:
@@ -49,12 +46,11 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_auth` :camera: :sound: :bird:
   - `wt_get_download_summary` :camera: :sound: :bird:
   - `wt_download_report` :camera: :sound: :bird:
-  - `wt_download_tags` :sound: :camera:
+    - Available reports: `main, project, location, recording / image / point count, tag, megaclassifer, megadetector, birdnet`
 - Analyze data
   - `wt_summarise_cam` :camera:
   - `wt_ind_det` :camera:
 - Convenience functions
-  - `wt_chop` :sound:
   - `wt_location_distances` :sound: :camera: :bird:
   - `wt_replace_tmtt` :sound:
   - `wt_tidy_species` :sound: :camera: :bird:

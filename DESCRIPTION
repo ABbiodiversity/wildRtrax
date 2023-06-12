@@ -15,8 +15,7 @@ Authors@R:
              role = "cre",
              email = "ecknight@ualberta.ca"))
 Maintainer: Marcus Becker <mabecker@ualberta.ca>
-Description: This package provides a set of functions to manage environmental sensor data 
-    to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
+Description: wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
 Depends: R (>= 4.0.4)
 License: `use_mit_license`
 Imports:
