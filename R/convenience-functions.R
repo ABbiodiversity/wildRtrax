@@ -15,7 +15,7 @@
 #' df <- wt_location_distances(input = my_location_tibble, input_from_file)
 #' }
 #'
-#' @return A three-column titble with the distances between each location
+#' @return A three-column tibble with the distances between each location
 
 wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NULL) {
 
@@ -80,6 +80,26 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 
 }
 
+#' Get the WildTrax species table
+#'
+#' @description Request for the WildTrax species table
+#'
+#' @import dplyr httr readr jsonlite
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data_species <- wt_get_species()
+#' }
+#' @return A tibble of the species table
+
+wt_get_species <- function(){
+
+  #
+  return(species_table)
+
+}
+
 #' Filter the species list to the groups of interest.
 #'
 #' @description This function filters the species provided in WildTrax reports to only the groups of interest. The groups available for filtering are mammal, bird, amphibian, abiotic, insect, and unknown. Zero-filling functionality is available to ensure all surveys are retained in the dataset if no observations of the group of interest are available.
@@ -96,7 +116,6 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
-
 wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE){
 
   #Convert to the sql database labels for species class
@@ -108,8 +127,9 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
                       !is.na(remove) ~ remove)
 
   #Get the sql lookup table
-  #### NEEDS AN API
+  ########################################################################## NEEDS AN API wt_get_species
   .species <- read.csv(system.file("lu_species.csv"), package="wildRtrax")
+  ##########################################################################
 
   #Get the species codes for what you want to filter out
   species.remove <- .species %>%

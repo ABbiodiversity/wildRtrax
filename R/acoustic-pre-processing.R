@@ -289,7 +289,7 @@ wt_wac_info <- function(path) {
 #' @import dplyr
 #' @importFrom stringr str_detect
 #' @importFrom furrr future_map
-#' @importFrom progressr with_progress progressor
+#' @importFrom progressr
 #' @export
 #'
 #' @examples

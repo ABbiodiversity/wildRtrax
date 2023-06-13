@@ -12,7 +12,7 @@ wt_location_distances(input_from_tibble = NULL, input_from_file = NULL)
 \item{input_from_file}{Use a file downloaded from either an organization or project}
 }
 \value{
-A three-column titble with the distances between each location
+A three-column tibble with the distances between each location
 }
 \description{
 Set of general convenience functions

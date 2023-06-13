@@ -4,9 +4,9 @@
 \name{wildRtrax}
 \alias{wildRtrax}
 \alias{wildRtrax-package}
-\title{wildRtrax: Am R package to facilitate full-cycle environmental sensor data work flows.}
+\title{wildRtrax: A series of advanced user functions for environmental sensor data management and an}
 \description{
-This package provides a set of functions to manage environmental sensor data to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
+wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
 }
 \author{
 Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca} Elly Knight \email{ecknight@ualberta.ca}

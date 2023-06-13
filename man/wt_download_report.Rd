@@ -2,35 +2,62 @@
 % Please edit documentation in R/api.R
 \name{wt_download_report}
 \alias{wt_download_report}
-\title{Get download summary}
+\title{Download Reports}
 \usage{
-wt_download_report(
-  project_id,
-  sensor_id,
-  cols_def = FALSE,
-  weather_cols = TRUE
-)
+wt_download_report(project_id, sensor_id, report, weather_cols = TRUE)
 }
 \arguments{
-\item{project_id}{Numeric; the project ID number that you would like to download data for. Use \verb{wt_get_download_summary() to retrieve these IDs.}}
+\item{project_id}{Numeric; the project ID number that you would like to download data for. Use \code{wt_get_download_summary()} to retrieve these IDs.}
 
-\item{sensor_id}{Can either be "ARU" or "CAM"}
+\item{sensor_id}{Character; Can either be "ARU", "CAM", or "PC".}
 
-\item{cols_def}{Logical; Do you want to include the column definitions? Defaults to FALSE}
+\item{report}{Character; The report type to be returned. Multiple values are accepted as a concatenated string.}
 
-\item{weather_cols}{Logical; Do you want to include weather information for your stations? Defaults to TRUE}
+\item{weather_cols}{Logical; Do you want to include weather information for your stations? Defaults to TRUE.}
 }
 \value{
-If cols_def is TRUE, a list is returned with three elements: the data, english, and french column definitions; if FALSE, the data is returned as a dataframe.
+If multiple report types are requested, a list object is returned; if only one, a dataframe.
 }
 \description{
-Obtain a table listing projects that the user is able to download data for
+Download ARU, Camera, or Point Count data from a project
+}
+\details{
+Valid values for argument \code{report} when \code{sensor_id} = "CAM" currently are:
+\itemize{
+\item main
+\item project
+\item location
+\item image
+\item tag
+\item megadetector
+\item megaclassifier
+\item definitions
+}
+
+Valid values for argument \code{report} when \code{sensor_id} = "ARU" currently are:
+\itemize{
+\item main
+\item project
+\item location
+\item tag
+\item birdnet
+\item definitions
+}
+
+Valid values for argument \code{report} when \code{sensor_id} = "PC" currently are:
+\itemize{
+\item main
+\item project
+\item location
+\item point count
+\item definitions
+}
 }
 \examples{
 \dontrun{
 # Authenticate first:
 wt_auth()
-wt_download_report(project_id = 397, sensor_id = "CAM", cols_def = FALSE, weather_cols = TRUE)
+wt_download_report(project_id = 397, sensor_id = "CAM", report = c("tag", "image"), weather_cols = TRUE)
 }
 
 }

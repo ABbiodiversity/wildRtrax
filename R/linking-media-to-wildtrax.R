@@ -172,12 +172,12 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
 #'
 #' @param input Character; The path to the input csv
 #' @param output Character; Path where the output file will be stored
-#' @param my_output_file
-#' @param species_code Character;
-#' @param vocalization_type Character;
-#' @param method
-#' @param score_filter
-#' @param task_length Numeric;
+#' @param my_output_file Character; Path of the output file
+#' @param species_code Character; Short-hand code for the species (see wt_get_species)
+#' @param vocalization_type Character; The vocalization type from either Song, Call, Non-Vocal, Night flight and Feeding Buzz
+#' @param method Character; Include options from 1SPT, 1SPM or None
+#' @param score_filter Numeric; Filter the detections by score
+#' @param task_length Numeric; length of the task in seconds
 #'
 #' @import dplyr tidyr readr pipeR stringr lubridate tibble
 #' @export

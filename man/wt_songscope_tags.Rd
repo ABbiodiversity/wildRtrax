@@ -5,18 +5,33 @@
 \title{\subsection{Sonic hits}{
 }}
 \usage{
-wt_songscope_tags(input, output, species_code, vocalization_type, task_length)
+wt_songscope_tags(
+  input,
+  output = c("env", "csv"),
+  my_output_file = NULL,
+  species_code,
+  vocalization_type,
+  score_filter,
+  method = c("USPM", "1SPT"),
+  task_length
+)
 }
 \arguments{
 \item{input}{Character; The path to the input csv}
 
 \item{output}{Character; Path where the output file will be stored}
 
-\item{species_code}{Character;}
+\item{my_output_file}{Character; Path of the output file}
 
-\item{vocalization_type}{Character;}
+\item{species_code}{Character; Short-hand code for the species (see wt_get_species)}
 
-\item{task_length}{Numeric;}
+\item{vocalization_type}{Character; The vocalization type from either Song, Call, Non-Vocal, Night flight and Feeding Buzz}
+
+\item{score_filter}{Numeric; Filter the detections by score}
+
+\item{method}{Character; Include options from 1SPT, 1SPM or None}
+
+\item{task_length}{Numeric; length of the task in seconds}
 }
 \value{
 A csv formatted as a WildTrax tag template
@@ -26,7 +41,7 @@ Takes the classifier output from Wildlife Acoustics Songscope and converts them 
 }
 \examples{
 \dontrun{
-wt_songscope_tags(input = input.csv, output = tags.csv, species_code, vocalization_type = "Call", task_length = 180)
+wt_songscope_tags(input = input.csv, output = tags.csv, species_code, = "CONI", method = "1SPT", vocalization_type = "Call", task_length = 180)
 }
 
 }

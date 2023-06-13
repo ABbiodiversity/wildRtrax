@@ -3,14 +3,13 @@
 #'
 #' @section `wt_ord` details:
 #'
-#' @description
+#' @description Uses a series of multivariate analyses to determine differences in multiobserver data
 
 #' @param input Character; A wt_download_report tibble
 #' @param min_obs Numeric; The minimum number of replicates you want to use. wt_ord will omit
 #' @param confidence Numeric; The confidence of the ellipses in the RDA
 #'
 #' @import
-#' @importFrom
 #' @importFrom
 #' @export
 #'

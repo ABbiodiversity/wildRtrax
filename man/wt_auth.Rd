@@ -15,7 +15,7 @@ Obtain Auth0 credentials using WT_USERNAME and WT_PASSWORD stored as environment
 \examples{
 \dontrun{
 # Authenticate first:
-wt_auth(type = c("google", "env"), force = FALSE)
+wt_auth(force = FALSE)
 }
 
 }
