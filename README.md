@@ -52,8 +52,9 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_ind_det` :camera:
 - Convenience functions
   - `wt_location_distances` :sound: :camera: :bird:
-  - `wt_replace_tmtt` :sound:
+  - `wt_get_species` :sound: :camera: :bird:
   - `wt_tidy_species` :sound: :camera: :bird:
+  - `wt_replace_tmtt` :sound:
   - `wt_make_wide` :sound: :camera: :bird:
   - `wt_occupancy_format` :sound: :bird:
   - `wt_qpad_offsets` :sound: :bird:
