@@ -2,7 +2,7 @@
 title: 'Authenticating into WildTrax'
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{authenticating-into-wt}
+  %\VignetteIndexEntry{Authenticating into WildTrax}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

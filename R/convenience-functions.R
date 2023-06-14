@@ -1,13 +1,13 @@
-#' # Set of general convenience functions
+#' Set of general convenience functions
 #'
 #' @section `wt_location_distances` details:
 #'
-#' @description
+#' @description Takes input lats and longs and computes the distances between each set of points
 #'
 #' @param input_from_tibble Use a tibble constructed with a distinct list of location names, latitude and longitude
 #' @param input_from_file Use a file downloaded from either an organization or project
 #'
-#' @import dplyr tibble tidyr sf %>%
+#' @import dplyr tibble tidyr sf
 #' @export
 #'
 #' @examples

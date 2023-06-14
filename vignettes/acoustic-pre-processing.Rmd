@@ -2,7 +2,7 @@
 title: 'Acoustic pre-processing'
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{using-functions-from-wildRtrax}
+  %\VignetteIndexEntry{Acoustic pre-processing}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -34,8 +34,8 @@ The `wt_audio_scanner()` function reads in audio files (either wac, wav or flac 
 ```{r, include=F, eval=F, warning=F, message=F}
 #save.image(".Data")
 
-# Load example data. Hide this block.
-load(".RData")
+# Load example data from the wildRtrax book. Hide this block.
+load("book.RData")
 
 ```
 
@@ -52,10 +52,13 @@ head(b)
 
 You might want to select recordings between certain times of day or year. 
 
-```{r}
+```{r, eval=F}
+library(tidyverse)
+library(lubridate)
+
 # Filter recordings based on criteria
 b %>%
-  mutate(hour = lubridate::hour(recording_date_time)) %>%
+  mutate(hour = hour(recording_date_time)) %>%
   filter(julian == 176, 
          hour %in% c(4:8))
 
@@ -84,7 +87,7 @@ wt_glean_ap()
 
 We can use the `wt_signal_level()` function to search for sounds that exceed a certain amplitude threshold. 
 
-```{r echo=TRUE, include=TRUE, eval=TRUE}
+```{r echo=TRUE, include=TRUE, eval=F}
 # Example audio file
 path_to_file <- b$file_path[3]
 

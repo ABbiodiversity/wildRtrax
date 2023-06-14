@@ -1,6 +1,6 @@
-#' # Set of analysis functions
+#' Set of analysis functions
 #'
-# '
+#'
 #' Summarise your camera data by location, time interval, and species.
 #'
 #' @description This function takes your independent detection data and summarises it by location, specified time interval, and species.
@@ -261,6 +261,8 @@ wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = date_
 
 }
 
+#' Use a series of multivariate analyses to determine observer differences in acoustic processed data
+#'
 #' @section `wt_ord` details:
 #'
 #' @description Uses a series of multivariate analyses to determine differences in multiobserver data
@@ -269,8 +271,7 @@ wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = date_
 #' @param min_obs Numeric; The minimum number of replicates you want to use. wt_ord will omit
 #' @param confidence Numeric; The confidence of the ellipses in the RDA
 #'
-#' @import
-#' @importFrom
+#' @import lubridate fitdistrplus furrr purrr scales vegan pipeR vctrs extraDistr gamlss tools
 #' @export
 #'
 #' @examples

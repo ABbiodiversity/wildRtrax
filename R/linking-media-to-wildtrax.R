@@ -1,4 +1,4 @@
-#' # Prepare media and data for upload to WildTrax
+#' Prepare media and data for upload to WildTrax
 #'
 #' The following suite of functions will help you wrangle media and data together
 #' in order to upload them to WildTrax. You can make tasks(https://www.wildtrax.ca/home/resources/guide/projects/aru-projects.html)

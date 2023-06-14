@@ -1,8 +1,10 @@
 ---
-title: "audio-data-concepts"
-author: "Alex MacPhail"
-date: "11/11/2022"
-output: html_document
+title: 'Audio data concepts'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Audio data concepts}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -23,7 +25,7 @@ There are three major audio file types used within the **wildRtrax**: *wac*, *fl
 
 You might also be working with *mp3* which is a lossy compressed audio file format.
 
-```{r Examples of reading acoustic data into R, include = TRUE, echo = TRUE}
+```{r Examples of reading acoustic data into R, include = TRUE, echo = TRUE, eval = FALSE}
 root <- "/volumes/GoogleDrive/Shared drives/wildRtrax/data/example/"
 
 file <- paste0(root,"ABMI-0754-SW_20170301_085900.wav")
@@ -38,7 +40,7 @@ list(wave_t, wave_f)
 
 You can access the *objects* in `wave_t` through a `$` as you would a normal list. When `header = FALSE` and you are reading in the entire wav file, you can access *slots* of the `S4` object using `@`. 
 
-```{r Accessing S4 and lists, include = TRUE, echo = TRUE}
+```{r Accessing S4 and lists, include = TRUE, echo = TRUE, eval = FALSE}
 sound_length_S4 <- round((wave_f@left / wave_f@samp.rate), 2)
 
 #Is equivalent to:

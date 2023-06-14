@@ -8,6 +8,13 @@
 \description{
 wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://abbiodiversity.github.io/wildRtrax/}
+}
+
+}
 \author{
 Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca} Elly Knight \email{ecknight@ualberta.ca}
 }

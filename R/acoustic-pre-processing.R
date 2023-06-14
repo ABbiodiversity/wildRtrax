@@ -1,4 +1,4 @@
-#' # Pre-process acoustic data for use in WildTrax
+#' Pre-process acoustic data for use in WildTrax
 #'
 #' The following set of functions help to pre-process and organize audio and corresponding metadata.
 #' \code(`wt_audio_scanner`) scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns.
@@ -120,10 +120,10 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       df_wac <- df %>>%
         "Working on wac files..." %>>%
         dplyr::filter(file_type == "wac") %>%
-        dplyr::mutate(info = furrr::future_map(.x = file_path, .f = ~ wt_wac_info(.x), .progress = TRUE, .options = furrr_options(seed = TRUE)),
-                      sample_rate = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
-                      length_seconds = purrr::map_dbl(.x = info, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
-                      n_channels = purrr::map_dbl(.x = info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
+        dplyr::mutate(wac_info = furrr::future_map(.x = file_path, .f = ~ wt_wac_info(.x), .progress = TRUE, .options = furrr_options(seed = TRUE)),
+                      sample_rate = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
+                      length_seconds = purrr::map_dbl(.x = wac_info, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
+                      n_channels = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
         dplyr::select(-c(info, unsafe))
       })
     }
@@ -134,7 +134,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       df_flac <- df %>>%
         "Working on flac files..." %>>%
         dplyr::filter(file_type == "flac") %>%
-        dplyr::mutate(data = furrr::future_map(.x = file_path, .f = ~ seewave::wav2flac(.x), .options = furrr_options(seed = TRUE)),
+        dplyr::mutate(flac_info = furrr::future_map(.x = file_path, .f = ~ wt_flac_info(.x), .options = furrr_options(seed = TRUE)),
                       sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample_rate"]])),
                       length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
@@ -171,6 +171,8 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
 
 }
 
+#' Extract relevant metadata from a wac file
+#'
 #' @section `wt_wac_info` details:
 #'
 #' @description Scrape relevant information from wac (Wildlife Acoustics) file
@@ -259,19 +261,45 @@ wt_wac_info <- function(path) {
 
 }
 
-# @section `wt_flac_info` details:
-#
-# @description Scrape relevant information from flac file
-#
-# @param path Character; The flac file path
-#
-# @import
-# @export
-#
-# @return a list with relevant information
+#' Extract relevant metadata from a flac file
+#'
+#' @section `wt_flac_info` details:
+#'
+#' @description Scrape relevant information from flac file
+#'
+#' @param path Character; The flac file path
+#'
+#' @import tools seewave tuneR
+#' @export
+#'
+#' @return a list with relevant information
 
-#wt_flac_info <- function(path {})
+wt_flac_info <- function(path) {
 
+  if (tools::file_ext(path) != "flac") {
+    stop("This is not a flac file.")
+  }
+
+  newfile <- gsub(".flac$", ".wav", input)
+
+  seewave::wav2flac(input, reverse = T)
+
+  info <- tuneR::readWave(newfile, from = 0, to = Inf, units = "seconds", header = T)
+
+  file.remove(newfile)
+
+  return(
+    out = list(
+      sample_rate = info$sample.rate,
+      n_channels = info$n_channels,
+      length_seconds = info$samples / info$sample.rate
+    )
+  )
+
+}
+
+#' Get a variety of acoustic index output from audio
+#'
 #' @section `wt_run_ap` for generating acoustic indices and false-colour spectrograms using QUT Ecoacoustics **A**nalysis **P**rograms software
 #'
 #' @description See \url{https://github.com/QutEcoacoustics/audio-analysis} for information about usage and installation of the AP software.
@@ -286,10 +314,7 @@ wt_wac_info <- function(path) {
 #' @param output_dir Character; path to directory where you want outputs to be stored.
 #' @param path_to_ap Character; file path to the AnalysisPrograms software package. Defaults to "C:\\AP\\AnalysisPrograms.exe".
 #'
-#' @import dplyr
-#' @importFrom stringr str_detect
-#' @importFrom furrr future_map
-#' @importFrom progressr
+#' @import dplyr stringr furrr progressr
 #' @export
 #'
 #' @examples
@@ -357,6 +382,8 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 
 }
 
+#' Extract and plot relevant acoustic index metadata and LDFCs
+#'
 #' @section `wt_glean_ap` for retrieving data from the AP output
 #'
 #' @description This function will use a list of media files from a `wt_*` work flow and outputs from `wt_run_ap`
@@ -448,6 +475,9 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   return(list(joined,plotted,ldfc))
 }
 
+
+#' Get signals from specific windows of audio
+#'
 #' @section `wt_signal_level` to extract relative sound level from a wav file using amplitude thresholds
 #'
 #' @description Signal level uses amplitude and frequency thresholds in order to detect a signal.
@@ -586,6 +616,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 
 }
 
+#' Segment a large audio file
 #'
 #' @section `wt_chop` details:
 #'
@@ -595,14 +626,14 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
 #' @param output_folder Character; output path to where the segments will be stored
 #'
-#' @import tuneR future furrr lubridate %>% dplyr pipeR
+#' @import tuneR future furrr lubridate dplyr pipeR
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' wt_chop(input = my_audio_tibble %>% slice(1), segment_length = 60, output_folder "/where/i/store/my/chopped/files")
 #'
-#' df %>%
+#' my_audio_tibble %>%
 #'    dplyr::rowwise() %>%
 #'    ~purrr::map_lgl(.x = ., ~wt_chop(., segment_length = 60, output_folder = "where/i/store/my/chopped/files")
 #
@@ -627,7 +658,6 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
                   location,
                   file_type,
                   length_seconds)
-
 
   length_sec <- inp %>% pluck('length_seconds')
 
@@ -670,4 +700,5 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
         .options = furrr::furrr_options(seed = T)
       )
   }
+
 }
