@@ -2,8 +2,7 @@
 % Please edit documentation in R/linking-media-to-wildtrax.R
 \name{wt_kaleidoscope_tags}
 \alias{wt_kaleidoscope_tags}
-\title{\subsection{Upload hits from a Wildlife Acoustics classifier}{
-}}
+\title{Upload hits from a Wildlife Acoustics classifier}
 \usage{
 wt_kaleidoscope_tags(input, output, tz, freq_bump = T)
 }
@@ -21,10 +20,6 @@ A csv formatted as a WildTrax tag template
 }
 \description{
 \code{wt_kaleidoscope_tags} Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
-}
-\details{
-\subsection{Ultrasonic hits}{
-}
 }
 \section{\code{wt_kaleidoscope_tags}}{
 NA

@@ -19,3 +19,4 @@ Functions to format reports for qpad offset calculation.
 \details{
 QPAD offsets, wrapped by the \code{wt_qpad_offsets} function.
 }
+\keyword{internal}

@@ -1,4 +1,4 @@
-# wildRtrax 1.0.0 'Rose-breasted Grosbeak / Wolverine'
+# wildRtrax 1.0.0
 
 ## Major changes 
 
@@ -26,7 +26,7 @@
 
 * `wt_prob_det`
 
-# wildRtrax 0.1.0 'American Pipit'
+# wildRtrax 0.1.0
 
 * Addition of base functions:
   * **Acoustic**

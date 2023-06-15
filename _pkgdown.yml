@@ -1,4 +1,47 @@
 url: https://abbiodiversity.github.io/wildRtrax/
 template:
   bootstrap: 5
-
+  bootswatch: flatly
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - introduction
+  - audio-data-concepts
+  - image-data-concepts
+  - authenticating-into-wt
+  - acoustic-pre-processing
+  - acoustic-data-wrangling
+reference:
+- contents:
+  - wt_auth
+  - wt_get_download_summary
+  - wt_download_report
+  - wt_get_species
+  - wt_audio_scanner
+  - wt_run_ap
+  - wt_glean_ap
+  - wt_signal_level
+  - wt_chop
+  - wt_wac_info
+  - wt_flac_info
+  - wt_make_aru_tasks
+  - wt_kaleidoscope_tags
+  - wt_songscope_tags
+  - wt_replace_tmtt
+  - wt_summarise_cam
+  - wt_ind_detect
+  - wt_ord
+  - wt_location_distances
+  - wt_tidy_species
+  - wt_make_wide
+  - wt_format_occupancy
+  - wt_qpad_offsets
+  - wildRtrax
+news:
+  releases:
+  - text: "wildRtrax 1.0.0"
+  - text: "wildRtrax 0.1.0"
+  one_page: true
+development:
+  mode: auto

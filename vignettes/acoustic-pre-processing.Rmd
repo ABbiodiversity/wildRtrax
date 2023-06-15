@@ -7,64 +7,60 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+The following set of functions help to pre-process and organize audio and corresponding metadata. \code(`wt_audio_scanner`) scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns. \code(`wt_run_ap`) allows you to generate acoustic indices and false-colour spectrograms from a \code(`wt_audio_scanner`) tibble, while \code{`wt_glean_ap`} wrangles the output into summary plots and LDFCs. \code(`wt_signal_level`) detects signals in audio based on amplitude thresholds. In conjunction, these tools allow you to select recordings parameterized to a specific study design. `vignette("linking-media-to-wildtrax")` will allow you to dive deeper in how to link the data to the WildTrax platform.
+
+```{r, include = FALSE, echo = F, include = T, warning = F, message = F}
 
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = '#>'
 )
 
+library(wildRtrax)
+library(tidyverse)
+
 ```
 
-## Acoustic pre-processing
-
-This vignette describes several acoustic pre-processing functions and work flows available in the `wildRtrax` package. 
-
-### Scanning audio files from a directory
+## Scanning audio files from a directory
 
 The `wt_audio_scanner()` function reads in audio files (either wac, wav or flac format) from a local directory and outputs useful metadata.
 
-```{r setup, echo = F, include = T, warning = F, message = F}
-# Attach packages
-#library(wildRtrax)
-#library(tidyverse)
-
-```
-
-```{r, include=F, eval=F, warning=F, message=F}
-#save.image(".Data")
-
-# Load example data from the wildRtrax book. Hide this block.
-load("book.RData")
-
-```
-
-```{r, echo=TRUE, include=TRUE, eval=F, warning = F, message = F}
+```{r, echo=TRUE, include=TRUE, eval=T, warning = F, message = F}
 # Scan data
-b <- wt_audio_scanner(path = root, file_type = "all", extra_cols = T)
 
-```
+if (dir.exists("../")) {
+  wt_audio_scanner(path = "../", file_type = "wav", extra_cols = T)
+} else {
+  'Can\'\t find this directory'
+}
 
-```{r, echo=T, include=T, eval=F, warning=F, message=F, prompt=T, comment=""}
-# View
-head(b)
 ```
 
 You might want to select recordings between certain times of day or year. 
 
-```{r, eval=F}
-library(tidyverse)
+```{r, echo=TRUE, include=F, eval=T, warning = F, message = F}
+load("../book/book.RData")
+
+```
+
+```{r, echo=TRUE, include=TRUE, eval=T, warning = F, message = F}
+files
+
+```
+
+Or filter recordings based on some criteria.
+
+```{r, echo=TRUE, include=TRUE, eval=T, warning = F, message = F}
 library(lubridate)
 
-# Filter recordings based on criteria
-b %>%
+files %>%
   mutate(hour = hour(recording_date_time)) %>%
   filter(julian == 176, 
          hour %in% c(4:8))
 
 ```
 
-### Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
+## Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
 
 The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)](https://ap.qut.ecoacoustics.info/) on your audio data. AP generates acoustic index values and false-colour spectrograms for each audio minute of data. Note that you must have the AP program installed on your computer. See more here [(Towsey et al., 2018)](https://researchoutput.csu.edu.au/ws/portalfiles/portal/28556441/28544328_Published_article.pdf). 
 
@@ -83,7 +79,7 @@ wt_glean_ap()
 
 ```
 
-### Applying a limited amplitude filter
+## Applying a limited amplitude filter
 
 We can use the `wt_signal_level()` function to search for sounds that exceed a certain amplitude threshold. 
 
@@ -108,7 +104,14 @@ s['output']
 
 ```
 
-### Linking files to WildTrax
+## Linking files to WildTrax
+
+Make tasks at any time using a `wt_*` standard data set.
+
+```{r, include = T, eval=F, warning=F, message=F}
+wt_make_aru_tasks(input = testff, task_method = "1SPT", task_length = 180)
+
+```
 
 The function `wt_songscope_tags` reformats the output obtained from a wildlife acoustics songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
 
@@ -124,9 +127,3 @@ wt_kaleidoscope_tags()
 
 ```
 
-Make tasks at any time using a `wt_*` standard data set.
-
-```{r, include = T, eval=F, warning=F, message=F}
-wt_make_aru_tasks()
-
-```

@@ -12,6 +12,8 @@
 #' wt_auth(force = FALSE)
 #' }
 #'
+#'
+
 wt_auth <- function(force = FALSE) {
 
   if (!exists("._wt_auth_env_"))
@@ -225,6 +227,25 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
 
   return(x)
 
+}
+
+
+#' Get the WildTrax species table
+#'
+#' @description Request for the WildTrax species table
+#'
+#' @import dplyr httr readr jsonlite
+#' @export
+#'
+#' @examples
+#'  \dontrun{
+#'  data_species <- wt_get_species()
+#'  }
+#' @return A tibble of the species table
+#'
+
+wt_get_species <- function(){
+  message("This will return the WildTrax species table. Stay tuned!")
 }
 
 

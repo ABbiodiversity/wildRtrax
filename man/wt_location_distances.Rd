@@ -2,7 +2,7 @@
 % Please edit documentation in R/convenience-functions.R
 \name{wt_location_distances}
 \alias{wt_location_distances}
-\title{Set of general convenience functions}
+\title{General convenience functions}
 \usage{
 wt_location_distances(input_from_tibble = NULL, input_from_file = NULL)
 }

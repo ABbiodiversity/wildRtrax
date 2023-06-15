@@ -12,3 +12,4 @@ Get Auth0 token and assign information to the hidden environment
 \details{
 WildTrax authentication
 }
+\keyword{internal}

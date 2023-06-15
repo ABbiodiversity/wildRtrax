@@ -17,12 +17,8 @@ wt_ord(input = x, min_obs, confidence)
 A list containing the following:
 }
 \description{
-Uses a series of multivariate analyses to determine differences in multiobserver data
+Uses a series of multivariate analyses to determine differences in multiobserver data \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
-\section{\code{wt_ord} details}{
-
-}
-
 \examples{
 \dontrun{
 res <- wt_prd(input = data, min_obs = 10, confidence = 0.67)

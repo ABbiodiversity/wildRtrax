@@ -1,3 +1,5 @@
+#' Linking media to WildTrax
+#'
 #' Prepare media and data for upload to WildTrax
 #'
 #' The following suite of functions will help you wrangle media and data together
@@ -5,7 +7,7 @@
 #' and tags(https://www.wildtrax.ca/home/resources/guide/acoustic-data/acoustic-tagging-methods.html) using the results from a
 #' `wt_audio_scanner` tibble or the hits from one of two Wildlife Acoustics programs Songscope() and Kaleidoscpe().
 #'
-#' ## Creating tasks from media
+#' Creating tasks from media
 #'
 #' @section `wt_make_aru_tasks`
 #'
@@ -30,7 +32,7 @@
 #' It's important that if the media hasn't been uploaded to WildTrax, that you do that first before trying to generate tasks in a project.
 #' In parallel, you can select the files you want and upload and generate tasks in a project.
 
-wt_make_aru_tasks <- function(input, output, task_method = c("1SPM","1SPT","None"), task_length) {
+wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT","None"), task_length) {
 
   task_prep <- input
 
@@ -66,19 +68,25 @@ wt_make_aru_tasks <- function(input, output, task_method = c("1SPM","1SPT","None
     tibble::add_column(audioQuality = "", .after = "otherNoise") %>%
     tibble::add_column(taskComments = "", .after = "audioQuality") %>%
     tibble::add_column(internal_task_id = "", .after = "taskComments")
-  #{if (im_feeling_lucky = T) sample_frac(runif(1,0,1), replace = F)}
+
+  no_length <- tasks %>%
+    filter(is.na(taskLength))
+
+  warning(nrow(no_length), ' rows are shorter than the desired task length')
 
   if (!is.null(tasks)) {
     message("Converted list of recordings to WildTrax tasks. Go to your WildTrax organization > Recordings Tab > Manage > Upload Recordings.
         Then go to your WildTrax project > Manage > Upload Tasks to upload the csv of tasks.")
   }
 
-  return(write.csv(tasks, output, row.names = F))
+  if (is.null(output)) {
+    return(my_tasks <<- tasks)
+  } else {
+    return(write.csv(tasks, output, row.names = F))
+  }
 }
 
-#' ## Upload hits from a Wildlife Acoustics classifier
-#'
-#' ### Ultrasonic hits
+#' Upload hits from a Wildlife Acoustics classifier
 #'
 #' @section `wt_kaleidoscope_tags`
 #'
@@ -166,8 +174,6 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
 
 }
 
-#' ### Sonic hits
-#'
 #' Takes the classifier output from Wildlife Acoustics Songscope and converts them into a WildTrax tag template for upload
 #'
 #' @param input Character; The path to the input csv

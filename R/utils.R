@@ -4,6 +4,8 @@
 #'
 #' @description Get Auth0 token and assign information to the hidden environment
 #'
+#' @keywords internal
+#'
 #' @import httr
 #'
 .wt_auth <- function() {
@@ -61,6 +63,8 @@
 #'
 #' @description Check if the Auth0 token has expired
 #'
+#' @keywords internal
+#'
 #'
 .wt_auth_expired <- function () {
 
@@ -79,6 +83,8 @@
 #'
 #' @param path The path to the API
 #' @param ... Argument to pass along into POST query
+#'
+#' @keywords internal
 #'
 #' @import httr
 #'
@@ -124,6 +130,8 @@
 #' @param data Dataframe output from the `wt_format_wide` function.
 #' @param tz Character; whether or not the data is in local or UTC time ("local", or "utc"). Defaults to "local".
 #' @param check_xy Logical; check whether coordinates are within the range that QPAD offsets are valid for.
+#'
+#' @keywords internal
 #'
 #' @import QPAD dplyr intrval maptools
 #' @importFrom raster raster proj4string coordinates extract
@@ -272,6 +280,8 @@
 #'
 #' @param spp species for offset calculation.
 #' @param x Dataframe out from the `.make_x` function.
+#'
+#' @keywords internal
 #'
 #' @import QPAD dplyr intrval
 #'

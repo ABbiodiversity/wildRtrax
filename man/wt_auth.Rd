@@ -18,4 +18,5 @@ Obtain Auth0 credentials using WT_USERNAME and WT_PASSWORD stored as environment
 wt_auth(force = FALSE)
 }
 
+
 }

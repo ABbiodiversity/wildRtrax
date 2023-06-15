@@ -14,3 +14,4 @@
 \description{
 Functions to get the offsets.
 }
+\keyword{internal}

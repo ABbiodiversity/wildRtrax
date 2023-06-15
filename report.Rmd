@@ -1,6 +1,0 @@
----
-title: "report"
-date: "`r Sys.Date()`"
-output: html_document
----
-

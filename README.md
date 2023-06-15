@@ -1,5 +1,5 @@
 
-# wildRtrax <img src="man/figures/hex-logo-pipit.png" width="40%" align="right" />
+# wildRtrax <img src="man/figures/logo.png" width="40%" align="right" />
 
 <!-- badges: start -->
 
@@ -50,6 +50,7 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
 - Analyze data
   - `wt_summarise_cam` :camera:
   - `wt_ind_det` :camera:
+  - `wt_ord` **beta** :sound:
 - Convenience functions
   - `wt_location_distances` :sound: :camera: :bird:
   - `wt_get_species` :sound: :camera: :bird:

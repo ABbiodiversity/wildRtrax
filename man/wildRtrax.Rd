@@ -6,6 +6,8 @@
 \alias{wildRtrax-package}
 \title{wildRtrax: A series of advanced user functions for environmental sensor data management and an}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
 }
 \seealso{

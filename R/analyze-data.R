@@ -263,9 +263,7 @@ wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = date_
 
 #' Use a series of multivariate analyses to determine observer differences in acoustic processed data
 #'
-#' @section `wt_ord` details:
-#'
-#' @description Uses a series of multivariate analyses to determine differences in multiobserver data
+#' @description Uses a series of multivariate analyses to determine differences in multiobserver data `r lifecycle::badge("experimental")`
 
 #' @param input Character; A wt_download_report tibble
 #' @param min_obs Numeric; The minimum number of replicates you want to use. wt_ord will omit

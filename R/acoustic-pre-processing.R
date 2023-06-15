@@ -1,16 +1,6 @@
-#' Pre-process acoustic data for use in WildTrax
+#' Scan acoustic data to a standard format
 #'
-#' The following set of functions help to pre-process and organize audio and corresponding metadata.
-#' \code(`wt_audio_scanner`) scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns.
-#' \code(`wt_run_ap`) allows you to generate acoustic indices and false-colour spectrograms from a \code(`wt_audio_scanner`)
-#' tibble, while \code{`wt_glean_ap`} wrangles the output into summary plots and LDFCs. \code(`wt_signal_level`) detects signals in audio based on amplitude thresholds. In conjunction, these tools allow
-#' you to select recordings parameterized to a specific study design. `vignette("linking-media-to-wildtrax")` will allow you to
-#' dive deeper in how to link the data to the WildTrax platform.
-#'
-#' @section `wt_audio_scanner` details:
-#'
-#' @description Scans directories of audio data and returns the file path, file name, file size, date, time, location name,
-#' sample rate, length (seconds) and number of channels to be used as filters for other uses
+#' @description Scans directories of audio data and returns the standard naming conventions
 #'
 #' @param path Character; The path to the directory with audio files you wish to scan. Can be done recursively.
 #' @param file_type Character; Takes one of four values: wav, wac, flac or all. Use "all" if your directory contains many types of files.
@@ -23,11 +13,10 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' df <- wt_audio_scanner(path = "/path/to/file", file_type = "all", extra_cols = FALSE, tz = "US/Mountain")
-#' }
+#' wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T, tz = "US/Mountain")
 #'
-#' @return A tibble with a summary of your audio files
+#'
+#' @return A tibble with a summary of your audio files. Includes file path, file name, file size, date, time, location name, sample rate, length (seconds) and number of channels to be used as filters for other uses
 
 wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   # Create regex for file_type
@@ -621,7 +610,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #'
 #' @description "Chops" up a wav file into many smaller files of a desired duration
 #'
-#' @param input A tibble; A single row from a \code(`wt_audio_scanner`) tibble
+#' @param input A tibble; A single row from a \code{`wt_audio_scanner`} tibble
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
 #' @param output_folder Character; output path to where the segments will be stored
 #'

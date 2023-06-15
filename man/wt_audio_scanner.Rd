@@ -2,7 +2,7 @@
 % Please edit documentation in R/acoustic-pre-processing.R
 \name{wt_audio_scanner}
 \alias{wt_audio_scanner}
-\title{Pre-process acoustic data for use in WildTrax}
+\title{Scan acoustic data to a standard format}
 \usage{
 wt_audio_scanner(path, file_type, extra_cols = F, tz = "")
 }
@@ -16,27 +16,13 @@ wt_audio_scanner(path, file_type, extra_cols = F, tz = "")
 \item{tz}{Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, \code{wt_audio_scanner} will assume the next valid time. Use \code{OlsonNames()} to get a list of valid names.}
 }
 \value{
-A tibble with a summary of your audio files
+A tibble with a summary of your audio files. Includes file path, file name, file size, date, time, location name, sample rate, length (seconds) and number of channels to be used as filters for other uses
 }
 \description{
-Scans directories of audio data and returns the file path, file name, file size, date, time, location name,
-sample rate, length (seconds) and number of channels to be used as filters for other uses
+Scans directories of audio data and returns the standard naming conventions
 }
-\details{
-The following set of functions help to pre-process and organize audio and corresponding metadata.
-\code(\code{wt_audio_scanner}) scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns.
-\code(\code{wt_run_ap}) allows you to generate acoustic indices and false-colour spectrograms from a \code(\code{wt_audio_scanner})
-tibble, while \code{`wt_glean_ap`} wrangles the output into summary plots and LDFCs. \code(\code{wt_signal_level}) detects signals in audio based on amplitude thresholds. In conjunction, these tools allow
-you to select recordings parameterized to a specific study design. \code{vignette("linking-media-to-wildtrax")} will allow you to
-dive deeper in how to link the data to the WildTrax platform.
-}
-\section{\code{wt_audio_scanner} details}{
-
-}
-
 \examples{
-\dontrun{
-df <- wt_audio_scanner(path = "/path/to/file", file_type = "all", extra_cols = FALSE, tz = "US/Mountain")
-}
+wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T, tz = "US/Mountain")
+
 
 }

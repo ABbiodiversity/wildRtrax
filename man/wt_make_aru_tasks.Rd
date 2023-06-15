@@ -2,7 +2,7 @@
 % Please edit documentation in R/linking-media-to-wildtrax.R
 \name{wt_make_aru_tasks}
 \alias{wt_make_aru_tasks}
-\title{Prepare media and data for upload to WildTrax}
+\title{Linking media to WildTrax}
 \usage{
 wt_make_aru_tasks(
   input,
@@ -30,12 +30,14 @@ In parallel, you can select the files you want and upload and generate tasks in 
 \code{wt_make_aru_tasks} uses a \code{wt_audio_scanner} input tibble to create a task template to upload to a WildTrax project.
 }
 \details{
+Prepare media and data for upload to WildTrax
+
 The following suite of functions will help you wrangle media and data together
 in order to upload them to WildTrax. You can make tasks(https://www.wildtrax.ca/home/resources/guide/projects/aru-projects.html)
 and tags(https://www.wildtrax.ca/home/resources/guide/acoustic-data/acoustic-tagging-methods.html) using the results from a
 \code{wt_audio_scanner} tibble or the hits from one of two Wildlife Acoustics programs Songscope() and Kaleidoscpe().
-\subsection{Creating tasks from media}{
-}
+
+Creating tasks from media
 }
 \section{\code{wt_make_aru_tasks}}{
 NA

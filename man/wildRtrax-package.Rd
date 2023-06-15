@@ -6,6 +6,8 @@
 \alias{wildRtrax-package}
 \title{wildRtrax: Environmental sensor data management and analytics to and from WildTrax}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
 }
 \seealso{
@@ -16,11 +18,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Alex MacPhail \email{agmacpha@ualberta.ca}
+\strong{Maintainer}: Marcus Becker \email{mabecker@ualberta.ca}
 
 Authors:
 \itemize{
-  \item Marcus Becker \email{mabecker@ualberta.ca}
+  \item Alex MacPhail \email{agmacpha@ualberta.ca}
   \item Elly Knight \email{ecknight@ualberta.ca}
 }
 

@@ -1,4 +1,4 @@
-#' Set of general convenience functions
+#' General convenience functions
 #'
 #' @section `wt_location_distances` details:
 #'
@@ -77,26 +77,6 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
     dplyr::select(location_from, distance_to, distance)
 
   return(final_distances)
-
-}
-
-#' Get the WildTrax species table
-#'
-#' @description Request for the WildTrax species table
-#'
-#' @import dplyr httr readr jsonlite
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' data_species <- wt_get_species()
-#' }
-#' @return A tibble of the species table
-
-wt_get_species <- function(){
-
-  #
-  return(species_table)
 
 }
 
@@ -191,7 +171,6 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 #' dat.tmtt <- replace_tmtt(dat, calc="round")
 #' }
 #' @return A dataframe identical to input with 'TMTT' entries in the abundance column replaced by integer values.
-
 
 wt_replace_tmtt <- function(data, calc="round"){
 

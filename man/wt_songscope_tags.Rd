@@ -2,8 +2,7 @@
 % Please edit documentation in R/linking-media-to-wildtrax.R
 \name{wt_songscope_tags}
 \alias{wt_songscope_tags}
-\title{\subsection{Sonic hits}{
-}}
+\title{Takes the classifier output from Wildlife Acoustics Songscope and converts them into a WildTrax tag template for upload}
 \usage{
 wt_songscope_tags(
   input,
