@@ -17,15 +17,14 @@
 #' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.
 #' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, `wt_audio_scanner` will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
 #'
-#' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr seewave
+#' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr seewave progressr
 #' @importFrom lubridate year ymd_hms yday with_tz
 #' @importFrom rlang env_has current_env
-#' @importFrom progressr with_progress progressor
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "all", extra_cols = FALSE, tz = "US/Mountain")
+#' df <- wt_audio_scanner(path = "/path/to/file", file_type = "all", extra_cols = FALSE, tz = "US/Mountain")
 #' }
 #'
 #' @return A tibble with a summary of your audio files
@@ -475,7 +474,6 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   return(list(joined,plotted,ldfc))
 }
 
-
 #' Get signals from specific windows of audio
 #'
 #' @section `wt_signal_level` to extract relative sound level from a wav file using amplitude thresholds
@@ -500,6 +498,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
 #'
 #' @return A list object containing the following four elements: output (dataframe), aggregated (boolean), channel (character), and threshold (numeric)
 #'
+
 wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "left", aggregate = NULL) {
   # Load wav object from path
   wav_object <- tuneR::readWave(path)
@@ -632,11 +631,6 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' @examples
 #' \dontrun{
 #' wt_chop(input = my_audio_tibble %>% slice(1), segment_length = 60, output_folder "/where/i/store/my/chopped/files")
-#'
-#' my_audio_tibble %>%
-#'    dplyr::rowwise() %>%
-#'    ~purrr::map_lgl(.x = ., ~wt_chop(., segment_length = 60, output_folder = "where/i/store/my/chopped/files")
-#
 #' }
 #'
 #' @return Segmented files written to the output_folder
@@ -662,13 +656,13 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
   length_sec <- inp %>% pluck('length_seconds')
 
   if (segment_length > length_sec) {
-    stop('Segment is longer than duration')
+    stop('Segment is longer than duration. Choose a shorter segment length.')
   }
 
   start_times = seq(0, length_sec - segment_length, by = segment_length)
   val <- max(start_times) + segment_length
 
-  if (val < length_sec){
+  if (val < length_sec) {
     inp %>>%
       "Chopping the modulo recording" %>>%
       furrr::future_pmap(
@@ -700,5 +694,4 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
         .options = furrr::furrr_options(seed = T)
       )
   }
-
 }

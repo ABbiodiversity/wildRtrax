@@ -36,7 +36,7 @@ dive deeper in how to link the data to the WildTrax platform.
 
 \examples{
 \dontrun{
-df <- wt_audio_scanner(path = "C:/Users/me/path/to/audio/files", file_type = "all", extra_cols = FALSE, tz = "US/Mountain")
+df <- wt_audio_scanner(path = "/path/to/file", file_type = "all", extra_cols = FALSE, tz = "US/Mountain")
 }
 
 }
