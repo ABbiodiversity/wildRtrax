@@ -18,7 +18,6 @@ Author: Alex MacPhail
 Maintainer: Marcus Becker <mabecker@ualberta.ca>
 Description: wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
 Depends: R (>= 4.0.4)
-License: `use_mit_license`
 Imports:
     dplyr (>= 1.0.0),
     future,
@@ -38,8 +37,6 @@ Imports:
     intrval,
     jsonlite,
     magick,
-    maptools,
-    raster,
     readr,
     scales,
     sf,
@@ -49,14 +46,11 @@ Imports:
     vegan,
     purrr,
     rlang,
-    foreach,
-    doParallel,
     unmarked,
-    plumber,
-    shiny,
     seewave,
+    maptools,
+    raster,
     httr,
-    progress,
     progressr,
 Suggests: 
     testthat (>= 3.0.0),
