@@ -127,7 +127,7 @@
 #'
 #' @description Functions to format reports for qpad offset calculation.
 #'
-#' @param data Dataframe output from the `wt_format_wide` function.
+#' @param data Dataframe output from the `wt_make_wide` function.
 #' @param tz Character; whether or not the data is in local or UTC time ("local", or "utc"). Defaults to "local".
 #' @param check_xy Logical; check whether coordinates are within the range that QPAD offsets are valid for.
 #'
@@ -142,10 +142,10 @@
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
   #Get the gis data
-  .rlcc <- raster(system.file("lcc.tif"), package="wildRTrax")
-  .rtree <- raster(system.file("tree.tif"), package="wildRTrax")
-  .rd1 <- raster(system.file("seedgrow.tif"), package="wildRTrax")
-  .rtz <- raster(system.file("utcoffset.tif"), package="wildRTrax")
+  .rlcc <- raster(system.file("lcc.tif"), package="wildRtrax")
+  .rtree <- raster(system.file("tree.tif"), package="wildRtrax")
+  .rd1 <- raster(system.file("seedgrow.tif"), package="wildRtrax")
+  .rtz <- raster(system.file("utcoffset.tif"), package="wildRtrax")
   crs <- proj4string(.rtree)
 
   #Separate method into duration and tag method
