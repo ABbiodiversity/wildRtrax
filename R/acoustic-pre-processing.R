@@ -161,8 +161,6 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
 
 #' Extract relevant metadata from a wac file
 #'
-#' @section `wt_wac_info` details:
-#'
 #' @description Scrape relevant information from wac (Wildlife Acoustics) file
 #'
 #' @param path Character; The wac file path
@@ -251,8 +249,6 @@ wt_wac_info <- function(path) {
 
 #' Extract relevant metadata from a flac file
 #'
-#' @section `wt_flac_info` details:
-#'
 #' @description Scrape relevant information from flac file
 #'
 #' @param path Character; The flac file path
@@ -288,9 +284,7 @@ wt_flac_info <- function(path) {
 
 #' Get a variety of acoustic index output from audio
 #'
-#' @section `wt_run_ap` for generating acoustic indices and false-colour spectrograms using QUT Ecoacoustics **A**nalysis **P**rograms software
-#'
-#' @description See \url{https://github.com/QutEcoacoustics/audio-analysis} for information about usage and installation of the AP software.
+#' @description For generating acoustic indices and false-colour spectrograms using QUT Ecoacoustics **A**nalysis **P**rograms software. See \url{https://github.com/QutEcoacoustics/audio-analysis} for information about usage and installation of the AP software.
 #' Note that this function relies on having this software installed locally.
 #'
 #' This function will batch calculate summary and spectral acoustic indices and generate false-colour spectrograms for a folder of audio files using the Towsey.Acoustic configuration (yml) file from the AP software.
@@ -605,8 +599,6 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 }
 
 #' Segment a large audio file
-#'
-#' @section `wt_chop` details:
 #'
 #' @description "Chops" up a wav file into many smaller files of a desired duration
 #'
