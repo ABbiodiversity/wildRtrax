@@ -1,7 +1,5 @@
 #' General convenience functions
 #'
-#' @section `wt_location_distances` details:
-#'
 #' @description Takes input lats and longs and computes the distances between each set of points
 #'
 #' @param input_from_tibble Use a tibble constructed with a distinct list of location names, latitude and longitude
@@ -80,7 +78,7 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 
 }
 
-#' Filter the species list to the groups of interest.
+#' Filter the species list to the groups of interest from wt_get_species
 #'
 #' @description This function filters the species provided in WildTrax reports to only the groups of interest. The groups available for filtering are mammal, bird, amphibian, abiotic, insect, and unknown. Zero-filling functionality is available to ensure all surveys are retained in the dataset if no observations of the group of interest are available.
 #'
@@ -106,10 +104,19 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
                       remove=="bird" ~ "Aves",
                       !is.na(remove) ~ remove)
 
-  #Get the sql lookup table
-  ########################################################################## NEEDS AN API wt_get_species
-  .species <- read.csv(system.file("lu_species.csv"), package="wildRtrax")
-  ##########################################################################
+  if (exists("wt_spp_table", where = environment(), inherits = F)) {
+    message("Found the species table! Continuing to filter...")
+    .species <- wt_spp_table
+  } else {
+    message("Couldn't find the species table. Requesting to download...")
+    wt_get_species()
+    if (exists("wt_spp_table", where = environment(), inherits = F)) {
+      message("Found the species table! Continuing to filter...")
+      .species <- wt_spp_table
+    } else {
+      stop("An error occured. Please try again and check your authentication credentials.")
+    }
+  }
 
   #Get the species codes for what you want to filter out
   species.remove <- .species %>%
