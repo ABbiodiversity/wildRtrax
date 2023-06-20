@@ -7,7 +7,7 @@
 .make_x(data, tz = "local", check_xy = TRUE)
 }
 \arguments{
-\item{data}{Dataframe output from the \code{wt_format_wide} function.}
+\item{data}{Dataframe output from the \code{wt_make_wide} function.}
 
 \item{tz}{Character; whether or not the data is in local or UTC time ("local", or "utc"). Defaults to "local".}
 

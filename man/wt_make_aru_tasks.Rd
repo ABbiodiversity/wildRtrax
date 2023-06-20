@@ -6,7 +6,7 @@
 \usage{
 wt_make_aru_tasks(
   input,
-  output,
+  output = NULL,
   task_method = c("1SPM", "1SPT", "None"),
   task_length
 )

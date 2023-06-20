@@ -19,10 +19,6 @@ Segmented files written to the output_folder
 \description{
 "Chops" up a wav file into many smaller files of a desired duration
 }
-\section{\code{wt_chop} details}{
-
-}
-
 \examples{
 \dontrun{
 wt_chop(input = my_audio_tibble \%>\% slice(1), segment_length = 60, output_folder "/where/i/store/my/chopped/files")

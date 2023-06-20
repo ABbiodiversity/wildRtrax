@@ -2,7 +2,7 @@
 % Please edit documentation in R/convenience-functions.R
 \name{wt_tidy_species}
 \alias{wt_tidy_species}
-\title{Filter the species list to the groups of interest.}
+\title{Filter the species list to the groups of interest from wt_get_species}
 \usage{
 wt_tidy_species(
   data,

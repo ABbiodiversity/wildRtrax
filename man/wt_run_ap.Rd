@@ -27,16 +27,12 @@ wt_run_ap(
 Output will return to the specific root directory
 }
 \description{
-See \url{https://github.com/QutEcoacoustics/audio-analysis} for information about usage and installation of the AP software.
+For generating acoustic indices and false-colour spectrograms using QUT Ecoacoustics \strong{A}nalysis \strong{P}rograms software. See \url{https://github.com/QutEcoacoustics/audio-analysis} for information about usage and installation of the AP software.
 Note that this function relies on having this software installed locally.
 
 This function will batch calculate summary and spectral acoustic indices and generate false-colour spectrograms for a folder of audio files using the Towsey.Acoustic configuration (yml) file from the AP software.
 You can use the output from \code{`wt_audio_scanner`} in the function, or define a local folder with audio files directly.
 }
-\section{\code{wt_run_ap} for generating acoustic indices and false-colour spectrograms using QUT Ecoacoustics \strong{A}nalysis \strong{P}rograms software}{
-NA
-}
-
 \examples{
 \dontrun{
 }

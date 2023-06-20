@@ -15,7 +15,3 @@ a list with relevant information
 \description{
 Scrape relevant information from flac file
 }
-\section{\code{wt_flac_info} details}{
-
-}
-

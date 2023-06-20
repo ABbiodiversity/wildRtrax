@@ -17,10 +17,6 @@ A three-column tibble with the distances between each location
 \description{
 Takes input lats and longs and computes the distances between each set of points
 }
-\section{\code{wt_location_distances} details}{
-
-}
-
 \examples{
 \dontrun{
 df <- wt_location_distances(input = my_location_tibble, input_from_file)

@@ -15,7 +15,3 @@ a list with relevant information
 \description{
 Scrape relevant information from wac (Wildlife Acoustics) file
 }
-\section{\code{wt_wac_info} details}{
-
-}
-

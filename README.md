@@ -30,7 +30,7 @@ remotes::install_github("ABbiodiversity/wildRtrax@development")
 
 ## Usage
 
-All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis. 
+All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis. Some functions are built specifically for ARUs :sound:, cameras :cameras: or point counts :bird:, while others are used for all sensors.
 
 - Pre-process acoustic data
   - `wt_audio_scanner` :sound:
@@ -47,6 +47,7 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_get_download_summary` :camera: :sound: :bird:
   - `wt_download_report` :camera: :sound: :bird:
     - Available reports: `main, project, location, recording / image / point count, tag, megaclassifer, megadetector, birdnet`
+  - `wt_get_species` :camera: :sound: :bird:
 - Analyze data
   - `wt_summarise_cam` :camera:
   - `wt_ind_det` :camera:
