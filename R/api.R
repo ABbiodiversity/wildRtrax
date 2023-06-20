@@ -241,7 +241,7 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
 #'  \dontrun{
 #'  data_species <- wt_get_species()
 #'  }
-#' @return A tibble of the species table
+#' @return A tibble of the species table called 'wt_spp_table'
 #'
 
 wt_get_species <- function(){
