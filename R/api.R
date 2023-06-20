@@ -245,11 +245,51 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
 #'
 
 wt_get_species <- function(){
-  message("This will return the WildTrax species table. Stay tuned!")
+
+  # Check if authentication has expired:
+  if (.wt_auth_expired())
+    stop("Please authenticate with wt_auth().", call. = FALSE)
+
+  # User agent
+  u <- getOption("HTTPUserAgent")
+  if (is.null(u)) {
+    u <- sprintf("R/%s; R (%s)",
+                 getRversion(),
+                 paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
+  }
+
+  # Add wildRtrax version information:
+  u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
+
+  spp <- httr::POST(
+    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-all-species"),
+    accept = "application/json",
+    httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
+    httr::user_agent(u),
+    httr::progress()
+  )
+
+  if (spp$status_code == 200) {
+  } else {
+    stop("The species table could not be downloaded.")
+  }
+
+  spps <- httr::content(spp)
+
+  spp_table <- tibble(
+    species_id = map_dbl(spps, ~ ifelse(!is.null(.x$id), .x$id, NA)),
+    species_code = map_chr(spps, ~ ifelse(!is.null(.x$code), .x$code, NA)),
+    species_common_name = map_chr(spps, ~ ifelse(!is.null(.x$commonName), .x$commonName, NA)),
+    species_class = map_chr(spps, ~ ifelse(!is.null(.x$className), .x$className, NA)),
+    species_order = map_chr(spps, ~ ifelse(!is.null(.x$order), .x$order, NA)),
+    species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
+  )
+
+  message("Successfully downloaded the species table! Use wt_tidy_species to filter species from the list.")
+
+  assign("wt_spp_table", spp_table, 1)
+
 }
-
-
-
 
 
 
