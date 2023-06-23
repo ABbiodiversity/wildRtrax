@@ -107,7 +107,9 @@ wt_get_download_summary <- function(sensor_id) {
 #' \dontrun{
 #' # Authenticate first:
 #' wt_auth()
-#' wt_download_report(project_id = 397, sensor_id = "CAM", report = c("tag", "image"), weather_cols = TRUE)
+#' a_camera_project <- wt_download_report(project_id = 397, sensor_id = "CAM", reports = c("tag", "image"), weather_cols = TRUE)
+#'
+#' an_aru_project <- wt_download_report(project_id = 47, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = TRUE)
 #' }
 #'
 #' @return If multiple report types are requested, a list object is returned; if only one, a dataframe.
@@ -167,6 +169,8 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     sensorId = sensor_id
   )
 
+
+ # Create the list of objects
   if ("main" %in% reports) query_list$mainReport <- TRUE
   if ("project" %in% reports) query_list$projectReport <- TRUE
   if ("location" %in% reports) query_list$locationReport <- TRUE
@@ -188,11 +192,12 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     httr::modify_url("https://acpt-api.wildtrax.ca", path = "/bis/download-report"),
     query = query_list,
     accept = "application/zip",
-    httr::add_headers(Authorization = paste("Bearer", x$access_token)),
+    httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
     httr::user_agent(u),
     httr::write_disk(tmp),
     httr::progress()
-  )
+    )
+
 
   # Stop if an error or bad request occurred
   if (httr::http_error(r))
@@ -223,7 +228,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   }
 
   # Return the requested report(s)
-  report <- paste(report, collapse = "|")
+  report <- paste(reports, collapse = "|")
   x <- x[grepl(report, names(x))]
   # Return a dataframe if only 1 element in the list (i.e., only 1 report requested)
   if (length(x) == 1) {
