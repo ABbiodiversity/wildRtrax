@@ -137,7 +137,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
 
   # Allowable reports for each sensor
   cam <- c("main", "project", "location", "image", "tag", "megadetector", "megaclassifier", "definitions")
-  aru <- c("main", "project", "location", "birdnet", "task", "tag", "definitions")
+  aru <- c("main", "project", "location", "birdnet", "recording", "tag", "definitions")
   pc <- c("main", "project", "location", "point count", "definitions")
 
   # Check that the user supplied a valid report type depending on the sensor
@@ -168,7 +168,6 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     projectIds = project_id,
     sensorId = sensor_id
   )
-
 
  # Create the list of objects
   if ("main" %in% reports) query_list$mainReport <- TRUE
@@ -266,6 +265,14 @@ wt_get_species <- function(){
   # Check if authentication has expired:
   if (.wt_auth_expired())
     stop("Please authenticate with wt_auth().", call. = FALSE)
+
+  if (exists("wt_spp_table")) {
+    user_input <- readline("Do you want to overwrrite the current species table in your environment? (Y/N): ")
+
+    if (user_input == "N") {
+      stop("Stopping.")
+    }
+  }
 
   # User agent
   u <- getOption("HTTPUserAgent")
