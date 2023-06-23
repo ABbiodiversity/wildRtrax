@@ -404,14 +404,17 @@ wt_format_occupancy <- function(data,
 
 }
 
-#' Get QPAD offsets.
+#' Get QPAD offsets
 #'
-#' @description This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds, as per 'Solymos et al. 2013. Calibrating indices of avian density from non-standardized survey data: making the most of a messy situation Methods in Ecology and Evolution, 4, 1047-1058.' This function requires download of the `QPAD` R package and should be used on the output of the `wt_format_wide` function.
+#' @description This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds. This function requires download of the `QPAD` R package and should be used on the output of the `wt_format_wide` function
 #'
 #' @param data Dataframe output from the `wt_format_wide` function.
 #' @param species Character; species for offset calculation. Can be a list of 4-letter AOU codes (e.g., c("TEWA", "OSFL", "OVEN")) or "all" to calculate offsets for every species in the input dataframe for which offsets are available. Defaults to "all".
 #' @param version Numeric; version of QPAD offsets to use (2, or 3). Defaults to 3.
 #' @param together Logical; whether or not offsets should be bound to the input dataframe or returned as a separate object.
+#'
+#' @references Solymos et al. 2013. Calibrating indices of avian density from non-standardized survey data: making the most of a messy situation. Methods in Ecology and Evolution, 4, 1047-1058.
+#'
 #' @import QPAD dplyr
 #' @export
 #'
@@ -419,12 +422,12 @@ wt_format_occupancy <- function(data,
 #' \dontrun{
 #' devtools::install_github("borealbirds/QPAD")
 #'
-#' dat.clean <- wt_clean_species(dat)
+#' dat.clean <- wt_tidy_species(dat)
 #' dat.tmtt <- wt_replace_tmtt(dat.clean)
 #' dat.wide <- wt_make_wide(dat.tmtt, sound="all")
 #' dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE)
 #' }
-#' @return An object of class unmarkedFrameOccu. See `?unmarked::unmarkedFrameOccu` for details.
+#' @return An object of class unmarkedFrameOccu. See `unmarked::unmarkedFrameOccu` for details.
 
 wt_qpad_offsets <- function(data, species = "all", version = 3, together=TRUE){
 
