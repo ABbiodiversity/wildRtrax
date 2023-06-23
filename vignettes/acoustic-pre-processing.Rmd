@@ -7,7 +7,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-The following set of functions help to pre-process and organize audio and corresponding metadata. \code(`wt_audio_scanner`) scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns. \code(`wt_run_ap`) allows you to generate acoustic indices and false-colour spectrograms from a \code(`wt_audio_scanner`) tibble, while \code{`wt_glean_ap`} wrangles the output into summary plots and LDFCs. \code(`wt_signal_level`) detects signals in audio based on amplitude thresholds. In conjunction, these tools allow you to select recordings parameterized to a specific study design. `vignette("linking-media-to-wildtrax")` will allow you to dive deeper in how to link the data to the WildTrax platform.
+The following set of functions help to pre-process and organize audio and corresponding metadata. In conjunction, these tools allow you to select recordings parameterized to a specific study design.
+
+# Data pre-processing
+
+- \code`wt_audio_scanner()` scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns. 
+- \code`wt_run_ap()` allows you to generate acoustic indices and false-colour spectrograms from a \code`wt_audio_scanner()` tibble, while \code`wt_glean_ap()` wrangles the output into summary plots and LDFCs. 
+- \code`wt_signal_level()` detects signals in audio based on amplitude thresholds. 
+- \code`wt_chop()` divides a large audio file into shorter segments.
 
 ```{r, include = FALSE, echo = F, include = T, warning = F, message = F}
 knitr::opts_chunk$set(
@@ -17,6 +24,10 @@ knitr::opts_chunk$set(
 
 library(wildRtrax)
 library(tidyverse)
+
+# Set the directory path
+load("book.RData")
+#save.image("book.RData")
 
 ```
 
@@ -37,15 +48,9 @@ if (dir.exists(".")) {
 
 You might want to select recordings between certain times of day or year, or filter recordings based on some criteria.
 
-```{r, echo=TRUE, include=T, eval=T, warning = F, message = F}
-# Set the directory path
-load("book.RData")
-#save.image("book.RData")
-
-```
-
 ```{r, echo=TRUE, include=TRUE, eval=T, warning = F, message = F}
-files
+files %>%
+  select(-file_path)
 
 ```
 
@@ -82,18 +87,24 @@ wt_glean_ap()
 
 We can use the `wt_signal_level()` function to search for sounds that exceed a certain amplitude threshold. 
 
-```{r, include=TRUE, eval=F, warning=F, message=F}
-# Example audio file
-signal_file <- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
+```{r, echo=T, include=TRUE, eval=F, warning=F, message=F}
+if (dir.exists(".")) {
+  signal_file <- wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
+} else {
+  'Can\'\t find this directory'
+}
 
-# Run
-s <- wt_signal_level(path = signal_file$file_path[[1]], 
+wt_signal_level(path = signal_file$file_path, 
                      fmin = 0, 
-                     fmax = 2000, 
-                     threshold = 20, 
-                     channel = 'left', 
-                     aggregate = 5)
+                     fmax = 10000, 
+                     threshold = 5, 
+                     channel = 'left')
 
+```
+
+```{r, eval = F}
+# Run
+s
 # Return a list object, with parameters stored
 str(s)
 
@@ -103,20 +114,18 @@ s['output']
 
 ```
 
-## Linking files to WildTrax
+# Linking files to WildTrax
 
 Make tasks at any time using a `wt_*` standard data set.
 
 ```{r, include = T, eval=F, warning=F, message=F}
-wt_make_aru_tasks(input = testff, task_method = "1SPT", task_length = 180)
-
+wt_make_aru_tasks(input = files %>% select(-file_path), task_method = "1SPT", task_length = 180)
 ```
 
 The function `wt_songscope_tags` reformats the output obtained from a wildlife acoustics songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
 
 ```{r, include = T, eval=F, warning=F, message=F, prompt="", prompt=T}
 wt_songscope_tags()
-
 ```
 
 Similarly, the function `wt_kaleidoscope_tags` performs the same reformatting process, but with Kaleidoscope instead. It is worth noting that this function targeted for sonic and ultrasonic species upload.

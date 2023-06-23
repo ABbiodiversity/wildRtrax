@@ -32,10 +32,6 @@ A list object containing the following four elements: output (dataframe), aggreg
 \description{
 Signal level uses amplitude and frequency thresholds in order to detect a signal.
 }
-\section{\code{wt_signal_level} to extract relative sound level from a wav file using amplitude thresholds}{
-NA
-}
-
 \examples{
 \dontrun{
 df <- wt_signal_level(path = "")

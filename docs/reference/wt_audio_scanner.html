@@ -88,15 +88,26 @@
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A tibble with a summary of your audio files. Includes file path, file name, file size, date, time, location name, sample rate, length (seconds) and number of channels to be used as filters for other uses</p>
-    </div>
+<p>A tibble with a summary of your audio files.</p><ul><li><p>file_path; Character - Full file path of the audio</p></li>
+<li><p>size_Mb; Numeric - Size of the file in MB</p></li>
+<li><p>file_name; Character - Basename of the file</p></li>
+<li><p>location; Character - Location name</p></li>
+<li><p>recording_date_time; Dttm - Recording date time of the file; use with "tz" argument to set as needed</p></li>
+<li><p>file_type; Character - wac, wav or flac</p></li>
+<li><p>julian; Numeric - Julian date of the audio</p></li>
+<li><p>year; Numeric - Year of the audio</p></li>
+<li><p>gps_enabled; Boolean - If TRUE, audio is GPS enabled</p></li>
+<li><p>time_index; Numeric - Numeric value describing the order of the recording per day. E.g. time_index = 1 is the first recording of the day</p></li>
+<li><p>length_seconds; Numeric - Length of the audio file in seconds</p></li>
+<li><p>sample rate; Numeric - Sample rate of the audio file in Hertz</p></li>
+<li><p>n_channels; Numeric - Number of channels of the audio file</p></li>
+</ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">wt_audio_scanner</span><span class="op">(</span>path <span class="op">=</span> <span class="st">"."</span>, file_type <span class="op">=</span> <span class="st">"wav"</span>, extra_cols <span class="op">=</span> <span class="cn">T</span>, tz <span class="op">=</span> <span class="st">"US/Mountain"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Scanning files in path... </span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T,     tz = "US/Mountain"):</span> There were no files of the type specified in file_path in the directory path specified.</span>
-<span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="fu">wt_audio_scanner</span><span class="op">(</span>path <span class="op">=</span> <span class="st">"."</span>, file_type <span class="op">=</span> <span class="st">"wav"</span>, extra_cols <span class="op">=</span> <span class="cn">T</span>, tz <span class="op">=</span> <span class="st">"US/Mountain"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

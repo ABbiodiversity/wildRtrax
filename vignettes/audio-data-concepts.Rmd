@@ -26,9 +26,7 @@ There are three major audio file types used within the **wildRtrax**: *wac*, *fl
 You might also be working with *mp3* which is a lossy compressed audio file format.
 
 ```{r Examples of reading acoustic data into R, include = TRUE, echo = TRUE, eval = FALSE}
-root <- "/volumes/GoogleDrive/Shared drives/wildRtrax/data/example/"
-
-file <- paste0(root,"ABMI-0754-SW_20170301_085900.wav")
+file <- fs::dir_ls(path = ".", regexp = "*.wav")
 
 wave_t <- tuneR::readWave(file, header = T) #True header format
 
@@ -45,6 +43,8 @@ sound_length_S4 <- round((wave_f@left / wave_f@samp.rate), 2)
 
 #Is equivalent to:
 sound_length_list <- wave_t$samples / wave_t$sample.rate
+
+sound_length_list
 
 ```
 

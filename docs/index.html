@@ -85,10 +85,11 @@
 </div>
 <!-- badges: start -->
 
+<!-- badges: end -->
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p><code>wildRtrax</code> (pronounced <em>‘wilder tracks’</em>) is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data. It simplifies the entire data life cycle by offering tools for data pre-processing, cleaning and analysis using data to and from <a href="https://www.wildtrax.ca/home.html" class="external-link">WildTrax</a>. With <code>wildRtrax</code>, users can easily establish end-to-end work flows and ensure reproducibility in their analyses. By providing a consistent and organized framework, the package facilitates transparency and integrity in research, making it effortless to share and replicate results.</p>
+<p><code>wildRtrax</code> (pronounced <em>wild-R-tracks</em>) is an R package containing functions to help manage and analyze environmental sensor data. It helps to simplify the entire data life cycle by offering tools for data pre-processing, wrangling, and analysis, facilitating seamless data transfer to and from <a href="https://www.wildtrax.ca/home.html" class="external-link">WildTrax</a>. With <code>wildRtrax</code>, users can effortlessly establish end-to-end workflows and ensure reproducibility in their analyses. By providing a consistent and organized framework, the package promotes transparency and integrity in research, making it effortless to share and replicate results.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -97,61 +98,57 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"ABbiodiversity/wildRtrax"</span><span class="op">)</span></span></code></pre></div>
-<p>Or the development version with:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"ABbiodiversity/wildRtrax@development"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<p>All functions begin with a <code>wt_*</code> prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis.</p>
+<p>All functions begin with a <code>wt_*</code> prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis. Some functions are built specifically for ARUs <span class="emoji" data-emoji="sound">🔉</span>, cameras <span class="emoji" data-emoji="camera">📷</span> or point counts <span class="emoji" data-emoji="bird">🐦</span>, while others are used for all sensors. <span class="emoji" data-emoji="bat">🦇</span> denotes ultrasonic functionalities.</p>
 <ul>
 <li>Pre-process acoustic data
 <ul>
 <li>
-<code>wt_audio_scanner</code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_audio_scanner.html">wt_audio_scanner()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
 </li>
 <li>
-<code>wt_run_ap</code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_run_ap.html">wt_run_ap()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
 </li>
 <li>
-<code>wt_glean_ap</code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_glean_ap.html">wt_glean_ap()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
 </li>
 <li>
-<code>wt_signal_level</code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_signal_level.html">wt_signal_level()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
 </li>
 <li>
-<code>wt_chop</code> <span class="emoji" data-emoji="sound">🔉</span>
-</li>
-</ul>
-</li>
-<li>Organize acoustic media and metadata for upload to WildTrax
-<ul>
-<li>
-<code>wt_make_aru_tasks</code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_chop.html">wt_chop()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
 </li>
 <li>
-<code>wt_kaleidoscope_tags</code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_make_aru_tasks.html">wt_make_aru_tasks()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
 </li>
 <li>
-<code>wt_songscope_tags</code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_songscope_tags.html">wt_songscope_tags()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
+</li>
+<li>
+<code><a href="reference/wt_kaleidoscope_tags.html">wt_kaleidoscope_tags()</a></code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 </ul>
 </li>
 <li>Download processed data from WildTrax
 <ul>
 <li>
-<code>wt_auth</code> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span>
+<code>wt_auth</code> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 <li>
-<code>wt_get_download_summary</code> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span>
+<code>wt_get_download_summary</code> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 <li>
-<code>wt_download_report</code> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span>
+<code>wt_download_report</code> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span> <span class="emoji" data-emoji="bat">🦇</span>
 <ul>
-<li>Available reports: <code>main, project, location, recording / image / point count, tag, megaclassifer, megadetector, birdnet</code>
+<li>Available reports: <code>main, project, location, recording / image / point count, tag, megadetector, megaclassifer, birdnet</code>
 </li>
 </ul>
+</li>
+<li>
+<code>wt_get_species</code> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 </ul>
 </li>
@@ -171,19 +168,16 @@
 <li>Convenience functions
 <ul>
 <li>
-<code>wt_location_distances</code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="bird">🐦</span>
+<code>wt_location_distances</code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="bird">🐦</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 <li>
-<code>wt_get_species</code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="bird">🐦</span>
-</li>
-<li>
-<code>wt_tidy_species</code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="bird">🐦</span>
+<code>wt_tidy_species</code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="bird">🐦</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 <li>
 <code>wt_replace_tmtt</code> <span class="emoji" data-emoji="sound">🔉</span>
 </li>
 <li>
-<code>wt_make_wide</code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="bird">🐦</span>
+<code>wt_make_wide</code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="bird">🐦</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 <li>
 <code>wt_occupancy_format</code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span>

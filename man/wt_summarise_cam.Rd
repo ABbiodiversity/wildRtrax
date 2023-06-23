@@ -47,9 +47,10 @@ A dataframe summarising your camera data by location, time interval, and species
 \description{
 This function takes your independent detection data and summarises it by location, specified time interval, and species.
 }
-\details{
-Summarise your camera data by location, time interval, and species.
+\section{Summarise your camera data by location, time interval, and species.}{
+NA
 }
+
 \examples{
 \dontrun{
 summary <- wt_summarise_cam(x, y, time_interval = "day", variable = "detections", output_format = "wide")

@@ -16,13 +16,29 @@ wt_audio_scanner(path, file_type, extra_cols = F, tz = "")
 \item{tz}{Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, \code{wt_audio_scanner} will assume the next valid time. Use \code{OlsonNames()} to get a list of valid names.}
 }
 \value{
-A tibble with a summary of your audio files. Includes file path, file name, file size, date, time, location name, sample rate, length (seconds) and number of channels to be used as filters for other uses
+A tibble with a summary of your audio files.
+\itemize{
+\item file_path; Character - Full file path of the audio
+\item size_Mb; Numeric - Size of the file in MB
+\item file_name; Character - Basename of the file
+\item location; Character - Location name
+\item recording_date_time; Dttm - Recording date time of the file; use with "tz" argument to set as needed
+\item file_type; Character - wac, wav or flac
+\item julian; Numeric - Julian date of the audio
+\item year; Numeric - Year of the audio
+\item gps_enabled; Boolean - If TRUE, audio is GPS enabled
+\item time_index; Numeric - Numeric value describing the order of the recording per day. E.g. time_index = 1 is the first recording of the day
+\item length_seconds; Numeric - Length of the audio file in seconds
+\item sample rate; Numeric - Sample rate of the audio file in Hertz
+\item n_channels; Numeric - Number of channels of the audio file
+}
 }
 \description{
 Scans directories of audio data and returns the standard naming conventions
 }
 \examples{
+\dontrun{
 wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T, tz = "US/Mountain")
-
+}
 
 }

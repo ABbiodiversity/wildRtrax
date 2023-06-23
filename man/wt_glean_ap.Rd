@@ -19,10 +19,6 @@ This function will use a list of media files from a \verb{wt_*} work flow and ou
 in order to generate summary plots of acoustic indices and long-duration false-colour spectrograms. This can
 be viewed as the "final step" in interpreting acoustic index and LDFC values from your recordings.
 }
-\section{\code{wt_glean_ap} for retrieving data from the AP output}{
-NA
-}
-
 \examples{
 \dontrun{
 wt_glean_ap(x = wt_audio_scanner_data, input_dir = "/path/to/my/files")
