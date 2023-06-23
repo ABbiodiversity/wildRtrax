@@ -113,7 +113,7 @@ wt_get_download_summary <- function(sensor_id) {
 #' @return If multiple report types are requested, a list object is returned; if only one, a dataframe.
 #'
 
-wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRUE) {
+wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TRUE) {
 
   # Check if authentication has expired:
   if (.wt_auth_expired())
@@ -128,7 +128,7 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   }
 
   # Make sure report is specified
-  if(missing(report)) {
+  if(missing(reports)) {
     stop("Please specify a report type (or multiple) using the `report` argument. Use ?wt_download_report to view options.",
          call. = TRUE)
   }
@@ -139,15 +139,15 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   pc <- c("main", "project", "location", "point count", "definitions")
 
   # Check that the user supplied a valid report type depending on the sensor
-  if(sensor_id == "CAM" & !all(report %in% cam)) {
+  if(sensor_id == "CAM" & !all(reports %in% cam)) {
     stop("Please supply a valid report type. Use ?wt_download_report to view options.", call. = TRUE)
   }
 
-  if(sensor_id == "ARU" & !all(report %in% aru)) {
+  if(sensor_id == "ARU" & !all(reports %in% aru)) {
     stop("Please supply a valid report type. Use ?wt_download_report to view options.", call. = TRUE)
   }
 
-  if(sensor_id == "PC" & !all(report %in% pc)) {
+  if(sensor_id == "PC" & !all(reports %in% pc)) {
     stop("Please supply a valid report type. Use ?wt_download_report to view options.", call. = TRUE)
   }
 
@@ -162,6 +162,22 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   # Add wildRtrax version information:
   u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
 
+  query_list <- list(
+    projectIds = project_id,
+    sensorId = sensor_id
+  )
+
+  if ("main" %in% reports) query_list$mainReport <- TRUE
+  if ("project" %in% reports) query_list$projectReport <- TRUE
+  if ("location" %in% reports) query_list$locationReport <- TRUE
+  if ("tag" %in% reports) query_list$tagReport <- TRUE
+  if ("image" %in% reports) query_list$imageReport <- TRUE
+  if ("image_set" %in% reports) query_list$imageSetReport <- TRUE
+  if ("birdnet" %in% reports) query_list$birdnetReport <- TRUE
+  if ("megadetctor" %in% reports) query_list$megaDetectorReport <- TRUE
+  if ("megaclassifer" %in% reports) query_list$megaClassiferReport <- TRUE
+  query_list$splitLocation <- FALSE
+
   # Prepare temporary file:
   tmp <- tempfile(fileext = ".zip")
   # tmp directory
@@ -169,14 +185,10 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
 
   # Create POST request
   r <- httr::POST(
-    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
-    query = list(
-      projectIds = project_id,
-      sensorId = sensor_id,
-      splitLocation = FALSE
-    ),
+    httr::modify_url("https://acpt-api.wildtrax.ca", path = "/bis/download-report"),
+    query = query_list,
     accept = "application/zip",
-    httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
+    httr::add_headers(Authorization = paste("Bearer", x$access_token)),
     httr::user_agent(u),
     httr::write_disk(tmp),
     httr::progress()
