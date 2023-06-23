@@ -104,13 +104,13 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
                       remove=="bird" ~ "Aves",
                       !is.na(remove) ~ remove)
 
-  if (exists("wt_spp_table", where = environment(), inherits = F)) {
+  if (exists("wt_spp_table")) {
     message("Found the species table! Continuing to filter...")
     .species <- wt_spp_table
   } else {
     message("Couldn't find the species table. Requesting to download...")
     wt_get_species()
-    if (exists("wt_spp_table", where = environment(), inherits = F)) {
+    if (exists("wt_spp_table")) {
       message("Found the species table! Continuing to filter...")
       .species <- wt_spp_table
     } else {
@@ -145,7 +145,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 
     #first identify the unique visits (replace this with task_id in the future)
     visit <- dat %>%
-      dplyr::select(-species_code, -species_common_name, -species_class, -individual_appearance_order, -tag_start_s, -vocalization, -abundance, -species_comments, -is_verified) %>%
+      dplyr::select(-species_code, -species_common_name, -species_class, -individual_order, -detection_time, -vocalization, -individual_count, -species_individual_comments, -tag_is_verified) %>%
       unique()
 
     #see if there are any that have been removed
@@ -155,7 +155,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 
     #add to the filtered data
     filtered.none <- suppressMessages(full_join(filtered, none)) %>%
-      arrange(organization, project_name, location, recording_date, tag_start_s, individual_appearance_order)
+      arrange(organization, project_id, location, recording_date_time, detection_time, individual_order)
 
     #return the filtered object with nones added
     return(filtered.none)
@@ -186,25 +186,24 @@ wt_replace_tmtt <- function(data, calc="round"){
 
   #wrangle to tmtts only
   dat.tmtt <- data %>%
-    dplyr::filter(abundance=="TMTT")
+    dplyr::filter(individual_count=="TMTT")
 
   #replace values with random selection from bootstraps
   dat.abun <- dat.tmtt %>%
     mutate(species_code = ifelse(species_code %in% .tmtt$species_code, species_code, "species"),
-           observer_id = as.integer(ifelse(observer_id %in% .tmtt$observer_id, observer_id, 0))) %>%
+           observer_user_id = as.integer(ifelse(observer_user_id %in% .tmtt$observer_usr_id, observer_user_id, 0))) %>%
     data.frame() %>%
-    left_join(.tmtt, by=c("species_code", "observer_id", "boot"))
-
-  #summarize predicted values
-  dat.abun$abundance <- as.integer(case_when(calc=="round" ~ round(pred),
-                                             calc=="ceiling" ~ ceiling(pred),
-                                             calc=="floor" ~ floor(pred)))
+    inner_join(.tmtt %>% select(species_code, observer_user_id, pred), by=c("species_code", "observer_user_id")) %>%
+    mutate(individual_count = case_when(calc == "round" ~ round(pred),
+                                 calc == "ceiling" ~ ceiling(pred),
+                                 calc == "floor" ~ floor(pred),
+                                 TRUE ~ NA_real_)) %>%
+    select(-pred)
 
   #join back to data
-  out <- dat.abun  %>%
-    dplyr::select(colnames(dat)) %>%
-    rbind(data %>%
-            dplyr::filter(abundance!="TMTT"))
+  out <- data %>%
+    dplyr::filter(individual_count!="TMTT") %>%
+    rbind(., dat.abun)
 
   #return the unmarked object
   return(out)
@@ -235,10 +234,10 @@ wt_make_wide <- function(data, sound="all"){
 
   #Filter to first detection per individual
   summed <- dat %>%
-    group_by(organization, project_name, location, recording_date, method, status, observer, species_code, species_common_name, species_class, individual_appearance_order) %>%
-    mutate(first = max(tag_start_s)) %>%
+    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_user_id, species_code, species_common_name, species_class, individual_order) %>%
+    mutate(first = max(detection_time)) %>%
     ungroup() %>%
-    dplyr::filter(tag_start_s==first)
+    dplyr::filter(detection_time==first)
 
   #Remove undesired sound types
   if(!"all" %in% sound){
@@ -255,7 +254,7 @@ wt_make_wide <- function(data, sound="all"){
   #TO DO: COME BACK TO THE ERROR HANDLING
   #  options(warn=-1)
   wide <- summed %>%
-    mutate(abundance = as.numeric(abundance)) %>%
+    mutate(individual_count = as.numeric(individual_count)) %>%
     pivot_wider(id_cols = organization:species_class,
                 names_from = "species_code",
                 values_from = "abundance",
@@ -298,19 +297,19 @@ wt_format_occupancy <- function(data,
   #Wrangle observations and observation covariates for the species of interest
   visits <- dat %>%
     dplyr::filter(species_code==species) %>%
-    dplyr::select(location, recording_date) %>%
+    dplyr::select(location, recording_date_time) %>%
     unique() %>%
     mutate(occur=1) %>%
     right_join(dat %>%
-                 dplyr::select(location, recording_date, observer, method) %>%
+                 dplyr::select(location, recording_date_time, observer_user_id, task_method) %>%
                  unique(),
                by=c("location", "recording_date")) %>%
     mutate(occur = ifelse(is.na(occur), 0, 1),
-           recording_date = ymd_hms(recording_date),
-           doy = yday(recording_date),
-           hr = as.numeric(hour(recording_date) + minute(recording_date)/60)) %>%
+           recording_date_time = ymd_hms(recording_date_time),
+           doy = yday(recording_date_time),
+           hr = as.numeric(hour(recording_date_time) + minute(recording_date_time)/60)) %>%
     group_by(location) %>%
-    arrange(recording_date) %>%
+    arrange(recording_date_time) %>%
     mutate(visit = row_number()) %>%
     ungroup()
 
@@ -354,7 +353,7 @@ wt_format_occupancy <- function(data,
     data.frame()
 
   method <- visits %>%
-    dplyr::select(location, visit, method) %>%
+    dplyr::select(location, visit, task_method) %>%
     mutate(method = as.factor(method)) %>%
     pivot_wider(id_cols = location, names_from = visit, values_from = method) %>%
     arrange(location) %>%
@@ -362,8 +361,8 @@ wt_format_occupancy <- function(data,
     data.frame()
 
   observer <- visits %>%
-    dplyr::select(location, visit, observer) %>%
-    mutate(observer = as.factor(observer)) %>%
+    dplyr::select(location, visit, observer_user_id) %>%
+    mutate(observer = as.factor(observer_user_id)) %>%
     pivot_wider(id_cols = location, names_from = visit, values_from = observer) %>%
     arrange(location) %>%
     dplyr::select(-location) %>%
