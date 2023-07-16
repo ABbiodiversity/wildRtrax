@@ -36,22 +36,22 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_songscope_tags()` :sound:
   - `wt_kaleidoscope_tags()` :sound: :bat:
 - Download processed data from WildTrax
-  - `wt_auth` :camera: :sound: :bird: :bat:
-  - `wt_get_download_summary` :camera: :sound: :bird: :bat:
-  - `wt_download_report` :camera: :sound: :bird: :bat:
+  - `wt_auth()` :camera: :sound: :bird: :bat:
+  - `wt_get_download_summary()` :camera: :sound: :bird: :bat:
+  - `wt_download_report()` :camera: :sound: :bird: :bat:
     - Available reports: `main, project, location, recording / image / point count, tag, megadetector, megaclassifer, birdnet`
-  - `wt_get_species` :camera: :sound: :bird: :bat:
+  - `wt_get_species()` :camera: :sound: :bird: :bat:
 - Analyze data
-  - `wt_summarise_cam` :camera:
-  - `wt_ind_det` :camera:
-  - `wt_ord` **beta** :sound:
+  - `wt_summarise_cam()` :camera:
+  - `wt_ind_det()` :camera:
+  - `wt_ord()` :sound:
 - Convenience functions
-  - `wt_location_distances` :sound: :camera: :bird: :bat:
-  - `wt_tidy_species` :sound: :camera: :bird: :bat:
-  - `wt_replace_tmtt` :sound:
-  - `wt_make_wide` :sound: :camera: :bird: :bat:
-  - `wt_occupancy_format` :sound: :bird:
-  - `wt_qpad_offsets` :sound: :bird:
+  - `wt_location_distances()` :sound: :camera: :bird: :bat:
+  - `wt_tidy_species()` :sound: :camera: :bird: :bat:
+  - `wt_replace_tmtt()` :sound:
+  - `wt_make_wide()` :sound: :camera: :bird: :bat:
+  - `wt_occupancy_format()` :sound: :bird:
+  - `wt_qpad_offsets()` :sound: :bird:
 
 ## Issues
 
@@ -61,7 +61,7 @@ To report bugs, request additional features, or get help using the package, plea
 ## Contributors
 
 * `wildRtrax` is authored and created by [Alexander G. MacPhail](https://github.com/agmacpha), created and maintained by [Marcus Becker](https://github.com/mabecker89) and created by [Dr. Elly Knight](https://github.com/ecknight). The [Alberta Biodiversity Monitoring Institute](http://https://abmi.ca/home.html) provides ongoing support, development and funding for the package.
-* Many thanks to [Dr. Richard Hedley](https://richardwhedley.wordpress.com/) for providing the basis for the `wt_wac_info` internal function for *wac* file support
+* Many thanks to [Dr. Richard Hedley](https://richardwhedley.wordpress.com/) for providing the basis for the `wt_wac_info()` internal function for *wac* file support
 
 ## License
 
