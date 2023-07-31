@@ -1,6 +1,6 @@
 #' General convenience functions
 #'
-#' @description Takes input lats and longs and computes the distances between each set of points
+#' @description Takes input latitude and longitudes and computes the distances between each set of valid points
 #'
 #' @param input_from_tibble Use a tibble constructed with a distinct list of location names, latitude and longitude
 #' @param input_from_file Use a file downloaded from either an organization or project
@@ -94,14 +94,16 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
-wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE){
+wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "insect", "bird", "unknown"), zerofill = TRUE){
+
+  dat <- data
 
   #Convert to the sql database labels for species class
-  remove <- case_when(remove=="mammal" ~ "Mammalia",
-                      remove=="amphibian" ~ "Amphibia",
-                      remove=="abiotic" ~ "Abiotic",
-                      remove=="insect" ~ "Insecta",
-                      remove=="bird" ~ "Aves",
+  remove <- case_when(remove=="mammal" ~ "MAMMALIA",
+                      remove=="amphibian" ~ "AMPHIBIA",
+                      remove=="abiotic" ~ "ABIOTIC",
+                      remove=="insect" ~ "INSECTA",
+                      remove=="bird" ~ "AVES",
                       !is.na(remove) ~ remove)
 
   if (exists("wt_spp_table")) {
@@ -233,7 +235,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 wt_make_wide <- function(data, sound="all"){
 
   #Filter to first detection per individual
-  summed <- dat %>%
+  summed <- data %>%
     group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_user_id, species_code, species_common_name, species_class, individual_order) %>%
     mutate(first = max(detection_time)) %>%
     ungroup() %>%
@@ -257,7 +259,7 @@ wt_make_wide <- function(data, sound="all"){
     mutate(individual_count = as.numeric(individual_count)) %>%
     pivot_wider(id_cols = organization:species_class,
                 names_from = "species_code",
-                values_from = "abundance",
+                values_from = "individual_count",
                 values_fn = sum,
                 values_fill = 0,
                 names_sort = TRUE)
@@ -295,15 +297,15 @@ wt_format_occupancy <- function(data,
                                 siteCovs=NULL){
 
   #Wrangle observations and observation covariates for the species of interest
-  visits <- dat %>%
+  visits <- data %>%
     dplyr::filter(species_code==species) %>%
     dplyr::select(location, recording_date_time) %>%
     unique() %>%
     mutate(occur=1) %>%
-    right_join(dat %>%
+    right_join(data %>%
                  dplyr::select(location, recording_date_time, observer_user_id, task_method) %>%
                  unique(),
-               by=c("location", "recording_date")) %>%
+               by=c("location", "recording_date_time")) %>%
     mutate(occur = ifelse(is.na(occur), 0, 1),
            recording_date_time = ymd_hms(recording_date_time),
            doy = yday(recording_date_time),
@@ -354,8 +356,8 @@ wt_format_occupancy <- function(data,
 
   method <- visits %>%
     dplyr::select(location, visit, task_method) %>%
-    mutate(method = as.factor(method)) %>%
-    pivot_wider(id_cols = location, names_from = visit, values_from = method) %>%
+    mutate(task_method = as.factor(task_method)) %>%
+    pivot_wider(id_cols = location, names_from = visit, values_from = task_method) %>%
     arrange(location) %>%
     dplyr::select(-location) %>%
     data.frame()
@@ -375,7 +377,7 @@ wt_format_occupancy <- function(data,
   if(!is.null(siteCovs)){
 
     #Check length of siteCovs object, remove if incorrect
-    locs <- length(unique(dat$location))
+    locs <- length(unique(data$location))
 
     if(nrow(siteCovs)!=locs){
       siteCovs <- NULL

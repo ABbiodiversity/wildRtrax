@@ -188,7 +188,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
 
   # Create POST request
   r <- httr::POST(
-    httr::modify_url("https://acpt-api.wildtrax.ca", path = "/bis/download-report"),
+    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
     query = query_list,
     accept = "application/zip",
     httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
@@ -316,5 +316,86 @@ wt_get_species <- function(){
 }
 
 
+#' @description Downloads acoustic tags (mp3 and jpg) in an organized format for other purposes.
+#'
+#' @param input A data frame or tibble of the tag report i.e. wt_download_report(reports = "tag")
+#' @param output Directory to store the tags
+
+#'
+#' @import dplyr tibble readr
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dat.report <- wt_download_report(reports = "tag")
+#' wt_download_tags(input = my_tag_data)
+#' }
+#'
+#' @return An organized folder of clips and tags in the output directory. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
+
+wt_download_tags <- function(input, output, what = c("spectrogram","audio")) {
+
+  future::multisession()
+
+  input_data <- input
+
+  # Assuming input_data is a data frame or a matrix
+  if (!("tag_spectrogram_url" %in% colnames(input_data)) | !("clip_url" %in% colnames(input_data))) {
+    stop("Required columns 'tag_spectrogram_url' and 'clip_url' are missing in input_data. Use wt_download_report(reports = 'tag').")
+  }
+
+  if (!dir.exists(output)) {
+    stop("This directory doesn't exist.")
+  }
+
+  if (what == "audio") {
+
+    input_audio_only <- input_data %>%
+      select(organization, location, recording_date_time, species_code, individual_order, detection_time, clip_url) %>%
+      mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
+      # Create the local file name
+      mutate(clip_file_name = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".mp3"))
+
+    input_audio_only %>%
+      furrr::future_walk2(.x = .$clip_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+
+    return(input_audio_only)
+
+  } else if (what == "spectrogram") {
+
+    input_spec_only <- input_data %>%
+      select(organization, location, recording_date_time, species_code, individual_order, detection_time, tag_spectrogram_url) %>%
+      mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
+      # Create the local file name
+      mutate(clip_file_name = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".jpeg"))
+
+    input_spec_only %>%
+      furrr::future_walk2(.x = .$tag_spectrogram_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+
+    return(input_spec_only)
+
+  } else if (what == "spectrogram" & what == "audio") {
+
+    input_both <- input_data %>%
+      select(organization, location, recording_date_time, species_code, individual_order, detection_time, tag_spectrogram_url, clip_url) %>%
+      mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
+      # Create the local file name
+      mutate(clip_file_name_spec = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".jpeg"))
+      mutate(clip_file_name_audio = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".mp3"))
+
+    #Download spec first
+    input_both %>%
+     furrr::future_walk2(.x = .$tag_spectrogram_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+
+    input_both %>%
+      furrr::future_walk2(.x = .$tag_clip_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+
+    return(input_both)
+
+  } else {
+    stop("Need to define what, either spectrogram, audio or both")
+  }
+
+}
 
 
