@@ -300,7 +300,7 @@
   cf0 <- exp(unlist(coefBAMspecies(spp, 0, 0)))
 
   #best model
-  mi <- bestmodelBAMspecies(spp, type="BIC", TM=0)
+  mi <- bestmodelBAMspecies(spp, type="BIC")
   cfi <- coefBAMspecies(spp, mi$sra, mi$edr)
 
   TSSR <- x$TSSR

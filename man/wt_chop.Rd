@@ -21,7 +21,8 @@ Segmented files written to the output_folder
 }
 \examples{
 \dontrun{
-wt_chop(input = my_audio_tibble \%>\% slice(1), segment_length = 60, output_folder "/where/i/store/my/chopped/files")
+wt_chop(input = my_audio_tibble \%>\% slice(1),
+ segment_length = 60, output_folder "/where/i/store/my/chopped/files")
 }
 
 }

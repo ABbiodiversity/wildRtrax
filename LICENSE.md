@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2023 Alex MacPhail, Marcus Becker, Elly Knight, Alberta Biodiversity Monitoring Institute.
+Copyright (c) 2023 wildRtrax authors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

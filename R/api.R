@@ -67,7 +67,7 @@ wt_get_download_summary <- function(sensor_id) {
 #'
 #' @param project_id Numeric; the project ID number that you would like to download data for. Use `wt_get_download_summary()` to retrieve these IDs.
 #' @param sensor_id Character; Can either be "ARU", "CAM", or "PC".
-#' @param report Character; The report type to be returned. Multiple values are accepted as a concatenated string.
+#' @param reports Character; The report type to be returned. Multiple values are accepted as a concatenated string.
 #' @param weather_cols Logical; Do you want to include weather information for your stations? Defaults to TRUE.
 #' @details Valid values for argument \code{report} when \code{sensor_id} = "CAM" currently are:
 #' \itemize{
@@ -107,9 +107,13 @@ wt_get_download_summary <- function(sensor_id) {
 #' \dontrun{
 #' # Authenticate first:
 #' wt_auth()
-#' a_camera_project <- wt_download_report(project_id = 397, sensor_id = "CAM", reports = c("tag", "image"), weather_cols = TRUE)
+#' a_camera_project <- wt_download_report(
+#' project_id = 397, sensor_id = "CAM", reports = c("tag", "image"),
+#' weather_cols = TRUE)
 #'
-#' an_aru_project <- wt_download_report(project_id = 47, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = TRUE)
+#' an_aru_project <- wt_download_report(
+#' project_id = 47, sensor_id = "ARU", reports = c("main", "birdnet"),
+#' weather_cols = TRUE)
 #' }
 #'
 #' @return If multiple report types are requested, a list object is returned; if only one, a dataframe.
@@ -316,6 +320,8 @@ wt_get_species <- function(){
 }
 
 
+#' Download acoustic tags
+#'
 #' @description Downloads acoustic tags (mp3 and jpg) in an organized format for other purposes.
 #'
 #' @param input A data frame or tibble of the tag report i.e. wt_download_report(reports = "tag")
@@ -333,7 +339,7 @@ wt_get_species <- function(){
 #'
 #' @return An organized folder of clips and tags in the output directory. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
 
-wt_download_tags <- function(input, output, what = c("spectrogram","audio")) {
+wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")) {
 
   future::multisession()
 
@@ -348,7 +354,7 @@ wt_download_tags <- function(input, output, what = c("spectrogram","audio")) {
     stop("This directory doesn't exist.")
   }
 
-  if (what == "audio") {
+  if (clip_type == "audio") {
 
     input_audio_only <- input_data %>%
       select(organization, location, recording_date_time, species_code, individual_order, detection_time, clip_url) %>%
@@ -361,7 +367,7 @@ wt_download_tags <- function(input, output, what = c("spectrogram","audio")) {
 
     return(input_audio_only)
 
-  } else if (what == "spectrogram") {
+  } else if (clip_type == "spectrogram") {
 
     input_spec_only <- input_data %>%
       select(organization, location, recording_date_time, species_code, individual_order, detection_time, tag_spectrogram_url) %>%
@@ -374,7 +380,7 @@ wt_download_tags <- function(input, output, what = c("spectrogram","audio")) {
 
     return(input_spec_only)
 
-  } else if (what == "spectrogram" & what == "audio") {
+  } else if (clip_type == "spectrogram" & clip_type == "audio") {
 
     input_both <- input_data %>%
       select(organization, location, recording_date_time, species_code, individual_order, detection_time, tag_spectrogram_url, clip_url) %>%
@@ -397,5 +403,4 @@ wt_download_tags <- function(input, output, what = c("spectrogram","audio")) {
   }
 
 }
-
 

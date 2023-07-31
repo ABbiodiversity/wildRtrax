@@ -15,7 +15,7 @@ wt_location_distances(input_from_tibble = NULL, input_from_file = NULL)
 A three-column tibble with the distances between each location
 }
 \description{
-Takes input lats and longs and computes the distances between each set of points
+Takes input latitude and longitudes and computes the distances between each set of valid points
 }
 \examples{
 \dontrun{

@@ -17,7 +17,9 @@ reference:
   - wt_auth
   - wt_get_download_summary
   - wt_download_report
+  - wt_download_tags
   - wt_get_species
+  - wt_report
   - wt_audio_scanner
   - wt_run_ap
   - wt_glean_ap

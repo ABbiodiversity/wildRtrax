@@ -6,7 +6,7 @@
 \usage{
 wt_tidy_species(
   data,
-  remove = c("mammal", "amphibian", "abiotic", "insect", "unknown"),
+  remove = c("mammal", "amphibian", "abiotic", "insect", "bird", "unknown"),
   zerofill = TRUE
 )
 }
@@ -25,6 +25,8 @@ This function filters the species provided in WildTrax reports to only the group
 }
 \examples{
 \dontrun{
-dat.tmtt <- wt_tidy_species(dat, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE)
+dat.tmtt <- wt_tidy_species(dat,
+remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"),
+zerofill = TRUE)
 }
 }

@@ -11,9 +11,9 @@ wt_download_report(project_id, sensor_id, reports, weather_cols = TRUE)
 
 \item{sensor_id}{Character; Can either be "ARU", "CAM", or "PC".}
 
-\item{weather_cols}{Logical; Do you want to include weather information for your stations? Defaults to TRUE.}
+\item{reports}{Character; The report type to be returned. Multiple values are accepted as a concatenated string.}
 
-\item{report}{Character; The report type to be returned. Multiple values are accepted as a concatenated string.}
+\item{weather_cols}{Logical; Do you want to include weather information for your stations? Defaults to TRUE.}
 }
 \value{
 If multiple report types are requested, a list object is returned; if only one, a dataframe.
@@ -57,9 +57,13 @@ Valid values for argument \code{report} when \code{sensor_id} = "PC" currently a
 \dontrun{
 # Authenticate first:
 wt_auth()
-a_camera_project <- wt_download_report(project_id = 397, sensor_id = "CAM", reports = c("tag", "image"), weather_cols = TRUE)
+a_camera_project <- wt_download_report(
+project_id = 397, sensor_id = "CAM", reports = c("tag", "image"),
+weather_cols = TRUE)
 
-an_aru_project <- wt_download_report(project_id = 47, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = TRUE)
+an_aru_project <- wt_download_report(
+project_id = 47, sensor_id = "ARU", reports = c("main", "birdnet"),
+weather_cols = TRUE)
 }
 
 }

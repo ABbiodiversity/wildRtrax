@@ -623,7 +623,8 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #'
 #' @examples
 #' \dontrun{
-#' wt_chop(input = my_audio_tibble %>% slice(1), segment_length = 60, output_folder "/where/i/store/my/chopped/files")
+#' wt_chop(input = my_audio_tibble %>% slice(1),
+#'  segment_length = 60, output_folder "/where/i/store/my/chopped/files")
 #' }
 #'
 #' @return Segmented files written to the output_folder
@@ -881,7 +882,9 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
 #'
 #' @examples
 #' \dontrun{
-#' wt_songscope_tags(input = input.csv, output = tags.csv, species_code, = "CONI", method = "1SPT", vocalization_type = "Call", task_length = 180)
+#' wt_songscope_tags(input = input.csv, output = tags.csv,
+#' species_code, = "CONI", method = "1SPT",
+#' vocalization_type = "Call", task_length = 180)
 #' }
 #'
 #' @return A csv formatted as a WildTrax tag template

@@ -1,11 +1,10 @@
 #' Build automatic reports from analyzed data in wildRtrax
-#' Description of family
 #'
 #' @section `wt_report` details:
 #'
-#' @description
+#' @description Build reports automatically using custom settings
 #'
-#' @param data
+#' @param data Input data from wt_download_report
 #' @param what NULL, conclusion
 #'
 #' @import markdown
@@ -21,7 +20,7 @@
 wt_report <-
   function (data,
             what = c(NULL, "conclusion"),
-            output_file = "report.html") {
+            output_file = "report") {
     rmd_org <- unique(data$organization)
 
     # Example usage:
@@ -120,10 +119,10 @@ The concluding thoughts.
       stop("Did nothing")
     }
 
-    rmd_file <- paste0(output_file, ".Rmd")
+    rmd_file <- paste0(output_filename, ".Rmd")
     writeLines(rmd_merge_content, con = rmd_file)
 
-    rmarkdown::render(rmd_file, output_format = "html_document", output_file = output_file)
+    rmarkdown::render(rmd_file, output_format = "html_document", output_file = output_filename)
 
     file.remove(rmd_file)
 

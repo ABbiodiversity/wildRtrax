@@ -40,7 +40,9 @@ Takes the classifier output from Wildlife Acoustics Songscope and converts them 
 }
 \examples{
 \dontrun{
-wt_songscope_tags(input = input.csv, output = tags.csv, species_code, = "CONI", method = "1SPT", vocalization_type = "Call", task_length = 180)
+wt_songscope_tags(input = input.csv, output = tags.csv,
+species_code, = "CONI", method = "1SPT",
+vocalization_type = "Call", task_length = 180)
 }
 
 }
