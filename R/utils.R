@@ -134,10 +134,9 @@
 #' @keywords internal
 #'
 #' @import QPAD dplyr intrval maptools
-#' @importFrom raster raster proj4string coordinates extract
+#' @importFrom raster proj4string coordinates extract
 #' @importFrom maptools sunriset
 #' @importFrom sp spTransform
-#'
 
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 

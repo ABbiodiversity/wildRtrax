@@ -10,6 +10,8 @@ wt_download_tags(input, output, clip_type = c("spectrogram", "audio"))
 \item{input}{A data frame or tibble of the tag report i.e. wt_download_report(reports = "tag")}
 
 \item{output}{Directory to store the tags}
+
+\item{clip_type}{Character; either spectrogram or audio clips}
 }
 \value{
 An organized folder of clips and tags in the output directory. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory

@@ -388,6 +388,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #'
 #' @param x A data frame or tibble; must contain the file name. Use output from \code{`wt_audio_scanner`}.
 #' @param input_dir Character; A folder path where outputs from \code{`wt_run_ap`} are stored.
+#' @param purpose Character; type of filtering you can choose from
 #'
 #' @import tidyverse lubridate magick
 #' @export

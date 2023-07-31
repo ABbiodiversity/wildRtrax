@@ -326,6 +326,7 @@ wt_get_species <- function(){
 #'
 #' @param input A data frame or tibble of the tag report i.e. wt_download_report(reports = "tag")
 #' @param output Directory to store the tags
+#' @param clip_type Character; either spectrogram or audio clips
 
 #'
 #' @import dplyr tibble readr

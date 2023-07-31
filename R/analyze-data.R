@@ -23,7 +23,9 @@
 #'
 #' @examples
 #' \dontrun{
-#' summary <- wt_summarise_cam(x, y, time_interval = "day", variable = "detections", output_format = "wide")
+#' summary <- wt_summarise_cam(
+#' x, y, time_interval = "day", variable = "detections", output_format = "wide"
+#' )
 #' }
 #'
 #' @return A dataframe summarising your camera data by location, time interval, and species.

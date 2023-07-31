@@ -6,6 +6,7 @@
 #'
 #' @param data Input data from wt_download_report
 #' @param what NULL, conclusion
+#' @param output_filename Character; name of the output file name
 #'
 #' @import markdown
 #' @export
@@ -20,7 +21,7 @@
 wt_report <-
   function (data,
             what = c(NULL, "conclusion"),
-            output_file = "report") {
+            output_filename = "report") {
     rmd_org <- unique(data$organization)
 
     # Example usage:
@@ -122,7 +123,7 @@ The concluding thoughts.
     rmd_file <- paste0(output_filename, ".Rmd")
     writeLines(rmd_merge_content, con = rmd_file)
 
-    rmarkdown::render(rmd_file, output_format = "html_document", output_file = output_filename)
+    rmarkdown::render(rmd_file, output_format = "html_document")
 
     file.remove(rmd_file)
 

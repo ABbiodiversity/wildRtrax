@@ -4,12 +4,14 @@
 \alias{wt_report}
 \title{Build automatic reports from analyzed data in wildRtrax}
 \usage{
-wt_report(data, what = c(NULL, "conclusion"), output_file = "report")
+wt_report(data, what = c(NULL, "conclusion"), output_filename = "report")
 }
 \arguments{
 \item{data}{Input data from wt_download_report}
 
 \item{what}{NULL, conclusion}
+
+\item{output_filename}{Character; name of the output file name}
 }
 \value{
 A document with the report
