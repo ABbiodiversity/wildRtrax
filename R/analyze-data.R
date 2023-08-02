@@ -31,7 +31,7 @@
 #' @return A dataframe summarising your camera data by location, time interval, and species.
 #'
 wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", variable = "detections", output_format = "wide",
-                             species_col = common_name, effort_data = NULL, project_col = NULL, station_col = NULL,
+                             species_col = species_common_name, effort_data = NULL, project_col = NULL, station_col = NULL,
                              start_col = NULL, end_col = NULL) {
 
   # Make sure one of raw_data or effort_data is supplied
@@ -47,14 +47,14 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
   # Parse the raw or effort data to get time ranges for each camera deployment.
   if (!is_missing(raw_data)) {
     x <- raw_data %>%
-      mutate(date_detected = ymd_hms(date_detected)) %>%
-      group_by(project, location) %>%
-      summarise(start_date = as.Date(min(date_detected)),
-                end_date = as.Date(max(date_detected))) %>%
+      mutate(image_date_time = ymd_hms(image_date_time)) %>%
+      group_by(project_id, location) %>%
+      summarise(start_date = as.Date(min(image_date_time)),
+                end_date = as.Date(max(image_date_time))) %>%
       ungroup()
   } else {
     x <- effort_data %>%
-      select(project = {{project_col}},
+      select(project_id = {{project_col}},
              location = {{station_col}},
              start_date = {{start_col}},
              end_date = {{end_col}}) %>%
@@ -63,10 +63,10 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
 
   # Expand the time ranges into individual days of operation (smallest unit)
   x <- x %>%
-    group_by(project, location) %>%
+    group_by(project_id, location) %>%
     mutate(day = list(seq.Date(start_date, end_date, by = "day"))) %>%
     unnest(day) %>%
-    select(project, location, day)
+    select(project_id, location, day)
 
   int <- c("day", "week", "month", "full")
   if (!time_interval %in% int) {
@@ -106,7 +106,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
   } else if (time_interval == "week") {
     x <- x %>%
       mutate(week = isoweek(day)) %>%
-      group_by(project, location, week) %>%
+      group_by(project_id, location, week) %>%
       tally(name = "n_days_effort") %>%
       ungroup()
     z <- x %>%
@@ -116,7 +116,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
   } else if (time_interval == "month") {
     x <- x %>%
       mutate(month = month(day, label = TRUE, abbr = FALSE)) %>%
-      group_by(project, location, month) %>%
+      group_by(project_id, location, month) %>%
       tally(name = "n_days_effort") %>%
       ungroup()
     z <- x %>%
@@ -128,7 +128,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
       crossing(sp) %>%
       left_join(y) %>%
       mutate(across(5:7, ~ replace_na(.x, 0))) %>%
-      group_by(project, location, {{species_col}}) %>%
+      group_by(project_id, location, {{species_col}}) %>%
       summarise(detections = sum(detections),
                 counts = sum(counts),
                 presence = ifelse(any(presence == 1), 1, 0)) %>%
@@ -161,10 +161,10 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
 #'
 #' @description Create independent detections dataframe using camera data from WildTrax
 #'
-#' @param x A dataframe of camera data; preferably, the output of `wt_download_report()`.
+#' @param x A dataframe of camera data; preferably, the main report from `wt_download_report()`.
 #' @param threshold Numeric; time interval to parse out independent detections.
 #' @param units The threshold unit. Can be one of three values, "seconds", "minutes", "hours".
-#' @param datetime_col Defaults to `date_detected`; The column indicating the timestamp of the image.
+#' @param datetime_col Defaults to `image_date_time`; The column indicating the timestamp of the image.
 #' @param remove_human Logical; Should human and human-related tags (e.g. vehicles) be removed? Defaults to TRUE.
 #' @param remove_domestic Logical; Should domestic animal tags (e.g. cows) be removed? Defaults to TRUE.
 #'
@@ -179,7 +179,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
 #'
 #' @return A dataframe of independent detections in your camera data, based on the threshold you specified. The df wil include information about the duration of each detection, the number of images, the average number of individual animals per image, and the max number of animals in the detection.
 
-wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = date_detected, remove_human = TRUE, remove_domestic = TRUE) {
+wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = image_date_time, remove_human = TRUE, remove_domestic = TRUE) {
 
   # Check that x is a dataframe
   if (!is.data.frame(x)) {
@@ -194,9 +194,9 @@ wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = date_
   }
 
   # Check if x contains the required columns - standard output from WildTrax. Probably should make this more flexible.
-  req_cols <- c("project", "location", "field_of_view", "scientific_name", "common_name", "number_individuals")
+  req_cols <- c("project_id", "location", "species_common_name", "individual_count")
   if (!all(req_cols %in% colnames(x))) {
-    stop("Important columns are missing from the data you have supplied.")
+    stop("Important columns are missing from the data you have supplied. All of `project_id`, `location`, `species_common_name`, and `individual_count` are required.")
   }
 
   # Check that the units argument is either seconds, minutes, or hours
@@ -219,26 +219,24 @@ wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = date_
     # Standard WildTrax tags that refer to human(ish) objects
     t <- c(t, "Human", "Vehicle", "Unknown Vehicle", "All Terrain Vehicle", "Train", "Heavy Equipment")
   }
-  x <- filter(x, !common_name %in% t)
+  x <- filter(x, !species_common_name %in% t)
   if (remove_domestic) {
     # All tags in WildTrax that refer to domestic animals begin with 'Domestic __'
-    x <- filter(x, !str_detect(common_name, "^Domestic"))
+    x <- filter(x, !str_detect(species_common_name, "^Domestic"))
   }
 
   # Create ordered dataframe, and calculate time interval between images.
   x1 <- x %>%
-    # Remove images outside of the camera field-of-view
-    filter(field_of_view == "WITHIN") %>%
     # Sometimes VNA sneaks in here
-    mutate(number_individuals = as.numeric(ifelse(number_individuals == "VNA", 1, number_individuals))) %>%
+    mutate(individual_count = as.numeric(ifelse(individual_count == "VNA", 1, individual_count))) %>%
     # Amalgamate tags of same species in same image; currently broken into two separate rows
-    group_by(location, {{datetime_col}}, common_name) %>%
-    mutate(number_individuals = sum(number_individuals)) %>%
-    distinct(location, {{datetime_col}}, common_name, number_individuals, .keep_all = TRUE) %>%
+    group_by(location, {{datetime_col}}, species_common_name) %>%
+    mutate(individual_count = sum(individual_count)) %>%
+    distinct(location, {{datetime_col}}, species_common_name, individual_count, .keep_all = TRUE) %>%
     ungroup() %>%
     # Order the dataframe
-    arrange(project, location, {{datetime_col}}, common_name) %>%
-    group_by(project, location, common_name) %>%
+    arrange(project_id, location, {{datetime_col}}, species_common_name) %>%
+    group_by(project_id, location, species_common_name) %>%
     # Calculate the time difference between subsequent images
     mutate(interval = int_length({{datetime_col}} %--% lag({{datetime_col}}))) %>%
     # Is this considered a new detection?
@@ -249,13 +247,14 @@ wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = date_
 
   # Summarise detections
   x2 <- x1 %>%
-    group_by(detection, project, location, common_name, scientific_name) %>%
+    group_by(detection, project_id, location, species_common_name) %>%
     summarise(start_time = min({{datetime_col}}),
               end_time = max({{datetime_col}}),
               total_duration_seconds = int_length(start_time %--% end_time),
               n_images = n(),
-              avg_animals = mean(number_individuals),
-              max_animals = max(number_individuals))
+              avg_animals_per_image = mean(individual_count),
+              max_animals = max(individual_count)) %>%
+    ungroup()
 
   # Return x2
   return(x2)
