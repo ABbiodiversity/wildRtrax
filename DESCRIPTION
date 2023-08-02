@@ -1,6 +1,6 @@
 Package: wildRtrax
 Title: Environmental sensor data management and analytics to and from WildTrax
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: 
     c(person(given = "Alex",
            family = "MacPhail",
@@ -29,24 +29,36 @@ Imports:
     tools,
     pipeR,
     tuneR,
+    QPAD,
+    extraDistr,
+    fitdistrplus,
+    gamlss,
+    intrval,
+    jsonlite,
+    magick,
+    readr,
+    scales,
+    sf,
+    sp,
+    tidyverse,
+    vctrs,
+    vegan,
     purrr,
     rlang,
-    foreach,
-    doParallel,
     unmarked,
-    plumber,
-    shiny,
     seewave,
-    httr
+    maptools,
+    raster,
+    httr,
+    progressr,
+    markdown
 Suggests: 
-    testthat,
-    knitr,
-    rmarkdown,
-    abmi.themes
-Remotes:
-    mabecker89/abmi.themes
+    testthat (>= 3.0.0),
+    usethis,
+    knitr
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
+URL: https://abbiodiversity.github.io/wildRtrax/

@@ -12,6 +12,8 @@
 #' wt_auth(force = FALSE)
 #' }
 #'
+#'
+
 wt_auth <- function(force = FALSE) {
 
   if (!exists("._wt_auth_env_"))
@@ -65,26 +67,34 @@ wt_get_download_summary <- function(sensor_id) {
 #'
 #' @param project_id Numeric; the project ID number that you would like to download data for. Use `wt_get_download_summary()` to retrieve these IDs.
 #' @param sensor_id Character; Can either be "ARU", "CAM", or "PC".
-#' @param report Character; The report type to be returned. Multiple values are accepted as a concatenated string.
+#' @param reports Character; The report type to be returned. Multiple values are accepted as a concatenated string.
 #' @param weather_cols Logical; Do you want to include weather information for your stations? Defaults to TRUE.
 #' @details Valid values for argument \code{report} when \code{sensor_id} = "CAM" currently are:
 #' \itemize{
+#'  \item main
+#'  \item project
+#'  \item location
 #'  \item image
 #'  \item tag
 #'  \item megadetector
+#'  \item megaclassifier
 #'  \item definitions
 #' }
 #' @details Valid values for argument \code{report} when \code{sensor_id} = "ARU" currently are:
 #' \itemize{
-#'  \item summary
-#'  \item birdnet
-#'  \item task
+#'  \item main
+#'  \item project
+#'  \item location
 #'  \item tag
+#'  \item birdnet
 #'  \item definitions
 #' }
 #' @details Valid values for argument \code{report} when \code{sensor_id} = "PC" currently are:
 #' \itemize{
-#'  \item report
+#'  \item main
+#'  \item project
+#'  \item location
+#'  \item point count
 #'  \item definitions
 #' }
 #'
@@ -97,13 +107,19 @@ wt_get_download_summary <- function(sensor_id) {
 #' \dontrun{
 #' # Authenticate first:
 #' wt_auth()
-#' wt_download_report(project_id = 397, sensor_id = "CAM", report = c("tag", "image"), weather_cols = TRUE)
+#' a_camera_project <- wt_download_report(
+#' project_id = 397, sensor_id = "CAM", reports = c("tag", "image"),
+#' weather_cols = TRUE)
+#'
+#' an_aru_project <- wt_download_report(
+#' project_id = 47, sensor_id = "ARU", reports = c("main", "birdnet"),
+#' weather_cols = TRUE)
 #' }
 #'
 #' @return If multiple report types are requested, a list object is returned; if only one, a dataframe.
 #'
 
-wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRUE) {
+wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TRUE) {
 
   # Check if authentication has expired:
   if (.wt_auth_expired())
@@ -118,26 +134,26 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   }
 
   # Make sure report is specified
-  if(missing(report)) {
+  if(missing(reports)) {
     stop("Please specify a report type (or multiple) using the `report` argument. Use ?wt_download_report to view options.",
          call. = TRUE)
   }
 
   # Allowable reports for each sensor
-  cam <- c("image", "tag", "megadetector", "definitions")
-  aru <- c("summary", "birdnet", "task", "tag", "definitions")
-  pc <- c("report", "definitions")
+  cam <- c("main", "project", "location", "image", "tag", "megadetector", "megaclassifier", "definitions")
+  aru <- c("main", "project", "location", "birdnet", "recording", "tag", "definitions")
+  pc <- c("main", "project", "location", "point count", "definitions")
 
   # Check that the user supplied a valid report type depending on the sensor
-  if(sensor_id == "CAM" & !all(report %in% cam)) {
+  if(sensor_id == "CAM" & !all(reports %in% cam)) {
     stop("Please supply a valid report type. Use ?wt_download_report to view options.", call. = TRUE)
   }
 
-  if(sensor_id == "ARU" & !all(report %in% aru)) {
+  if(sensor_id == "ARU" & !all(reports %in% aru)) {
     stop("Please supply a valid report type. Use ?wt_download_report to view options.", call. = TRUE)
   }
 
-  if(sensor_id == "PC" & !all(report %in% pc)) {
+  if(sensor_id == "PC" & !all(reports %in% pc)) {
     stop("Please supply a valid report type. Use ?wt_download_report to view options.", call. = TRUE)
   }
 
@@ -152,6 +168,23 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   # Add wildRtrax version information:
   u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
 
+  query_list <- list(
+    projectIds = project_id,
+    sensorId = sensor_id
+  )
+
+ # Create the list of objects
+  if ("main" %in% reports) query_list$mainReport <- TRUE
+  if ("project" %in% reports) query_list$projectReport <- TRUE
+  if ("location" %in% reports) query_list$locationReport <- TRUE
+  if ("tag" %in% reports) query_list$tagReport <- TRUE
+  if ("image" %in% reports) query_list$imageReport <- TRUE
+  if ("image_set" %in% reports) query_list$imageSetReport <- TRUE
+  if ("birdnet" %in% reports) query_list$birdnetReport <- TRUE
+  if ("megadetctor" %in% reports) query_list$megaDetectorReport <- TRUE
+  if ("megaclassifer" %in% reports) query_list$megaClassiferReport <- TRUE
+  query_list$splitLocation <- FALSE
+
   # Prepare temporary file:
   tmp <- tempfile(fileext = ".zip")
   # tmp directory
@@ -160,17 +193,14 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   # Create POST request
   r <- httr::POST(
     httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
-    query = list(
-      projectIds = project_id,
-      sensorId = sensor_id,
-      splitLocation = FALSE
-    ),
+    query = query_list,
     accept = "application/zip",
     httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
     httr::user_agent(u),
     httr::write_disk(tmp),
     httr::progress()
-  )
+    )
+
 
   # Stop if an error or bad request occurred
   if (httr::http_error(r))
@@ -190,7 +220,7 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   # List data files, read into R as a list
   files <- gsub(".csv", "", list.files(td, pattern = ".csv"))
   files.full <- list.files(td, pattern = ".csv", full.names = TRUE)
-  x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) |>
+  x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) %>%
     purrr::set_names(files)
 
   # Remove weather columns, if desired
@@ -201,7 +231,7 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
   }
 
   # Return the requested report(s)
-  report <- paste(report, collapse = "|")
+  report <- paste(reports, collapse = "|")
   x <- x[grepl(report, names(x))]
   # Return a dataframe if only 1 element in the list (i.e., only 1 report requested)
   if (length(x) == 1) {
@@ -220,8 +250,158 @@ wt_download_report <- function(project_id, sensor_id, report, weather_cols = TRU
 }
 
 
+#' Get the WildTrax species table
+#'
+#' @description Request for the WildTrax species table
+#'
+#' @import dplyr httr readr jsonlite
+#' @export
+#'
+#' @examples
+#'  \dontrun{
+#'  data_species <- wt_get_species()
+#'  }
+#' @return A tibble of the species table called 'wt_spp_table'
+#'
+
+wt_get_species <- function(){
+
+  # Check if authentication has expired:
+  if (.wt_auth_expired())
+    stop("Please authenticate with wt_auth().", call. = FALSE)
+
+  if (exists("wt_spp_table")) {
+    user_input <- readline("Do you want to overwrrite the current species table in your environment? (Y/N): ")
+
+    if (user_input == "N") {
+      stop("Stopping.")
+    }
+  }
+
+  # User agent
+  u <- getOption("HTTPUserAgent")
+  if (is.null(u)) {
+    u <- sprintf("R/%s; R (%s)",
+                 getRversion(),
+                 paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
+  }
+
+  # Add wildRtrax version information:
+  u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
+
+  spp <- httr::POST(
+    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-all-species"),
+    accept = "application/json",
+    httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
+    httr::user_agent(u),
+    httr::progress()
+  )
+
+  if (spp$status_code == 200) {
+  } else {
+    stop("The species table could not be downloaded.")
+  }
+
+  spps <- httr::content(spp)
+
+  spp_table <- tibble(
+    species_id = map_dbl(spps, ~ ifelse(!is.null(.x$id), .x$id, NA)),
+    species_code = map_chr(spps, ~ ifelse(!is.null(.x$code), .x$code, NA)),
+    species_common_name = map_chr(spps, ~ ifelse(!is.null(.x$commonName), .x$commonName, NA)),
+    species_class = map_chr(spps, ~ ifelse(!is.null(.x$className), .x$className, NA)),
+    species_order = map_chr(spps, ~ ifelse(!is.null(.x$order), .x$order, NA)),
+    species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
+  )
+
+  message("Successfully downloaded the species table! Use wt_tidy_species to filter species from the list.")
+
+  assign("wt_spp_table", spp_table, 1)
+
+}
 
 
+#' Download acoustic tags
+#'
+#' @description Downloads acoustic tags (mp3 and jpg) in an organized format for other purposes.
+#'
+#' @param input A data frame or tibble of the tag report i.e. wt_download_report(reports = "tag")
+#' @param output Directory to store the tags
+#' @param clip_type Character; either spectrogram or audio clips
 
+#'
+#' @import dplyr tibble readr
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dat.report <- wt_download_report(reports = "tag")
+#' wt_download_tags(input = my_tag_data)
+#' }
+#'
+#' @return An organized folder of clips and tags in the output directory. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
 
+wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")) {
+
+  future::multisession()
+
+  input_data <- input
+
+  # Assuming input_data is a data frame or a matrix
+  if (!("tag_spectrogram_url" %in% colnames(input_data)) | !("clip_url" %in% colnames(input_data))) {
+    stop("Required columns 'tag_spectrogram_url' and 'clip_url' are missing in input_data. Use wt_download_report(reports = 'tag').")
+  }
+
+  if (!dir.exists(output)) {
+    stop("This directory doesn't exist.")
+  }
+
+  if (clip_type == "audio") {
+
+    input_audio_only <- input_data %>%
+      select(organization, location, recording_date_time, species_code, individual_order, detection_time, clip_url) %>%
+      mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
+      # Create the local file name
+      mutate(clip_file_name = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".mp3"))
+
+    input_audio_only %>%
+      furrr::future_walk2(.x = .$clip_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+
+    return(input_audio_only)
+
+  } else if (clip_type == "spectrogram") {
+
+    input_spec_only <- input_data %>%
+      select(organization, location, recording_date_time, species_code, individual_order, detection_time, tag_spectrogram_url) %>%
+      mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
+      # Create the local file name
+      mutate(clip_file_name = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".jpeg"))
+
+    input_spec_only %>%
+      furrr::future_walk2(.x = .$tag_spectrogram_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+
+    return(input_spec_only)
+
+  } else if (clip_type == "spectrogram" & clip_type == "audio") {
+
+    input_both <- input_data %>%
+      select(organization, location, recording_date_time, species_code, individual_order, detection_time, tag_spectrogram_url, clip_url) %>%
+      mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
+      # Create the local file name
+      mutate(clip_file_name_spec = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".jpeg"))
+      mutate(clip_file_name_audio = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".mp3"))
+
+    #Download spec first
+    input_both %>%
+     furrr::future_walk2(.x = .$tag_spectrogram_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+
+    input_both %>%
+      furrr::future_walk2(.x = .$tag_clip_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+
+    return(input_both)
+
+  } else {
+    stop("Need to define what, either spectrogram, audio or both")
+  }
+
+}
 

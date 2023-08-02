@@ -4,10 +4,19 @@
 \name{wildRtrax}
 \alias{wildRtrax}
 \alias{wildRtrax-package}
-\title{wildRtrax: A series of advanced user functions for environmental sensor data management, analytics and exploration.}
+\title{wildRtrax: A series of advanced user functions for environmental sensor data management and an}
 \description{
-This package provides a set of functions to manage environmental sensor data to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
+wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://abbiodiversity.github.io/wildRtrax/}
+}
+
 }
 \author{
-Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca}
+Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca} Elly Knight \email{ecknight@ualberta.ca}
 }

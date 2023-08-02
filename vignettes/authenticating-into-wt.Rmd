@@ -2,7 +2,7 @@
 title: 'Authenticating into WildTrax'
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{authenticating-into-wt}
+  %\VignetteIndexEntry{Authenticating into WildTrax}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,7 +21,7 @@ library(wildRtrax)
 
 ## Set up credentials
 
-To obtain an Auth0 token, you need to first store your WildTrax username and password as environment variables.
+To obtain an Auth0 token, you must login into WildTrax using Auth0 (Google authorization is currently not supported). You also need to store your WildTrax user name and password as environment variables.
 
 ```{r echo=TRUE, eval=FALSE}
 # Note that you need to use 'WT_USERNAME' and 'WT_PASSWORD'.
@@ -41,7 +41,7 @@ wt_auth()
 
 ```
 
-The Auth0 token you obtained will last for 8 hours. After that time, you will need to re-authenticate.
+The Auth0 token you obtained will last for 12 hours. After that time, you will need to re-authenticate.
 
 ## Making API calls
 
@@ -59,7 +59,7 @@ Using the project_id number in the download summary you can then use `wt_downloa
 
 ```{r echo=TRUE, eval=FALSE, warning = F, message = F}
 #Download the project report
-my_report <- wt_download_report(project_id = 47, sensor_id = 'ARU', cols_def = F, weather_cols = T)
+my_report <- wt_download_report(project_id = 41, sensor_id = 'ARU', cols_def = F, weather_cols = T)
 
 my_report
 
