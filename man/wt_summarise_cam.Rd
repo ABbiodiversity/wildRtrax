@@ -10,7 +10,7 @@ wt_summarise_cam(
   time_interval = "day",
   variable = "detections",
   output_format = "wide",
-  species_col = common_name,
+  species_col = species_common_name,
   effort_data = NULL,
   project_col = NULL,
   station_col = NULL,

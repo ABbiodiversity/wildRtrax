@@ -8,19 +8,19 @@ wt_ind_detect(
   x,
   threshold,
   units = "minutes",
-  datetime_col = date_detected,
+  datetime_col = image_date_time,
   remove_human = TRUE,
   remove_domestic = TRUE
 )
 }
 \arguments{
-\item{x}{A dataframe of camera data; preferably, the output of \code{wt_download_report()}.}
+\item{x}{A dataframe of camera data; preferably, the main report from \code{wt_download_report()}.}
 
 \item{threshold}{Numeric; time interval to parse out independent detections.}
 
 \item{units}{The threshold unit. Can be one of three values, "seconds", "minutes", "hours".}
 
-\item{datetime_col}{Defaults to \code{date_detected}; The column indicating the timestamp of the image.}
+\item{datetime_col}{Defaults to \code{image_date_time}; The column indicating the timestamp of the image.}
 
 \item{remove_human}{Logical; Should human and human-related tags (e.g. vehicles) be removed? Defaults to TRUE.}
 
