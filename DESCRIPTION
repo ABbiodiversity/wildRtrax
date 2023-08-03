@@ -8,16 +8,26 @@ Authors@R:
            email = "agmacpha@ualberta.ca"),
       person(given = "Marcus",
              family = "Becker",
+<<<<<<< HEAD
              role = c("aut","cre"),
+=======
+             role = "cre",
+>>>>>>> main
              email = "mabecker@ualberta.ca"),
       person(given = "Elly",
              family = "Knight",
              role = "aut",
              email = "ecknight@ualberta.ca"))
+<<<<<<< HEAD
 Author: Alex MacPhail
 Maintainer: Marcus Becker <mabecker@ualberta.ca>
 Description: wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
 Depends: R (>= 4.3.0)
+=======
+Description: This package provides a set of functions to manage environmental sensor data to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
+Depends: R (>= 3.5.0)
+License: MIT + file LICENSE
+>>>>>>> main
 Imports:
     dplyr (>= 1.0.0),
     future,
@@ -56,7 +66,11 @@ VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
+<<<<<<< HEAD
 RoxygenNote: 7.2.3
 Config/testthat/edition: 3
 URL: https://abbiodiversity.github.io/wildRtrax/
 License: MIT + file LICENSE
+=======
+RoxygenNote: 7.2.1
+>>>>>>> main
