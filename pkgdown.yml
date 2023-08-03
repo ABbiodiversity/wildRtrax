@@ -1,9 +1,14 @@
-pandoc: 2.7.3
-pkgdown: 1.6.1
+pandoc: 2.19.2
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
+  acoustic-data-wrangling: acoustic-data-wrangling.html
+  acoustic-pre-processing: acoustic-pre-processing.html
+  audio-data-concepts: audio-data-concepts.html
   authenticating-into-wt: authenticating-into-wt.html
-  concepts: concepts.html
-  pre-processing-tools-in-wrt: pre-processing-tools-in-wrt.html
-last_built: 2021-09-10T13:53Z
+  introduction: introduction.html
+last_built: 2023-08-03T18:44Z
+urls:
+  reference: https://abbiodiversity.github.io/wildRtrax/reference
+  article: https://abbiodiversity.github.io/wildRtrax/articles
 
