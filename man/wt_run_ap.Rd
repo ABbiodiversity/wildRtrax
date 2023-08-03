@@ -33,8 +33,3 @@ Note that this function relies on having this software installed locally.
 This function will batch calculate summary and spectral acoustic indices and generate false-colour spectrograms for a folder of audio files using the Towsey.Acoustic configuration (yml) file from the AP software.
 You can use the output from \code{`wt_audio_scanner`} in the function, or define a local folder with audio files directly.
 }
-\examples{
-\dontrun{
-}
-
-}

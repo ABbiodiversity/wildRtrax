@@ -149,7 +149,7 @@
 
   #Separate method into duration and tag method
   options(warn = -1)
-  dat.meth <- separate(dat, method, into=c("duration", "tagmeth"), sep=" ") %>%
+  dat.meth <- separate(data, method, into=c("duration", "tagmeth"), sep=" ") %>%
     mutate(duration = as.numeric(str_sub(duration, -100, -2)))
   options(warn = 0)
 

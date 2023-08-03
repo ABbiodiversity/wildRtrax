@@ -18,21 +18,6 @@
 #' }
 #'
 #' @return A tibble with a summary of your audio files.
-#' \itemize{
-#'   \item file_path; Character - Full file path of the audio
-#'   \item size_Mb; Numeric - Size of the file in MB
-#'   \item file_name; Character - Basename of the file
-#'   \item location; Character - Location name
-#'   \item recording_date_time; Dttm - Recording date time of the file; use with "tz" argument to set as needed
-#'   \item file_type; Character - wac, wav or flac
-#'   \item julian; Numeric - Julian date of the audio
-#'   \item year; Numeric - Year of the audio
-#'   \item gps_enabled; Boolean - If TRUE, audio is GPS enabled
-#'   \item time_index; Numeric - Numeric value describing the order of the recording per day. E.g. time_index = 1 is the first recording of the day
-#'   \item length_seconds; Numeric - Length of the audio file in seconds
-#'   \item sample rate; Numeric - Sample rate of the audio file in Hertz
-#'   \item n_channels; Numeric - Number of channels of the audio file
-#'   }
 
 wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   # Create regex for file_type
@@ -314,11 +299,6 @@ wt_flac_info <- function(path) {
 #'
 #' @import dplyr stringr furrr progressr
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#  wt_run_ap(x = scanner_output, output_dir = '/user/output_folder', path_to_ap = "C:\\AP\\AnalysisPrograms.exe")
-#' }
 #'
 #' @return Output will return to the specific root directory
 
@@ -773,7 +753,7 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
   }
 
   if (is.null(output)) {
-    return(my_tasks <<- tasks)
+    return(tasks)
   } else {
     return(write.csv(tasks, output, row.names = F))
   }
@@ -974,7 +954,7 @@ wt_songscope_tags <- function (input, output = c("env","csv"),
 
   #Write the file
   if (output == "env") {
-    songscope_tags <<- in_tbl_wtd
+    return(in_tbl_wtd)
     print("Converted to WildTrax tags. Review the output then go to your WildTrax project > Manage > Upload Tags.")
   } else if (output == "csv") {
     return(list(in_tbl_wtd, write.csv(in_tbl_wtd, file = my_output_file, row.names = F)))

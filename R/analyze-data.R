@@ -29,7 +29,7 @@
 #' }
 #'
 #' @return A dataframe summarising your camera data by location, time interval, and species.
-#'
+
 wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", variable = "detections", output_format = "wide",
                              species_col = common_name, effort_data = NULL, project_col = NULL, station_col = NULL,
                              start_col = NULL, end_col = NULL) {

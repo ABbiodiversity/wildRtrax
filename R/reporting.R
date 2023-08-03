@@ -2,6 +2,8 @@
 #'
 #' @section `wt_report` details:
 #'
+#' Build customized reports from WildTrax data
+#'
 #' @description Build reports automatically using custom settings
 #'
 #' @param data Input data from wt_download_report

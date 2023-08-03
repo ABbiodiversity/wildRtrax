@@ -44,7 +44,6 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
 - Analyze data
   - `wt_summarise_cam()` :camera:
   - `wt_ind_det()` :camera:
-  - `wt_ord()` :sound:
 - Convenience functions
   - `wt_location_distances()` :sound: :camera: :bird: :bat:
   - `wt_tidy_species()` :sound: :camera: :bird: :bat:

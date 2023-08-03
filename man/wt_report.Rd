@@ -21,6 +21,8 @@ Build reports automatically using custom settings
 }
 \section{\code{wt_report} details}{
 
+
+Build customized reports from WildTrax data
 }
 
 \examples{

@@ -8,7 +8,6 @@ articles:
   contents:
   - introduction
   - audio-data-concepts
-  - image-data-concepts
   - authenticating-into-wt
   - acoustic-pre-processing
   - acoustic-data-wrangling
@@ -30,10 +29,10 @@ reference:
   - wt_make_aru_tasks
   - wt_kaleidoscope_tags
   - wt_songscope_tags
+  - wt_download_tags
   - wt_replace_tmtt
   - wt_summarise_cam
   - wt_ind_detect
-  - wt_ord
   - wt_location_distances
   - wt_tidy_species
   - wt_make_wide
