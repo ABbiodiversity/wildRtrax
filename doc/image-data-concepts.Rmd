@@ -1,0 +1,8 @@
+---
+title: "Image data concepts"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Image data concepts}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---

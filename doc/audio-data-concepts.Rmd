@@ -1,0 +1,97 @@
+---
+title: 'Audio data concepts'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Audio data concepts}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Audio data management
+
+Autonomous recording units (ARUs) and remote cameras collect data on the environment by means of capturing acoustic or visual signals, respectively. ARUs are used to survey a variety of species such as birds, amphibians, and bats, since these taxa give reliable, identifiable signals. These signals are produced for activities, such as, territory defense or mating. Environmental sensors are designed to record sound or images autonomously for long periods of time, which can accrue a large amount of data.
+
+### Audio file formats
+
+There are three major audio file types used within the **wildRtrax**: *wac*, *flac* and *wav*
+
+* *wac* is a proprietary, lossless compressed file format developed by [Wildlife Acoustics](https://www.wildlifeacoustics.com/)
+* *wav* is the standard, ubiquitous uncompressed audio file format
+* *flac* a lossless compressed format
+
+You might also be working with *mp3* which is a lossy compressed audio file format.
+
+```{r Examples of reading acoustic data into R, include = TRUE, echo = TRUE, eval = FALSE}
+root <- "/volumes/GoogleDrive/Shared drives/wildRtrax/data/example/"
+
+file <- paste0(root,"ABMI-0754-SW_20170301_085900.wav")
+
+wave_t <- tuneR::readWave(file, header = T) #True header format
+
+wave_f <- tuneR::readWave(file, header = F)
+
+list(wave_t, wave_f)
+
+```
+
+You can access the *objects* in `wave_t` through a `$` as you would a normal list. When `header = FALSE` and you are reading in the entire wav file, you can access *slots* of the `S4` object using `@`. 
+
+```{r Accessing S4 and lists, include = TRUE, echo = TRUE, eval = FALSE}
+sound_length_S4 <- round((wave_f@left / wave_f@samp.rate), 2)
+
+#Is equivalent to:
+sound_length_list <- wave_t$samples / wave_t$sample.rate
+
+```
+
+### Spectrograms
+
+A *spectrogram* is a visual representation of the spectrum of frequencies of an audio signal as it varies with time ([Wikipedia](https://en.wikipedia.org/wiki/Spectrogram)). A **Fast-Fourier Transform** is what converts a waveform into a spectrogram.  Spectrograms can be used to identify wildlife and other signals by their unique spectral signature. Generally speaking, there are three pieces of information you can use when identifying a signal from a spectrogram:
+
+* Length in time (e.g. seconds, minutes) of the signal via the x-axis
+* Frequency range of the signal via the y-axis in Hz (hertz)
+* Relative amplitude of the signal via the z-axis in dBFS (decibels relative to full scale)
+
+The maximum frequency of a spectrogram is always the sample rate / 2, which is also called the **Nyquist Frequency**.
+
+Let's create a spectrogram to get a better look at some of those audio files. Here's one way to do it using `ggspectro` in `seewave`. 
+
+```{r, echo = T, eval = F, warnings = FALSE, include = TRUE}
+#Plot a spectrogram
+v <- seewave::ggspectro(tuneR::readWave(file, from = 0, to = 60, units = "seconds"), ovlp = 50) + ggplot2::geom_tile(aes(fill=amplitude)) + theme_bw()
+
+```
+
+[**SoX**](http://sox.sourceforge.net/) is also a very powerful command line tool that can build spectrograms as well. Processing time here is much faster given R doesn't have to read in the file as an S4 wave object. More on this later. 
+
+```{r SoX images in bash, engine='bash', include = TRUE, eval = F, include = T, warning = F, message = F}
+#Or try a bash command using SoX
+
+#cd /path/to/file && for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done
+
+```
+
+### From the field to the office
+
+Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from raw data. But robust field or [*visit*](https://www.wildtrax.ca/home/resources/guide/organizations/visits.html) metadata is important to support the quality control process of the media.
+
+### Metadata dependencies for acoustic data
+
+The **wildRtrax** prefers that the file name string from which the data is deriving is composed of two parts: a *spatial* component and a *temporal* component. We call these fields the [*location*](https://www.wildtrax.ca/home/resources/guide/organizations/locations.html) and the *recording_date_time* of the audio respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
+
+### Data volume, storage and computing power
+
+Collecting lots of data with environmental sensors is easy. Are there ways you can reduce what you collect and have to process?
+
+* *Are you interested in one or many species?*
+  * A community analysis would require a broad spectrum range to record in or analyze or with more data being collected to account for imperfect detection. Whereas with a single or multi-species approach, you may only need to look at a narrow frequency range in order to detect the species. 
+* *What frequency range does your species vocalize in?*
+  * If you know the frequency range your species vocalizes in, you may be able to *change the sampling rate*, apply a *band-pass filter* or *compress the data*
+* *Data quality or data volume?*
+  * All methods above will inherently reduce data quality in favour of also reducing data volume. With more complex acoustic information comes larger files.
+
+
