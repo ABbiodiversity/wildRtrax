@@ -50,9 +50,9 @@ Imports:
     markdown
 Suggests: 
     testthat (>= 3.0.0),
-    QPAD,
     usethis,
     knitr
+Remotes: psolymos/QPAD
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
