@@ -31,7 +31,6 @@ Imports:
     tools,
     pipeR,
     tuneR,
-    QPAD,
     intrval,
     jsonlite,
     magick,
@@ -51,6 +50,7 @@ Imports:
     markdown
 Suggests: 
     testthat (>= 3.0.0),
+    QPAD,
     usethis,
     knitr
 VignetteBuilder: knitr
