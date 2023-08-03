@@ -9,15 +9,20 @@ Authors@R:
       person(given = "Marcus",
              family = "Becker",
 <<<<<<< HEAD
+<<<<<<< HEAD
              role = c("aut","cre"),
 =======
              role = "cre",
 >>>>>>> main
+=======
+             role = "cre",
+>>>>>>> cf6f620060a4324f060f61dc3e9106e0705107d3
              email = "mabecker@ualberta.ca"),
       person(given = "Elly",
              family = "Knight",
              role = "aut",
              email = "ecknight@ualberta.ca"))
+<<<<<<< HEAD
 <<<<<<< HEAD
 Author: Alex MacPhail
 Maintainer: Marcus Becker <mabecker@ualberta.ca>
@@ -28,6 +33,11 @@ Description: This package provides a set of functions to manage environmental se
 Depends: R (>= 3.5.0)
 License: MIT + file LICENSE
 >>>>>>> main
+=======
+Description: This package provides a set of functions to manage environmental sensor data to and from the WildTrax platform, as well as perform basic data cleaning, analysis, and quality control.
+Depends: R (>= 3.5.0)
+License: MIT + file LICENSE
+>>>>>>> cf6f620060a4324f060f61dc3e9106e0705107d3
 Imports:
     dplyr (>= 1.0.0),
     future,
@@ -67,6 +77,7 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 <<<<<<< HEAD
+<<<<<<< HEAD
 RoxygenNote: 7.2.3
 Config/testthat/edition: 3
 URL: https://abbiodiversity.github.io/wildRtrax/
@@ -74,3 +85,7 @@ License: MIT + file LICENSE
 =======
 RoxygenNote: 7.2.1
 >>>>>>> main
+=======
+RoxygenNote: 7.2.1
+URL: https://abbiodiversity.github.io/wildRtrax/
+>>>>>>> cf6f620060a4324f060f61dc3e9106e0705107d3

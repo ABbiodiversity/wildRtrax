@@ -3,10 +3,15 @@
 export(wt_audio_scanner)
 export(wt_auth)
 <<<<<<< HEAD
+<<<<<<< HEAD
 export(wt_chop)
 =======
 export(wt_download_clips)
 >>>>>>> main
+=======
+export(wt_download_clips)
+export(wt_chop)
+>>>>>>> cf6f620060a4324f060f61dc3e9106e0705107d3
 export(wt_download_report)
 export(wt_download_tags)
 export(wt_flac_info)
@@ -60,14 +65,22 @@ importFrom(lubridate,yday)
 importFrom(lubridate,year)
 importFrom(lubridate,ymd_hms)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+importFrom(plumber,plumb)
+importFrom(purrr,map2)
+>>>>>>> cf6f620060a4324f060f61dc3e9106e0705107d3
 importFrom(maptools,sunriset)
 importFrom(raster,coordinates)
 importFrom(raster,extract)
 importFrom(raster,proj4string)
+<<<<<<< HEAD
 =======
 importFrom(plumber,plumb)
 importFrom(purrr,map2)
 >>>>>>> main
+=======
+>>>>>>> cf6f620060a4324f060f61dc3e9106e0705107d3
 importFrom(rlang,current_env)
 importFrom(rlang,env_has)
 importFrom(rlang,is_missing)
