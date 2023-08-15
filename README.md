@@ -35,21 +35,22 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_make_aru_tasks()` :sound:
   - `wt_songscope_tags()` :sound:
   - `wt_kaleidoscope_tags()` :sound: :bat:
-- Download processed data from WildTrax
+- Download data from WildTrax
   - `wt_auth()` :camera: :sound: :bird: :bat:
   - `wt_get_download_summary()` :camera: :sound: :bird: :bat:
   - `wt_download_report()` :camera: :sound: :bird: :bat:
     - Available reports: `main, project, location, recording / image / point count, tag, megadetector, megaclassifer, birdnet`
   - `wt_get_species()` :camera: :sound: :bird: :bat:
+  - `wt_download_tags()` :sound:
 - Analyze data
   - `wt_summarise_cam()` :camera:
-  - `wt_ind_det()` :camera:
+  - `wt_ind_detect()` :camera:
 - Convenience functions
   - `wt_location_distances()` :sound: :camera: :bird: :bat:
   - `wt_tidy_species()` :sound: :camera: :bird: :bat:
   - `wt_replace_tmtt()` :sound:
   - `wt_make_wide()` :sound: :camera: :bird: :bat:
-  - `wt_occupancy_format()` :sound: :bird:
+  - `wt_format_occupancy()` :sound: :bird:
   - `wt_qpad_offsets()` :sound: :bird:
 
 ## Issues

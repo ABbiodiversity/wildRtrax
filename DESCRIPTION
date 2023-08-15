@@ -47,7 +47,8 @@ Imports:
     httr,
     progressr,
     rmarkdown,
-    markdown
+    markdown,
+    QPAD
 Suggests: 
     testthat (>= 3.0.0),
     usethis,
