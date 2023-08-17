@@ -4,7 +4,7 @@ Version: 1.0.0
 Authors@R: 
     c(person(given = "Alex",
            family = "MacPhail",
-           role = "aut",
+           role = c("aut"),
            email = "agmacpha@ualberta.ca"),
       person(given = "Marcus",
              family = "Becker",
@@ -12,7 +12,7 @@ Authors@R:
              email = "mabecker@ualberta.ca"),
       person(given = "Elly",
              family = "Knight",
-             role = "aut",
+             role = c("aut"),
              email = "ecknight@ualberta.ca"))
 Author: Alex MacPhail
 Maintainer: Marcus Becker <mabecker@ualberta.ca>
@@ -27,7 +27,6 @@ Imports:
     tibble,
     tidyr (>= 1.0.2),
     lubridate,
-    stringr,
     tools,
     pipeR,
     tuneR,
@@ -36,8 +35,9 @@ Imports:
     magick,
     readr,
     sf,
-    sp,
+    stringr,
     tidyverse,
+    sp,
     purrr,
     rlang,
     unmarked,

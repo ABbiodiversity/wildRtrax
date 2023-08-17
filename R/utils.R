@@ -141,11 +141,11 @@
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
   #Get the gis data
-  .rlcc <- raster(system.file("lcc.tif"), package="wildRtrax")
-  .rtree <- raster(system.file("tree.tif"), package="wildRtrax")
-  .rd1 <- raster(system.file("seedgrow.tif"), package="wildRtrax")
-  .rtz <- raster(system.file("utcoffset.tif"), package="wildRtrax")
-  crs <- proj4string(.rtree)
+  .rlcc <- raster::raster(system.file("lcc.tif"), package="wildRtrax")
+  .rtree <- raster::raster(system.file("tree.tif"), package="wildRtrax")
+  .rd1 <- raster::raster(system.file("seedgrow.tif"), package="wildRtrax")
+  .rtz <- raster::raster(system.file("utcoffset.tif"), package="wildRtrax")
+  crs <- raster::proj4string(.rtree)
 
   #Separate method into duration and tag method
   options(warn = -1)
@@ -201,7 +201,7 @@
   xy$x[is.na(xy$x)] <- mean(xy$x, na.rm=TRUE)
   xy$y[is.na(xy$y)] <- mean(xy$y, na.rm=TRUE)
   raster::coordinates(xy) <- ~ x + y
-  proj4string(xy) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
+  raster::proj4string(xy) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
   xy <- invisible(spTransform(xy, crs))
 
   #LCC4 and LCC2

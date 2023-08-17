@@ -14,6 +14,6 @@ Request for the WildTrax species table
 }
 \examples{
  \dontrun{
- data_species <- wt_get_species()
+ wt_species <- wt_get_species()
  }
 }

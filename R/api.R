@@ -259,7 +259,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
 #'
 #' @examples
 #'  \dontrun{
-#'  data_species <- wt_get_species()
+#'  wt_species <- wt_get_species()
 #'  }
 #' @return A tibble of the species table called 'wt_spp_table'
 #'
@@ -315,7 +315,7 @@ wt_get_species <- function(){
 
   message("Successfully downloaded the species table! Use wt_tidy_species to filter species from the list.")
 
-  assign("wt_spp_table", spp_table, 1)
+ return(spp_table)
 
 }
 
