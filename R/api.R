@@ -141,7 +141,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   }
 
   # Allowable reports for each sensor
-  cam <- c("main", "project", "location", "image", "tag", "megadetector", "megaclassifier", "definitions")
+  cam <- c("main", "project", "location", "image", "image_set", "tag", "megadetector", "megaclassifier", "definitions")
   aru <- c("main", "project", "location", "birdnet", "recording", "tag", "definitions")
   pc <- c("main", "project", "location", "point count", "definitions")
 
