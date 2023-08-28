@@ -75,6 +75,7 @@ wt_get_download_summary <- function(sensor_id) {
 #'  \item project
 #'  \item location
 #'  \item image
+#'  \item image_set
 #'  \item tag
 #'  \item megadetector
 #'  \item megaclassifier
