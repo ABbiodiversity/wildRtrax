@@ -11,7 +11,7 @@ wt_tidy_species(
 )
 }
 \arguments{
-\item{data}{WildTrax main report or tag report from the \code{wt_download_report} function.}
+\item{data}{WildTrax main report or tag report from the \code{wt_download_report()} function.}
 
 \item{remove}{Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "unknown"). Defaults to retaining bird group only.}
 

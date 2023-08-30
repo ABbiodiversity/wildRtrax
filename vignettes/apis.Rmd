@@ -1,0 +1,99 @@
+---
+title: 'APIs'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{APIs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = '#>'
+)
+```
+
+```{r setup, echo=FALSE, include=FALSE, eval=TRUE}
+# Attach package
+library(wildRtrax)
+library(tidyverse)
+```
+
+## Set up WildTrax credentials
+
+To obtain an Auth0 token, you must login into WildTrax using Auth0 (Google authorization is currently not supported). You also need to store your WildTrax user name and password as environment variables.
+
+```{r echo=TRUE, eval=TRUE}
+# Note that you need to use 'WT_USERNAME' and 'WT_PASSWORD'
+Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
+
+```
+
+## Authenticate
+
+Next, you use the `wt_auth()` function to authenticate.
+
+```{r echo=TRUE, eval=TRUE}
+# Authenticate
+wt_auth()
+
+```
+
+The Auth0 token you obtained will last for 12 hours. After that time, you will need to re-authenticate.
+
+## Making API calls
+
+Once authenticated, you can now use various functions that call upon the WildTrax API. For instance, you can use `wt_get_download_summary()` to see basic metadata about projects that you can download data for.  
+
+```{r echo=TRUE, eval=TRUE, wanring=F, message=F}
+# Download the project summary you have access to
+my_projects <- wt_get_download_summary(sensor_id = 'ARU') %>%
+  tibble::as_tibble() %>%
+  tidyr::unnest(cols = c(project, project_id, sensorId, tasks, status))
+
+head(my_projects)
+```
+
+Using the project_id number in the download summary you can then use `wt_download_report()` to access the species data. You can also find the project_id number in the url of a WildTrax project, e.g. https://www.wildtrax.ca/home/aru-tasks.html?projectId=605&sensorId=ARU.
+
+```{r echo=TRUE, include=TRUE, eval=F, warning = FALSE, message = FALSE}
+# Download the project report
+my_report <- wt_download_report(project_id = 379, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+  tibble::as_tibble()
+```
+```{r echo=F, include=F, eval=T, warning = FALSE, message = FALSE}
+# Download the project report
+my_report <- wt_download_report(project_id = 379, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+  tibble::as_tibble()
+```
+```{r}
+head(my_report)
+
+```
+
+An easy way to download multiple projects at once is to use `wt_get_download_summary()` and then filter by a substring in order to get the project ids to download the data.
+
+```{r echo=T, eval=FALSE, warning = F, message = F}
+# Download all of the published A's Ecosystem Health ARU data to a single object
+eh_projects <- wt_get_download_summary(sensor_id = "ARU") %>%
+  tibble::as_tibble() %>%
+  dplyr::filter(grepl('^Ecosystem Health',project)) %>%
+  dplyr::mutate(data = purrr::map(.x = project_id, .f = ~wt_download_report(project_id = .x, sensor_id = "ARU", weather_cols = F, reports = "main")))
+
+```
+
+Downloading the WildTrax species table with `wt_get_species()` also grants you access to other valuable columns or provides a complete list of the species currently supported by WildTrax.
+
+```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
+# Download the WildTrax species table
+spp_table <- wt_get_species()
+```
+```{r, echo=F, include=F, eval=T, warning=F, message = FALSE}
+# Download the WildTrax species table
+spp_table <- wt_get_species()
+```
+```{r}
+head(spp_table)
+
+```

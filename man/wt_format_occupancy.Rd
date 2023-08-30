@@ -7,7 +7,7 @@
 wt_format_occupancy(data, species, siteCovs = NULL)
 }
 \arguments{
-\item{data}{Summary report of WildTrax observations from the \code{wt_download_report} function. Currently only functioning for the ARU sensor.}
+\item{data}{Summary report of WildTrax observations from the \code{wt_download_report()} function. Currently only functioning for the ARU sensor.}
 
 \item{species}{Character; four-letter alpha code for the species desired for occupancy modelling.}
 
@@ -17,7 +17,7 @@ wt_format_occupancy(data, species, siteCovs = NULL)
 An object of class unmarkedFrameOccu. See \code{?unmarked::unmarkedFrameOccu} for details.
 }
 \description{
-This function formats the summary report from the \code{wt_download_report} function into an unmarked object for occupancy modelling. The current version only includes formatting for the ARU sensor and for single species single season models.
+This function formats the summary report from the \code{wt_download_report()} function into an unmarked object for occupancy modelling. The current version only includes formatting for the ARU sensor and for single species single season models.
 }
 \examples{
 \dontrun{

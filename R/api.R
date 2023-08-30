@@ -74,6 +74,7 @@ wt_get_download_summary <- function(sensor_id) {
 #'  \item main
 #'  \item project
 #'  \item location
+#'  \item image_set
 #'  \item image
 #'  \item tag
 #'  \item megadetector
@@ -85,6 +86,7 @@ wt_get_download_summary <- function(sensor_id) {
 #'  \item main
 #'  \item project
 #'  \item location
+#'  \item recording
 #'  \item tag
 #'  \item birdnet
 #'  \item definitions
@@ -108,7 +110,7 @@ wt_get_download_summary <- function(sensor_id) {
 #' # Authenticate first:
 #' wt_auth()
 #' a_camera_project <- wt_download_report(
-#' project_id = 397, sensor_id = "CAM", reports = c("tag", "image"),
+#' project_id = 397, sensor_id = "CAM", reports = c("tag", "image_set"),
 #' weather_cols = TRUE)
 #'
 #' an_aru_project <- wt_download_report(
@@ -140,9 +142,9 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   }
 
   # Allowable reports for each sensor
-  cam <- c("main", "project", "location", "image", "tag", "megadetector", "megaclassifier", "definitions")
+  cam <- c("main", "project", "location", "image_set", "image", "tag", "megadetector", "megaclassifier", "definitions")
   aru <- c("main", "project", "location", "birdnet", "recording", "tag", "definitions")
-  pc <- c("main", "project", "location", "point count", "definitions")
+  pc <- c("main", "project", "location", "point_count", "definitions")
 
   # Check that the user supplied a valid report type depending on the sensor
   if(sensor_id == "CAM" & !all(reports %in% cam)) {
@@ -173,17 +175,20 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     sensorId = sensor_id
   )
 
- # Create the list of objects
+  # Create the list of objects
   if ("main" %in% reports) query_list$mainReport <- TRUE
   if ("project" %in% reports) query_list$projectReport <- TRUE
   if ("location" %in% reports) query_list$locationReport <- TRUE
   if ("tag" %in% reports) query_list$tagReport <- TRUE
   if ("image" %in% reports) query_list$imageReport <- TRUE
   if ("image_set" %in% reports) query_list$imageSetReport <- TRUE
+  if ("point_count" %in% reports) query_list$pointCountReport <- TRUE
   if ("birdnet" %in% reports) query_list$birdnetReport <- TRUE
-  if ("megadetctor" %in% reports) query_list$megaDetectorReport <- TRUE
-  if ("megaclassifer" %in% reports) query_list$megaClassiferReport <- TRUE
-  query_list$splitLocation <- FALSE
+  if ("megadetector" %in% reports) query_list$megaDetectorReport <- TRUE
+  if ("megaclassifier" %in% reports) query_list$megaClassifierReport <- TRUE
+
+  query_list$includeMetaData <- TRUE
+  query_list$splitLocation <- TRUE
 
   # Prepare temporary file:
   tmp <- tempfile(fileext = ".zip")
@@ -191,7 +196,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   td <- tempdir()
 
   # Create POST request
-  r <- httr::POST(
+  r <- httr::GET(
     httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
     query = query_list,
     accept = "application/zip",
@@ -261,7 +266,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
 #'  \dontrun{
 #'  wt_species <- wt_get_species()
 #'  }
-#' @return A tibble of the species table called 'wt_spp_table'
+#' @return A tibble of the WildTrax species table
 #'
 
 wt_get_species <- function(){

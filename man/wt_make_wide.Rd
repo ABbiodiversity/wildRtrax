@@ -7,7 +7,7 @@
 wt_make_wide(data, sound = "all")
 }
 \arguments{
-\item{data}{WildTrax main report or tag report from the \code{wt_download_report} function.}
+\item{data}{WildTrax main report or tag report from the \code{wt_download_report()} function.}
 
 \item{sound}{Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).}
 }

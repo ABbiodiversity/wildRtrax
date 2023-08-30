@@ -8,7 +8,7 @@ articles:
   contents:
   - introduction
   - audio-data-concepts
-  - authenticating-into-wt
+  - apis
   - acoustic-pre-processing
   - acoustic-data-wrangling
 reference:
@@ -41,6 +41,7 @@ reference:
   - wildRtrax
 news:
   releases:
+  - text: wildRtrax 1.0.1
   - text: wildRtrax 1.0.0
   - text: wildRtrax 0.1.0
   one_page: yes

@@ -7,7 +7,7 @@
 wt_qpad_offsets(data, species = "all", version = 3, together = TRUE)
 }
 \arguments{
-\item{data}{Dataframe output from the \code{wt_format_wide} function.}
+\item{data}{Dataframe output from the \code{wt_make_wide()} function.}
 
 \item{species}{Character; species for offset calculation. Can be a list of 4-letter AOU codes (e.g., c("TEWA", "OSFL", "OVEN")) or "all" to calculate offsets for every species in the input dataframe for which offsets are available. Defaults to "all".}
 

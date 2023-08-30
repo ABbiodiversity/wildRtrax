@@ -82,7 +82,7 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #'
 #' @description This function filters the species provided in WildTrax reports to only the groups of interest. The groups available for filtering are mammal, bird, amphibian, abiotic, insect, and unknown. Zero-filling functionality is available to ensure all surveys are retained in the dataset if no observations of the group of interest are available.
 #'
-#' @param data WildTrax main report or tag report from the `wt_download_report` function.
+#' @param data WildTrax main report or tag report from the `wt_download_report()` function.
 #' @param remove Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "unknown"). Defaults to retaining bird group only.
 #' @param zerofill Logical; indicates if zerofilling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
 #' @import dplyr
@@ -108,19 +108,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
                       remove=="bird" ~ "AVES",
                       !is.na(remove) ~ remove)
 
-  if (exists("wt_spp_table")) {
-    message("Found the species table! Continuing to filter...")
-    .species <- wt_spp_table
-  } else {
-    message("Couldn't find the species table. Requesting to download...")
-    wt_get_species()
-    if (exists("wt_spp_table")) {
-      message("Found the species table! Continuing to filter...")
-      .species <- wt_spp_table
-    } else {
-      stop("An error occured. Please try again and check your authentication credentials.")
-    }
-  }
+  .species <- wt_get_species()
 
   #Get the species codes for what you want to filter out
   species.remove <- .species %>%
@@ -221,7 +209,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 #'
 #' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values. This function is best preceded by the`wt_tidy_species` and `wt_replace_tmtt` functions  to ensure 'TMTT' and amphibian calling index values are not converted to zeros.
 #'
-#' @param data WildTrax main report or tag report from the `wt_download_report` function.
+#' @param data WildTrax main report or tag report from the `wt_download_report()` function.
 #' @param sound Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).
 #' @import dplyr
 #' @export
@@ -278,9 +266,9 @@ wt_make_wide <- function(data, sound="all"){
 
 #' Format WildTrax report for occupancy modelling.
 #'
-#' @description This function formats the summary report from the `wt_download_report` function into an unmarked object for occupancy modelling. The current version only includes formatting for the ARU sensor and for single species single season models.
+#' @description This function formats the summary report from the `wt_download_report()` function into an unmarked object for occupancy modelling. The current version only includes formatting for the ARU sensor and for single species single season models.
 #'
-#' @param data Summary report of WildTrax observations from the `wt_download_report` function. Currently only functioning for the ARU sensor.
+#' @param data Summary report of WildTrax observations from the `wt_download_report()` function. Currently only functioning for the ARU sensor.
 #' @param species Character; four-letter alpha code for the species desired for occupancy modelling.
 #' @param siteCovs Optional dataframe of site covariates. Must contain a column with the same values as the location field in the data, with one row per unique value of location (i.e., one row per site).
 #' @import dplyr lubridate
@@ -411,7 +399,7 @@ wt_format_occupancy <- function(data,
 #'
 #' @description This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds. This function requires download of the `QPAD` R package and should be used on the output of the `wt_format_wide` function
 #'
-#' @param data Dataframe output from the `wt_format_wide` function.
+#' @param data Dataframe output from the `wt_make_wide()` function.
 #' @param species Character; species for offset calculation. Can be a list of 4-letter AOU codes (e.g., c("TEWA", "OSFL", "OVEN")) or "all" to calculate offsets for every species in the input dataframe for which offsets are available. Defaults to "all".
 #' @param version Numeric; version of QPAD offsets to use (2, or 3). Defaults to 3.
 #' @param together Logical; whether or not offsets should be bound to the input dataframe or returned as a separate object.

@@ -7,7 +7,7 @@
 wt_get_species()
 }
 \value{
-A tibble of the species table called 'wt_spp_table'
+A tibble of the WildTrax species table
 }
 \description{
 Request for the WildTrax species table

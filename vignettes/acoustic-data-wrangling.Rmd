@@ -6,3 +6,78 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+The recommended workflow to wrangle together data for analyis in `wildRtrax` is as follows. Once you have your data (`dat`) from `wt_download_report()`:
+
+- Remove unneeded species: `wt_tidy_species()`
+- Convert TMTT counts to numeric: `wt_replace_tmtt()`
+- Convert the species to a wide format: `wt_make_wide()`
+- Add additional [offsets](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12106) for the data `wt_qpad_offsets()`
+
+```{r, warning = F, message = F, eval = T, include = T, echo = T}
+library(wildRtrax)
+library(tidyverse)
+
+# Start by getting everything you need
+Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
+wt_auth()
+my_data <- wt_download_report(project_id = 379, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+  tibble::as_tibble()
+
+spps <- wt_get_species() %>%
+  select(species_code, species_class)
+
+my_data <- my_data %>%
+  dplyr::inner_join(., spps, by = ("species_code" = "species_code"))
+
+head(my_data)
+
+```
+
+## Data wrangling
+
+Now let's start cleaning things up a bit. We don't need certain abiotic codes so let's remove those with `wt_tidy_species()`.
+
+```{r}
+
+#my_tidy_data <- wt_tidy_species(my_data, remove = c("mammal", "amphibian", "abiotic", "insect", "unknown", zerofill=TRUE))
+
+#my_tidy_data
+
+# Difference in rows
+#round((nrow(my_tidy_data)/nrow(my_data)),2)
+```
+
+Now let's convert TMTT counts to numeric: 
+
+```{r}
+#dat.tmtt <- wt_replace_tmtt(my_tidy_data)
+
+```
+
+Then widen the data into a species matrix
+
+```{r}
+
+
+```
+
+## Offsets
+
+Now you can add the additional offsets
+
+```{r}
+
+
+```
+
+## Occupancy modelling
+
+Note that you can perform an occupancy work flow using `wt_format_occupancy()` once the data is downloaded.
+
+```{r}
+
+#dat.occu <- wt_format_occupancy(my_data, species="CONI", siteCovs=NULL)
+#mod <- unmarked::occu(~ 1 ~ 1, dat.occu)
+
+```

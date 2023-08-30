@@ -39,7 +39,7 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_auth()` :camera: :sound: :bird: :bat:
   - `wt_get_download_summary()` :camera: :sound: :bird: :bat:
   - `wt_download_report()` :camera: :sound: :bird: :bat:
-    - Available reports: `main, project, location, recording / image / point count, tag, megadetector, megaclassifer, birdnet`
+    - Available reports: `main, project, location, recording, image_set, image, tag, point_count, megadetector, megaclassifer, birdnet`
   - `wt_get_species()` :camera: :sound: :bird: :bat:
   - `wt_download_tags()` :sound:
 - Analyze data

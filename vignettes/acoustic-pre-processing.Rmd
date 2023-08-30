@@ -9,12 +9,10 @@ vignette: >
 
 The following set of functions help to pre-process and organize audio and corresponding metadata. In conjunction, these tools allow you to select recordings parameterized to a specific study design.
 
-# Data pre-processing
-
-- \code`wt_audio_scanner()` scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns. 
-- \code`wt_run_ap()` allows you to generate acoustic indices and false-colour spectrograms from a \code`wt_audio_scanner()` tibble, while \code`wt_glean_ap()` wrangles the output into summary plots and LDFCs. 
-- \code`wt_signal_level()` detects signals in audio based on amplitude thresholds. 
-- \code`wt_chop()` divides a large audio file into shorter segments.
+- \code`wt_audio_scanner()` scans a directory of audio files and prepares them in a tibble with WildTrax formatted columns
+- \code`wt_run_ap()` allows you to generate acoustic indices and false-colour spectrograms from a \code`wt_audio_scanner()` tibble, while \code`wt_glean_ap()` wrangles the output into summary plots and long-duration false-colour spectrograms
+- \code`wt_signal_level()` detects signals in audio based on amplitude thresholds
+- \code`wt_chop()` divides a large audio file into shorter segments
 
 ```{r, include = FALSE, echo = F, include = T, warning = F, message = F}
 knitr::opts_chunk$set(
@@ -66,16 +64,16 @@ files %>%
 
 ## Running the QUT Ecoacoustics AnalysisPrograms software on a wt_* standard data set
 
-The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)](https://ap.qut.ecoacoustics.info/) on your audio data. AP generates acoustic index values and false-colour spectrograms for each audio minute of data. Note that you must have the AP program installed on your computer. See more here [(Towsey et al., 2018)](https://researchoutput.csu.edu.au/ws/portalfiles/portal/28556441/28544328_Published_article.pdf). 
+The `wt_run_ap()` function allows you to run the QUT Analysis Programs [(AP.exe)](https://ap.qut.ecoacoustics.info/) on your audio data. AP generates acoustic index values and false-colour spectrograms for each audio minute of data. Note that you must have the AP program installed on your computer. See more here [(Towsey et al., 2018)](https://researchoutput.csu.edu.au/ws/portalfiles/portal/28556441/28544328_Published_article.pdf).
 
 ```{r echo=TRUE, include=T, eval=F, warning = F, message = F}
-#Use the wt_* tibble to execute the AP on the files
+# Use the wt_* tibble to execute the AP on the files
 
 wt_run_ap(x = my_files, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/where/you/store/AP')
 
 ```
 
-The use `wt_glean_ap` to plot the acoustic index and LDFC results
+The use `wt_glean_ap()` to plot the acoustic index and long-duration false-colour spectrogram (LDFC) results.
 
 ```{r, echo=T, include=T, eval=F, warning=F, message, prompt=T, comment=""}
 
@@ -114,24 +112,24 @@ s['output']
 
 ```
 
-# Linking files to WildTrax
+# Linking data to WildTrax
 
-Make tasks at any time using a `wt_*` standard data set.
+Make tasks at any time using a `wt_*` standard data set with `wt_make_aru_tasks()`.
 
 ```{r, include = T, eval=F, warning=F, message=F}
 wt_make_aru_tasks(input = files %>% select(-file_path), task_method = "1SPT", task_length = 180)
 ```
 
-The function `wt_songscope_tags` reformats the output obtained from a wildlife acoustics songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
+The function `wt_songscope_tags()` reformats the output obtained from a Wildlife Acoustics Songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
 
 ```{r, include = T, eval=F, warning=F, message=F, prompt="", prompt=T}
 wt_songscope_tags()
 ```
 
-Similarly, the function `wt_kaleidoscope_tags` performs the same reformatting process, but with Kaleidoscope instead. It is worth noting that this function targeted for sonic and ultrasonic species upload.
+Similarly, the function `wt_kaleidoscope_tags()` performs the same reformatting process, but with Kaleidoscope instead. It is worth noting that this function targeted for sonic and ultrasonic species upload.
 
 ```{r, include = T, eval=F, warning=F, message=F}
-wt_kaleidoscope_tags()
+wt_kaleidoscope_tags(input = "SML182.txt", )
 
 ```
 
