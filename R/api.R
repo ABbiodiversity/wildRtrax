@@ -179,6 +179,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   if ("main" %in% reports) query_list$mainReport <- TRUE
   if ("project" %in% reports) query_list$projectReport <- TRUE
   if ("location" %in% reports) query_list$locationReport <- TRUE
+  if ("recording" %in% reports) query_list$recordingReport <- TRUE
   if ("tag" %in% reports) query_list$tagReport <- TRUE
   if ("image" %in% reports) query_list$imageReport <- TRUE
   if ("image_set" %in% reports) query_list$imageSetReport <- TRUE
