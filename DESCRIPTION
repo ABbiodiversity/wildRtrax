@@ -4,16 +4,15 @@ Version: 1.0.1
 Authors@R: 
     c(person(given = "Alex",
            family = "MacPhail",
-           role = c("aut"),
-           email = "agmacpha@ualberta.ca",
-           comment = c(ORCID = "0000-0002-7968-6281"),
+           role = "aut",
+           email = "agmacpha@ualberta.ca"),
       person(given = "Marcus",
              family = "Becker",
-             role = c("aut","cre"),
+             role = c("cre"),
              email = "mabecker@ualberta.ca"),
       person(given = "Elly",
              family = "Knight",
-             role = c("aut"),
+             role = "aut",
              email = "ecknight@ualberta.ca"))
 Author: Alex MacPhail
 Maintainer: Marcus Becker <mabecker@ualberta.ca>
