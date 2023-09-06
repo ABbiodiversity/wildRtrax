@@ -929,9 +929,10 @@ wt_songscope_tags <- function (input, output = c("env","csv"),
       tibble::add_column(method = "1SPT", .after = "recordingDate") %>%
       tibble::add_column(taskLength = task_length, .after = "method") %>%
       tibble::add_column(transcriber = "Not Assigned", .after = "taskLength") %>%
-      tibble::add_column(species = "CONI", .after = "transcriber") %>%
+      tibble::add_column(species = species_code, .after = "transcriber") %>%
       dplyr::group_by(location, recordingDate, taskLength, species) %>%
       dplyr::mutate(speciesIndividualNumber = row_number()) %>%
+      dplyr::ungroup() %>%
       dplyr::filter(!speciesIndividualNumber > 1) %>%
       dplyr::mutate(vocalization = vocalization_type) %>%
       tibble::add_column(abundance = 1, .after= "vocalization") %>%
