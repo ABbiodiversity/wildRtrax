@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">wildRtrax</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/introduction.html">Introduction</a>
     <a class="dropdown-item" href="../articles/audio-data-concepts.html">Audio data concepts</a>
-    <a class="dropdown-item" href="../articles/authenticating-into-wt.html">Authenticating into WildTrax</a>
+    <a class="dropdown-item" href="../articles/apis.html">APIs</a>
     <a class="dropdown-item" href="../articles/acoustic-pre-processing.html">Acoustic pre-processing</a>
     <a class="dropdown-item" href="../articles/acoustic-data-wrangling.html">Acoustic data wrangling</a>
   </div>
@@ -59,6 +59,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.1</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 0.1.0</h6>
     <div class="dropdown-divider"></div>
@@ -94,24 +95,21 @@
 <p>The following set of functions help to pre-process and organize audio
 and corresponding metadata. In conjunction, these tools allow you to
 select recordings parameterized to a specific study design.</p>
-<div class="section level2">
-<h2 id="data-pre-processing">Data pre-processing<a class="anchor" aria-label="anchor" href="#data-pre-processing"></a>
-</h2>
 <ul>
 <li>
 <code><a href="../reference/wt_audio_scanner.html">wt_audio_scanner()</a></code> scans a directory of audio files and
-prepares them in a tibble with WildTrax formatted columns.</li>
+prepares them in a tibble with WildTrax formatted columns</li>
 <li>
 <code><a href="../reference/wt_run_ap.html">wt_run_ap()</a></code> allows you to generate acoustic indices and
 false-colour spectrograms from a <code><a href="../reference/wt_audio_scanner.html">wt_audio_scanner()</a></code> tibble,
 while <code><a href="../reference/wt_glean_ap.html">wt_glean_ap()</a></code> wrangles the output into summary plots
-and LDFCs.</li>
+and long-duration false-colour spectrograms</li>
 <li>
 <code><a href="../reference/wt_signal_level.html">wt_signal_level()</a></code> detects signals in audio based on
-amplitude thresholds.</li>
+amplitude thresholds</li>
 <li>
 <code><a href="../reference/wt_chop.html">wt_chop()</a></code> divides a large audio file into shorter
-segments.</li>
+segments</li>
 </ul>
 <div class="section level3">
 <h3 id="scanning-audio-files-from-a-directory">Scanning audio files from a directory<a class="anchor" aria-label="anchor" href="#scanning-audio-files-from-a-directory"></a>
@@ -130,8 +128,8 @@ useful metadata.</p>
 <p>You might want to select recordings between certain times of day or
 year, or filter recordings based on some criteria.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">files</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">file_path</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">files</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">file_path</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1,041 × 10</span></span></span>
 <span><span class="co">#&gt;    size_Mb unsafe file_name  location recording_date_time file_type julian  year</span></span>
 <span><span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -150,9 +148,9 @@ year, or filter recordings based on some criteria.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">files</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>hour <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/hour.html" class="external-link">hour</a></span><span class="op">(</span><span class="va">recording_date_time</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">julian</span> <span class="op">==</span> <span class="fl">176</span>, </span>
+<span><span class="va">files</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>hour <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/hour.html" class="external-link">hour</a></span><span class="op">(</span><span class="va">recording_date_time</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">julian</span> <span class="op">==</span> <span class="fl">176</span>, </span>
 <span>         <span class="va">hour</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 12</span></span></span>
 <span><span class="co">#&gt;   file_path      size_Mb unsafe file_name location recording_date_time file_type</span></span>
@@ -173,11 +171,11 @@ for each audio minute of data. Note that you must have the AP program
 installed on your computer. See more here <a href="https://researchoutput.csu.edu.au/ws/portalfiles/portal/28556441/28544328_Published_article.pdf" class="external-link">(Towsey
 et al., 2018)</a>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Use the wt_* tibble to execute the AP on the files</span></span>
+<code class="sourceCode R"><span><span class="co"># Use the wt_* tibble to execute the AP on the files</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/wt_run_ap.html">wt_run_ap</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">my_files</span>, output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">root</span>, <span class="st">'ap_outputs'</span><span class="op">)</span>, path_to_ap <span class="op">=</span> <span class="st">'/where/you/store/AP'</span><span class="op">)</span></span></code></pre></div>
-<p>The use <code>wt_glean_ap</code> to plot the acoustic index and LDFC
-results</p>
+<p>The use <code><a href="../reference/wt_glean_ap.html">wt_glean_ap()</a></code> to plot the acoustic index and
+long-duration false-colour spectrogram (LDFC) results.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">wt_glean_ap</span>()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span></code></pre></div>
@@ -209,26 +207,25 @@ sounds that exceed a certain amplitude threshold.</p>
 <span><span class="va">s</span><span class="op">[</span><span class="st">'output'</span><span class="op">]</span></span>
 <span><span class="co"># We have eleven detections that exceeded this threshold.</span></span></code></pre></div>
 </div>
-</div>
 <div class="section level2">
-<h2 id="linking-files-to-wildtrax">Linking files to WildTrax<a class="anchor" aria-label="anchor" href="#linking-files-to-wildtrax"></a>
+<h2 id="linking-data-to-wildtrax">Linking data to WildTrax<a class="anchor" aria-label="anchor" href="#linking-data-to-wildtrax"></a>
 </h2>
-<p>Make tasks at any time using a <code>wt_*</code> standard data
-set.</p>
+<p>Make tasks at any time using a <code>wt_*</code> standard data set
+with <code><a href="../reference/wt_make_aru_tasks.html">wt_make_aru_tasks()</a></code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/wt_make_aru_tasks.html">wt_make_aru_tasks</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">files</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">file_path</span><span class="op">)</span>, task_method <span class="op">=</span> <span class="st">"1SPT"</span>, task_length <span class="op">=</span> <span class="fl">180</span><span class="op">)</span></span></code></pre></div>
-<p>The function <code>wt_songscope_tags</code> reformats the output
-obtained from a wildlife acoustics songscope recognizer. This
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/wt_make_aru_tasks.html">wt_make_aru_tasks</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">files</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">file_path</span><span class="op">)</span>, task_method <span class="op">=</span> <span class="st">"1SPT"</span>, task_length <span class="op">=</span> <span class="fl">180</span><span class="op">)</span></span></code></pre></div>
+<p>The function <code><a href="../reference/wt_songscope_tags.html">wt_songscope_tags()</a></code> reformats the output
+obtained from a Wildlife Acoustics Songscope recognizer. This
 transformation involves converting the recognizer tags into tags that do
 not have a method type. This makes it possible to upload each hit as a
 tag in a task.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">wt_songscope_tags</span>()</span></code></pre></div>
-<p>Similarly, the function <code>wt_kaleidoscope_tags</code> performs
+<p>Similarly, the function <code><a href="../reference/wt_kaleidoscope_tags.html">wt_kaleidoscope_tags()</a></code> performs
 the same reformatting process, but with Kaleidoscope instead. It is
 worth noting that this function targeted for sonic and ultrasonic
 species upload.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/wt_kaleidoscope_tags.html">wt_kaleidoscope_tags</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/wt_kaleidoscope_tags.html">wt_kaleidoscope_tags</a></span><span class="op">(</span>input <span class="op">=</span> <span class="st">"SML182.txt"</span>, <span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

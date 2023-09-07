@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">wildRtrax</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/introduction.html">Introduction</a>
     <a class="dropdown-item" href="../articles/audio-data-concepts.html">Audio data concepts</a>
-    <a class="dropdown-item" href="../articles/authenticating-into-wt.html">Authenticating into WildTrax</a>
+    <a class="dropdown-item" href="../articles/apis.html">APIs</a>
     <a class="dropdown-item" href="../articles/acoustic-pre-processing.html">Acoustic pre-processing</a>
     <a class="dropdown-item" href="../articles/acoustic-data-wrangling.html">Acoustic data wrangling</a>
   </div>
@@ -59,6 +59,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.1</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 0.1.0</h6>
     <div class="dropdown-divider"></div>
@@ -167,7 +168,7 @@ audio files. Here’s one way to do it using <code>ggspectro</code> in
 <code>seewave</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#Plot a spectrogram</span></span>
-<span><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu">seewave</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/seewave/man/ggspectro.html" class="external-link">ggspectro</a></span><span class="op">(</span><span class="fu">tuneR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tuneR/man/readWave.html" class="external-link">readWave</a></span><span class="op">(</span><span class="va">file</span>, from <span class="op">=</span> <span class="fl">0</span>, to <span class="op">=</span> <span class="fl">60</span>, units <span class="op">=</span> <span class="st">"seconds"</span><span class="op">)</span>, ovlp <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>fill<span class="op">=</span><span class="va">amplitude</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu">seewave</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/seewave/man/ggspectro.html" class="external-link">ggspectro</a></span><span class="op">(</span><span class="fu">tuneR</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tuneR/man/readWave.html" class="external-link">readWave</a></span><span class="op">(</span><span class="va">file</span>, from <span class="op">=</span> <span class="fl">0</span>, to <span class="op">=</span> <span class="fl">60</span>, units <span class="op">=</span> <span class="st">"seconds"</span><span class="op">)</span>, ovlp <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill<span class="op">=</span><span class="va">amplitude</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><a href="http://sox.sourceforge.net/" class="external-link"><strong>SoX</strong></a> is
 also a very powerful command line tool that can build spectrograms as
 well. Processing time here is much faster given R doesn’t have to read

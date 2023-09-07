@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">wildRtrax</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/introduction.html">Introduction</a>
     <a class="dropdown-item" href="../articles/audio-data-concepts.html">Audio data concepts</a>
-    <a class="dropdown-item" href="../articles/authenticating-into-wt.html">Authenticating into WildTrax</a>
+    <a class="dropdown-item" href="../articles/apis.html">APIs</a>
     <a class="dropdown-item" href="../articles/acoustic-pre-processing.html">Acoustic pre-processing</a>
     <a class="dropdown-item" href="../articles/acoustic-data-wrangling.html">Acoustic data wrangling</a>
   </div>
@@ -59,6 +59,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.1</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 0.1.0</h6>
     <div class="dropdown-divider"></div>
@@ -97,36 +98,35 @@
 <div class="section level3">
 <h3 id="what-is-wildrtrax">What is <code>wildRtrax</code>?<a class="anchor" aria-label="anchor" href="#what-is-wildrtrax"></a>
 </h3>
-<p><code>wildRtrax</code>, pronounced <em>‘wilder tracks’</em>, is an R
+<p><code>wildRtrax</code>, pronounced <em>‘wild-R-tracks’</em>, is an R
 package for ecologists and advanced users who work with environmental
-sensors such as autonomous recordings units (ARUs) and remote cameras.
-It contains functions designed to meet most needs in order to organize,
-analyze and standardize data to the <a href="https://wwww.wildtrax.ca" class="external-link">WildTrax</a> infrastructure.
-<code>wildRtrax</code> is self-contained and must be run under an R
+sensors such as autonomous recording units (ARUs) and remote cameras. It
+contains functions designed to meet most needs in order to organize,
+analyze and standardize data with the <a href="https://wwww.wildtrax.ca" class="external-link">WildTrax</a> infrastructure.
+<code>wildRtrax</code> iis self-contained and must be run under an R
 statistical environment, and it also depends on many other R packages.
 <code>wildRtrax</code> is free software and distributed under <a href="https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE" class="external-link">MIT
-License (c) 2020</a>.</p>
+License (c) 2023</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="what-is-wildtrax">What is <strong>WildTrax</strong>?<a class="anchor" aria-label="anchor" href="#what-is-wildtrax"></a>
 </h3>
 <p><a href="https://www.wildtrax.ca" class="external-link"><strong>WildTrax</strong></a> is a
 web-enabled portal designed to manage, store, process, share and
-discover environmental sensor data and the <strong>biological
-data</strong> extracted from the media. WildTrax was developed by the <a href="https://abmi.ca" class="external-link">Alberta Biodiversity Monitoring Institute</a> and
-the <a href="https://bioacoustic.abmi.ca" class="external-link">Bioacoustic Unit</a>.
-<code>wildRtrax</code> serves as a parallel design and indicator to
-<strong>WildTrax</strong> for future analytics anf functionalities.</p>
+discover environmental sensor data and the biological data extracted
+from the media. WildTrax was developed by the <a href="https://abmi.ca" class="external-link">Alberta Biodiversity Monitoring Institute</a> and
+the <a href="https://bioacoustic.abmi.ca" class="external-link">Bioacoustic Unit</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="why-did-you-build-wildrtrax">Why did you build <code>wildRtrax</code>?<a class="anchor" aria-label="anchor" href="#why-did-you-build-wildrtrax"></a>
 </h3>
-<p>By outlining a standardized and harmonized procedure for data intake,
-quality control, processing and verification of acoustic data from
-autonomous recording units (ARUs), <code>wildRtrax</code> and WildTrax
-hope to provide open work flows for using ARUs to answer meaningful
-biological questions in order to inform conservation and
-decision-making.</p>
+<p><code>wildRtrax</code> has been built in parallel with WildTrax to
+provide additional analytics and functionalities. By outlining a
+standardized and harmonized procedure for data intake, quality control,
+processing and verification of environmental sensor data,
+<code>wildRtrax</code> and WildTrax hope to provide open workflows for
+using ARUs and cameras to answer biological questions in order to inform
+meaningful conservation and decision-making.</p>
 </div>
 <div class="section level3">
 <h3 id="what-r-packages-does-wildrtrax-depend-on">What R packages does <code>wildRtrax</code> depend on?<a class="anchor" aria-label="anchor" href="#what-r-packages-does-wildrtrax-depend-on"></a>
@@ -146,16 +146,16 @@ Ecoacoustics Audio Analysis Software</a>.</p>
 </h3>
 <p>If you think you have found a bug in <code>wildRtrax</code>, you
 should report it to developers or maintainers. Please do not send bug
-reports to R mailing lists, since <code>wildRtrax</code> is not a
-standard R package. The preferred forum to report bugs is <a href="https://github.com/ABbiodiversity/wildRtrax/issues" class="external-link">GitHub</a>.
-Here is what is required in order to report a bug - issues are welcome
-and encouraged and are the only way to make <code>wildRtrax</code>
+reports to R mailing lists, since wildRtrax is not a standard R package.
+The preferred forum to report bugs is <a href="https://github.com/ABbiodiversity/wildRtrax/issues" class="external-link">GitHub</a>.
+Here is what is required in order to report a bug - reporting issues is
+welcomed and encouraged and are the only way to make wildRtrax
 non-buggy:</p>
 <ul>
-<li>The bug report should be so detailed that the bug can be replicated
-and corrected</li>
+<li>The bug report should be sufficiently detailed that the bug can be
+replicated and corrected</li>
 <li>Send an example that causes a bug</li>
-<li>Send a minimal data set as well if it is not available in R</li>
+<li>Send a minimal data set if it is not available in R</li>
 <li>Paste the output or error message in your message</li>
 <li>Specify which version of <code>wildRtrax</code> you used</li>
 </ul>
