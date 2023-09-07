@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-The recommended workflow to wrangle together data for analyis in `wildRtrax` is as follows. Once you have your data (`dat`) from `wt_download_report()`:
+The recommended workflow to wrangle together data for analysis in `wildRtrax` is as follows. Once you have your data from `wt_download_report()`.
 
 - Remove unneeded species: `wt_tidy_species()`
 - Convert TMTT counts to numeric: `wt_replace_tmtt()`
@@ -36,38 +36,39 @@ head(my_data)
 
 ## Data wrangling
 
-Now let's start cleaning things up a bit. We don't need certain abiotic codes so let's remove those with `wt_tidy_species()`.
+Now let's start cleaning things up a bit. We don't need certain abiotic codes so let's remove those with `wt_tidy_species()`,
 
-```{r}
+```{r, eval = T, echo = T, warning = F, message = F}
 
-#my_tidy_data <- wt_tidy_species(my_data, remove = c("mammal", "amphibian", "abiotic", "insect", "unknown", zerofill=TRUE))
-
-#my_tidy_data
+my_tidy_data <- wt_tidy_species(my_data, remove = c("mammal", "amphibian", "abiotic", "insect", "unknown", zerofill=TRUE))
 
 # Difference in rows
-#round((nrow(my_tidy_data)/nrow(my_data)),2)
+round((nrow(my_tidy_data)/nrow(my_data)),2)
 ```
 
-Now let's convert TMTT counts to numeric: 
+convert TMTT counts to numeric,
 
-```{r}
-#dat.tmtt <- wt_replace_tmtt(my_tidy_data)
+```{r, eval = F, echo = T, warning = F, message = F}
+
+my_tmtt_data <- wt_replace_tmtt(data = my_tidy_data, calc = "round")
 
 ```
 
-Then widen the data into a species matrix
+and finally widen the data into a species matrix.
 
-```{r}
+```{r, eval = F, echo = T, warning = F, message = F}
 
+my_wide_data <- wt_make_wide(data = my_tmtt_data, sound = "all")
 
 ```
 
 ## Offsets
 
-Now you can add the additional offsets
+Now you can add the additional offsets.
 
-```{r}
+```{r, eval = F, echo = T, warning = F, message = F}
 
+my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version = 3, together = TRUE)
 
 ```
 
@@ -75,9 +76,10 @@ Now you can add the additional offsets
 
 Note that you can perform an occupancy work flow using `wt_format_occupancy()` once the data is downloaded.
 
-```{r}
+```{r, eval = F, echo = T, warning = F, message = F}
 
-#dat.occu <- wt_format_occupancy(my_data, species="CONI", siteCovs=NULL)
-#mod <- unmarked::occu(~ 1 ~ 1, dat.occu)
+dat.occu <- wt_format_occupancy(my_data, species="CONI", siteCovs=NULL)
+mod <- unmarked::occu(~ 1 ~ 1, dat.occu)
+mod
 
 ```
