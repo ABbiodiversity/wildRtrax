@@ -76,6 +76,7 @@ wt_get_download_summary <- function(sensor_id) {
 #'  \item location
 #'  \item image_set
 #'  \item image
+#'  \item image_set
 #'  \item tag
 #'  \item megadetector
 #'  \item megaclassifier
@@ -142,7 +143,11 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   }
 
   # Allowable reports for each sensor
+<<<<<<< HEAD
   cam <- c("main", "project", "location", "image_set", "image", "tag", "megadetector", "megaclassifier", "definitions")
+=======
+  cam <- c("main", "project", "location", "image", "image_set", "tag", "megadetector", "megaclassifier", "definitions")
+>>>>>>> c812306074ab8c147468b0f3c7a08f3c0dac5e36
   aru <- c("main", "project", "location", "birdnet", "recording", "tag", "definitions")
   pc <- c("main", "project", "location", "point_count", "definitions")
 
