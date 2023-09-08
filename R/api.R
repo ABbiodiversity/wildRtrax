@@ -74,8 +74,7 @@ wt_get_download_summary <- function(sensor_id) {
 #'  \item main
 #'  \item project
 #'  \item location
-#'  \item image_set
-#'  \item image
+#'  \item image_report
 #'  \item image_set
 #'  \item tag
 #'  \item megadetector
@@ -143,7 +142,8 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   }
 
   # Allowable reports for each sensor
-  cam <- c("main", "project", "location", "image", "image_set", "tag", "megadetector", "megaclassifier", "definitions")
+
+  cam <- c("main", "project", "location", "image_set", "image_report", "tag", "megadetector", "megaclassifier", "definitions")
   aru <- c("main", "project", "location", "birdnet", "recording", "tag", "definitions")
   pc <- c("main", "project", "location", "point_count", "definitions")
 
@@ -171,20 +171,34 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   # Add wildRtrax version information:
   u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
 
+  # Create query list
   query_list <- list(
     projectIds = project_id,
-    sensorId = sensor_id
+    sensorId = sensor_id,
+    mainReport = FALSE,
+    projectReport = FALSE,
+    recordingReport = FALSE,
+    pointCountReport = FALSE,
+    locationReport = FALSE,
+    tagReport = FALSE,
+    imageReport = FALSE,
+    imageSetReport = FALSE,
+    birdnetReport = FALSE,
+    megaDetectorReport = FALSE,
+    megaClassifierReport = FALSE,
+    includeMetaData = FALSE,
+    splitLocation = FALSE
   )
 
   # Create the list of objects
   if ("main" %in% reports) query_list$mainReport <- TRUE
   if ("project" %in% reports) query_list$projectReport <- TRUE
-  if ("location" %in% reports) query_list$locationReport <- TRUE
   if ("recording" %in% reports) query_list$recordingReport <- TRUE
-  if ("tag" %in% reports) query_list$tagReport <- TRUE
-  if ("image" %in% reports) query_list$imageReport <- TRUE
-  if ("image_set" %in% reports) query_list$imageSetReport <- TRUE
   if ("point_count" %in% reports) query_list$pointCountReport <- TRUE
+  if ("location" %in% reports) query_list$locationReport <- TRUE
+  if ("tag" %in% reports) query_list$tagReport <- TRUE
+  if ("image_report" %in% reports) query_list$imageReport <- TRUE
+  if ("image_set" %in% reports) query_list$imageSetReport <- TRUE
   if ("birdnet" %in% reports) query_list$birdnetReport <- TRUE
   if ("megadetector" %in% reports) query_list$megaDetectorReport <- TRUE
   if ("megaclassifier" %in% reports) query_list$megaClassifierReport <- TRUE
