@@ -9,7 +9,7 @@ type: software
 license: MIT
 title: 'wildRtrax: Environmental sensor data management and analytics to and from
   WildTrax'
-version: 1.0.0
+version: 1.0.1
 abstract: wildRtrax is an R package that enables environmental sensor data users to
   create comprehensive work flows for managing and analyzing data.
 authors:
@@ -154,17 +154,6 @@ references:
     given-names: Hadley
   year: '2023'
 - type: software
-  title: stringr
-  abstract: 'stringr: Simple, Consistent Wrappers for Common String Operations'
-  notes: Imports
-  url: https://stringr.tidyverse.org
-  repository: https://CRAN.R-project.org/package=stringr
-  authors:
-  - family-names: Wickham
-    given-names: Hadley
-    email: hadley@rstudio.com
-  year: '2023'
-- type: software
   title: tools
   abstract: 'R: A Language and Environment for Statistical Computing'
   notes: Imports
@@ -272,6 +261,28 @@ references:
     orcid: https://orcid.org/0000-0001-8049-7069
   year: '2023'
 - type: software
+  title: stringr
+  abstract: 'stringr: Simple, Consistent Wrappers for Common String Operations'
+  notes: Imports
+  url: https://stringr.tidyverse.org
+  repository: https://CRAN.R-project.org/package=stringr
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@rstudio.com
+  year: '2023'
+- type: software
+  title: tidyverse
+  abstract: 'tidyverse: Easily Install and Load the ''Tidyverse'''
+  notes: Imports
+  url: https://tidyverse.tidyverse.org
+  repository: https://CRAN.R-project.org/package=tidyverse
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@rstudio.com
+  year: '2023'
+- type: software
   title: sp
   abstract: 'sp: Classes and Methods for Spatial Data'
   notes: Imports
@@ -284,17 +295,6 @@ references:
   - family-names: Bivand
     given-names: Roger
     email: Roger.Bivand@nhh.no
-  year: '2023'
-- type: software
-  title: tidyverse
-  abstract: 'tidyverse: Easily Install and Load the ''Tidyverse'''
-  notes: Imports
-  url: https://tidyverse.tidyverse.org
-  repository: https://CRAN.R-project.org/package=tidyverse
-  authors:
-  - family-names: Wickham
-    given-names: Hadley
-    email: hadley@rstudio.com
   year: '2023'
 - type: software
   title: purrr
