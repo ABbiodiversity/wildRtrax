@@ -128,8 +128,8 @@ useful metadata.</p>
 <p>You might want to select recordings between certain times of day or
 year, or filter recordings based on some criteria.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">files</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">file_path</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">files</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">file_path</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1,041 × 10</span></span></span>
 <span><span class="co">#&gt;    size_Mb unsafe file_name  location recording_date_time file_type julian  year</span></span>
 <span><span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -148,9 +148,9 @@ year, or filter recordings based on some criteria.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">files</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>hour <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/hour.html" class="external-link">hour</a></span><span class="op">(</span><span class="va">recording_date_time</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">julian</span> <span class="op">==</span> <span class="fl">176</span>, </span>
+<span><span class="va">files</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>hour <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/hour.html" class="external-link">hour</a></span><span class="op">(</span><span class="va">recording_date_time</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">julian</span> <span class="op">==</span> <span class="fl">176</span>, </span>
 <span>         <span class="va">hour</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 12</span></span></span>
 <span><span class="co">#&gt;   file_path      size_Mb unsafe file_name location recording_date_time file_type</span></span>
@@ -213,7 +213,7 @@ sounds that exceed a certain amplitude threshold.</p>
 <p>Make tasks at any time using a <code>wt_*</code> standard data set
 with <code><a href="../reference/wt_make_aru_tasks.html">wt_make_aru_tasks()</a></code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/wt_make_aru_tasks.html">wt_make_aru_tasks</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">files</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">file_path</span><span class="op">)</span>, task_method <span class="op">=</span> <span class="st">"1SPT"</span>, task_length <span class="op">=</span> <span class="fl">180</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/wt_make_aru_tasks.html">wt_make_aru_tasks</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">files</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">file_path</span><span class="op">)</span>, task_method <span class="op">=</span> <span class="st">"1SPT"</span>, task_length <span class="op">=</span> <span class="fl">180</span><span class="op">)</span></span></code></pre></div>
 <p>The function <code><a href="../reference/wt_songscope_tags.html">wt_songscope_tags()</a></code> reformats the output
 obtained from a Wildlife Acoustics Songscope recognizer. This
 transformation involves converting the recognizer tags into tags that do
