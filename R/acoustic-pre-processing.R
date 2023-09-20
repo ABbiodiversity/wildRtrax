@@ -401,7 +401,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   if (dir.exists(input_dir)) {
     ind <-
       fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) %>%
-      map_dfr( ~ read_csv(., progress = T)) %>%
+      map_dfr( ~ read_csv(., progress = F)) %>%
       relocate(c(FileName, ResultMinute)) %>%
       select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
       pivot_longer(!c(FileName, ResultMinute),
