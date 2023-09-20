@@ -14,10 +14,21 @@ The recommended workflow to wrangle together data for analysis in `wildRtrax` is
 - Convert the species to a wide format: `wt_make_wide()`
 - Add additional [offsets](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12106) for the data `wt_qpad_offsets()`
 
-```{r, warning = F, message = F, eval = T, include = T, echo = T}
+```{r, echo = F, warning = F, message = F, eval = T}
+
 library(wildRtrax)
 library(tidyverse)
 
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = '#>'
+)
+
+load("book.RData")
+
+```
+
+```{r, warning = F, message = F, eval = F, include = T, echo = T}
 # Start by getting everything you need
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
@@ -25,10 +36,10 @@ my_data <- wt_download_report(project_id = 379, sensor_id = 'ARU', reports = "ma
   tibble::as_tibble()
 
 spps <- wt_get_species() %>%
-  select(species_code, species_class)
+  select(species_code, species_class) # Select only a couple columns needed
 
 my_data <- my_data %>%
-  dplyr::inner_join(., spps, by = ("species_code" = "species_code"))
+  dplyr::inner_join(., spps, by = ("species_code" = "species_code")) 
 
 head(my_data)
 
@@ -38,8 +49,7 @@ head(my_data)
 
 Now let's start cleaning things up a bit. We don't need certain abiotic codes so let's remove those with `wt_tidy_species()`,
 
-```{r, eval = T, echo = T, warning = F, message = F}
-
+```{r, eval = F, echo = T, warning = F, message = F}
 my_tidy_data <- wt_tidy_species(my_data, remove = c("mammal", "amphibian", "abiotic", "insect", "unknown", zerofill=TRUE))
 
 # Difference in rows
@@ -49,7 +59,6 @@ round((nrow(my_tidy_data)/nrow(my_data)),2)
 convert TMTT counts to numeric,
 
 ```{r, eval = F, echo = T, warning = F, message = F}
-
 my_tmtt_data <- wt_replace_tmtt(data = my_tidy_data, calc = "round")
 
 ```
@@ -57,7 +66,6 @@ my_tmtt_data <- wt_replace_tmtt(data = my_tidy_data, calc = "round")
 and finally widen the data into a species matrix.
 
 ```{r, eval = F, echo = T, warning = F, message = F}
-
 my_wide_data <- wt_make_wide(data = my_tmtt_data, sound = "all")
 
 ```
@@ -67,17 +75,15 @@ my_wide_data <- wt_make_wide(data = my_tmtt_data, sound = "all")
 Now you can add the additional offsets.
 
 ```{r, eval = F, echo = T, warning = F, message = F}
-
 my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version = 3, together = TRUE)
 
 ```
 
 ## Occupancy modelling
 
-Note that you can perform an occupancy work flow using `wt_format_occupancy()` once the data is downloaded.
+You can also perform a single-season, single-species occupancy work flow using `wt_format_occupancy()` once the data is downloaded.
 
 ```{r, eval = F, echo = T, warning = F, message = F}
-
 dat.occu <- wt_format_occupancy(my_data, species="CONI", siteCovs=NULL)
 mod <- unmarked::occu(~ 1 ~ 1, dat.occu)
 mod
