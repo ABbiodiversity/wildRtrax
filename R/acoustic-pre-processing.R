@@ -419,7 +419,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   }
 
   # Join the indices and LDFCs to the media
-  joined <- late19 %>% filter(location == "ABMI-596-NW") %>% slice(1:120) %>%
+  joined <- files %>%
     inner_join(., ind, by = c("file_name" = "FileName")) %>%
     inner_join(., ldfcs, by = c("file_name" = "file_name")) %>>%
     "Files joined!"
