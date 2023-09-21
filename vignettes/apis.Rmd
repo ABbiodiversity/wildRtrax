@@ -48,9 +48,7 @@ Once authenticated, you can now use various functions that call upon the WildTra
 
 ```{r echo=TRUE, eval=TRUE, wanring=F, message=F}
 # Download the project summary you have access to
-my_projects <- wt_get_download_summary(sensor_id = 'ARU') %>%
-  tibble::as_tibble() %>%
-  tidyr::unnest(cols = c(organization_id, organization, project, project_id, sensor, tasks, status))
+my_projects <- wt_get_download_summary(sensor_id = 'ARU')
 
 head(my_projects)
 ```
