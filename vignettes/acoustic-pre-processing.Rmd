@@ -73,13 +73,23 @@ wt_run_ap(x = my_files, output_dir = paste0(root, 'ap_outputs'), path_to_ap = '/
 
 ```
 
-The use `wt_glean_ap()` to plot the acoustic index and long-duration false-colour spectrogram (LDFC) results.
+Then use `wt_glean_ap()` to plot the acoustic index and long-duration false-colour spectrogram (LDFC) results.
 
 ```{r, echo=T, include=T, eval=F, warning=F, message, prompt=T, comment=""}
+# This example is from ABMI's Ecosystem Health Monitoring program
 
-wt_glean_ap()
+my_files <- wt_audio_scanner(".../ABMI-986-SE", file_type = "wav", extra_cols = )
+
+wt_glean_ap(my_files %>% 
+               mutate(hour = lubridate::hour(recording_date_time)) %>%
+               filter(between(julian,110,220),
+                      hour %in% c(0:3,22:23)), input_dir = ".../ap_outputs", purpose = "biotic")
 
 ```
+
+![](986-se-indices.png)
+
+![](986-se.png)
 
 ## Applying a limited amplitude filter
 
@@ -116,20 +126,10 @@ s['output']
 
 Make tasks at any time using a `wt_*` standard data set with `wt_make_aru_tasks()`.
 
-```{r, include = T, eval=F, warning=F, message=F}
-wt_make_aru_tasks(input = files %>% select(-file_path), task_method = "1SPT", task_length = 180)
-```
-
-The function `wt_songscope_tags()` reformats the output obtained from a Wildlife Acoustics Songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task.
-
-```{r, include = T, eval=F, warning=F, message=F, prompt="", prompt=T}
-wt_songscope_tags()
-```
-
-Similarly, the function `wt_kaleidoscope_tags()` performs the same reformatting process, but with Kaleidoscope instead. It is worth noting that this function targeted for sonic and ultrasonic species upload.
-
-```{r, include = T, eval=F, warning=F, message=F}
-wt_kaleidoscope_tags(input = "SML182.txt", )
+```{r eval=F, message=FALSE, warning=FALSE, include=T}
+wt_make_aru_tasks(input = files %>% dplyr::select(-file_path), task_method = "1SPT", task_length = 180)
 
 ```
+
+The function `wt_songscope_tags()` reformats the output obtained from a Wildlife Acoustics Songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task. Similarly, the function `wt_kaleidoscope_tags()` performs the same reformatting process, but with Kaleidoscope instead. It is worth noting that this function targeted for sonic and ultrasonic species upload.
 
