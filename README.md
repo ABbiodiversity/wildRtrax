@@ -3,9 +3,10 @@
 
 <!-- badges: start -->
 
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![CRAN status](https://www.r-pkg.org/badges/version/wildRtrax)](https://CRAN.R-project.org/package=wildRtrax)
 [![R-CMD-check](https://github.com/ABbiodiversity/wildRtrax/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ABbiodiversity/wildRtrax/actions/workflows/R-CMD-check.yaml)
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+
 <!-- badges: end -->
 
 ## Overview
@@ -14,12 +15,20 @@
 
 ## Installation
 
-You can install `wildRtrax` directly from this repository with:
+You can install version 1.0 of `wildRtrax` directly from this repository with:
 
 ``` r
 # install.packages("remotes")
 remotes::install_github("ABbiodiversity/wildRtrax")
 ```
+
+The [development](https://github.com/ABbiodiversity/wildRtrax/tree/development) version of this package contains experimental features and recent fixes. It can be installed with: 
+
+```r
+remotes::install_github("ABbiodiversity/wildRtrax@development
+```
+
+The development version of the package will be periodically merged and will be reflected in the [Changelogs](https://abbiodiversity.github.io/wildRtrax/news/index.html).
 
 ## Usage
 
