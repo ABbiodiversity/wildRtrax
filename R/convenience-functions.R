@@ -137,7 +137,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 
     #first identify the unique visits (replace this with task_id in the future)
     visit <- dat %>%
-      dplyr::select(-species_code, -species_common_name, -species_class, -individual_order, -detection_time, -vocalization, -individual_count, -species_individual_comments, -tag_is_verified) %>%
+      dplyr::select(-species_code, -species_common_name, -individual_order, -detection_time, -vocalization, -individual_count, -species_individual_comments, -tag_is_verified) %>%
       unique()
 
     #see if there are any that have been removed
