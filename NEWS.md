@@ -1,7 +1,7 @@
 # wildRtrax 1.0.1
 
 * Patching API errors in `wt_download_report()`
-* Adding additional articles on [acoustic data wrangling](#acoustic-data-wrangling)
+* Adding additional articles on [Acoustic data wrangling](https://abbiodiversity.github.io/wildRtrax/articles/acoustic-data-wrangling.html)
 
 # wildRtrax 1.0.0
 
