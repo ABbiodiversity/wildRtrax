@@ -401,7 +401,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   if (dir.exists(input_dir)) {
     ind <-
       fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) %>%
-      map_dfr( ~ read_csv(., progress = T)) %>%
+      map_dfr( ~ read_csv(., progress = F)) %>%
       relocate(c(FileName, ResultMinute)) %>%
       select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
       pivot_longer(!c(FileName, ResultMinute),
@@ -419,7 +419,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   }
 
   # Join the indices and LDFCs to the media
-  joined <- late19 %>% filter(location == "ABMI-596-NW") %>% slice(1:120) %>%
+  joined <- files %>%
     inner_join(., ind, by = c("file_name" = "FileName")) %>%
     inner_join(., ldfcs, by = c("file_name" = "file_name")) %>>%
     "Files joined!"

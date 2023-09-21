@@ -27,8 +27,8 @@ Valid values for argument \code{report} when \code{sensor_id} = "CAM" currently 
 \item main
 \item project
 \item location
+\item image_report
 \item image_set
-\item image
 \item tag
 \item megadetector
 \item megaclassifier
