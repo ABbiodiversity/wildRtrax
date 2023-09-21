@@ -67,13 +67,6 @@ wt_get_download_summary <- function(sensor_id) {
                      project = fullNm, project_id = id, sensor = sensorId, tasks, status) |>
     mutate(across(everything(), unlist))
 
-  if(sensor_id == "PC") {
-    x <- x |> filter(sensor == "PC")
-    return(x)
-  } else {
-    return(x)
-  }
-
 }
 
 #' Download Reports
