@@ -30,10 +30,11 @@ wt_auth <- function(force = FALSE) {
 #'
 #' @description Obtain a table listing projects that the user is able to download data for
 #'
-#' @param sensor_id Can either be "ARU" or "CAM"
+#' @param sensor_id Can be one of "ARU", "CAM", or "PC"
 #'
 #' @importFrom httr content
-#' @importFrom dplyr select %>%
+#' @importFrom dplyr select mutate across everything
+#'
 #' @export
 #'
 #' @examples
@@ -47,6 +48,13 @@ wt_auth <- function(force = FALSE) {
 #'
 wt_get_download_summary <- function(sensor_id) {
 
+  sens <- c("PC", "ARU", "CAM")
+
+  # Stop call if sensor id value is not within range of possible values
+  if(!sensor_id %in% sens) {
+    stop("A valid value for sensor_id must be supplied. See ?wt_get_download_summary for a list of possible values", call. = TRUE)
+  }
+
   r <- .wt_api_pr(
     path = "/bis/get-download-summary",
     sensorId = sensor_id,
@@ -54,11 +62,17 @@ wt_get_download_summary <- function(sensor_id) {
     order = "asc"
   )
 
-  x <- data.frame(do.call(rbind, httr::content(r)$results)) %>%
+  x <- data.frame(do.call(rbind, httr::content(r)$results)) |>
        dplyr::select(organization_id = organizationId, organization = organizationName,
-                     project = fullNm, project_id = id, sensor = sensorId, tasks, status)
+                     project = fullNm, project_id = id, sensor = sensorId, tasks, status) |>
+    mutate(across(everything(), unlist))
 
-  return(x)
+  if(sensor_id == "PC") {
+    x <- x |> filter(sensor == "PC")
+    return(x)
+  } else {
+    return(x)
+  }
 
 }
 
