@@ -34,8 +34,10 @@ load("book.RData")
 The `wt_audio_scanner()` function reads in audio files (either wac, wav or flac format) from a local directory and outputs useful metadata.
 
 ```{r, echo=TRUE, include=TRUE, eval=F, warning = F, message = F}
-# Scan data
+# Plan futures
+future::plan(multisession)
 
+# Scan data
 if (dir.exists(".")) {
   wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
 } else {
