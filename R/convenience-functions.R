@@ -424,14 +424,14 @@ wt_qpad_offsets <- function(data, species = "all", version = 3, together=TRUE){
 
   #Make prediction object
   cat("Extracting covariates for offset calculation - be patient")
-  x <- .make_x(dat)
+  x <- .make_x(data)
 
   #Load QPAD estimates
   cat("\nLoading QPAD estimates: ")
   load_BAM_QPAD(version)
 
   #Make the species list
-  if(species=="all") spp <- sort(intersect(getBAMspecieslist(), colnames(dat))) else spp <- species
+  if(species=="all") spp <- sort(intersect(getBAMspecieslist(), colnames(data))) else spp <- species
 
   #Set up the offset loop
   cat("\nCalculating offsets")
@@ -452,7 +452,7 @@ wt_qpad_offsets <- function(data, species = "all", version = 3, together=TRUE){
 
   #Put together if requested
   if(together==FALSE){
-    out <- cbind(dat,
+    out <- cbind(data,
                  data.frame(off) %>%
                    rename_with(.fn=~paste0(.x, ".off")))
 
