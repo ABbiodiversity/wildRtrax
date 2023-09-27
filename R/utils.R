@@ -149,18 +149,12 @@
                       package="wildRtrax"))
   crs <- terra::crs(.rtree)
 
-  #Separate method into duration and tag method
-  options(warn = -1)
-  dat.meth <- separate(data, method, into=c("duration", "tagmeth"), sep=" ") %>%
-    mutate(duration = as.numeric(str_sub(duration, -100, -2)))
-  options(warn = 0)
-
   #get vars
   date <- str_sub(dat.meth$recording_date, 1, 10)
   time <- str_sub(dat.meth$recording_date, 12, 19)
   lon <- as.numeric(dat.meth$longitude)
   lat <- as.numeric(dat.meth$latitude)
-  dur <- as.numeric(dat.meth$duration)
+  dur <- as.numeric(str_sub(dat.meth$task_duration, -100, -1))
   dis <- Inf
 
   #parse date+time into POSIXlt
