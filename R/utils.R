@@ -193,10 +193,10 @@
   checkfun(dur, "dur", c(0, Inf))
 
   #intersect here
-  xy <- data.frame(x=lon, y=lat)
-  xy$x[is.na(xy$x)] <- mean(xy$x, na.rm=TRUE)
-  xy$y[is.na(xy$y)] <- mean(xy$y, na.rm=TRUE)
-  xy <- terra::vect(xy, geom=c("x", "y"), crs="+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+  xydf <- data.frame(x=lon, y=lat)
+  xydf$x[is.na(xydf$x)] <- mean(xydf$x, na.rm=TRUE)
+  xydf$y[is.na(xydf$y)] <- mean(xydf$y, na.rm=TRUE)
+  xy <- terra::vect(xydf, geom=c("x", "y"), crs="+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
   xy <- terra::project(xy, crs)
 
   #LCC4 and LCC2
@@ -229,12 +229,12 @@
   ok_dt <- !is.na(dtm)
   dtm[is.na(dtm)] <- mean(dtm, na.rm=TRUE)
   if(tz=="local"){
-    sr <- suntools::sunriset(cbind("X"=lon, "Y"=lat),
+    sr <- suntools::sunriset(cbind("X"=xydf$x, "Y"=xydf$y),
                    as.POSIXct(dtm, tz="America/Edmonton"),
                    direction="sunrise", POSIXct.out=FALSE) * 24
   }
   if(tz=="utc"){
-    sr <- suntools::sunriset(cbind("X"=lon, "Y"=lat),
+    sr <- suntools::sunriset(cbind("X"=xydf$x, "Y"=xydf$y),
                    as.POSIXct(dtm, tz="GMT"),
                    direction="sunrise", POSIXct.out=FALSE) * 24
   }
