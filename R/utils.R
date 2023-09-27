@@ -141,12 +141,12 @@
   #Get the gis data
   .rlcc <- terra::rast(system.file("extdata", "lcc.tif",
                        package="wildRtrax"))
-  .rtree <- terra::rast(system.file("extdata", "tree.tif"),
-                        package="wildRtrax")
-  .rd1 <- terra::rast(system.file("extdata", "seedgrow.tif"),
-                      package="wildRtrax")
-  .rtz <- terra::rast(system.file("extdata", "utcoffset.tif"),
-                      package="wildRtrax")
+  .rtree <- terra::rast(system.file("extdata", "tree.tif",
+                        package="wildRtrax"))
+  .rd1 <- terra::rast(system.file("extdata", "seedgrow.tif",
+                      package="wildRtrax"))
+  .rtz <- terra::rast(system.file("extdata", "utcoffset.tif",
+                      package="wildRtrax"))
   crs <- terra::crs(.rtree)
 
   #Separate method into duration and tag method
