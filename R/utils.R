@@ -150,11 +150,11 @@
   crs <- terra::crs(.rtree)
 
   #get vars
-  date <- str_sub(dat.meth$recording_date, 1, 10)
-  time <- str_sub(dat.meth$recording_date, 12, 19)
-  lon <- as.numeric(dat.meth$longitude)
-  lat <- as.numeric(dat.meth$latitude)
-  dur <- as.numeric(str_sub(dat.meth$task_duration, -100, -1))
+  date <- str_sub(data$recording_date_time, 1, 10)
+  time <- str_sub(data$recording_date_time, 12, 19)
+  lon <- as.numeric(data$longitude)
+  lat <- as.numeric(data$latitude)
+  dur <- as.numeric(str_sub(data$task_duration, -100, -2))
   dis <- Inf
 
   #parse date+time into POSIXlt
