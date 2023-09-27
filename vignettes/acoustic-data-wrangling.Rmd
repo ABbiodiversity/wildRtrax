@@ -72,7 +72,7 @@ my_wide_data <- wt_make_wide(data = my_tmtt_data, sound = "all")
 
 ## Offsets
 
-Now you can add the additional offsets.
+Now you can calculate statistical offsets to account for imperfection detection following the QPAD method (Solymos et al. 2013 in Methods in Ecology & Evolution).
 
 ```{r, eval = F, echo = T, warning = F, message = F}
 my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version = 3, together = TRUE)
