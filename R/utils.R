@@ -139,10 +139,14 @@
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
   #Get the gis data
-  .rlcc <- terra::rast(system.file("lcc.tif"), package="wildRtrax")
-  .rtree <- terra::rast(system.file("tree.tif"), package="wildRtrax")
-  .rd1 <- terra::rast(system.file("seedgrow.tif"), package="wildRtrax")
-  .rtz <- terra::rast(system.file("utcoffset.tif"), package="wildRtrax")
+  .rlcc <- terra::rast(system.file("inst", "extdata", "lcc.tif"),
+                       package="wildRtrax")
+  .rtree <- terra::rast(system.file("inst", "extdata", "tree.tif"),
+                        package="wildRtrax")
+  .rd1 <- terra::rast(system.file("inst", "extdata", "seedgrow.tif"),
+                      package="wildRtrax")
+  .rtz <- terra::rast(system.file("inst", "extdata", "utcoffset.tif"),
+                      package="wildRtrax")
   crs <- terra::crs(.rtree)
 
   #Separate method into duration and tag method
