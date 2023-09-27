@@ -174,7 +174,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 wt_replace_tmtt <- function(data, calc="round"){
 
   #load tmtt lookup table
-  .tmtt <- readRDS(system.file("data", "tmtt_predictions.rds", package="wildRtrax"))
+  .tmtt <- readRDS(system.file("extdata", "tmtt_predictions.rds", package="wildRtrax"))
 
   #wrangle to tmtts only
   dat.tmtt <- data %>%
