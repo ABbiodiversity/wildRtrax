@@ -174,7 +174,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 wt_replace_tmtt <- function(data, calc="round"){
 
   #load tmtt lookup table
-  .tmtt <- read.csv(system.file("data", "tmtt_predictions.csv", package="wildRtrax"))
+  .tmtt <- read_csv(system.file("data", "tmtt_predictions.csv", package="wildRtrax"), show_col_types = F)
 
   #wrangle to tmtts only
   dat.tmtt <- data %>%
@@ -183,9 +183,9 @@ wt_replace_tmtt <- function(data, calc="round"){
   #replace values with random selection from bootstraps
   dat.abun <- dat.tmtt %>%
     mutate(species_code = ifelse(species_code %in% .tmtt$species_code, species_code, "species"),
-           observer_user_id = as.integer(ifelse(observer_user_id %in% .tmtt$observer_usr_id, observer_user_id, 0))) %>%
+           observer_id = as.integer(ifelse(observer_id %in% .tmtt$observer_id, observer_id, 0))) %>%
     data.frame() %>%
-    inner_join(.tmtt %>% select(species_code, observer_user_id, pred), by=c("species_code", "observer_user_id")) %>%
+    inner_join(.tmtt %>% select(species_code, observer_id, pred), by=c("species_code", "observer_id")) %>%
     mutate(individual_count = case_when(calc == "round" ~ round(pred),
                                  calc == "ceiling" ~ ceiling(pred),
                                  calc == "floor" ~ floor(pred),
@@ -225,8 +225,8 @@ wt_replace_tmtt <- function(data, calc="round"){
 wt_make_wide <- function(data, sound="all"){
 
   #Filter to first detection per individual
-  summed <- data %>%
-    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_user_id, species_code, species_common_name, species_class, individual_order) %>%
+  summed <- eh212a %>%
+    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, individual_order) %>%
     mutate(first = max(detection_time)) %>%
     ungroup() %>%
     dplyr::filter(detection_time==first)
@@ -246,8 +246,8 @@ wt_make_wide <- function(data, sound="all"){
   #TO DO: COME BACK TO THE ERROR HANDLING
   #  options(warn=-1)
   wide <- summed %>%
-    mutate(individual_count = as.numeric(individual_count)) %>%
-    pivot_wider(id_cols = organization:species_class,
+    mutate(individual_count = case_when(grepl('^C',individual_count) ~ individual_count, TRUE ~ as.numeric(individual_count))) %>%
+    pivot_wider(id_cols = organization:species_common_name,
                 names_from = "species_code",
                 values_from = "individual_count",
                 values_fn = sum,
@@ -293,11 +293,10 @@ wt_format_occupancy <- function(data,
     unique() %>%
     mutate(occur=1) %>%
     right_join(data %>%
-                 dplyr::select(location, recording_date_time, observer_user_id, task_method) %>%
+                 dplyr::select(location, recording_date_time, observer_id, task_method) %>%
                  unique(),
                by=c("location", "recording_date_time")) %>%
     mutate(occur = ifelse(is.na(occur), 0, 1),
-           recording_date_time = ymd_hms(recording_date_time),
            doy = yday(recording_date_time),
            hr = as.numeric(hour(recording_date_time) + minute(recording_date_time)/60)) %>%
     group_by(location) %>%
@@ -353,8 +352,8 @@ wt_format_occupancy <- function(data,
     data.frame()
 
   observer <- visits %>%
-    dplyr::select(location, visit, observer_user_id) %>%
-    mutate(observer = as.factor(observer_user_id)) %>%
+    dplyr::select(location, visit, observer_id) %>%
+    mutate(observer = as.factor(observer_id)) %>%
     pivot_wider(id_cols = location, names_from = visit, values_from = observer) %>%
     arrange(location) %>%
     dplyr::select(-location) %>%
