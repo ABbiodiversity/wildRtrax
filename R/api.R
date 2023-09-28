@@ -67,13 +67,6 @@ wt_get_download_summary <- function(sensor_id) {
                      project = fullNm, project_id = id, sensor = sensorId, tasks, status) |>
     mutate(across(everything(), unlist))
 
-  if(sensor_id == "PC") {
-    x <- x |> filter(sensor == "PC")
-    return(x)
-  } else {
-    return(x)
-  }
-
 }
 
 #' Download Reports
@@ -256,7 +249,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   # List data files, read into R as a list
   files <- gsub(".csv", "", list.files(td, pattern = ".csv"))
   files.full <- list.files(td, pattern = ".csv", full.names = TRUE)
-  x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) %>%
+  x <- purrr::map(.x = files.full, .f = ~ read_csv(., show_col_types = F)) %>%
     purrr::set_names(files)
 
   # Remove weather columns, if desired
@@ -349,7 +342,7 @@ wt_get_species <- function(){
     species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
   )
 
-  message("Successfully downloaded the species table! Use wt_tidy_species to filter species from the list.")
+  message("Successfully downloaded the species table!")
 
  return(spp_table)
 

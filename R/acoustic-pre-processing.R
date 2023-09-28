@@ -613,8 +613,6 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 
 wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
 
-  future::plan(multisession)
-
   outroot <- output_folder
 
   if (!dir.exists(outroot)) {

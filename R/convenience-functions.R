@@ -137,7 +137,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 
     #first identify the unique visits (replace this with task_id in the future)
     visit <- dat %>%
-      dplyr::select(-species_code, -species_common_name, -species_class, -individual_order, -detection_time, -vocalization, -individual_count, -species_individual_comments, -tag_is_verified) %>%
+      dplyr::select(-species_code, -species_common_name, -individual_order, -detection_time, -vocalization, -individual_count, -species_individual_comments, -tag_is_verified) %>%
       unique()
 
     #see if there are any that have been removed
@@ -226,7 +226,7 @@ wt_make_wide <- function(data, sound="all"){
 
   #Filter to first detection per individual
   summed <- data %>%
-    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, species_class, individual_order) %>%
+    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, individual_order) %>%
     mutate(first = max(detection_time)) %>%
     ungroup() %>%
     dplyr::filter(detection_time==first)
@@ -246,8 +246,9 @@ wt_make_wide <- function(data, sound="all"){
   #TO DO: COME BACK TO THE ERROR HANDLING
   #  options(warn=-1)
   wide <- summed %>%
-    mutate(individual_count = as.numeric(individual_count)) %>%
-    pivot_wider(id_cols = organization:species_class,
+    mutate(individual_count = case_when(grepl('^C',individual_count) ~ NA_real_, TRUE ~ as.numeric(individual_count))) %>%
+    filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
+    pivot_wider(id_cols = organization:species_common_name,
                 names_from = "species_code",
                 values_from = "individual_count",
                 values_fn = sum,
@@ -297,7 +298,6 @@ wt_format_occupancy <- function(data,
                  unique(),
                by=c("location", "recording_date_time")) %>%
     mutate(occur = ifelse(is.na(occur), 0, 1),
-           recording_date_time = ymd_hms(recording_date_time),
            doy = yday(recording_date_time),
            hr = as.numeric(hour(recording_date_time) + minute(recording_date_time)/60)) %>%
     group_by(location) %>%
