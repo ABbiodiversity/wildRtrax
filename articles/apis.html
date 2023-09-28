@@ -126,20 +126,20 @@ projects that you can download data for.</p>
 <span><span class="va">my_projects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_get_download_summary.html">wt_get_download_summary</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="st">'ARU'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_projects</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organization_id organization                                       project</span></span>
-<span><span class="co">#&gt; 1               1           BU                   Big Grid Pilot Program 2014</span></span>
-<span><span class="co">#&gt; 2               5         ABMI                                     Big Grids</span></span>
-<span><span class="co">#&gt; 3               1           BU                                     Big Grids</span></span>
-<span><span class="co">#&gt; 4            5273          BNP                          Bird Monitoring 2021</span></span>
-<span><span class="co">#&gt; 5            5273          BNP                          Bird Monitoring 2022</span></span>
-<span><span class="co">#&gt; 6               1           BU Boreal Avian Modelling Project Re-visits 2019</span></span>
-<span><span class="co">#&gt;   project_id sensor tasks                      status</span></span>
-<span><span class="co">#&gt; 1         32    ARU   733          Published - Public</span></span>
-<span><span class="co">#&gt; 2        381    ARU  2226 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 3         31    ARU  7601          Published - Public</span></span>
-<span><span class="co">#&gt; 4        462    ARU   243 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 5       1175    ARU   214 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 6        161    ARU   187          Published - Public</span></span></code></pre></div>
+<span><span class="co">#&gt;   organization_id organization                              project project_id</span></span>
+<span><span class="co">#&gt; 1               5         ABMI ABMI Adopt-a-Camera ARU Surveys 2017         42</span></span>
+<span><span class="co">#&gt; 2               1           BU          Big Grid Pilot Program 2014         32</span></span>
+<span><span class="co">#&gt; 3               1           BU                            Big Grids         31</span></span>
+<span><span class="co">#&gt; 4               5         ABMI                            Big Grids        381</span></span>
+<span><span class="co">#&gt; 5            5273          BNP                 Bird Monitoring 2021        462</span></span>
+<span><span class="co">#&gt; 6            5273          BNP                 Bird Monitoring 2022       1175</span></span>
+<span><span class="co">#&gt;   sensor tasks                      status</span></span>
+<span><span class="co">#&gt; 1    ARU   309 Published - Map+Report Only</span></span>
+<span><span class="co">#&gt; 2    ARU   733          Published - Public</span></span>
+<span><span class="co">#&gt; 3    ARU  7601          Published - Public</span></span>
+<span><span class="co">#&gt; 4    ARU  2226 Published - Map+Report Only</span></span>
+<span><span class="co">#&gt; 5    ARU   243 Published - Map+Report Only</span></span>
+<span><span class="co">#&gt; 6    ARU   214 Published - Map+Report Only</span></span></code></pre></div>
 <p>Using the project_id number in the download summary you can then use
 <code><a href="../reference/wt_download_report.html">wt_download_report()</a></code> to access the species data. You can
 also find the project_id number in the url of a WildTrax project,
