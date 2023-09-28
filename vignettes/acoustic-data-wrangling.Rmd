@@ -32,16 +32,10 @@ load("book.RData")
 # Start by getting everything you need
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
-my_data <- wt_download_report(project_id = 379, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+my_report <- wt_download_report(project_id = 379, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
 
-spps <- wt_get_species() %>%
-  select(species_code, species_class) # Select only a couple columns needed
-
-my_data <- my_data %>%
-  dplyr::inner_join(., spps, by = ("species_code" = "species_code")) 
-
-head(my_data)
+head(my_report)
 
 ```
 
@@ -50,7 +44,7 @@ head(my_data)
 Now let's start cleaning things up a bit. We don't need certain abiotic codes so let's remove those with `wt_tidy_species()`,
 
 ```{r, eval = F, echo = T, warning = F, message = F}
-my_tidy_data <- wt_tidy_species(my_data, remove = c("mammal", "amphibian", "abiotic", "insect", "unknown", zerofill=TRUE))
+my_tidy_data <- wt_tidy_species(my_report, remove = c("mammal", "amphibian", "abiotic", "insect", "unknown", zerofill=TRUE))
 
 # Difference in rows
 round((nrow(my_tidy_data)/nrow(my_data)),2)
@@ -84,7 +78,7 @@ my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version 
 You can also perform a single-season, single-species occupancy work flow using `wt_format_occupancy()` once the data is downloaded.
 
 ```{r, eval = F, echo = T, warning = F, message = F}
-dat.occu <- wt_format_occupancy(my_data, species="CONI", siteCovs=NULL)
+dat.occu <- wt_format_occupancy(my_report, species="CONI", siteCovs=NULL)
 mod <- unmarked::occu(~ 1 ~ 1, dat.occu)
 mod
 

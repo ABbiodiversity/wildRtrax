@@ -1,7 +1,8 @@
 # wildRtrax 1.0.1
 
 * Patching API errors in `wt_download_report()`
-* Adding additional articles on [acoustic data wrangling](#acoustic-data-wrangling)
+* Adding additional articles on [Acoustic data wrangling](https://abbiodiversity.github.io/wildRtrax/articles/acoustic-data-wrangling.html)
+* 
 
 # wildRtrax 1.0.0
 
@@ -24,10 +25,10 @@
 
 ## Minor improvements and bug fixes
 
-* Moved `wt_run_ap` to `future_map` from `dopar` loop to lessen package dependencies
+* Moved `wt_run_ap()` to `furrr::future_map` from `dopar` loop to lessen package dependencies
 * Quiet console output from `wt_run_ap()` for Windows users
 * Added a `NEWS.md` file to track changes to the package
-* Renamed `wt_ind_det` to `wt_ind_detect`
+* Renamed `wt_ind_det` to `wt_ind_detect()`
 
 ## Deprecated 
 
@@ -39,6 +40,6 @@
   * **Acoustic**
     * `wt_audio_scanner()`, `wt_run_ap()`, `wt_signal_level()`, `wt_prob_det()`
   * **Camera**
-    * `wt_ind_det`, `wt_summarise_cam`
+    * `wt_ind_det`, `wt_summarise_cam()`
   * **Authorization and Download from WildTrax**
-    * `wt_auth`, `wt_get_download_summary`, `wt_download_report`
+    * `wt_auth()`, `wt_get_download_summary()`, `wt_download_report()`
