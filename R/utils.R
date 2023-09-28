@@ -133,32 +133,28 @@
 #'
 #' @keywords internal
 #'
-#' @import QPAD dplyr intrval maptools
-#' @importFrom raster proj4string coordinates extract
-#' @importFrom maptools sunriset
-#' @importFrom sp spTransform
+#' @import QPAD dplyr intrval terra
+#' @importFrom suntools sunriset
 
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
   #Get the gis data
-  .rlcc <- raster::raster(system.file("lcc.tif"), package="wildRtrax")
-  .rtree <- raster::raster(system.file("tree.tif"), package="wildRtrax")
-  .rd1 <- raster::raster(system.file("seedgrow.tif"), package="wildRtrax")
-  .rtz <- raster::raster(system.file("utcoffset.tif"), package="wildRtrax")
-  crs <- raster::proj4string(.rtree)
-
-  #Separate method into duration and tag method
-  options(warn = -1)
-  dat.meth <- separate(data, method, into=c("duration", "tagmeth"), sep=" ") %>%
-    mutate(duration = as.numeric(str_sub(duration, -100, -2)))
-  options(warn = 0)
+  .rlcc <- terra::rast(system.file("extdata", "lcc.tif",
+                       package="wildRtrax"))
+  .rtree <- terra::rast(system.file("extdata", "tree.tif",
+                        package="wildRtrax"))
+  .rd1 <- terra::rast(system.file("extdata", "seedgrow.tif",
+                      package="wildRtrax"))
+  .rtz <- terra::rast(system.file("extdata", "utcoffset.tif",
+                      package="wildRtrax"))
+  crs <- terra::crs(.rtree)
 
   #get vars
-  date <- str_sub(dat.meth$recording_date, 1, 10)
-  time <- str_sub(dat.meth$recording_date, 12, 19)
-  lon <- as.numeric(dat.meth$longitude)
-  lat <- as.numeric(dat.meth$latitude)
-  dur <- as.numeric(dat.meth$duration)
+  date <- str_sub(data$recording_date_time, 1, 10)
+  time <- str_sub(data$recording_date_time, 12, 19)
+  lon <- as.numeric(data$longitude)
+  lat <- as.numeric(data$latitude)
+  dur <- as.numeric(str_sub(data$task_duration, -100, -2))
   dis <- Inf
 
   #parse date+time into POSIXlt
@@ -197,15 +193,14 @@
   checkfun(dur, "dur", c(0, Inf))
 
   #intersect here
-  xy <- data.frame(x=lon, y=lat)
-  xy$x[is.na(xy$x)] <- mean(xy$x, na.rm=TRUE)
-  xy$y[is.na(xy$y)] <- mean(xy$y, na.rm=TRUE)
-  raster::coordinates(xy) <- ~ x + y
-  raster::proj4string(xy) <- "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
-  xy <- invisible(spTransform(xy, crs))
+  xydf <- data.frame(x=lon, y=lat)
+  xydf$x[is.na(xydf$x)] <- mean(xydf$x, na.rm=TRUE)
+  xydf$y[is.na(xydf$y)] <- mean(xydf$y, na.rm=TRUE)
+  xy <- terra::vect(xydf, geom=c("x", "y"), crs="+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+  xy <- terra::project(xy, crs)
 
   #LCC4 and LCC2
-  vlcc <- raster::extract(.rlcc, xy)
+  vlcc <- terra::extract(.rlcc, xy)$lcc
   lcclevs <- c("0"="", "1"="Conif", "2"="Conif", "3"="", "4"="",
                "5"="DecidMixed", "6"="DecidMixed", "7"="", "8"="Open", "9"="",
                "10"="Open", "11"="Open", "12"="Open", "13"="Open", "14"="Wet",
@@ -215,16 +210,16 @@
   levels(lcc2) <- c("Forest", "Forest", "OpenWet", "OpenWet")
 
   #TREE
-  vtree <- raster::extract(.rtree, xy)
+  vtree <- terra::extract(.rtree, xy)$tree
   TREE <- vtree / 100
   TREE[TREE %)(% c(0, 1)] <- 0
 
   #raster::extract seedgrow value (this is rounded)
-  d1 <- raster::extract(.rd1, xy)
+  d1 <- terra::extract(.rd1, xy)$seedgrow
 
   #UTC offset + 7 makes Alberta 0 (MDT offset) for local times
   if(tz=="local"){
-    ltz <- raster::extract(.rtz, xy) + 7
+    ltz <- terra::extract(.rtz, xy)$utcoffset + 7
   }
   if(tz=="utc"){
     ltz <- 0
@@ -234,12 +229,12 @@
   ok_dt <- !is.na(dtm)
   dtm[is.na(dtm)] <- mean(dtm, na.rm=TRUE)
   if(tz=="local"){
-    sr <- sunriset(cbind("X"=lon, "Y"=lat),
+    sr <- suntools::sunriset(cbind("X"=xydf$x, "Y"=xydf$y),
                    as.POSIXct(dtm, tz="America/Edmonton"),
                    direction="sunrise", POSIXct.out=FALSE) * 24
   }
   if(tz=="utc"){
-    sr <- sunriset(cbind("X"=lon, "Y"=lat),
+    sr <- suntools::sunriset(cbind("X"=xydf$x, "Y"=xydf$y),
                    as.POSIXct(dtm, tz="GMT"),
                    direction="sunrise", POSIXct.out=FALSE) * 24
   }

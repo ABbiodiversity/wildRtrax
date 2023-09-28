@@ -174,7 +174,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 wt_replace_tmtt <- function(data, calc="round"){
 
   #load tmtt lookup table
-  .tmtt <- read.csv(system.file("data", "tmtt_predictions.csv", package="wildRtrax"))
+  .tmtt <- readRDS(system.file("extdata", "tmtt_predictions.rds", package="wildRtrax"))
 
   #wrangle to tmtts only
   dat.tmtt <- data %>%
@@ -183,9 +183,9 @@ wt_replace_tmtt <- function(data, calc="round"){
   #replace values with random selection from bootstraps
   dat.abun <- dat.tmtt %>%
     mutate(species_code = ifelse(species_code %in% .tmtt$species_code, species_code, "species"),
-           observer_user_id = as.integer(ifelse(observer_user_id %in% .tmtt$observer_usr_id, observer_user_id, 0))) %>%
+           observer_id = as.integer(ifelse(observer_id %in% .tmtt$observer_id, observer_id, 0))) %>%
     data.frame() %>%
-    inner_join(.tmtt %>% select(species_code, observer_user_id, pred), by=c("species_code", "observer_user_id")) %>%
+    inner_join(.tmtt %>% select(species_code, observer_id, pred), by=c("species_code", "observer_id")) %>%
     mutate(individual_count = case_when(calc == "round" ~ round(pred),
                                  calc == "ceiling" ~ ceiling(pred),
                                  calc == "floor" ~ floor(pred),
@@ -226,7 +226,7 @@ wt_make_wide <- function(data, sound="all"){
 
   #Filter to first detection per individual
   summed <- data %>%
-    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_user_id, species_code, species_common_name, species_class, individual_order) %>%
+    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, species_class, individual_order) %>%
     mutate(first = max(detection_time)) %>%
     ungroup() %>%
     dplyr::filter(detection_time==first)
@@ -293,7 +293,7 @@ wt_format_occupancy <- function(data,
     unique() %>%
     mutate(occur=1) %>%
     right_join(data %>%
-                 dplyr::select(location, recording_date_time, observer_user_id, task_method) %>%
+                 dplyr::select(location, recording_date_time, observer_id, task_method) %>%
                  unique(),
                by=c("location", "recording_date_time")) %>%
     mutate(occur = ifelse(is.na(occur), 0, 1),
@@ -353,8 +353,8 @@ wt_format_occupancy <- function(data,
     data.frame()
 
   observer <- visits %>%
-    dplyr::select(location, visit, observer_user_id) %>%
-    mutate(observer = as.factor(observer_user_id)) %>%
+    dplyr::select(location, visit, observer_id) %>%
+    mutate(observer = as.factor(observer_id)) %>%
     pivot_wider(id_cols = location, names_from = visit, values_from = observer) %>%
     arrange(location) %>%
     dplyr::select(-location) %>%
@@ -424,14 +424,14 @@ wt_qpad_offsets <- function(data, species = "all", version = 3, together=TRUE){
 
   #Make prediction object
   cat("Extracting covariates for offset calculation - be patient")
-  x <- .make_x(dat)
+  x <- .make_x(data)
 
   #Load QPAD estimates
   cat("\nLoading QPAD estimates: ")
   load_BAM_QPAD(version)
 
   #Make the species list
-  if(species=="all") spp <- sort(intersect(getBAMspecieslist(), colnames(dat))) else spp <- species
+  if(species=="all") spp <- sort(intersect(getBAMspecieslist(), colnames(data))) else spp <- species
 
   #Set up the offset loop
   cat("\nCalculating offsets")
@@ -452,7 +452,7 @@ wt_qpad_offsets <- function(data, species = "all", version = 3, together=TRUE){
 
   #Put together if requested
   if(together==FALSE){
-    out <- cbind(dat,
+    out <- cbind(data,
                  data.frame(off) %>%
                    rename_with(.fn=~paste0(.x, ".off")))
 
