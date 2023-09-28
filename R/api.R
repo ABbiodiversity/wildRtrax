@@ -342,7 +342,7 @@ wt_get_species <- function(){
     species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
   )
 
-  message("Successfully downloaded the species table! Use wt_tidy_species to filter species from the list.")
+  message("Successfully downloaded the species table!")
 
  return(spp_table)
 
