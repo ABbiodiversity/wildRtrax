@@ -246,7 +246,8 @@ wt_make_wide <- function(data, sound="all"){
   #TO DO: COME BACK TO THE ERROR HANDLING
   #  options(warn=-1)
   wide <- summed %>%
-    mutate(individual_count = case_when(grepl('^C',individual_count) ~ individual_count, TRUE ~ as.numeric(individual_count))) %>%
+    mutate(individual_count = case_when(grepl('^C',individual_count) ~ NA_real_, TRUE ~ as.numeric(individual_count))) %>%
+    filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
     pivot_wider(id_cols = organization:species_common_name,
                 names_from = "species_code",
                 values_from = "individual_count",

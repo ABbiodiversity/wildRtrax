@@ -12,20 +12,21 @@ The recommended workflow to wrangle together data for analysis in `wildRtrax` is
 - Remove unneeded species: `wt_tidy_species()`
 - Convert TMTT counts to numeric: `wt_replace_tmtt()`
 - Convert the species to a wide format: `wt_make_wide()`
-- Add additional [offsets](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12106) for the data `wt_qpad_offsets()`
+- Calculate statistical offsets to account for imperfection detection following the [QPAD method](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12106): `wt_qpad_offsets()`
 
-```{r, echo = F, warning = F, message = F, eval = T}
-
-library(wildRtrax)
-library(tidyverse)
-
+```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = '#>'
 )
 
 load("book.RData")
+```
 
+```{r setup, echo=FALSE, include=FALSE, eval=TRUE}
+# Attach package
+library(wildRtrax)
+library(tidyverse)
 ```
 
 ```{r, warning = F, message = F, eval = F, include = T, echo = T}
@@ -34,23 +35,21 @@ Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
 my_report <- wt_download_report(project_id = 379, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
-
-head(my_report)
-
 ```
 
 ## Data wrangling
 
 Now let's start cleaning things up a bit. We don't need certain abiotic codes so let's remove those with `wt_tidy_species()`,
 
-```{r, eval = F, echo = T, warning = F, message = F}
-my_tidy_data <- wt_tidy_species(my_report, remove = c("mammal", "amphibian", "abiotic", "insect", "unknown", zerofill=TRUE))
+```{r, tidy-chunk, eval = F, echo = T, warning = F, message = F}
+my_tidy_data <- wt_tidy_species(my_report, remove = "mammal", zerofill=F)
 
 # Difference in rows
 round((nrow(my_tidy_data)/nrow(my_report)),2)
 ```
 
-convert TMTT counts to numeric,
+
+So about 5% of detections were mammals. Next, convert TMTT counts to numeric:
 
 ```{r, eval = F, echo = T, warning = F, message = F}
 my_tmtt_data <- wt_replace_tmtt(data = my_tidy_data, calc = "round")
@@ -62,14 +61,18 @@ and finally widen the data into a species matrix.
 ```{r, eval = F, echo = T, warning = F, message = F}
 my_wide_data <- wt_make_wide(data = my_tmtt_data, sound = "all")
 
+head(my_wide_data)
+
 ```
 
 ## Offsets
 
-Now you can calculate statistical offsets to account for imperfection detection following the QPAD method (Solymos et al. 2013 in Methods in Ecology & Evolution).
+Now you can calculate statistical offsets to account for imperfection detection following the QPAD method.
 
 ```{r, eval = F, echo = T, warning = F, message = F}
 my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version = 3, together = TRUE)
+
+head(my_offset_data)
 
 ```
 
@@ -78,15 +81,7 @@ my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version 
 You can also perform a single-season, single-species occupancy work flow using `wt_format_occupancy()` once the data is downloaded.
 
 ```{r, eval = F, echo = T, warning = F, message = F}
-<<<<<<< HEAD
-<<<<<<< HEAD
-dat.occu <- wt_format_occupancy(my_report, species="CONI", siteCovs=NULL)
-=======
-dat.occu <- wt_format_occupancy(my_data, species="WTSP", siteCovs=NULL)
->>>>>>> 98cbec44583e541d85b7c568570b1ee7032c4a0f
-=======
-dat.occu <- wt_format_occupancy(my_report, species="CONI", siteCovs=NULL)
->>>>>>> 70c5a0272f45c44e5eb385b2c40ace4248e2f507
+dat.occu <- wt_format_occupancy(my_report, species="WTSP", siteCovs=NULL)
 mod <- unmarked::occu(~ 1 ~ 1, dat.occu)
 mod
 
