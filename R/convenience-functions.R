@@ -174,11 +174,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 wt_replace_tmtt <- function(data, calc="round"){
 
   #load tmtt lookup table
-<<<<<<< HEAD
   .tmtt <- readRDS(system.file("extdata", "tmtt_predictions.rds", package="wildRtrax"))
-=======
-  .tmtt <- read_csv(system.file("data", "tmtt_predictions.csv", package="wildRtrax"), show_col_types = F)
->>>>>>> 70c5a0272f45c44e5eb385b2c40ace4248e2f507
 
   #wrangle to tmtts only
   dat.tmtt <- data %>%
@@ -229,13 +225,8 @@ wt_replace_tmtt <- function(data, calc="round"){
 wt_make_wide <- function(data, sound="all"){
 
   #Filter to first detection per individual
-<<<<<<< HEAD
   summed <- data %>%
-    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, species_class, individual_order) %>%
-=======
-  summed <- eh212a %>%
     group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, individual_order) %>%
->>>>>>> 70c5a0272f45c44e5eb385b2c40ace4248e2f507
     mutate(first = max(detection_time)) %>%
     ungroup() %>%
     dplyr::filter(detection_time==first)
