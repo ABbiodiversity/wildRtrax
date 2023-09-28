@@ -79,10 +79,14 @@ You can also perform a single-season, single-species occupancy work flow using `
 
 ```{r, eval = F, echo = T, warning = F, message = F}
 <<<<<<< HEAD
+<<<<<<< HEAD
 dat.occu <- wt_format_occupancy(my_report, species="CONI", siteCovs=NULL)
 =======
 dat.occu <- wt_format_occupancy(my_data, species="WTSP", siteCovs=NULL)
 >>>>>>> 98cbec44583e541d85b7c568570b1ee7032c4a0f
+=======
+dat.occu <- wt_format_occupancy(my_report, species="CONI", siteCovs=NULL)
+>>>>>>> 70c5a0272f45c44e5eb385b2c40ace4248e2f507
 mod <- unmarked::occu(~ 1 ~ 1, dat.occu)
 mod
 

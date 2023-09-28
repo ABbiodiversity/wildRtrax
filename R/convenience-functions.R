@@ -137,7 +137,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 
     #first identify the unique visits (replace this with task_id in the future)
     visit <- dat %>%
-      dplyr::select(-species_code, -species_common_name, -species_class, -individual_order, -detection_time, -vocalization, -individual_count, -species_individual_comments, -tag_is_verified) %>%
+      dplyr::select(-species_code, -species_common_name, -individual_order, -detection_time, -vocalization, -individual_count, -species_individual_comments, -tag_is_verified) %>%
       unique()
 
     #see if there are any that have been removed
@@ -174,7 +174,11 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 wt_replace_tmtt <- function(data, calc="round"){
 
   #load tmtt lookup table
+<<<<<<< HEAD
   .tmtt <- readRDS(system.file("extdata", "tmtt_predictions.rds", package="wildRtrax"))
+=======
+  .tmtt <- read_csv(system.file("data", "tmtt_predictions.csv", package="wildRtrax"), show_col_types = F)
+>>>>>>> 70c5a0272f45c44e5eb385b2c40ace4248e2f507
 
   #wrangle to tmtts only
   dat.tmtt <- data %>%
@@ -225,8 +229,13 @@ wt_replace_tmtt <- function(data, calc="round"){
 wt_make_wide <- function(data, sound="all"){
 
   #Filter to first detection per individual
+<<<<<<< HEAD
   summed <- data %>%
     group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, species_class, individual_order) %>%
+=======
+  summed <- eh212a %>%
+    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, individual_order) %>%
+>>>>>>> 70c5a0272f45c44e5eb385b2c40ace4248e2f507
     mutate(first = max(detection_time)) %>%
     ungroup() %>%
     dplyr::filter(detection_time==first)
@@ -246,8 +255,8 @@ wt_make_wide <- function(data, sound="all"){
   #TO DO: COME BACK TO THE ERROR HANDLING
   #  options(warn=-1)
   wide <- summed %>%
-    mutate(individual_count = as.numeric(individual_count)) %>%
-    pivot_wider(id_cols = organization:species_class,
+    mutate(individual_count = case_when(grepl('^C',individual_count) ~ individual_count, TRUE ~ as.numeric(individual_count))) %>%
+    pivot_wider(id_cols = organization:species_common_name,
                 names_from = "species_code",
                 values_from = "individual_count",
                 values_fn = sum,
@@ -297,7 +306,6 @@ wt_format_occupancy <- function(data,
                  unique(),
                by=c("location", "recording_date_time")) %>%
     mutate(occur = ifelse(is.na(occur), 0, 1),
-           recording_date_time = ymd_hms(recording_date_time),
            doy = yday(recording_date_time),
            hr = as.numeric(hour(recording_date_time) + minute(recording_date_time)/60)) %>%
     group_by(location) %>%
