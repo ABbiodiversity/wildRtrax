@@ -243,13 +243,13 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   unzip(tmp, exdir = td)
 
   # Remove abstract file
-  abstract <- list.files(td, pattern = "*_abstract.csv", full.names = TRUE)
+  abstract <- list.files(td, pattern = "*_abstract.csv", full.names = TRUE, recursive = TRUE)
   file.remove(abstract)
 
   # List data files, read into R as a list
-  files <- gsub(".csv", "", list.files(td, pattern = ".csv"))
-  files.full <- list.files(td, pattern = ".csv", full.names = TRUE)
-  x <- purrr::map(.x = files.full, .f = ~ read_csv(., show_col_types = F)) %>%
+  files <- gsub(".csv", "", list.files(td, pattern = ".csv", recursive = TRUE))
+  files.full <- list.files(td, pattern = ".csv", full.names = TRUE, recursive = TRUE)
+  x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) %>%
     purrr::set_names(files)
 
   # Remove weather columns, if desired
