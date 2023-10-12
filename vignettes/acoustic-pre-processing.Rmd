@@ -13,6 +13,7 @@ The following set of functions help to pre-process and organize audio and corres
 - \code`wt_run_ap()` allows you to generate acoustic indices and false-colour spectrograms from a \code`wt_audio_scanner()` tibble, while \code`wt_glean_ap()` wrangles the output into summary plots and long-duration false-colour spectrograms
 - \code`wt_signal_level()` detects signals in audio based on amplitude thresholds
 - \code`wt_chop()` divides a large audio file into shorter segments
+- \code`wt_make_aru_tasks()`, \code`wt_songscope_tags()` and \code`wt_kaleidoscope_tags()` allow you to link media to tasks and to generate tags from recognizer or classifier results from [Songscope](https://www.wildlifeacoustics.com/resources/faqs/song-scope-is-no-longer-supported) and [Kaleidoscope](https://www.wildlifeacoustics.com/products/kaleidoscope-pro)
 
 ```{r, include = FALSE, echo = F, include = T, warning = F, message = F}
 knitr::opts_chunk$set(
@@ -135,3 +136,42 @@ wt_make_aru_tasks(input = files %>% dplyr::select(-file_path), task_method = "1S
 
 The function `wt_songscope_tags()` reformats the output obtained from a Wildlife Acoustics Songscope recognizer. This transformation involves converting the recognizer tags into tags that do not have a method type. This makes it possible to upload each hit as a tag in a task. Similarly, the function `wt_kaleidoscope_tags()` performs the same reformatting process, but with Kaleidoscope instead. It is worth noting that this function targeted for sonic and ultrasonic species upload.
 
+```{r eval=F, message=FALSE, warning=FALSE, include=T}
+# Convert Songscope output into WildTrax tags
+wt_songscope_tags(
+  input, 
+  output = c("env", "csv"),
+  my_output_file = NULL,
+  species_code,
+  vocalization_type,
+  score_filter,
+  method = c("USPM", "1SPT"),
+  task_length
+)
+
+# Convert Kaleidoscope output into WildTrax tags
+wt_kaleidoscope_tags(
+  input, 
+  output,
+  tz, 
+  freq_bump = T) # Add a frequency buffer to the tag, e.g. 20000 kHz
+
+```
+
+If you've already uploaded recordings to WildTrax, scan your media using `wt_audio_scanner()` and a relative folder path.
+
+```{r eval=F, message=FALSE, warning=FALSE, include=T}
+my_files <- wt_audio_scanner(path = '/my/BigGrid/files', file_type = 'all', extra_cols = F)
+
+```
+
+And then download the project data you wish to compare it to:
+
+```{r eval=F, message=FALSE, warning=FALSE, include=T}
+my_projects <- wt_get_download_summary(sensor_id = 'ARU') %>%
+  tibble::as_tibble() %>%
+  dplyr::filter(grepl('Big Grids',project)) %>% # Customized as needed
+  dplyr::mutate(data = purrr::map(.x = project_id, .f = ~wt_download_report(project_id = .x, sensor_id = 'ARU', weather_cols = F, reports = 'main')))
+```
+
+Alternatively, go to WildTrax to Organization > Recordings > Manage > Download Recordings to get a list of all recordings. Then either filter out or do an anti-join on `location` and `recording_date_time`. That should give you the remaining list of media that has not been processed or uploaded to WildTrax yet.

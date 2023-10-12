@@ -40,4 +40,4 @@ utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext"
                          "tag_spectrogram_url",
                          "task_method",
                          "wt_spp_table","<<-","clip_type","output_filename","image_date_time",
-                         "unlist", "PC", "sens"))
+                         "unlist", "PC", "sens","organizationId","organizationName"))

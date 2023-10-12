@@ -2,7 +2,7 @@
 % Please edit documentation in R/acoustic-pre-processing.R
 \name{wt_songscope_tags}
 \alias{wt_songscope_tags}
-\title{Takes the classifier output from Wildlife Acoustics Songscope and converts them into a WildTrax tag template for upload}
+\title{Convert Songscope output to tags}
 \usage{
 wt_songscope_tags(
   input,
@@ -36,13 +36,5 @@ wt_songscope_tags(
 A csv formatted as a WildTrax tag template
 }
 \description{
-Takes the classifier output from Wildlife Acoustics Songscope and converts them into a WildTrax tag template for upload
-}
-\examples{
-\dontrun{
-wt_songscope_tags(input = input.csv, output = tags.csv,
-species_code, = "CONI", method = "1SPT",
-vocalization_type = "Call", task_length = 180)
-}
-
+Convert Songscope output to tags
 }

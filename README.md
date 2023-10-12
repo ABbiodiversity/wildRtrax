@@ -15,7 +15,7 @@
 
 ## Installation
 
-You can install version 1.0 of `wildRtrax` directly from this repository with:
+You can install version 1.1.0 of `wildRtrax` directly from this repository with:
 
 ``` r
 # install.packages("remotes")
@@ -35,12 +35,12 @@ The development version of the package will be periodically merged and will be r
 All functions begin with a `wt_*` prefix. Column names and metadata align with the WildTrax infrastructure. The goal is to follow the work flow of pre-processing, linking with WildTrax, download and analysis. Some functions are built specifically for ARUs :sound:, cameras :camera: or point counts :bird:, while others are used for all sensors. :bat: denotes ultrasonic functionalities.
 
 - Pre-process acoustic data
-  - `wt_audio_scanner()` :sound:
+  - `wt_audio_scanner()` :sound: :bat:
   - `wt_run_ap()` :sound:
   - `wt_glean_ap()` :sound:
   - `wt_signal_level()` :sound:
-  - `wt_chop()` :sound:
-  - `wt_make_aru_tasks()` :sound:
+  - `wt_chop()` :sound: :bat:
+  - `wt_make_aru_tasks()` :sound: :bat:
   - `wt_songscope_tags()` :sound:
   - `wt_kaleidoscope_tags()` :sound: :bat:
 - Download data from WildTrax
@@ -49,7 +49,7 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_download_report()` :camera: :sound: :bird: :bat:
     - Available reports: `main, project, location, recording, image_set, image, tag, point_count, megadetector, megaclassifer, birdnet`
   - `wt_get_species()` :camera: :sound: :bird: :bat:
-  - `wt_download_tags()` :sound:
+  - `wt_download_tags()` :sound: :bat:
 - Analyze data
   - `wt_summarise_cam()` :camera:
   - `wt_ind_detect()` :camera:
@@ -57,7 +57,7 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_location_distances()` :sound: :camera: :bird: :bat:
   - `wt_tidy_species()` :sound: :camera: :bird: :bat:
   - `wt_replace_tmtt()` :sound:
-  - `wt_make_wide()` :sound: :camera: :bird: :bat:
+  - `wt_make_wide()` :sound: :bird: :bat:
   - `wt_format_occupancy()` :sound: :bird:
   - `wt_qpad_offsets()` :sound: :bird:
 
@@ -68,12 +68,11 @@ To report bugs, request additional features, or get help using the package, plea
 
 ## Contributors
 
-* `wildRtrax` is authored and created by [Alexander G. MacPhail](https://github.com/agmacpha), created and maintained by [Marcus Becker](https://github.com/mabecker89) and created by [Dr. Elly Knight](https://github.com/ecknight). The [Alberta Biodiversity Monitoring Institute](http://https://abmi.ca/home.html) provides ongoing support, development and funding for the package.
-* Many thanks to [Dr. Richard Hedley](https://richardwhedley.wordpress.com/) for providing the basis for the `wt_wac_info()` internal function for *wac* file support
+* `wildRtrax` is authored, created and maintained by [Alexander G. MacPhail](https://github.com/agmacpha) and [Marcus Becker](https://github.com/mabecker89), with significant contributions from [Dr. Elly Knight](https://github.com/ecknight) and [Dr. Richard Hedley](https://richardwhedley.wordpress.com/). We encourage ongoing contributions and collaborations to improve the package into the future. The [Alberta Biodiversity Monitoring Institute](https://abmi.ca) provides ongoing support, development and funding.
 
 ## License
 
-This R package is licensed under [MIT license](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE)© 2023 Marcus Becker, Alex MacPhail, Elly Knight and the [Alberta Biodiversity Monitoring Institute](http://https://abmi.ca/home.html).
+This R package is licensed under [MIT license](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE)© 2023 Marcus Becker, Alex MacPhail, Elly Knight and the [Alberta Biodiversity Monitoring Institute](https://abmi.ca).
 
 ## Code of Conduct
 

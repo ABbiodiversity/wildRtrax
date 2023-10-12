@@ -351,10 +351,11 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
   # Track progress of run
   # progressr::with_progress({
   #   p <- progressr::progressor(steps = nrow(files))
-    files <- files %>%
+    files <- files %>>%
+      "Starting AP run - this may take a while depending on your machine..." %>>%
       tibble::as_tibble() %>%
       dplyr::rename("file_path" = 1) %>%
-      furrr::future_map(.x = .$file_path, .f = ~ system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)), furrr_options(seed = T))
+      furrr::future_map(.x = .$file_path, .f = ~ suppressMessages(system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)), furrr_options(seed = T)))
   # })
   return(message('Done!'))
 
@@ -401,7 +402,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   if (dir.exists(input_dir)) {
     ind <-
       fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) %>%
-      map_dfr( ~ read_csv(., progress = F)) %>%
+      map_dfr( ~ read_csv(., show_col_types = F)) %>%
       relocate(c(FileName, ResultMinute)) %>%
       select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
       pivot_longer(!c(FileName, ResultMinute),
@@ -757,9 +758,8 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
   }
 }
 
-#' Upload hits from a Wildlife Acoustics classifier
+#' Convert Kaleidoscope output to tags
 #'
-#' @section `wt_kaleidoscope_tags`
 #'
 #' @description `wt_kaleidoscope_tags` Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
 #'
@@ -845,7 +845,7 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
 
 }
 
-#' Takes the classifier output from Wildlife Acoustics Songscope and converts them into a WildTrax tag template for upload
+#' Convert Songscope output to tags
 #'
 #' @param input Character; The path to the input csv
 #' @param output Character; Path where the output file will be stored
@@ -858,13 +858,6 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
 #'
 #' @import dplyr tidyr readr pipeR stringr lubridate tibble
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' wt_songscope_tags(input = input.csv, output = tags.csv,
-#' species_code, = "CONI", method = "1SPT",
-#' vocalization_type = "Call", task_length = 180)
-#' }
 #'
 #' @return A csv formatted as a WildTrax tag template
 

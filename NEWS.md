@@ -2,14 +2,16 @@
 
 ## Major changes
 
-* `wildRtrax` now honours WildTrax report structures. See more here. 
+* `wildRtrax` now honours new WildTrax report structures. Future changes will incorporate standardized naming in syncing functions.
 * Replaced geospatial functionalities from `rgdal`, `rgeos` and `maptools` with `sf`, `sp` and `terra` packages. Added functionality with the `suntools` package. Users should re-download the package by October 2023 in-line with the former package retirement: https://geocompx.org/post/2023/rgdal-retirement/.
 
 ## Minor changes
 
-* Tweaks to [Acoustic data wrangling](https://abbiodiversity.github.io/wildRtrax/articles/acoustic-data-wrangling.html).
+* Tweaks to [Acoustic data wrangling](https://abbiodiversity.github.io/wildRtrax/articles/acoustic-data-wrangling.html) for (#16)
 * Addition of geospatial assets. Users should be warned package size is now ~40 MB.
-* Moved TMTT predictions from csv to .RDS.
+* Moved TMTT predictions from csv to .RDS file.
+* Work flow repairs to `wt_get_species()` and `wt_tidy_species()` (#21)
+* Replaced `utils::read.csv()` to `readr::read_csv()` in `wt_download_report()` (#20)
 
 # wildRtrax 1.0.1
 
