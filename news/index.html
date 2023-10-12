@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">wildRtrax</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,6 +35,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.1.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.1</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 0.1.0</h6>
@@ -57,10 +58,27 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.1.0" id="wildrtrax-110">wildRtrax 1.1.0<a class="anchor" aria-label="anchor" href="#wildrtrax-110"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-1-1-0">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-1-1-0"></a></h3>
+<ul><li>
+<code>wildRtrax</code> now honours new WildTrax report structures. Future changes will incorporate standardized naming in syncing functions.</li>
+<li>Replaced geospatial functionalities from <code>rgdal</code>, <code>rgeos</code> and <code>maptools</code> with <code>sf</code>, <code>sp</code> and <code>terra</code> packages. Added functionality with the <code>suntools</code> package. Users should re-download the package by October 2023 in-line with the former package retirement: <a href="https://geocompx.org/post/2023/rgdal-retirement/" class="external-link uri">https://geocompx.org/post/2023/rgdal-retirement/</a>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-changes-1-1-0">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-1-1-0"></a></h3>
+<ul><li>Tweaks to <a href="https://abbiodiversity.github.io/wildRtrax/articles/acoustic-data-wrangling.html">Acoustic data wrangling</a> for (#16)</li>
+<li>Addition of geospatial assets. Users should be warned package size is now ~40 MB.</li>
+<li>Moved TMTT predictions from csv to .RDS file.</li>
+<li>Work flow repairs to <code><a href="../reference/wt_get_species.html">wt_get_species()</a></code> and <code><a href="../reference/wt_tidy_species.html">wt_tidy_species()</a></code> (#21)</li>
+<li>Replaced <code><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">utils::read.csv()</a></code> to <code><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">readr::read_csv()</a></code> in <code><a href="../reference/wt_download_report.html">wt_download_report()</a></code> (#20)</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.1" id="wildrtrax-101">wildRtrax 1.0.1<a class="anchor" aria-label="anchor" href="#wildrtrax-101"></a></h2>
 <ul><li>Patching API errors in <code><a href="../reference/wt_download_report.html">wt_download_report()</a></code>
 </li>
-<li>Adding additional articles on <a href="#acoustic-data-wrangling">acoustic data wrangling</a>
+<li>Adding additional articles on <a href="https://abbiodiversity.github.io/wildRtrax/articles/acoustic-data-wrangling.html">Acoustic data wrangling</a>
 </li>
 </ul></div>
     <div class="section level2">
@@ -89,10 +107,10 @@
 </ul></div>
 <div class="section level3">
 <h3 id="minor-improvements-and-bug-fixes-1-0-0">Minor improvements and bug fixes<a class="anchor" aria-label="anchor" href="#minor-improvements-and-bug-fixes-1-0-0"></a></h3>
-<ul><li>Moved <code>wt_run_ap</code> to <code>future_map</code> from <code>dopar</code> loop to lessen package dependencies</li>
+<ul><li>Moved <code><a href="../reference/wt_run_ap.html">wt_run_ap()</a></code> to <code><a href="https://furrr.futureverse.org/reference/future_map.html" class="external-link">furrr::future_map</a></code> from <code>dopar</code> loop to lessen package dependencies</li>
 <li>Quiet console output from <code><a href="../reference/wt_run_ap.html">wt_run_ap()</a></code> for Windows users</li>
 <li>Added a <code>NEWS.md</code> file to track changes to the package</li>
-<li>Renamed <code>wt_ind_det</code> to <code>wt_ind_detect</code>
+<li>Renamed <code>wt_ind_det</code> to <code><a href="../reference/wt_ind_detect.html">wt_ind_detect()</a></code>
 </li>
 </ul></div>
 <div class="section level3">
@@ -112,13 +130,13 @@
 <li>
 <strong>Camera</strong>
 <ul><li>
-<code>wt_ind_det</code>, <code>wt_summarise_cam</code>
+<code>wt_ind_det</code>, <code><a href="../reference/wt_summarise_cam.html">wt_summarise_cam()</a></code>
 </li>
 </ul></li>
 <li>
 <strong>Authorization and Download from WildTrax</strong>
 <ul><li>
-<code>wt_auth</code>, <code>wt_get_download_summary</code>, <code>wt_download_report</code>
+<code><a href="../reference/wt_auth.html">wt_auth()</a></code>, <code><a href="../reference/wt_get_download_summary.html">wt_get_download_summary()</a></code>, <code><a href="../reference/wt_download_report.html">wt_download_report()</a></code>
 </li>
 </ul></li>
 </ul></li>

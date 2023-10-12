@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">wildRtrax</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.1.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.1</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 0.1.0</h6>
@@ -170,7 +171,7 @@ e.g. <a href="https://www.wildtrax.ca/home/aru-tasks.html?projectId=605&amp;sen
 <code><a href="../reference/wt_get_download_summary.html">wt_get_download_summary()</a></code> and then filter by a substring in
 order to get the project ids to download the data.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Download all of the published A's Ecosystem Health ARU data to a single object</span></span>
+<code class="sourceCode R"><span><span class="co"># Download all of the published Ecosystem Health ARU data to a single object</span></span>
 <span><span class="va">eh_projects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_get_download_summary.html">wt_get_download_summary</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="st">"ARU"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^Ecosystem Health'</span>,<span class="va">project</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
@@ -194,6 +195,120 @@ by WildTrax.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>       <span style="text-decoration: underline;">4</span>795 4795         Caprini Tribe              MAMMALIA      Artiodactyla </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>       <span style="text-decoration: underline;">4</span>833 4833         Mustelidae Family          MAMMALIA      Carnivora    </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: species_scientific_name &lt;chr&gt;</span></span></span></code></pre></div>
+<p>WildTrax also pre-formats ARU to point count (PC) data depending on
+the type of analysis you wish to perform. See the <a href="https://borealbirds.ca/" class="external-link">Boreal Avian Modelling project</a>
+website and GitHub <a href="https://github.com/borealbirds" class="external-link">repositories</a> to find out more
+on integration of avian point count and ARU data.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># As point count format</span></span>
+<span><span class="va">aru_as_aru</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">379</span> , sensor_id <span class="op">=</span> <span class="st">'ARU'</span>, reports <span class="op">=</span> <span class="st">"main"</span>, weather_cols <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># As point count format</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">aru_as_aru</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   organization project_id location location_id location_buffer_m longitude</span></span>
+<span><span class="co">#&gt; 1         ABMI        379  1000-NE       65876              5500 -118.4387</span></span>
+<span><span class="co">#&gt; 2         ABMI        379  1000-NE       65876              5500 -118.4387</span></span>
+<span><span class="co">#&gt; 3         ABMI        379  1000-NE       65876              5500 -118.4387</span></span>
+<span><span class="co">#&gt; 4         ABMI        379  1000-NE       65876              5500 -118.4387</span></span>
+<span><span class="co">#&gt; 5         ABMI        379  1000-NE       65876              5500 -118.4387</span></span>
+<span><span class="co">#&gt; 6         ABMI        379  1000-NE       65876              5500 -118.4387</span></span>
+<span><span class="co">#&gt;   latitude equipment_make recording_id recording_date_time task_id</span></span>
+<span><span class="co">#&gt; 1  54.3164                      167189 2020-04-13 07:11:00  132503</span></span>
+<span><span class="co">#&gt; 2  54.3164                      167448 2020-04-17 08:32:00  132762</span></span>
+<span><span class="co">#&gt; 3  54.3164                      167448 2020-04-17 08:32:00  132762</span></span>
+<span><span class="co">#&gt; 4  54.3164                      167441 2020-04-25 00:00:00  132755</span></span>
+<span><span class="co">#&gt; 5  54.3164                      167303 2020-05-18 05:59:00  132617</span></span>
+<span><span class="co">#&gt; 6  54.3164                      167303 2020-05-18 05:59:00  132617</span></span>
+<span><span class="co">#&gt;   aru_task_status task_duration task_method species_code    species_common_name</span></span>
+<span><span class="co">#&gt; 1     Transcribed           60s        1SPM         LITF          Light traffic</span></span>
+<span><span class="co">#&gt; 2     Transcribed           60s        1SPM         LIWI             Light wind</span></span>
+<span><span class="co">#&gt; 3     Transcribed           60s        1SPM         MORA          Moderate rain</span></span>
+<span><span class="co">#&gt; 4     Transcribed           60s        1SPM         NONE                   NONE</span></span>
+<span><span class="co">#&gt; 5     Transcribed           60s        1SPM         WTSP White-throated Sparrow</span></span>
+<span><span class="co">#&gt; 6     Transcribed           60s        1SPM         YRWA  Yellow-rumped Warbler</span></span>
+<span><span class="co">#&gt;   species_scientific_name individual_order  tag_id individual_count</span></span>
+<span><span class="co">#&gt; 1                                        1 2002069                1</span></span>
+<span><span class="co">#&gt; 2                                        1 2026175                1</span></span>
+<span><span class="co">#&gt; 3                                        1 2026174                1</span></span>
+<span><span class="co">#&gt; 4                                       NA      NA                 </span></span>
+<span><span class="co">#&gt; 5  ZONOTRICHIA ALBICOLLIS                2 2025471                1</span></span>
+<span><span class="co">#&gt; 6      SETOPHAGA CORONATA                2 2025476                1</span></span>
+<span><span class="co">#&gt;   vocalization detection_time tag_duration rms_peak_dbfs tag_is_verified</span></span>
+<span><span class="co">#&gt; 1    Non-vocal          28.71        10.35        -37.36               f</span></span>
+<span><span class="co">#&gt; 2         Song           0.13         4.64        -38.77               f</span></span>
+<span><span class="co">#&gt; 3         Song           0.10         4.70        -38.68               f</span></span>
+<span><span class="co">#&gt; 4                          NA           NA            NA                </span></span>
+<span><span class="co">#&gt; 5         Song           6.65         3.95        -60.48               f</span></span>
+<span><span class="co">#&gt; 6         Song          27.83         1.55        -55.58               f</span></span>
+<span><span class="co">#&gt;   tag_rating                observer observer_id species_individual_comments</span></span>
+<span><span class="co">#&gt; 1         NA              Steve Enid         660                            </span></span>
+<span><span class="co">#&gt; 2         NA Christopher Moser-Purdy          37                            </span></span>
+<span><span class="co">#&gt; 3         NA Christopher Moser-Purdy          37                            </span></span>
+<span><span class="co">#&gt; 4         NA        Bronwyn Robinson         533                            </span></span>
+<span><span class="co">#&gt; 5         NA Christopher Moser-Purdy          37                            </span></span>
+<span><span class="co">#&gt; 6         NA Christopher Moser-Purdy          37                            </span></span>
+<span><span class="co">#&gt;   task_comments</span></span>
+<span><span class="co">#&gt; 1              </span></span>
+<span><span class="co">#&gt; 2              </span></span>
+<span><span class="co">#&gt; 3              </span></span>
+<span><span class="co">#&gt; 4              </span></span>
+<span><span class="co">#&gt; 5              </span></span>
+<span><span class="co">#&gt; 6</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># As ARU format</span></span>
+<span><span class="va">aru_as_pc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">379</span>, sensor_id <span class="op">=</span> <span class="st">'PC'</span>, reports <span class="op">=</span> <span class="st">"main"</span>, weather_cols <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># As point count format</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">aru_as_pc</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   organization               project project_id location location_id</span></span>
+<span><span class="co">#&gt; 1         ABMI Ecosystem Health 2020        379  1080-SE       69364</span></span>
+<span><span class="co">#&gt; 2         ABMI Ecosystem Health 2020        379  1377-NW       68714</span></span>
+<span><span class="co">#&gt; 3         ABMI Ecosystem Health 2020        379   998-SE       65855</span></span>
+<span><span class="co">#&gt; 4         ABMI Ecosystem Health 2020        379  1391-SE       65890</span></span>
+<span><span class="co">#&gt; 5         ABMI Ecosystem Health 2020        379   222-NE       90194</span></span>
+<span><span class="co">#&gt; 6         ABMI Ecosystem Health 2020        379  1146-SE       65843</span></span>
+<span><span class="co">#&gt;   location_buffer_m latitude longitude            survey_id</span></span>
+<span><span class="co">#&gt; 1              5500 53.66429 -114.5621 ARU_recording:167512</span></span>
+<span><span class="co">#&gt; 2              5500 51.90682 -115.3275 ARU_recording:168074</span></span>
+<span><span class="co">#&gt; 3              5500 54.34684 -119.1078 ARU_recording:167209</span></span>
+<span><span class="co">#&gt; 4              5500       NA        NA ARU_recording:167967</span></span>
+<span><span class="co">#&gt; 5              5500 58.74061 -117.1383 ARU_recording:212126</span></span>
+<span><span class="co">#&gt; 6              5500 53.27800 -114.4021 ARU_recording:167879</span></span>
+<span><span class="co">#&gt;            survey_date</span></span>
+<span><span class="co">#&gt; 1  2020-03-30 00:00:00</span></span>
+<span><span class="co">#&gt; 2  2020-03-30 00:00:00</span></span>
+<span><span class="co">#&gt; 3  2020-03-30 00:00:00</span></span>
+<span><span class="co">#&gt; 4  2020-03-30 00:00:00</span></span>
+<span><span class="co">#&gt; 5  2020-03-30 00:00:00</span></span>
+<span><span class="co">#&gt; 6  2020-03-30 07:46:00</span></span>
+<span><span class="co">#&gt;                                                               survey_url</span></span>
+<span><span class="co">#&gt; 1 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=132826</span></span>
+<span><span class="co">#&gt; 2 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=133388</span></span>
+<span><span class="co">#&gt; 3 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=132523</span></span>
+<span><span class="co">#&gt; 4 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=133281</span></span>
+<span><span class="co">#&gt; 5 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=181369</span></span>
+<span><span class="co">#&gt; 6 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=133193</span></span>
+<span><span class="co">#&gt;    observer survey_distance_method survey_duration_method detection_distance</span></span>
+<span><span class="co">#&gt; 1 ARU(c856)                 0m-INF                 0-1min             0m-INF</span></span>
+<span><span class="co">#&gt; 2 ARU(9234)                 0m-INF                 0-1min             0m-INF</span></span>
+<span><span class="co">#&gt; 3 ARU(9234)                 0m-INF                 0-1min             0m-INF</span></span>
+<span><span class="co">#&gt; 4 ARU(07c5)                 0m-INF                 0-1min             0m-INF</span></span>
+<span><span class="co">#&gt; 5 ARU(85a6)                 0m-INF                 0-1min             0m-INF</span></span>
+<span><span class="co">#&gt; 6 ARU(07c5)                 0m-INF                 0-1min             0m-INF</span></span>
+<span><span class="co">#&gt;   detection_time species_code species_common_name species_scientific_name</span></span>
+<span><span class="co">#&gt; 1         0-1min         DOGG        Domestic Dog  CANIS LUPUS FAMILIARIS</span></span>
+<span><span class="co">#&gt; 2                        NONE                NONE                        </span></span>
+<span><span class="co">#&gt; 3                        NONE                NONE                        </span></span>
+<span><span class="co">#&gt; 4                        NONE                NONE                        </span></span>
+<span><span class="co">#&gt; 5                        NONE                NONE                        </span></span>
+<span><span class="co">#&gt; 6         0-1min         DOGG        Domestic Dog  CANIS LUPUS FAMILIARIS</span></span>
+<span><span class="co">#&gt;   individual_count detection_heard detection_seen     detection_comments</span></span>
+<span><span class="co">#&gt; 1                1               t              f                       </span></span>
+<span><span class="co">#&gt; 2                                f              f                       </span></span>
+<span><span class="co">#&gt; 3                                f              f                       </span></span>
+<span><span class="co">#&gt; 4                                f              f                       </span></span>
+<span><span class="co">#&gt; 5                                f              f No wildlife detections</span></span>
+<span><span class="co">#&gt; 6                1               t              f</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

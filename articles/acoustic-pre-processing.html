@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">wildRtrax</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.1.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.1</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 0.1.0</h6>
@@ -110,6 +111,12 @@ amplitude thresholds</li>
 <li>
 <code><a href="../reference/wt_chop.html">wt_chop()</a></code> divides a large audio file into shorter
 segments</li>
+<li>
+<code><a href="../reference/wt_make_aru_tasks.html">wt_make_aru_tasks()</a></code>, <code><a href="../reference/wt_songscope_tags.html">wt_songscope_tags()</a></code>
+and <code><a href="../reference/wt_kaleidoscope_tags.html">wt_kaleidoscope_tags()</a></code> allow you to link media to tasks
+and to generate tags from recognizer or classifier results from <a href="https://www.wildlifeacoustics.com/resources/faqs/song-scope-is-no-longer-supported" class="external-link">Songscope</a>
+and <a href="https://www.wildlifeacoustics.com/products/kaleidoscope-pro" class="external-link">Kaleidoscope</a>
+</li>
 </ul>
 <div class="section level3">
 <h3 id="scanning-audio-files-from-a-directory">Scanning audio files from a directory<a class="anchor" aria-label="anchor" href="#scanning-audio-files-from-a-directory"></a>
@@ -118,8 +125,10 @@ segments</li>
 (either wac, wav or flac format) from a local directory and outputs
 useful metadata.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Scan data</span></span>
+<code class="sourceCode R"><span><span class="co"># Plan futures</span></span>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="va">multisession</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Scan data</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.exists</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="../reference/wt_audio_scanner.html">wt_audio_scanner</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">"."</span>, file_type <span class="op">=</span> <span class="st">"wav"</span>, extra_cols <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
@@ -174,11 +183,19 @@ et al., 2018)</a>.</p>
 <code class="sourceCode R"><span><span class="co"># Use the wt_* tibble to execute the AP on the files</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/wt_run_ap.html">wt_run_ap</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">my_files</span>, output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">root</span>, <span class="st">'ap_outputs'</span><span class="op">)</span>, path_to_ap <span class="op">=</span> <span class="st">'/where/you/store/AP'</span><span class="op">)</span></span></code></pre></div>
-<p>The use <code><a href="../reference/wt_glean_ap.html">wt_glean_ap()</a></code> to plot the acoustic index and
+<p>Then use <code><a href="../reference/wt_glean_ap.html">wt_glean_ap()</a></code> to plot the acoustic index and
 long-duration false-colour spectrogram (LDFC) results.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">wt_glean_ap</span>()</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="co"># This example is from ABMI's Ecosystem Health Monitoring program</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> my_files <span class="ot">&lt;-</span> <span class="fu">wt_audio_scanner</span>(<span class="st">".../ABMI-986-SE"</span>, <span class="at">file_type =</span> <span class="st">"wav"</span>, <span class="at">extra_cols =</span> )</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="er">&gt;</span> <span class="fu">wt_glean_ap</span>(my_files <span class="sc">%&gt;%</span> </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>                <span class="fu">mutate</span>(<span class="at">hour =</span> lubridate<span class="sc">::</span><span class="fu">hour</span>(recording_date_time)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>                <span class="fu">filter</span>(<span class="fu">between</span>(julian,<span class="dv">110</span>,<span class="dv">220</span>),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="sc">+</span>                       hour <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">3</span>,<span class="dv">22</span><span class="sc">:</span><span class="dv">23</span>)), <span class="at">input_dir =</span> <span class="st">".../ap_outputs"</span>, <span class="at">purpose =</span> <span class="st">"biotic"</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> </span></code></pre></div>
+<p><img src="986-se-indices.png"></p>
+<p><img src="986-se.png"></p>
 </div>
 <div class="section level3">
 <h3 id="applying-a-limited-amplitude-filter">Applying a limited amplitude filter<a class="anchor" aria-label="anchor" href="#applying-a-limited-amplitude-filter"></a>
@@ -213,19 +230,50 @@ sounds that exceed a certain amplitude threshold.</p>
 <p>Make tasks at any time using a <code>wt_*</code> standard data set
 with <code><a href="../reference/wt_make_aru_tasks.html">wt_make_aru_tasks()</a></code>.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/wt_make_aru_tasks.html">wt_make_aru_tasks</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">files</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="op">-</span><span class="va">file_path</span><span class="op">)</span>, task_method <span class="op">=</span> <span class="st">"1SPT"</span>, task_length <span class="op">=</span> <span class="fl">180</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/wt_make_aru_tasks.html">wt_make_aru_tasks</a></span><span class="op">(</span>input <span class="op">=</span> <span class="va">files</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">file_path</span><span class="op">)</span>, task_method <span class="op">=</span> <span class="st">"1SPT"</span>, task_length <span class="op">=</span> <span class="fl">180</span><span class="op">)</span></span></code></pre></div>
 <p>The function <code><a href="../reference/wt_songscope_tags.html">wt_songscope_tags()</a></code> reformats the output
 obtained from a Wildlife Acoustics Songscope recognizer. This
 transformation involves converting the recognizer tags into tags that do
 not have a method type. This makes it possible to upload each hit as a
-tag in a task.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="sc">&gt;</span> <span class="fu">wt_songscope_tags</span>()</span></code></pre></div>
-<p>Similarly, the function <code><a href="../reference/wt_kaleidoscope_tags.html">wt_kaleidoscope_tags()</a></code> performs
-the same reformatting process, but with Kaleidoscope instead. It is
-worth noting that this function targeted for sonic and ultrasonic
-species upload.</p>
+tag in a task. Similarly, the function
+<code><a href="../reference/wt_kaleidoscope_tags.html">wt_kaleidoscope_tags()</a></code> performs the same reformatting
+process, but with Kaleidoscope instead. It is worth noting that this
+function targeted for sonic and ultrasonic species upload.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Convert Songscope output into WildTrax tags</span></span>
+<span><span class="fu"><a href="../reference/wt_songscope_tags.html">wt_songscope_tags</a></span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"env"</span>, <span class="st">"csv"</span><span class="op">)</span>,</span>
+<span>  my_output_file <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">species_code</span>,</span>
+<span>  <span class="va">vocalization_type</span>,</span>
+<span>  <span class="va">score_filter</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"USPM"</span>, <span class="st">"1SPT"</span><span class="op">)</span>,</span>
+<span>  <span class="va">task_length</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Convert Kaleidoscope output into WildTrax tags</span></span>
+<span><span class="fu"><a href="../reference/wt_kaleidoscope_tags.html">wt_kaleidoscope_tags</a></span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>,</span>
+<span>  <span class="va">tz</span>, </span>
+<span>  freq_bump <span class="op">=</span> <span class="cn">T</span><span class="op">)</span> <span class="co"># Add a frequency buffer to the tag, e.g. 20000 kHz</span></span></code></pre></div>
+<p>If you’ve already uploaded recordings to WildTrax, scan your media
+using <code><a href="../reference/wt_audio_scanner.html">wt_audio_scanner()</a></code> and a relative folder path.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/wt_kaleidoscope_tags.html">wt_kaleidoscope_tags</a></span><span class="op">(</span>input <span class="op">=</span> <span class="st">"SML182.txt"</span>, <span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">my_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_audio_scanner.html">wt_audio_scanner</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">'/my/BigGrid/files'</span>, file_type <span class="op">=</span> <span class="st">'all'</span>, extra_cols <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<p>And then download the project data you wish to compare it to:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_projects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_get_download_summary.html">wt_get_download_summary</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="st">'ARU'</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'Big Grids'</span>,<span class="va">project</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="co"># Customized as needed</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span>.x <span class="op">=</span> <span class="va">project_id</span>, .f <span class="op">=</span> <span class="op">~</span><span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="va">.x</span>, sensor_id <span class="op">=</span> <span class="st">'ARU'</span>, weather_cols <span class="op">=</span> <span class="cn">F</span>, reports <span class="op">=</span> <span class="st">'main'</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Alternatively, go to WildTrax to Organization &gt; Recordings &gt;
+Manage &gt; Download Recordings to get a list of all recordings. Then
+either filter out or do an anti-join on <code>location</code> and
+<code>recording_date_time</code>. That should give you the remaining
+list of media that has not been processed or uploaded to WildTrax
+yet.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
