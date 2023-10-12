@@ -2,14 +2,14 @@
 # CITATION file created with {cffr} R package, v0.5.0
 # See also: https://docs.ropensci.org/cffr/
 # -----------------------------------------------------------
- 
+
 cff-version: 1.2.0
 message: 'To cite package "wildRtrax" in publications use:'
 type: software
 license: MIT
 title: 'wildRtrax: Environmental sensor data management and analytics to and from
   WildTrax'
-version: 1.0.1
+version: 1.1.0
 abstract: wildRtrax is an R package that enables environmental sensor data users to
   create comprehensive work flows for managing and analyzing data.
 authors:

@@ -67,13 +67,6 @@ wt_get_download_summary <- function(sensor_id) {
                      project = fullNm, project_id = id, sensor = sensorId, tasks, status) |>
     mutate(across(everything(), unlist))
 
-  if(sensor_id == "PC") {
-    x <- x |> filter(sensor == "PC")
-    return(x)
-  } else {
-    return(x)
-  }
-
 }
 
 #' Download Reports
@@ -349,7 +342,7 @@ wt_get_species <- function(){
     species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
   )
 
-  message("Successfully downloaded the species table! Use wt_tidy_species to filter species from the list.")
+  message("Successfully downloaded the species table!")
 
  return(spp_table)
 
