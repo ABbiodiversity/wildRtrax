@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
   comment = '#>'
 )
 
-load("book.RData")
+load("package.RData")
 ```
 
 ```{r setup, echo=FALSE, include=FALSE, eval=TRUE}
@@ -33,7 +33,7 @@ library(tidyverse)
 # Start by getting everything you need
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
-my_report <- wt_download_report(project_id = 379, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
 ```
 

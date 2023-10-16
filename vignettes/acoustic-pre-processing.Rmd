@@ -25,7 +25,7 @@ library(wildRtrax)
 library(tidyverse)
 
 # Set the directory path
-load("book.RData")
+load("package.RData")
 #save.image("book.RData")
 
 ```
@@ -155,6 +155,8 @@ wt_kaleidoscope_tags(
   output,
   tz, 
   freq_bump = T) # Add a frequency buffer to the tag, e.g. 20000 kHz
+
+songscope_tags
 
 ```
 
