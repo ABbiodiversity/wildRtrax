@@ -2,7 +2,7 @@
 # CITATION file created with {cffr} R package, v0.5.0
 # See also: https://docs.ropensci.org/cffr/
 # -----------------------------------------------------------
-
+ 
 cff-version: 1.2.0
 message: 'To cite package "wildRtrax" in publications use:'
 type: software
@@ -286,20 +286,6 @@ references:
     email: hadley@rstudio.com
   year: '2023'
 - type: software
-  title: sp
-  abstract: 'sp: Classes and Methods for Spatial Data'
-  notes: Imports
-  url: https://github.com/edzer/sp/
-  repository: https://CRAN.R-project.org/package=sp
-  authors:
-  - family-names: Pebesma
-    given-names: Edzer
-    email: edzer.pebesma@uni-muenster.de
-  - family-names: Bivand
-    given-names: Roger
-    email: Roger.Bivand@nhh.no
-  year: '2023'
-- type: software
   title: purrr
   abstract: 'purrr: Functional Programming Tools'
   notes: Imports
@@ -369,25 +355,25 @@ references:
     given-names: Caroline
   year: '2023'
 - type: software
-  title: maptools
-  abstract: 'maptools: Tools for Handling Spatial Objects'
+  title: suntools
+  abstract: 'suntools: Calculate Sun Position, Sunrise, Sunset, Solar Noon and Twilight'
   notes: Imports
-  url: https://r-forge.r-project.org/projects/maptools/
-  repository: https://CRAN.R-project.org/package=maptools
+  url: https://github.com/adokter/suntools/
+  repository: https://CRAN.R-project.org/package=suntools
   authors:
   - family-names: Bivand
     given-names: Roger
     email: Roger.Bivand@nhh.no
     orcid: https://orcid.org/0000-0003-2392-6140
-  - family-names: Lewin-Koh
-    given-names: Nicholas
+  - family-names: Luque
+    given-names: Sebastian
   year: '2023'
 - type: software
-  title: raster
-  abstract: 'raster: Geographic Data Analysis and Modeling'
+  title: terra
+  abstract: 'terra: Spatial Data Analysis'
   notes: Imports
-  url: https://rspatial.org/raster
-  repository: https://CRAN.R-project.org/package=raster
+  url: https://rspatial.org/
+  repository: https://CRAN.R-project.org/package=terra
   authors:
   - family-names: Hijmans
     given-names: Robert J.

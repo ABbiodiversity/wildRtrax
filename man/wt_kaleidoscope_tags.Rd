@@ -2,7 +2,7 @@
 % Please edit documentation in R/acoustic-pre-processing.R
 \name{wt_kaleidoscope_tags}
 \alias{wt_kaleidoscope_tags}
-\title{Upload hits from a Wildlife Acoustics classifier}
+\title{Convert Kaleidoscope output to tags}
 \usage{
 wt_kaleidoscope_tags(input, output, tz, freq_bump = T)
 }
@@ -21,10 +21,6 @@ A csv formatted as a WildTrax tag template
 \description{
 \code{wt_kaleidoscope_tags} Takes the classifier output from Wildlife Acoustics Kaleidoscope and converts them into a WildTrax tag template for upload
 }
-\section{\code{wt_kaleidoscope_tags}}{
-NA
-}
-
 \examples{
 \dontrun{
 wt_kaleidoscope_tags(input = input.csv, output = tags.csv, tz = "", freq_bump = T)

@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="index.html">wildRtrax</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,6 +59,7 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.1.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.1</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 0.1.0</h6>
@@ -94,7 +95,7 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install version 1.0 of <code>wildRtrax</code> directly from this repository with:</p>
+<p>You can install version 1.1.0 of <code>wildRtrax</code> directly from this repository with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"ABbiodiversity/wildRtrax"</span><span class="op">)</span></span></code></pre></div>
@@ -110,7 +111,7 @@
 <li>Pre-process acoustic data
 <ul>
 <li>
-<code><a href="reference/wt_audio_scanner.html">wt_audio_scanner()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_audio_scanner.html">wt_audio_scanner()</a></code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 <li>
 <code><a href="reference/wt_run_ap.html">wt_run_ap()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
@@ -122,10 +123,10 @@
 <code><a href="reference/wt_signal_level.html">wt_signal_level()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
 </li>
 <li>
-<code><a href="reference/wt_chop.html">wt_chop()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_chop.html">wt_chop()</a></code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 <li>
-<code><a href="reference/wt_make_aru_tasks.html">wt_make_aru_tasks()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_make_aru_tasks.html">wt_make_aru_tasks()</a></code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 <li>
 <code><a href="reference/wt_songscope_tags.html">wt_songscope_tags()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
@@ -154,7 +155,7 @@
 <code><a href="reference/wt_get_species.html">wt_get_species()</a></code> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 <li>
-<code><a href="reference/wt_download_tags.html">wt_download_tags()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
+<code><a href="reference/wt_download_tags.html">wt_download_tags()</a></code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 </ul>
 </li>
@@ -180,7 +181,7 @@
 <code><a href="reference/wt_replace_tmtt.html">wt_replace_tmtt()</a></code> <span class="emoji" data-emoji="sound">🔉</span>
 </li>
 <li>
-<code><a href="reference/wt_make_wide.html">wt_make_wide()</a></code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="camera">📷</span> <span class="emoji" data-emoji="bird">🐦</span> <span class="emoji" data-emoji="bat">🦇</span>
+<code><a href="reference/wt_make_wide.html">wt_make_wide()</a></code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span> <span class="emoji" data-emoji="bat">🦇</span>
 </li>
 <li>
 <code><a href="reference/wt_format_occupancy.html">wt_format_occupancy()</a></code> <span class="emoji" data-emoji="sound">🔉</span> <span class="emoji" data-emoji="bird">🐦</span>
@@ -202,14 +203,13 @@
 </h2>
 <ul>
 <li>
-<code>wildRtrax</code> is authored and created by <a href="https://github.com/agmacpha" class="external-link">Alexander G. MacPhail</a>, created and maintained by <a href="https://github.com/mabecker89" class="external-link">Marcus Becker</a> and created by <a href="https://github.com/ecknight" class="external-link">Dr. Elly Knight</a>. The <a href="http://https://abmi.ca/home.html" class="external-link">Alberta Biodiversity Monitoring Institute</a> provides ongoing support, development and funding for the package.</li>
-<li>Many thanks to <a href="https://richardwhedley.wordpress.com/" class="external-link">Dr. Richard Hedley</a> for providing the basis for the <code><a href="reference/wt_wac_info.html">wt_wac_info()</a></code> internal function for <em>wac</em> file support</li>
+<code>wildRtrax</code> is authored, created and maintained by <a href="https://github.com/agmacpha" class="external-link">Alexander G. MacPhail</a> and <a href="https://github.com/mabecker89" class="external-link">Marcus Becker</a>, with significant contributions from <a href="https://github.com/ecknight" class="external-link">Dr. Elly Knight</a> and <a href="https://richardwhedley.wordpress.com/" class="external-link">Dr. Richard Hedley</a>. We encourage ongoing contributions and collaborations to improve the package into the future. The <a href="https://abmi.ca" class="external-link">Alberta Biodiversity Monitoring Institute</a> provides ongoing support, development and funding.</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
 </h2>
-<p>This R package is licensed under <a href="https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE" class="external-link">MIT license</a>© 2023 Marcus Becker, Alex MacPhail, Elly Knight and the <a href="http://https://abmi.ca/home.html" class="external-link">Alberta Biodiversity Monitoring Institute</a>.</p>
+<p>This R package is licensed under <a href="https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE" class="external-link">MIT license</a>© 2023 Marcus Becker, Alex MacPhail, Elly Knight and the <a href="https://abmi.ca" class="external-link">Alberta Biodiversity Monitoring Institute</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>

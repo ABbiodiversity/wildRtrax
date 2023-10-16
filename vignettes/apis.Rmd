@@ -57,12 +57,12 @@ Using the project_id number in the download summary you can then use `wt_downloa
 
 ```{r echo=TRUE, include=TRUE, eval=F, warning = FALSE, message = FALSE}
 # Download the project report
-my_report <- wt_download_report(project_id = 379, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
 ```
 ```{r echo=F, include=F, eval=T, warning = FALSE, message = FALSE}
 # Download the project report
-my_report <- wt_download_report(project_id = 379, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
 ```
 ```{r}
@@ -95,3 +95,33 @@ spp_table <- wt_get_species()
 head(spp_table)
 
 ```
+
+WildTrax also pre-formats ARU to point count (PC) data depending on the type of analysis you wish to perform. See the [Boreal Avian Modelling project](https://borealbirds.ca/) website and GitHub [repositories](https://github.com/borealbirds) to find out more on integration of avian point count and ARU data.
+
+```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
+# As point count format
+aru_as_aru <- wt_download_report(project_id = 605 , sensor_id = 'ARU', reports = "main", weather_cols = F)
+```
+```{r, echo=F, include=F, eval=T, warning=F, message = FALSE}
+# As point count format
+aru_as_aru <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F)
+```
+```{r}
+# As point count format
+head(aru_as_aru)
+
+```
+```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
+# As ARU format
+aru_as_pc <- wt_download_report(project_id = 605, sensor_id = 'PC', reports = "main", weather_cols = F)
+```
+```{r, echo=F, include=F, eval=T, warning=F, message = FALSE}
+# As ARU format
+aru_as_pc <- wt_download_report(project_id = 605, sensor_id = 'PC', reports = "main", weather_cols = F)
+```
+```{r}
+# As point count format
+head(aru_as_pc)
+
+```
+
