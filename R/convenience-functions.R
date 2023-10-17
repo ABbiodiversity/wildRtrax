@@ -420,7 +420,7 @@ wt_format_occupancy <- function(data,
 #' }
 #' @return An object of class unmarkedFrameOccu. See `unmarked::unmarkedFrameOccu` for details.
 
-wt_qpad_offsets <- function(data, species = "all", version = 3, together=TRUE){
+wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=TRUE){
 
   #Make prediction object
   cat("Extracting covariates for offset calculation - be patient")
@@ -431,7 +431,7 @@ wt_qpad_offsets <- function(data, species = "all", version = 3, together=TRUE){
   load_BAM_QPAD(version)
 
   #Make the species list
-  if(species=="all") spp <- sort(intersect(getBAMspecieslist(), colnames(data))) else spp <- species
+  if("all" %in% species) spp <- sort(intersect(getBAMspecieslist(), colnames(data))) else spp <- species
 
   #Set up the offset loop
   cat("\nCalculating offsets")
@@ -440,7 +440,7 @@ wt_qpad_offsets <- function(data, species = "all", version = 3, together=TRUE){
 
   #Make the offsets
   for (i in 1:length(spp)){
-    cat(spp[i], "\n")
+    cat("\n", spp[i])
     o <- .make_off(spp[i], x)
     off[,i] <- o$offset
   }
