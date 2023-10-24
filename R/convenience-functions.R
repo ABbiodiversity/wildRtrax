@@ -248,7 +248,7 @@ wt_make_wide <- function(data, sound="all"){
   wide <- summed %>%
     mutate(individual_count = case_when(grepl('^C',individual_count) ~ NA_real_, TRUE ~ as.numeric(individual_count))) %>%
     filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
-    pivot_wider(id_cols = organization:species_common_name,
+    pivot_wider(id_cols = organization:task_method,
                 names_from = "species_code",
                 values_from = "individual_count",
                 values_fn = sum,
