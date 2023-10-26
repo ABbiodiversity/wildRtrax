@@ -386,11 +386,12 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
 
   if (clip_type == "audio") {
 
-    input_audio_only <- input_data %>%
-      select(organization, location, recording_date_time, species_code, individual_order, detection_time, clip_url) %>%
+    input_audio_only <- bcrws %>%
+      mutate(file_type = tools::file_ext(clip_url)) %>%
+      select(organization, location, recording_date_time, species_code, individual_order, detection_time, clip_url, file_type) %>%
       mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
       # Create the local file name
-      mutate(clip_file_name = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".mp3"))
+      mutate(clip_file_name = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".",file_type))
 
     input_audio_only %>%
       furrr::future_walk2(.x = .$clip_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
@@ -413,11 +414,12 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
   } else if (clip_type == "spectrogram" & clip_type == "audio") {
 
     input_both <- input_data %>%
+      mutate(file_type = tools::file_ext(clip_url)) %>%
       select(organization, location, recording_date_time, species_code, individual_order, detection_time, tag_spectrogram_url, clip_url) %>%
       mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
       # Create the local file name
       mutate(clip_file_name_spec = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".jpeg"))
-      mutate(clip_file_name_audio = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".mp3"))
+      mutate(clip_file_name_audio = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".",file_type))
 
     #Download spec first
     input_both %>%
