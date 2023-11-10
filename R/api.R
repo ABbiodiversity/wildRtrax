@@ -369,9 +369,7 @@ wt_get_species <- function(){
 #'
 #' @return An organized folder of clips and tags in the output directory. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
 
-wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")) {
-
-  future::multisession()
+wt_download_tags_new <- function(input, output, clip_type = c("spectrogram","audio")) {
 
   input_data <- input
 
@@ -386,7 +384,7 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
 
   if (clip_type == "audio") {
 
-    input_audio_only <- bcrws %>%
+    input_audio_only <- input_data %>%
       mutate(file_type = tools::file_ext(clip_url)) %>%
       select(organization, location, recording_date_time, species_code, individual_order, detection_time, clip_url, file_type) %>%
       mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
@@ -423,7 +421,7 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
 
     #Download spec first
     input_both %>%
-     furrr::future_walk2(.x = .$tag_spectrogram_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+      furrr::future_walk2(.x = .$tag_spectrogram_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
 
     input_both %>%
       furrr::future_walk2(.x = .$tag_clip_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
