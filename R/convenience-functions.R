@@ -98,6 +98,17 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 
 wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE){
 
+  #check if it's ARU data
+  if(!"recording_date_time" %in% colnames(data)){
+
+    #Translate point count field names
+    data <- .pc_to_aru(data)
+
+    #Flag that it's point count data
+    pc <- TRUE
+
+  } else { pc <- FALSE }
+
   #Convert to the sql database labels for species class
   remove <- case_when(remove=="mammal" ~ "MAMMALIA",
                       remove=="amphibian" ~ "AMPHIBIA",
@@ -127,6 +138,11 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 
     filtered.sp <- dplyr::filter(filtered, species_code!="NONE")
 
+    #Translate point count field names back
+    if(pc==TRUE){
+      filtered.sp <- .aru_to_pc((filtered.sp))
+    }
+
     return(filtered.sp)
   }
 
@@ -145,7 +161,12 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 
     #add to the filtered data
     filtered.none <- suppressMessages(full_join(filtered, none)) %>%
-      arrange(organization, project_id, location, recording_date_time, detection_time, individual_order)
+      arrange(organization, project_id, location, recording_date_time)
+
+    #Translate point count field names back
+    if(pc==TRUE){
+      filtered.none <- .aru_to_pc((filtered.none))
+    }
 
     #return the filtered object with nones added
     return(filtered.none)
@@ -170,6 +191,11 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 #' @return A dataframe identical to input with 'TMTT' entries in the abundance column replaced by integer values.
 
 wt_replace_tmtt <- function(data, calc="round"){
+
+  #check if it's ARU data
+  if(!"recording_date_time" %in% colnames(data)){
+    stop("The `wt_replace_tmmtt` function only works on data from the ARU sensor")
+  }
 
   #load tmtt lookup table
   .tmtt <- readRDS(system.file("extdata", "tmtt_predictions.rds", package="wildRtrax"))
