@@ -96,7 +96,7 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
-wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "insect", "bird", "unknown"), zerofill = TRUE){
+wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE){
 
   dat <- data
 
