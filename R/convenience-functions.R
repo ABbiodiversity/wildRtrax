@@ -98,8 +98,6 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 
 wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE){
 
-  dat <- data
-
   #Convert to the sql database labels for species class
   remove <- case_when(remove=="mammal" ~ "MAMMALIA",
                       remove=="amphibian" ~ "AMPHIBIA",
@@ -108,7 +106,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
                       remove=="bird" ~ "AVES",
                       !is.na(remove) ~ remove)
 
-  options(warn=-1)
+  options(warn=-2)
   .species <- wt_get_species()
   options(warn=0)
 
@@ -124,7 +122,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
   }
 
   #Remove those codes from the data
-  filtered <- dplyr::filter(dat, !species_code %in% species.remove$species_code)
+  filtered <- dplyr::filter(data, !species_code %in% species.remove$species_code)
 
   #if you don't need nones, remove other NONEs & return the filtered object
   if(zerofill==FALSE){
@@ -138,8 +136,8 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
   if(zerofill==TRUE){
 
     #first identify the unique visits (replace this with task_id in the future)
-    visit <- dat %>%
-      dplyr::select(-species_code, -species_common_name, -individual_order, -detection_time, -vocalization, -individual_count, -species_individual_comments, -tag_is_verified) %>%
+    visit <- data %>%
+      dplyr::select(organization, project_id, location_id, recording_date_time, task_id) %>%
       unique()
 
     #see if there are any that have been removed
