@@ -108,7 +108,9 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
                       remove=="bird" ~ "AVES",
                       !is.na(remove) ~ remove)
 
+  options(warn=-1)
   .species <- wt_get_species()
+  options(warn=0)
 
   #Get the species codes for what you want to filter out
   species.remove <- .species %>%
