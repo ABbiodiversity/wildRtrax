@@ -4,7 +4,7 @@
 \alias{wt_format_occupancy}
 \title{Format WildTrax report for occupancy modelling.}
 \usage{
-wt_format_occupancy(data, species, siteCovs = NULL)
+wt_format_occupancy(data, species, siteCovs = NULL, sensor = "ARU")
 }
 \arguments{
 \item{data}{Summary report of WildTrax observations from the \code{wt_download_report()} function. Currently only functioning for the ARU sensor.}
@@ -12,6 +12,8 @@ wt_format_occupancy(data, species, siteCovs = NULL)
 \item{species}{Character; four-letter alpha code for the species desired for occupancy modelling.}
 
 \item{siteCovs}{Optional dataframe of site covariates. Must contain a column with the same values as the location field in the data, with one row per unique value of location (i.e., one row per site).}
+
+\item{sensor}{Character; can be one of "ARU" or "PC"}
 }
 \value{
 An object of class unmarkedFrameOccu. See \code{?unmarked::unmarkedFrameOccu} for details.

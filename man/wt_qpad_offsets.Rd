@@ -4,7 +4,13 @@
 \alias{wt_qpad_offsets}
 \title{Get QPAD offsets}
 \usage{
-wt_qpad_offsets(data, species = c("all"), version = 3, together = TRUE)
+wt_qpad_offsets(
+  data,
+  species = c("all"),
+  version = 3,
+  together = FALSE,
+  sensor = "ARU"
+)
 }
 \arguments{
 \item{data}{Dataframe output from the \code{wt_make_wide()} function.}
@@ -14,6 +20,8 @@ wt_qpad_offsets(data, species = c("all"), version = 3, together = TRUE)
 \item{version}{Numeric; version of QPAD offsets to use (2, or 3). Defaults to 3.}
 
 \item{together}{Logical; whether or not offsets should be bound to the input dataframe or returned as a separate object.}
+
+\item{sensor}{Character; can be one of "ARU" or "PC"}
 }
 \value{
 An object of class unmarkedFrameOccu. See \code{unmarked::unmarkedFrameOccu} for details.
