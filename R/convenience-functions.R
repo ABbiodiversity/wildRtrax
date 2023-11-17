@@ -85,6 +85,7 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
 #' @param remove Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "unknown"). Defaults to retaining bird group only.
 #' @param zerofill Logical; indicates if zerofilling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
+#' @param sensor Character; can be one of "ARU" or "PC"
 #' @import dplyr
 #' @export
 #'
@@ -96,18 +97,17 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
-wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"), zerofill = TRUE){
+wt_tidy_species <- function(data,
+                            remove = c("mammal", "amphibian", "abiotic", "insect", "unknown"),
+                            zerofill = TRUE,
+                            sensor = "ARU"){
 
-  #check if it's ARU data
-  if(!"recording_date_time" %in% colnames(data)){
-
-    #Translate point count field names
-    data <- .pc_to_aru(data)
-
-    #Flag that it's point count data
-    pc <- TRUE
-
-  } else { pc <- FALSE }
+  #Rename fields if PC
+  if(sensor=="PC"){
+    data <- data %>%
+      rename(task_id=survey_id,
+             recording_date_time = survey_date)
+  }
 
   #Convert to the sql database labels for species class
   remove <- case_when(remove=="mammal" ~ "MAMMALIA",
@@ -139,8 +139,10 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
     filtered.sp <- dplyr::filter(filtered, species_code!="NONE")
 
     #Translate point count field names back
-    if(pc==TRUE){
-      filtered.sp <- .aru_to_pc((filtered.sp))
+    if(sensor=="PC"){
+      filtered.sp <- filtered.sp %>%
+        rename(survey_id=task_id,
+               survey_date = recording_date_time)
     }
 
     return(filtered.sp)
@@ -164,8 +166,10 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
       arrange(organization, project_id, location, recording_date_time)
 
     #Translate point count field names back
-    if(pc==TRUE){
-      filtered.none <- .aru_to_pc((filtered.none))
+    if(sensor=="PC"){
+      filtered.none <- filtered.none %>%
+        rename(survey_id=task_id,
+               survey_date = recording_date_time)
     }
 
     #return the filtered object with nones added
@@ -234,7 +238,8 @@ wt_replace_tmtt <- function(data, calc="round"){
 #' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values. This function is best preceded by the`wt_tidy_species` and `wt_replace_tmtt` functions  to ensure 'TMTT' and amphibian calling index values are not converted to zeros.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
-#' @param sound Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).
+#' @param sound Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering). Note this functionality is only available for the ARU sensor.
+#' @param sensor Character; can be one of "ARU" or "PC"
 #' @import dplyr
 #' @export
 #'
@@ -246,44 +251,59 @@ wt_replace_tmtt <- function(data, calc="round"){
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
-wt_make_wide <- function(data, sound="all"){
+wt_make_wide <- function(data, sound="all", sensor="ARU"){
 
-  #Filter to first detection per individual
-  summed <- data %>%
-    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, individual_order) %>%
-    mutate(first = max(detection_time)) %>%
-    ungroup() %>%
-    dplyr::filter(detection_time==first)
+  #Steps for ARU data
+  if(sensor=="ARU"){
 
-  #Remove undesired sound types
-  if(!"all" %in% sound){
+    #Filter to first detection per individual
+    summed <- data %>%
+      group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, individual_order) %>%
+      mutate(first = max(detection_time)) %>%
+      ungroup() %>%
+      dplyr::filter(detection_time==first)
 
-    #Sigh, make it title case
-    sound <- str_to_title(sound)
+    #Remove undesired sound types
+    if(!"all" %in% sound){
 
-    #Filter
-    summed <- dplyr::filter(summed, vocalization %in% sound)
+      #Sigh, make it title case
+      sound <- str_to_title(sound)
+
+      #Filter
+      summed <- dplyr::filter(summed, vocalization %in% sound)
+
+    }
+
+    #Make it wide
+    wide <- summed %>%
+      mutate(individual_count = case_when(grepl('^C',individual_count) ~ NA_real_,
+                                          TRUE ~ as.numeric(individual_count))) %>%
+      filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
+      pivot_wider(id_cols = organization:task_method,
+                  names_from = "species_code",
+                  values_from = "individual_count",
+                  values_fn = sum,
+                  values_fill = 0,
+                  names_sort = TRUE)
 
   }
 
-  #Make it wide
-  #TO DO: COME BACK TO THE ERROR HANDLING
-  #  options(warn=-1)
-  wide <- summed %>%
-    mutate(individual_count = case_when(grepl('^C',individual_count) ~ NA_real_, TRUE ~ as.numeric(individual_count))) %>%
-    filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
-    pivot_wider(id_cols = organization:task_method,
-                names_from = "species_code",
-                values_from = "individual_count",
-                values_fn = sum,
-                values_fill = 0,
-                names_sort = TRUE)
-  #  options(warn=0)
+  #Steps for point count data
+  if(sensor=="PC"){
 
-  #Warn about NAs in the data
-  # if(!is.na(warnings(wide))){
-  #   warning('Non-numeric values in abundance field have been converted to zeros')
-  # }
+    #Make it wide and return field names to point count format
+    wide <- data %>%
+      mutate(individual_count = case_when(grepl('^C',individual_count) ~ NA_real_,
+                                          TRUE ~ as.numeric(individual_count))) %>%
+      filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
+      pivot_wider(id_cols = organization:survey_duration_method,
+                  names_from = "species_code",
+                  values_from = "individual_count",
+                  values_fn = sum,
+                  values_fill = 0,
+                  names_sort = TRUE)
+
+    }
 
   return(wide)
 
@@ -296,6 +316,7 @@ wt_make_wide <- function(data, sound="all"){
 #' @param data Summary report of WildTrax observations from the `wt_download_report()` function. Currently only functioning for the ARU sensor.
 #' @param species Character; four-letter alpha code for the species desired for occupancy modelling.
 #' @param siteCovs Optional dataframe of site covariates. Must contain a column with the same values as the location field in the data, with one row per unique value of location (i.e., one row per site).
+#' @param sensor Character; can be one of "ARU" or "PC"
 #' @import dplyr lubridate
 #' @importFrom unmarked unmarkedFrameOccu
 #' @export
@@ -309,7 +330,16 @@ wt_make_wide <- function(data, sound="all"){
 
 wt_format_occupancy <- function(data,
                                 species,
-                                siteCovs=NULL){
+                                siteCovs=NULL,
+                                sensor="ARU"){
+
+  #Rename fields if PC
+  if(sensor=="PC"){
+    data <- data %>%
+      rename(task_id=survey_id,
+             recording_date_time = survey_date,
+             observer_id = observer)
+  }
 
   #Wrangle observations and observation covariates for the species of interest
   visits <- data %>%
@@ -318,9 +348,10 @@ wt_format_occupancy <- function(data,
     unique() %>%
     mutate(occur=1) %>%
     right_join(data %>%
-                 dplyr::select(location, recording_date_time, observer_id, task_method) %>%
+                 dplyr::select(location, recording_date_time, observer_id) %>%
                  unique(),
-               by=c("location", "recording_date_time")) %>%
+               by=c("location", "recording_date_time"),
+               multiple="all") %>%
     mutate(occur = ifelse(is.na(occur), 0, 1),
            doy = yday(recording_date_time),
            hr = as.numeric(hour(recording_date_time) + minute(recording_date_time)/60)) %>%
@@ -368,14 +399,6 @@ wt_format_occupancy <- function(data,
     dplyr::select(-location) %>%
     data.frame()
 
-  method <- visits %>%
-    dplyr::select(location, visit, task_method) %>%
-    mutate(task_method = as.factor(task_method)) %>%
-    pivot_wider(id_cols = location, names_from = visit, values_from = task_method) %>%
-    arrange(location) %>%
-    dplyr::select(-location) %>%
-    data.frame()
-
   observer <- visits %>%
     dplyr::select(location, visit, observer_id) %>%
     mutate(observer = as.factor(observer_id)) %>%
@@ -385,7 +408,7 @@ wt_format_occupancy <- function(data,
     data.frame()
 
   #Create a list of the observation covariates
-  obsCovs <- list(doy=doy, doy2=doy2, hr=hr, hr2 = hr2, method=method, observer=observer)
+  obsCovs <- list(doy=doy, doy2=doy2, hr=hr, hr2 = hr2, observer=observer)
 
   #Order site covs dataframe if one is provided
   if(!is.null(siteCovs)){
@@ -427,6 +450,7 @@ wt_format_occupancy <- function(data,
 #' @param species Character; species for offset calculation. Can be a list of 4-letter AOU codes (e.g., c("TEWA", "OSFL", "OVEN")) or "all" to calculate offsets for every species in the input dataframe for which offsets are available. Defaults to "all".
 #' @param version Numeric; version of QPAD offsets to use (2, or 3). Defaults to 3.
 #' @param together Logical; whether or not offsets should be bound to the input dataframe or returned as a separate object.
+#' @param sensor Character; can be one of "ARU" or "PC"
 #'
 #' @references Solymos et al. 2013. Calibrating indices of avian density from non-standardized survey data: making the most of a messy situation. Methods in Ecology and Evolution, 4, 1047-1058.
 #'
@@ -444,7 +468,27 @@ wt_format_occupancy <- function(data,
 #' }
 #' @return An object of class unmarkedFrameOccu. See `unmarked::unmarkedFrameOccu` for details.
 
-wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=TRUE){
+wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALSE, sensor="ARU"){
+
+  #Rename fields if PC
+  if(sensor=="PC"){
+    data <- data %>%
+      rename(task_id=survey_id,
+             recording_date_time = survey_date,
+             observer_id = observer) %>%
+      rowwise() %>%
+      mutate(durationMethod = ifelse(str_sub(survey_duration_method, -1, -1)=="+",
+                                     str_sub(survey_duration_method, -100, -2),
+                                     survey_duration_method),
+             chardur = str_locate_all(durationMethod, "-"),
+             chardurmax = max(chardur),
+             task_duration = as.numeric(str_sub(durationMethod, chardurmax+1, -4))*60,
+             chardis = str_locate_all(survey_distance_method, "-"),
+             chardismax = max(chardis),
+             distance1 = str_sub(survey_distance_method, chardismax+1, -2),
+             task_distance = ifelse(distance1 %in% c("AR", "IN"), Inf, as.numeric(distance1))) %>%
+      ungroup()
+  }
 
   #Make prediction object
   cat("Extracting covariates for offset calculation - be patient")
@@ -470,15 +514,24 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=TRUE
   }
 
   #Return output as dataframe if separate output requested
-  if(together==TRUE){
+  if(together==FALSE){
     return(data.frame(off))
   }
 
   #Put together if requested
-  if(together==FALSE){
+  if(together==TRUE){
     out <- cbind(data,
                  data.frame(off) %>%
                    rename_with(.fn=~paste0(.x, ".off")))
+
+    #Translate point count field names back
+    if(sensor=="PC"){
+      out <- out %>%
+        rename(survey_id=task_id,
+               survey_date = recording_date_time,
+               observer = observer_id) %>%
+        dplyr::select(-durationMethod, -chardur, -chardurmax, -task_duration, -chardis, -chardismax, -distance1, -task_distance)
+    }
 
     return(out)
   }
@@ -486,4 +539,3 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=TRUE
   cat("\nDone!")
 
 }
-
