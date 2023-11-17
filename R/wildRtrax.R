@@ -40,4 +40,6 @@ utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext"
                          "tag_spectrogram_url",
                          "task_method",
                          "wt_spp_table","<<-","clip_type","output_filename","image_date_time",
-                         "unlist", "PC", "sens","organizationId","organizationName"))
+                         "unlist", "PC", "sens","organizationId","organizationName",
+                         "chardis", "chardismax", "chardur", "chardurmax", "distance1", "durationMethod", "location_id", "survey_date", "survey_distance", "survey_distance_method", "survey_duration_method",
+                         "survey_id", "task_distance", "task_duration", "task_id"))
