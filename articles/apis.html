@@ -127,20 +127,20 @@ projects that you can download data for.</p>
 <span><span class="va">my_projects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_get_download_summary.html">wt_get_download_summary</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="st">'ARU'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_projects</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organization_id organization                              project project_id</span></span>
-<span><span class="co">#&gt; 1               5         ABMI ABMI Adopt-a-Camera ARU Surveys 2017         42</span></span>
-<span><span class="co">#&gt; 2               1           BU          Big Grid Pilot Program 2014         32</span></span>
-<span><span class="co">#&gt; 3               5         ABMI                            Big Grids        381</span></span>
-<span><span class="co">#&gt; 4               1           BU                            Big Grids         31</span></span>
-<span><span class="co">#&gt; 5            5273          BNP                 Bird Monitoring 2021        462</span></span>
-<span><span class="co">#&gt; 6            5273          BNP                 Bird Monitoring 2022       1175</span></span>
-<span><span class="co">#&gt;   sensor tasks                      status</span></span>
-<span><span class="co">#&gt; 1    ARU   309 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 2    ARU   733          Published - Public</span></span>
-<span><span class="co">#&gt; 3    ARU  2226 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 4    ARU  7601          Published - Public</span></span>
-<span><span class="co">#&gt; 5    ARU   243 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 6    ARU   214 Published - Map+Report Only</span></span></code></pre></div>
+<span><span class="co">#&gt;   organization_id organization                                       project</span></span>
+<span><span class="co">#&gt; 1               5         ABMI          ABMI Adopt-a-Camera ARU Surveys 2017</span></span>
+<span><span class="co">#&gt; 2               1           BU                   Big Grid Pilot Program 2014</span></span>
+<span><span class="co">#&gt; 3               5         ABMI                                     Big Grids</span></span>
+<span><span class="co">#&gt; 4               1           BU                                     Big Grids</span></span>
+<span><span class="co">#&gt; 5               1           BU Boreal Avian Modelling Project Re-visits 2019</span></span>
+<span><span class="co">#&gt; 6            5350      CWS-PAC                Boreal Monitoring - 2022 CORE </span></span>
+<span><span class="co">#&gt;   project_id sensor tasks                      status</span></span>
+<span><span class="co">#&gt; 1         42    ARU   309 Published - Map+Report Only</span></span>
+<span><span class="co">#&gt; 2         32    ARU   733          Published - Public</span></span>
+<span><span class="co">#&gt; 3        381    ARU  2226 Published - Map+Report Only</span></span>
+<span><span class="co">#&gt; 4         31    ARU  7601          Published - Public</span></span>
+<span><span class="co">#&gt; 5        161    ARU   187          Published - Public</span></span>
+<span><span class="co">#&gt; 6       1311    ARU   168          Published - Public</span></span></code></pre></div>
 <p>Using the project_id number in the download summary you can then use
 <code><a href="../reference/wt_download_report.html">wt_download_report()</a></code> to access the species data. You can
 also find the project_id number in the url of a WildTrax project,
@@ -151,7 +151,7 @@ e.g. <a href="https://www.wildtrax.ca/home/aru-tasks.html?projectId=605&amp;sen
 <span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_report</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 31</span></span></span>
 <span><span class="co">#&gt;   organization project_id location location_id location_buffer_m longitude</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ABMI                605 1081-NE        <span style="text-decoration: underline;">90</span>251              <span style="text-decoration: underline;">5</span>500     -<span style="color: #BB0000;">114.</span></span></span>
@@ -160,10 +160,10 @@ e.g. <a href="https://www.wildtrax.ca/home/aru-tasks.html?projectId=605&amp;sen
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> ABMI                605 1081-NE        <span style="text-decoration: underline;">90</span>251              <span style="text-decoration: underline;">5</span>500     -<span style="color: #BB0000;">114.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> ABMI                605 1081-NE        <span style="text-decoration: underline;">90</span>251              <span style="text-decoration: underline;">5</span>500     -<span style="color: #BB0000;">114.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> ABMI                605 1081-NE        <span style="text-decoration: underline;">90</span>251              <span style="text-decoration: underline;">5</span>500     -<span style="color: #BB0000;">114.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 24 more variables: latitude &lt;dbl&gt;, equipment_make &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   recording_id &lt;int&gt;, recording_date_time &lt;chr&gt;, task_id &lt;int&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   aru_task_status &lt;chr&gt;, task_duration &lt;chr&gt;, task_method &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   species_code &lt;chr&gt;, species_common_name &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 25 more variables: latitude &lt;dbl&gt;, equipment_make &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   equipment_model &lt;chr&gt;, recording_id &lt;int&gt;, recording_date_time &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   task_id &lt;int&gt;, aru_task_status &lt;chr&gt;, task_duration &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   task_method &lt;chr&gt;, species_code &lt;chr&gt;, species_common_name &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   species_scientific_name &lt;chr&gt;, individual_order &lt;int&gt;, tag_id &lt;int&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   individual_count &lt;chr&gt;, vocalization &lt;chr&gt;, detection_time &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   tag_duration &lt;dbl&gt;, rms_peak_dbfs &lt;dbl&gt;, tag_is_verified &lt;chr&gt;, …</span></span></span></code></pre></div>
@@ -186,14 +186,14 @@ by WildTrax.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spp_table</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
-<span><span class="co">#&gt;   species_id species_code species_common_name        species_class species_order</span></span>
-<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>         64 LASNOC       Silver-haired Bat          MAMMALIA      Chiroptera   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>       <span style="text-decoration: underline;">4</span>794 4794         Canidae Family             MAMMALIA      Carnivora    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>       <span style="text-decoration: underline;">4</span>799 EACO         Eastern Cottontail         MAMMALIA      Lagomorpha   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>       <span style="text-decoration: underline;">4</span>790 AMMO         American Moose (Subspecie… MAMMALIA      Artiodactyla </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>       <span style="text-decoration: underline;">4</span>795 4795         Caprini Tribe              MAMMALIA      Artiodactyla </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>       <span style="text-decoration: underline;">4</span>833 4833         Mustelidae Family          MAMMALIA      Carnivora    </span></span>
+<span><span class="co">#&gt;   species_id species_code species_common_name   species_class species_order  </span></span>
+<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>       <span style="text-decoration: underline;">4</span>798 4798         Didelphimorphia Order MAMMALIA      Didelphimorphia</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>       <span style="text-decoration: underline;">4</span>791 4791         Artiodactyla Order    MAMMALIA      Artiodactyla   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>       <span style="text-decoration: underline;">4</span>474 4474         Lizards and Snakes    REPTILIA      Squamata       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>       <span style="text-decoration: underline;">4</span>478 4478         Serpentes Suborder    REPTILIA      Squamata       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>       <span style="text-decoration: underline;">4</span>479 4479         Lacertilia Suborder   REPTILIA      Squamata       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>       <span style="text-decoration: underline;">3</span>988 3988         Perissodactyla Order  MAMMALIA      Perissodactyla </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: species_scientific_name &lt;chr&gt;</span></span></span></code></pre></div>
 <p>WildTrax also pre-formats ARU to point count (PC) data depending on
 the type of analysis you wish to perform. See the <a href="https://borealbirds.ca/" class="external-link">Boreal Avian Modelling project</a>
@@ -212,41 +212,48 @@ on integration of avian point count and ARU data.</p>
 <span><span class="co">#&gt; 4         ABMI        605  1081-NE       90251              5500 -114.3343</span></span>
 <span><span class="co">#&gt; 5         ABMI        605  1081-NE       90251              5500 -114.3343</span></span>
 <span><span class="co">#&gt; 6         ABMI        605  1081-NE       90251              5500 -114.3343</span></span>
-<span><span class="co">#&gt;   latitude         equipment_make recording_id recording_date_time task_id</span></span>
-<span><span class="co">#&gt; 1 53.64621 Wildlife Acoustics Inc       212868 2021-04-06 07:29:00  181962</span></span>
-<span><span class="co">#&gt; 2 53.64621 Wildlife Acoustics Inc       212868 2021-04-06 07:29:00  181962</span></span>
-<span><span class="co">#&gt; 3 53.64621 Wildlife Acoustics Inc       212868 2021-04-06 07:29:00  181962</span></span>
-<span><span class="co">#&gt; 4 53.64621 Wildlife Acoustics Inc       212868 2021-04-06 07:29:00  181962</span></span>
-<span><span class="co">#&gt; 5 53.64621 Wildlife Acoustics Inc       212868 2021-04-06 07:29:00  181962</span></span>
-<span><span class="co">#&gt; 6 53.64621 Wildlife Acoustics Inc       212457 2021-04-09 00:00:00  181997</span></span>
-<span><span class="co">#&gt;   aru_task_status task_duration task_method species_code    species_common_name</span></span>
-<span><span class="co">#&gt; 1     Transcribed           60s        1SPM         BOWA       Bohemian Waxwing</span></span>
-<span><span class="co">#&gt; 2     Transcribed           60s        1SPM         BCCH Black-capped Chickadee</span></span>
-<span><span class="co">#&gt; 3     Transcribed           60s        1SPM         CANG           Canada Goose</span></span>
-<span><span class="co">#&gt; 4     Transcribed           60s        1SPM         BCCH Black-capped Chickadee</span></span>
-<span><span class="co">#&gt; 5     Transcribed           60s        1SPM         BCCH Black-capped Chickadee</span></span>
-<span><span class="co">#&gt; 6     Transcribed           60s        1SPM         NONE                   NONE</span></span>
-<span><span class="co">#&gt;   species_scientific_name individual_order  tag_id individual_count</span></span>
-<span><span class="co">#&gt; 1     BOMBYCILLA GARRULUS                1 2429111                1</span></span>
-<span><span class="co">#&gt; 2    POECILE ATRICAPILLUS                1 2429109                1</span></span>
-<span><span class="co">#&gt; 3       BRANTA CANADENSIS                1 2429114             TMTT</span></span>
-<span><span class="co">#&gt; 4    POECILE ATRICAPILLUS                3 2429118                1</span></span>
-<span><span class="co">#&gt; 5    POECILE ATRICAPILLUS                2 2429112                1</span></span>
-<span><span class="co">#&gt; 6                                       NA      NA                 </span></span>
-<span><span class="co">#&gt;   vocalization detection_time tag_duration rms_peak_dbfs tag_is_verified</span></span>
-<span><span class="co">#&gt; 1         Call           4.34         1.08        -65.84               t</span></span>
-<span><span class="co">#&gt; 2         Call           0.89         1.88        -67.12               t</span></span>
-<span><span class="co">#&gt; 3         Call           0.01         5.03        -36.42               f</span></span>
-<span><span class="co">#&gt; 4         Call          30.45         1.33        -59.40               t</span></span>
-<span><span class="co">#&gt; 5         Call           6.69         0.78        -69.40               t</span></span>
-<span><span class="co">#&gt; 6                          NA           NA            NA                </span></span>
-<span><span class="co">#&gt;   tag_rating    observer observer_id species_individual_comments task_comments</span></span>
-<span><span class="co">#&gt; 1         NA Nola Sheets        1257                                          </span></span>
-<span><span class="co">#&gt; 2          2 Nola Sheets        1257                                          </span></span>
-<span><span class="co">#&gt; 3         NA Nola Sheets        1257                                          </span></span>
-<span><span class="co">#&gt; 4          2 Nola Sheets        1257                                          </span></span>
-<span><span class="co">#&gt; 5          1 Nola Sheets        1257                                          </span></span>
-<span><span class="co">#&gt; 6         NA   Joel Kwek         822</span></span></code></pre></div>
+<span><span class="co">#&gt;   latitude         equipment_make equipment_model recording_id</span></span>
+<span><span class="co">#&gt; 1 53.64621 Wildlife Acoustics Inc             SM4       212868</span></span>
+<span><span class="co">#&gt; 2 53.64621 Wildlife Acoustics Inc             SM4       212868</span></span>
+<span><span class="co">#&gt; 3 53.64621 Wildlife Acoustics Inc             SM4       212868</span></span>
+<span><span class="co">#&gt; 4 53.64621 Wildlife Acoustics Inc             SM4       212868</span></span>
+<span><span class="co">#&gt; 5 53.64621 Wildlife Acoustics Inc             SM4       212868</span></span>
+<span><span class="co">#&gt; 6 53.64621 Wildlife Acoustics Inc             SM4       212457</span></span>
+<span><span class="co">#&gt;   recording_date_time task_id aru_task_status task_duration task_method</span></span>
+<span><span class="co">#&gt; 1 2021-04-06 07:29:00  181962     Transcribed           60s        1SPM</span></span>
+<span><span class="co">#&gt; 2 2021-04-06 07:29:00  181962     Transcribed           60s        1SPM</span></span>
+<span><span class="co">#&gt; 3 2021-04-06 07:29:00  181962     Transcribed           60s        1SPM</span></span>
+<span><span class="co">#&gt; 4 2021-04-06 07:29:00  181962     Transcribed           60s        1SPM</span></span>
+<span><span class="co">#&gt; 5 2021-04-06 07:29:00  181962     Transcribed           60s        1SPM</span></span>
+<span><span class="co">#&gt; 6 2021-04-09 00:00:00  181997     Transcribed           60s        1SPM</span></span>
+<span><span class="co">#&gt;   species_code    species_common_name species_scientific_name individual_order</span></span>
+<span><span class="co">#&gt; 1         BOWA       Bohemian Waxwing     BOMBYCILLA GARRULUS                1</span></span>
+<span><span class="co">#&gt; 2         BCCH Black-capped Chickadee    POECILE ATRICAPILLUS                1</span></span>
+<span><span class="co">#&gt; 3         CANG           Canada Goose       BRANTA CANADENSIS                1</span></span>
+<span><span class="co">#&gt; 4         BCCH Black-capped Chickadee    POECILE ATRICAPILLUS                3</span></span>
+<span><span class="co">#&gt; 5         BCCH Black-capped Chickadee    POECILE ATRICAPILLUS                2</span></span>
+<span><span class="co">#&gt; 6         NONE                   NONE                                       NA</span></span>
+<span><span class="co">#&gt;    tag_id individual_count vocalization detection_time tag_duration</span></span>
+<span><span class="co">#&gt; 1 2429111                1         Call           4.34         1.08</span></span>
+<span><span class="co">#&gt; 2 2429109                1         Call           0.89         1.88</span></span>
+<span><span class="co">#&gt; 3 2429114             TMTT         Call           0.01         5.03</span></span>
+<span><span class="co">#&gt; 4 2429118                1         Call          30.45         1.33</span></span>
+<span><span class="co">#&gt; 5 2429112                1         Call           6.69         0.78</span></span>
+<span><span class="co">#&gt; 6      NA                                           NA           NA</span></span>
+<span><span class="co">#&gt;   rms_peak_dbfs tag_is_verified tag_rating    observer observer_id</span></span>
+<span><span class="co">#&gt; 1        -65.84               t         NA Nola Sheets        1257</span></span>
+<span><span class="co">#&gt; 2        -67.12               t          2 Nola Sheets        1257</span></span>
+<span><span class="co">#&gt; 3        -36.42               f         NA Nola Sheets        1257</span></span>
+<span><span class="co">#&gt; 4        -59.40               t          2 Nola Sheets        1257</span></span>
+<span><span class="co">#&gt; 5        -69.40               t          1 Nola Sheets        1257</span></span>
+<span><span class="co">#&gt; 6            NA                         NA   Joel Kwek         822</span></span>
+<span><span class="co">#&gt;   species_individual_comments task_comments</span></span>
+<span><span class="co">#&gt; 1                                          </span></span>
+<span><span class="co">#&gt; 2                                          </span></span>
+<span><span class="co">#&gt; 3                                          </span></span>
+<span><span class="co">#&gt; 4                                          </span></span>
+<span><span class="co">#&gt; 5                                          </span></span>
+<span><span class="co">#&gt; 6</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># As ARU format</span></span>
 <span><span class="va">aru_as_pc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">605</span>, sensor_id <span class="op">=</span> <span class="st">'PC'</span>, reports <span class="op">=</span> <span class="st">"main"</span>, weather_cols <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
