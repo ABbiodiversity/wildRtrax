@@ -25,7 +25,7 @@ remotes::install_github("ABbiodiversity/wildRtrax")
 The [development](https://github.com/ABbiodiversity/wildRtrax/tree/development) version of this package contains experimental features and recent fixes. It can be installed with: 
 
 ```r
-remotes::install_github("ABbiodiversity/wildRtrax@development)
+remotes::install_github("ABbiodiversity/wildRtrax@development")
 ```
 
 The development version of the package will be periodically merged and will be reflected in the [Changelogs](https://abbiodiversity.github.io/wildRtrax/news/index.html).
