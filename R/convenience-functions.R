@@ -212,7 +212,7 @@ wt_replace_tmtt <- function(data, calc="round"){
   if(nrow(dat.tmtt) > 0){
     dat.abun <- dat.tmtt %>%
       mutate(species_code = ifelse(species_code %in% .tmtt$species_code, species_code, "species"),
-             observer_id = as.integer(ifelse(observer_id %in% .tmtt$observer_id, observer_id, 0)))
+             observer_id = as.integer(ifelse(observer_id %in% .tmtt$observer_id, observer_id, 0))) %>%
     data.frame() %>%
       inner_join(.tmtt %>% select(species_code, observer_id, pred), by=c("species_code", "observer_id")) %>%
       mutate(individual_count = case_when(calc == "round" ~ round(pred),
