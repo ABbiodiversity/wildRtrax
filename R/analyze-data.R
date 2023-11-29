@@ -88,6 +88,11 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
                 end_date = as.Date(max(image_date_time))) %>%
       ungroup()
 
+    if (any(c(is.na(x$start_date), is.na(x$end_date)))) {
+      message("Parsing of image date time produced NAs, these will be dropped")
+      x <- drop_na(x)
+    }
+
   } else {
     x <- effort_data %>%
       select(project_id = {{project_col}},
