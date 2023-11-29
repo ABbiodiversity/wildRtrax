@@ -169,7 +169,9 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
   # Make wide if desired, using
   if (output_format == "wide") {
     z <- z %>%
-      pivot_wider(names_from = {{species_col}}, values_from = {{variable}}, names_sep = ".")
+      pivot_wider(id_cols = c({{project_col}}, {{station_col}}, year,
+                              .data[[time_interval]], n_days_effort),
+        names_from = {{species_col}}, values_from = {{variable}}, names_sep = ".")
   } else if (output_format == "long") {
     z <- z %>% select({{project_col}}, {{station_col}}, year,
                       .data[[time_interval]], n_days_effort,
