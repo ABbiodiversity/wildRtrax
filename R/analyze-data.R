@@ -78,12 +78,12 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
   # Parse the raw or effort data to get time ranges for each camera deployment.
   if (!is_missing(raw_data)) {
     x <- raw_data %>%
-      mutate(image_date_time = ymd_hms({{date_time_col}}),
-             year = year(image_date_time)) %>%
-      group_by({{project_col}}, {{station_col}}, year) %>%
+      mutate(image_date_time = ymd_hms({{date_time_col}})) %>%
+      group_by({{project_col}}, {{station_col}}) %>%
       summarise(start_date = as.Date(min(image_date_time)),
                 end_date = as.Date(max(image_date_time))) %>%
       ungroup()
+
   } else {
     x <- effort_data %>%
       select(project_id = {{project_col}},
@@ -95,9 +95,10 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 
   # Expand the time ranges into individual days of operation (smallest unit)
   x <- x %>%
-    group_by({{project_col}}, {{station_col}}, year) %>%
+    group_by({{project_col}}, {{station_col}}) %>%
     mutate(day = list(seq.Date(start_date, end_date, by = "day"))) %>%
     unnest(day) %>%
+    mutate(year = year(day))  %>%
     select({{project_col}}, {{station_col}}, year, day)
 
   # Based on the desired timeframe, assess when each detection occurred
@@ -118,7 +119,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 
   # Summarise variable of interest
   y <- y %>%
-    group_by({{detection_id_col}}, {{project_col}}, {{species_col}}, year, .data[[time_interval]]) %>%
+    group_by({{project_col}}, {{species_col}}, year, .data[[time_interval]]) %>%
     summarise(detections = n(),
               counts = sum(max_animals)) %>%
     ungroup() %>%
