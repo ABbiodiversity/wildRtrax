@@ -78,8 +78,9 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
   # Parse the raw or effort data to get time ranges for each camera deployment.
   if (!is_missing(raw_data)) {
     x <- raw_data %>%
-      mutate(image_date_time = ymd_hms(image_date_time)) %>%
-      group_by(project_id, location) %>%
+      mutate(image_date_time = ymd_hms({{date_time_col}}),
+             year = year(image_date_time)) %>%
+      group_by({{project_col}}, {{station_col}}, year) %>%
       summarise(start_date = as.Date(min(image_date_time)),
                 end_date = as.Date(max(image_date_time))) %>%
       ungroup()
@@ -94,31 +95,30 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 
   # Expand the time ranges into individual days of operation (smallest unit)
   x <- x %>%
-    group_by(project_id, location) %>%
+    group_by({{project_col}}, {{station_col}}, year) %>%
     mutate(day = list(seq.Date(start_date, end_date, by = "day"))) %>%
     unnest(day) %>%
-    select(project_id, location, day)
-
-  int <- c("day", "week", "month", "full")
-  if (!time_interval %in% int) {
-    stop("Please select a valid time interval: 'day', 'week', 'month', or 'full'.")
-  }
+    select({{project_col}}, {{station_col}}, year, day)
 
   # Based on the desired timeframe, assess when each detection occurred
   if (time_interval == "day" | time_interval == "full") {
     y <- detect_data %>%
-      mutate(day = as.Date(start_time))
+      mutate(year = year({{start_col_det}}),
+             day = as.Date({{start_col_det}}))
+    time_interval <- "day"
   } else if (time_interval == "week") {
     y <- detect_data %>%
-      mutate(week = isoweek(start_time))
+      mutate(year = year({{start_col_det}}),
+             week = isoweek({{start_col_det}}))
   } else if (time_interval == "month") {
     y <- detect_data %>%
-      mutate(month = month(start_time, label = TRUE, abbr = FALSE))
+      mutate(year = year({{start_col_det}}),
+             month = month({{start_col_det}}, label = TRUE, abbr = FALSE))
   }
 
   # Summarise variable of interest
   y <- y %>%
-    group_by(across(c(2:3, {{species_col}}, last_col()))) %>%
+    group_by({{detection_id_col}}, {{project_col}}, {{species_col}}, year, .data[[time_interval]]) %>%
     summarise(detections = n(),
               counts = sum(max_animals)) %>%
     ungroup() %>%
@@ -137,7 +137,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
   } else if (time_interval == "week") {
     x <- x %>%
       mutate(week = isoweek(day)) %>%
-      group_by(project_id, location, week) %>%
+      group_by({{project_col}}, {{station_col}}, year, week) %>%
       tally(name = "n_days_effort") %>%
       ungroup()
     z <- x %>%
@@ -147,7 +147,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
   } else if (time_interval == "month") {
     x <- x %>%
       mutate(month = month(day, label = TRUE, abbr = FALSE)) %>%
-      group_by(project_id, location, month) %>%
+      group_by({{project_col}}, {{station_col}}, year, month) %>%
       tally(name = "n_days_effort") %>%
       ungroup()
     z <- x %>%
@@ -158,8 +158,8 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
     z <- x %>%
       crossing(sp) %>%
       left_join(y) %>%
-      mutate(across(5:7, ~ replace_na(.x, 0))) %>%
-      group_by(project_id, location, {{species_col}}) %>%
+      mutate(across(all_vars, ~ replace_na(.x, 0))) %>%
+      group_by({{project_col}}, {{station_col}}, year, {{species_col}}) %>%
       summarise(detections = sum(detections),
                 counts = sum(counts),
                 presence = ifelse(any(presence == 1), 1, 0)) %>%
@@ -171,7 +171,9 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
     z <- z %>%
       pivot_wider(id_cols = 1:4, names_from = {{species_col}}, values_from = {{variable}}, names_sep = ".")
   } else if (output_format == "long") {
-    z <- z %>% select(1:5, {{variable}}) %>%
+    z <- z %>% select({{project_col}}, {{station_col}}, year,
+                      .data[[time_interval]], n_days_effort,
+                      {{species_col}}, {{variable}}) %>%
       pivot_longer(cols = {{variable}}, names_to = "variable", values_to = "value")
   }
 
