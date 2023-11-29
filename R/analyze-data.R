@@ -165,12 +165,9 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
   } else if (output_format == "long") {
     z <- z %>% select(1:5, {{variable}}) %>%
       pivot_longer(cols = {{variable}}, names_to = "variable", values_to = "value")
-  } else {
-    z
-    # If neither 'wide' or 'long' is specified, just return z without pivoting plus a message.
-    message("Please specify `wide` or `long` in the output_format argument.")
   }
 
+  # If neither 'wide' or 'long' is specified, just return z without pivoting plus a message.
   return(z)
 
 }
