@@ -44,6 +44,29 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
     stop("Please only supply a value for one of `raw_data` or `effort_data`.")
   }
 
+  # Check output variable(s)
+  all_vars <- c("detections", "counts", "presence")
+  if (length(variable) == 1 &&
+      variable %in% c("detections", "counts", "presence", "all")) {
+    if (variable == "all") {
+      variable <- all_vars
+    }
+  } else {
+    stop("Variable must be one of 'detections', 'counts', 'presence', 'all'.")
+  }
+
+  # Check timeframe variable
+  int <- c("day", "week", "month", "full")
+  if (!time_interval %in% int) {
+    stop("Please select a valid time interval: 'day', 'week', 'month', or 'full'.")
+  }
+
+  # Check output format
+  formats <- c("wide", "long")
+  if (!time_interval %in% formats) {
+    message("Please specify `wide` or `long` in the output_format argument.")
+  }
+
   # Parse the raw or effort data to get time ranges for each camera deployment.
   if (!is_missing(raw_data)) {
     x <- raw_data %>%
@@ -133,10 +156,6 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
                 counts = sum(counts),
                 presence = ifelse(any(presence == 1), 1, 0)) %>%
       ungroup()
-  }
-
-  if (variable == "all") {
-    variable <- c("detections", "counts", "presence")
   }
 
   # Make wide if desired, using
