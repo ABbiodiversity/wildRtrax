@@ -207,7 +207,7 @@ wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = image
 
   # Ensure that datetime_col is of class POSIXct; if not, try to convert.
   name <- enquo(datetime_col) %>% quo_name()
-  if(!inherits(x[[name]], c("POSIXct"))) {
+  if (!inherits(x[[name]], c("POSIXct"))) {
     x <- x %>% mutate({{datetime_col}} := lubridate::as_datetime({{datetime_col}}))
     message("Your datetime_col has been converted to a Date.")
   }
