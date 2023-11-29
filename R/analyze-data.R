@@ -133,7 +133,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
       mutate(n_days_effort = 1) %>%
       crossing(sp) %>%
       left_join(y) %>%
-      mutate(across(6:8, ~ replace_na(.x, 0)))
+      mutate(across(all_vars, ~ replace_na(.x, 0)))
   } else if (time_interval == "week") {
     x <- x %>%
       mutate(week = isoweek(day)) %>%
@@ -143,7 +143,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
     z <- x %>%
       crossing(sp) %>%
       left_join(y) %>%
-      mutate(across(6:8, ~ replace_na(.x, 0)))
+      mutate(across(all_vars, ~ replace_na(.x, 0)))
   } else if (time_interval == "month") {
     x <- x %>%
       mutate(month = month(day, label = TRUE, abbr = FALSE)) %>%
@@ -153,7 +153,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
     z <- x %>%
       crossing(sp) %>%
       left_join(y) %>%
-      mutate(across(6:8, ~ replace_na(.x, 0)))
+      mutate(across(all_vars, ~ replace_na(.x, 0)))
   } else if (time_interval == "full") {
     z <- x %>%
       crossing(sp) %>%
