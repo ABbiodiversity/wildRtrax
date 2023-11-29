@@ -63,7 +63,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
 
   # Check output format
   formats <- c("wide", "long")
-  if (!time_interval %in% formats) {
+  if (!output_format %in% formats) {
     message("Please specify `wide` or `long` in the output_format argument.")
   }
 
