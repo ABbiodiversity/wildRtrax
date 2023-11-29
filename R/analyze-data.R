@@ -6,15 +6,18 @@
 #'
 #' @param detect_data Detection data generated from `wt_ind_det()`.
 #' @param raw_data The raw camera tag data, which is used to infer the effort (i.e. date ranges of operation) for each camera. Optionally, can supply effort_data directly instead.
-#' @param time_interval Character; Can be either "full", "month", "week", or "day".
-#' @param variable Character; Can be either "presence", "detections", "counts", or "all" (if you want all three).
-#' @param output_format Character; The format of the dataframe returned to you. Can be either "wide" or "long".
-#' @param species_col Defaults to `common_name`. The column referring to species. Use to switch between common and scientific names of species, if you have both.
+#' @param time_interval Character; Can be either "full", "month", "week", or "day" (default).
+#' @param variable Character; Can be either "detections" (default), "presence", "counts", or "all" (if you want all three).
+#' @param output_format Character; The format of the dataframe returned to you. Can be either "wide" (default) or "long".
+#' @param species_col Defaults to `species_common_name`. The column referring to species. Use to switch between common and scientific names of species, if you have both.
 #' @param effort_data Optionally supply your own effort data.
-#' @param project_col The column referring to project in your effort data.
-#' @param station_col The column referring to each individual camera station/location in your effort data.
-#' @param start_col The column indicating the start date of the camera location
-#' @param end_col The column indicating the end date of the camera location
+#' @param project_col Defaults to `project_id`. The column referring to project in your effort data.
+#' @param station_col Defaults to `location`. The column referring to each individual camera station/location in your effort data.
+#' @param date_time_col Defaults to `image_date_time`. The column referring to image date-time stamp.
+#' @param start_col Defaults to `start_date`. The column indicating the start date of the camera location
+#' @param end_col Defaults to `end_date`. The column indicating the end date of the camera location
+#' @param detection_id_col Defaults to `detection`. The column indicating the detection id
+#' @param start_col_det Defaults to `start_time`. The column indicating the start time of the independent detections
 #'
 #' @import dplyr lubridate tidyr
 #' @importFrom stringr str_detect
