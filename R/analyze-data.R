@@ -40,7 +40,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
   }
 
   # Check that only one is supplied
-  if(!is_missing(raw_data) & !is.null(effort_data)) {
+  if (!is_missing(raw_data) & !is.null(effort_data)) {
     stop("Please only supply a value for one of `raw_data` or `effort_data`.")
   }
 
