@@ -35,10 +35,10 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       "For now, this function can only be used for wav, wac and/or flac files. Please specify either 'wac', 'wav', 'flac' or 'all' with the file_type argument."
     )
   }
-
+  
   # Scan files, gather metadata
   df <- tibble::as_tibble(x = path)
-
+  
   # Track progress of file reading
   progressr::with_progress({
     p <- progressr::progressor(steps = nrow(df))
@@ -46,7 +46,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       "Scanning files in path..." %>>%
       dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, recurse = T, fail = F), .options = furrr_options(seed = TRUE)))
   })
-
+  
   # Create the main tibble
   df <- df %>%
     tidyr::unnest(file_path) %>%
@@ -71,24 +71,24 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     dplyr::group_by(location, year, julian) %>%
     dplyr::mutate(time_index = dplyr::row_number()) %>% # Create time index - this is an ordered list of the recording per day.
     dplyr::ungroup()
-
+  
   # Check if nothing was returned
   if (nrow(df) == 0) {
     stop (
       "There were no files of the type specified in file_path in the directory path specified."
     )
   }
-
+  
   if (extra_cols == FALSE) {
     df_final_simple <- df # Omit the extra columns if chosen
   } else {
-
+    
     # Filter out the unsafe recordings - re-append later
     df_unsafe <- df %>%
       filter(unsafe == "Unsafe")
     df <- df %>%
       filter(unsafe == "Safe")
-
+    
     # wav files first
     if ("wav" %in% df$file_type) {
       with_progress({p <- progressr::progressor(steps = nrow(df))
@@ -102,7 +102,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
         dplyr::select(-c(data, unsafe))
       })
     }
-
+    
     #Then wac files
     if ("wac" %in% df$file_type) {
       with_progress({p <- progressr::progressor(steps = nrow(df))
@@ -116,7 +116,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
         dplyr::select(-c(wac_info, unsafe))
       })
     }
-
+    
     #Finally flac
     if ("flac" %in% df$file_type) {
       with_progress({p <- progressr::progressor(steps = nrow(df))
@@ -124,14 +124,14 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
         "Working on flac files..." %>>%
         dplyr::filter(file_type == "flac") %>%
         dplyr::mutate(flac_info = furrr::future_map(.x = file_path, .f = ~ wt_flac_info(.x), .options = furrr_options(seed = TRUE)),
-                      sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample_rate"]])),
-                      length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
-                      n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
+                      sample_rate = purrr::map_dbl(.x = flac_info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
+                      length_seconds = purrr::map_dbl(.x = flac_info, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
+                      n_channels = purrr::map_dbl(.x = flac_info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
         dplyr::select(-c(flac_info, unsafe))
       })
     }
   }
-
+  
   # Stitch together
   if (rlang::env_has(rlang::current_env(), "df_final_simple")) {
     df_final <- df_final_simple
@@ -151,13 +151,13 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     df_final <- dplyr::bind_rows(df_wac, df_wav, df_flac, df_unsafe) %>%
       select_if(~any(!is.na(unsafe)))
   }
-
+  
   df_final <- df_final %>%
     select(-unsafe)
-
+  
   # Return final data frame
   return(df_final)
-
+  
 }
 
 #' Extract relevant metadata from a wac file
