@@ -128,7 +128,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 
   # Summarise variable of interest
   y <- y %>%
-    group_by({{project_col}}, {{species_col}}, year, .data[[time_interval]]) %>%
+    group_by({{project_col}}, .data[[station_col]], {{species_col}}, year, .data[[time_interval]]) %>%
     summarise(detections = n(),
               counts = sum(max_animals)) %>%
     ungroup() %>%
