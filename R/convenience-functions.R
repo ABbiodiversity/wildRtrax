@@ -114,7 +114,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
   species.remove <- .species %>%
     dplyr::filter(species_class %in% remove)
 
-  #add the unknowns if requested
+  #Add the unknowns if requested
   if("unknown" %in% remove){
     species.remove <- .species %>%
       dplyr::filter(str_sub(species_common_name, 1, 12)=="Unidentified") %>%
