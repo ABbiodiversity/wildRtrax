@@ -249,7 +249,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   # List data files, read into R as a list
   files <- gsub(".csv", "", list.files(td, pattern = ".csv", recursive = TRUE))
   files.full <- list.files(td, pattern = ".csv", full.names = TRUE, recursive = TRUE)
-  x <- purrr::map(.x = files.full, .f = ~ read.csv(., fileEncoding = "UTF-8-BOM")) %>%
+  x <- purrr::map(.x = files.full, .f = ~ read_csv(., fileEncoding = "UTF-8-BOM")) %>%
     purrr::set_names(files)
 
   # Remove weather columns, if desired
@@ -376,7 +376,7 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
   input_data <- input
 
   # Assuming input_data is a data frame or a matrix
-  if (!("tag_spectrogram_url" %in% colnames(input_data)) | !("clip_url" %in% colnames(input_data))) {
+  if (!("spectrogram_url" %in% colnames(input_data)) | !("clip_url" %in% colnames(input_data))) {
     stop("Required columns 'tag_spectrogram_url' and 'clip_url' are missing in input_data. Use wt_download_report(reports = 'tag').")
   }
 
@@ -387,10 +387,11 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
   if (clip_type == "audio") {
 
     input_audio_only <- input_data %>%
-      select(organization, location, recording_date_time, species_code, individual_order, detection_time, clip_url) %>%
+      mutate(file_type = tools::file_ext(clip_url)) %>%
+      select(organization, location, recording_date_time, species_code, individual_order, detection_time, clip_url, file_type) %>%
       mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
       # Create the local file name
-      mutate(clip_file_name = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".mp3"))
+      mutate(clip_file_name = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".",file_type))
 
     input_audio_only %>%
       furrr::future_walk2(.x = .$clip_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
@@ -400,31 +401,32 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
   } else if (clip_type == "spectrogram") {
 
     input_spec_only <- input_data %>%
-      select(organization, location, recording_date_time, species_code, individual_order, detection_time, tag_spectrogram_url) %>%
+      select(organization, location, recording_date_time, species_code, individual_order, detection_time, spectrogram_url) %>%
       mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
       # Create the local file name
       mutate(clip_file_name = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".jpeg"))
 
     input_spec_only %>%
-      furrr::future_walk2(.x = .$tag_spectrogram_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+      furrr::future_walk2(.x = .$spectrogram_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
 
     return(input_spec_only)
 
   } else if (clip_type == "spectrogram" & clip_type == "audio") {
 
     input_both <- input_data %>%
-      select(organization, location, recording_date_time, species_code, individual_order, detection_time, tag_spectrogram_url, clip_url) %>%
+      mutate(file_type = tools::file_ext(clip_url)) %>%
+      select(organization, location, recording_date_time, species_code, individual_order, detection_time, spectrogram_url, clip_url) %>%
       mutate(detection_time = as.character(detection_time), detection_time = gsub("\\.", "_", detection_time)) %>%
       # Create the local file name
       mutate(clip_file_name_spec = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".jpeg"))
-      mutate(clip_file_name_audio = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".mp3"))
+    mutate(clip_file_name_audio = paste0(output, "/", organization,"_",location, "_", format(parse_date_time(recording_date_time,"%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),"__", species_code,"__",individual_order,"__",detection_time,".",file_type))
 
     #Download spec first
     input_both %>%
-     furrr::future_walk2(.x = .$tag_spectrogram_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+      furrr::future_walk2(.x = .$spectrogram_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
 
     input_both %>%
-      furrr::future_walk2(.x = .$tag_clip_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
+      furrr::future_walk2(.x = .$clip_url, .y = .$clip_file_name, .f = ~ download.file(.x, .y))
 
     return(input_both)
 
@@ -433,4 +435,3 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
   }
 
 }
-
