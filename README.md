@@ -15,7 +15,7 @@
 
 ## Installation
 
-You can install version 1.1.0 of `wildRtrax` directly from this repository with:
+You can install the most recent version of `wildRtrax` directly from this repository with:
 
 ``` r
 # install.packages("remotes")
