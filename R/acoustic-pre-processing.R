@@ -113,7 +113,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
                       sample_rate = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
                       length_seconds = purrr::map_dbl(.x = wac_info, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
                       n_channels = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
-        dplyr::select(-c(info, unsafe))
+        dplyr::select(-c(wac_info, unsafe))
       })
     }
 
