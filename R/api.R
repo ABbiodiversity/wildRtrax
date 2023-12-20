@@ -44,7 +44,7 @@ wt_auth <- function(force = FALSE) {
 #' wt_get_download_summary(sensor_id = "ARU")
 #' }
 #'
-#' @return a dataframe listing the projects that the user can download data for, including: project name, id, year, number of tags, and status.
+#' @return A dataframe listing the projects that the user can download data for, including: project name, id, year, number of tasks, a geographic bounding box and project status.
 #'
 wt_get_download_summary <- function(sensor_id) {
 
@@ -63,8 +63,14 @@ wt_get_download_summary <- function(sensor_id) {
   )
 
   x <- data.frame(do.call(rbind, httr::content(r)$results)) |>
-       dplyr::select(organization_id = organizationId, organization = organizationName,
-                     project = fullNm, project_id = id, sensor = sensorId, tasks, status) |>
+       dplyr::select(organization_id = organizationId,
+                     organization = organizationName,
+                     project = fullNm,
+                     project_id = id,
+                     sensor = sensorId,
+                     tasks,
+                     #aoi = my_aoi,
+                     status) |>
     mutate(across(everything(), unlist))
 
 }
