@@ -11,6 +11,7 @@ articles:
   - apis
   - acoustic-pre-processing
   - acoustic-data-wrangling
+  - camera-data-wrangling
 reference:
 - contents:
   - wt_auth
@@ -41,6 +42,7 @@ reference:
   - wildRtrax
 news:
   releases:
+  - text: wildRtrax 1.1.1
   - text: wildRtrax 1.1.0
   - text: wildRtrax 1.0.1
   - text: wildRtrax 1.0.0

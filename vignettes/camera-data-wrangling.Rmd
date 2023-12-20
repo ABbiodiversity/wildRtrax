@@ -1,0 +1,8 @@
+---
+title: "Camera data wrangling"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Camera data wrangling}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
