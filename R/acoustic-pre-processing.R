@@ -592,9 +592,9 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 
 }
 
-#' Segment a large audio file
+#' Segment large audio files
 #'
-#' @description "Chops" up a wav file into many smaller files of a desired duration
+#' @description "Chops" up wav files into many smaller files of a desired duration
 #'
 #' @param input A tibble; A single row from a \code{`wt_audio_scanner`} tibble
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
@@ -605,7 +605,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #'
 #' @examples
 #' \dontrun{
-#' wt_chop(input = my_audio_tibble %>% slice(1),
+#' wt_chop(input = my_audio_tibble,
 #'  segment_length = 60, output_folder "/where/i/store/my/chopped/files")
 #' }
 #'
@@ -625,49 +625,40 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
                   recording_date_time,
                   location,
                   file_type,
-                  length_seconds)
+                  length_seconds) %>%
+    tibble::add_column("length_sec" = segment_length) %>%
+    dplyr::mutate(longer = case_when((length_seconds < length_sec) ~ FALSE, TRUE ~ TRUE),
+                  length_seconds = round(length_seconds,0))
 
-  length_sec <- inp %>% pluck('length_seconds')
+  too_long <- inp %>%
+    filter(longer == FALSE)
 
-  if (segment_length > length_sec) {
+  if (nrow(too_long) > 1) {
     stop('Segment is longer than duration. Choose a shorter segment length.')
   }
 
-  start_times = seq(0, length_sec - segment_length, by = segment_length)
-  val <- max(start_times) + segment_length
+  inp2 <- inp %>%
+    mutate(start_times = map2(.x = length_seconds, .y = segment_length, .f = ~seq(0, .x - .y, by = .y))) %>%
+    unnest(start_times) %>%
+    mutate(val = max(start_times) + segment_length,
+           ry = case_when(val < length_sec ~ "Modulo", TRUE ~ "Fixed"))
 
-  if (val < length_sec) {
-    inp %>>%
-      "Chopping the modulo recording" %>>%
-      furrr::future_pmap(
-        ..1 = .$file_path,
-        ..2 = .$recording_date_time,
-        ..3 = .$location,
-        ..4 = .$file_type,
-        ..5 = .$length_seconds,
-        .f = ~ tuneR::writeWave(tuneR::readWave(..1, from = val, to = ..5, units = "seconds"),
-                                filename = paste0(outroot, ..3, "_", format(..2 + lubridate::seconds(val), "%Y%m%d_%H%M%S"), ".", ..4),
-                                extensible = T),
-        .options = furrr::furrr_options(seed = T)
-      )
-  } else {
-    message("No modulo recordings found. Chopping the regular segments")
-  }
+  inp2 %>>%
+    "Chopping the recording" %>>%
+    furrr::future_pmap(
+      ..1 = .$file_path,
+      ..2 = .$recording_date_time,
+      ..3 = .$location,
+      ..4 = .$file_type,
+      ..5 = .$length_sec,
+      ..6 = .$start_times,
+      .f = ~ tuneR::writeWave(tuneR::readWave(..1, from = ..6, to = ..6 + ..5, units = "seconds"),
+                              filename = paste0(outroot, "/", ..3, "_", format(..2 + lubridate::seconds(..6), "%Y%m%d_%H%M%S"), ".", ..4),
+                              extensible = T),
+      .options = furrr::furrr_options(seed = T))
 
-  for (i in seq_along(start_times)) {
-    inp %>>%
-      "Chopping the regular segments" %>>%
-      furrr::future_pmap(
-        ..1 = .$file_path,
-        ..2 = .$recording_date_time,
-        ..3 = .$location,
-        ..4 = .$file_type,
-        .f = ~ tuneR::writeWave(tuneR::readWave(..1, from = start_times[[i]], to = start_times[[i]] + segment_length, units = "seconds"),
-                                filename = paste0(outroot, ..3, "_", format(..2 + lubridate::seconds(start_times[[i]]), "%Y%m%d_%H%M%S"), ".", ..4),
-                                extensible = T),
-        .options = furrr::furrr_options(seed = T)
-      )
-  }
+  return(inp2)
+
 }
 
 #' Linking media to WildTrax
