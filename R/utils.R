@@ -138,15 +138,20 @@
 
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
-  #Get the gis data
-  .rlcc <- terra::rast(system.file("extdata", "lcc.tif",
-                       package="wildRtrax"))
-  .rtree <- terra::rast(system.file("extdata", "tree.tif",
-                        package="wildRtrax"))
-  .rd1 <- terra::rast(system.file("extdata", "seedgrow.tif",
-                      package="wildRtrax"))
-  .rtz <- terra::rast(system.file("extdata", "utcoffset.tif",
-                      package="wildRtrax"))
+  # Download message
+  message("Download geospatial assets. This may take a moment.")
+
+  # Get tifs from assets repo
+  .rlcc <- terra::raster(download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", destfile = "lcc.tif"))
+  .rtree <- terra::raster(download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", destfile = "tree.tif"))
+  .rd1 <- terra::raster(download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", destfile = "seedgrow.tif"))
+  .rtz <- terra::raster(download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", destfile = "utcoffset.tif"))
+
+  message("Reading tifs and removing assets")
+
+  # Remove once downloaded and read
+  file.remove(list.files(pattern = "*.tif"))
+
   crs <- terra::crs(.rtree)
 
   #get vars
