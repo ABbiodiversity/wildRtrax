@@ -1,3 +1,10 @@
+# wildRtrax 1.1.1
+
+## Minor changes
+
+* `wt_chop()` now recurses across all input files
+* Addition of [Camera data wrangling vignette]()
+
 # wildRtrax 1.1.0
 
 ## Major changes

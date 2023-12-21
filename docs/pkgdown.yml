@@ -6,8 +6,9 @@ articles:
   acoustic-pre-processing: acoustic-pre-processing.html
   apis: apis.html
   audio-data-concepts: audio-data-concepts.html
+  camera-data-wrangling: camera-data-wrangling.html
   introduction: introduction.html
-last_built: 2023-10-16T19:41Z
+last_built: 2023-12-21T18:01Z
 urls:
   reference: https://abbiodiversity.github.io/wildRtrax/reference
   article: https://abbiodiversity.github.io/wildRtrax/articles

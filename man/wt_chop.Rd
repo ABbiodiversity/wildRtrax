@@ -2,7 +2,7 @@
 % Please edit documentation in R/acoustic-pre-processing.R
 \name{wt_chop}
 \alias{wt_chop}
-\title{Segment a large audio file}
+\title{Segment large audio files}
 \usage{
 wt_chop(input = NULL, segment_length = NULL, output_folder = NULL)
 }
@@ -17,11 +17,11 @@ wt_chop(input = NULL, segment_length = NULL, output_folder = NULL)
 Segmented files written to the output_folder
 }
 \description{
-"Chops" up a wav file into many smaller files of a desired duration
+"Chops" up wav files into many smaller files of a desired duration
 }
 \examples{
 \dontrun{
-wt_chop(input = my_audio_tibble \%>\% slice(1),
+wt_chop(input = my_audio_tibble,
  segment_length = 60, output_folder "/where/i/store/my/chopped/files")
 }
 
