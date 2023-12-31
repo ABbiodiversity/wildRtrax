@@ -7,7 +7,7 @@
 #' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.
 #' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, `wt_audio_scanner` will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
 #'
-#' @import future fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr seewave progressr
+#' @import fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr seewave progressr
 #' @importFrom lubridate year ymd_hms yday with_tz
 #' @importFrom rlang env_has current_env
 #' @export
@@ -20,6 +20,7 @@
 #' @return A tibble with a summary of your audio files.
 
 wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
+
   # Create regex for file_type
   if (file_type == "wav" || file_type == "WAV") {
     file_type_reg <- "\\.wav$|\\.WAV$"
@@ -39,43 +40,43 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   # Scan files, gather metadata
   df <- tibble::as_tibble(x = path)
 
-  # Track progress of file reading
-  progressr::with_progress({
-    p <- progressr::progressor(steps = nrow(df))
-    df <- df %>>%
-      "Scanning files in path..." %>>%
-      dplyr::mutate(file_path = furrr::future_map(.x = value, .f = ~ fs::dir_ls(path = .x, regexp = file_type_reg, recurse = T, fail = F), .options = furrr_options(seed = TRUE)))
-  })
+  df <- df %>>%
+    'Readining files from directory...' %>>%
+      mutate(file_path = future_map(
+        .x = value,
+        .f = function(x) {
+          p$tick()  # Increment progress bar
+          fs::dir_ls(path = x, regexp = file_type_reg, recurse = TRUE, fail = FALSE)
+        },
+        .options = furrr_options(seed = TRUE)
+      ))
 
   # Create the main tibble
   df <- df %>%
     tidyr::unnest(file_path) %>%
-    dplyr::mutate(file_size = furrr::future_map_dbl(.x = file_path, .f = ~ fs::file_size(.x), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
-    dplyr::mutate(file_path = as.character(file_path)) %>%
-    dplyr::mutate(size_Mb = round(file_size / 10e5, digits = 2)) %>% # Convert file sizes to megabytes
-    dplyr::select(-file_size) %>%
-    dplyr::mutate(unsafe = dplyr::case_when(size_Mb <= 0.5 ~ "Unsafe", TRUE ~ "Safe")) %>% #Create safe scanning protocol, pretty much based on file size
+    dplyr::mutate(size_Mb = round(furrr::future_map_dbl(.x = file_path, .f = ~ fs::file_size(.x), .progress = TRUE, .options = furrr_options(seed = TRUE)) / 10e5, digits = 2),
+                  file_path = as.character(file_path)) %>% # Convert file sizes to megabytes
+    dplyr::mutate(unsafe = dplyr::case_when(size_Mb <= 0.5 ~ "Unsafe", TRUE ~ "Safe")) %>% # Create safe scanning protocol, pretty much based on file size
     dplyr::select(file_path, size_Mb, unsafe) %>%
-    dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", "")) %>%
-    dplyr::mutate(file_type = tolower(tools::file_ext(file_path))) %>%
-    # Parse location and recording date time
-    tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = FALSE) %>% # Strips Wildlife Acoustics SM3 file naming convention for channels
-    dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)')) %>%
-    # Create date/time fields
-    dplyr::mutate(recording_date_time = case_when(tz == "" ~ lubridate::ymd_hms(recording_date_time), TRUE ~ lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = tz)),
+    dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", ""),
+                  file_type = tolower(tools::file_ext(file_path))) %>%
+    # Parse location, recording date time and other temporal columns
+    tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = FALSE) %>%
+    dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)'),
+                  recording_date_time = case_when(tz == "" ~ lubridate::ymd_hms(recording_date_time), TRUE ~ lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = tz)),
                   julian = lubridate::yday(recording_date_time),
                   year = lubridate::year(recording_date_time),
                   gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE),
                   year = lubridate::year(recording_date_time)) %>%
     dplyr::arrange(location, recording_date_time) %>%
     dplyr::group_by(location, year, julian) %>%
-    dplyr::mutate(time_index = dplyr::row_number()) %>% # Create time index - this is an ordered list of the recording per day.
+    dplyr::mutate(time_index = dplyr::row_number()) %>% # Create time index - this is an ordered list of the recording per day, e.g. first recording of the day = 1, second equals 2, etc.
     dplyr::ungroup()
 
   # Check if nothing was returned
   if (nrow(df) == 0) {
     stop (
-      "There were no files of the type specified in file_path in the directory path specified."
+      "No files of the specified file type were found in this directory."
     )
   }
 
@@ -89,7 +90,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     df <- df %>%
       filter(unsafe == "Safe")
 
-    # wav files first
+    # Scan the wav files first
     if ("wav" %in% df$file_type) {
       with_progress({p <- progressr::progressor(steps = nrow(df))
       df_wav <- df %>>%
@@ -133,24 +134,9 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   }
 
   # Stitch together
-  if (rlang::env_has(rlang::current_env(), "df_final_simple")) {
-    df_final <- df_final_simple
-  } else if (exists("df_wav") & !exists("df_wac") & !exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wav, df_unsafe)
-  } else if (exists("df_wav") & exists("df_wac") & !exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wav, df_wac, df_unsafe)
-  } else if (exists("df_wav") & !exists("df_wac") & exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wav, df_flac, df_unsafe)
-  } else if (!exists("df_wav") & exists("df_wac") & !exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wac, df_unsafe)
-  } else if (!exists("df_wav") & !exists("df_wac") & exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_flac, df_unsafe)
-  } else if (!exists("df_wav") & exists("df_wac") & exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wac, df_flac, df_unsafe)
-  } else if (exists("df_wav") & exists("df_wac") & exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wac, df_wav, df_flac, df_unsafe) %>%
+  df_list <- mget(c("df_final_simple", "df_wav", "df_wac", "df_flac", "df_unsafe"), envir = .GlobalEnv)
+  df_final <- dplyr::bind_rows(df_list) %>%
       select_if(~any(!is.na(unsafe)))
-  }
 
   df_final <- df_final %>%
     select(-unsafe)
