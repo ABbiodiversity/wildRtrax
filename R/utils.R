@@ -139,15 +139,19 @@
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
   # Download message
-  message("Download geospatial assets. This may take a moment.")
+  message("Downloading geospatial assets. This may take a moment.")
 
-  # Get tifs from assets repo
-  .rlcc <- terra::raster(download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", destfile = "lcc.tif"))
-  .rtree <- terra::raster(download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", destfile = "tree.tif"))
-  .rd1 <- terra::raster(download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", destfile = "seedgrow.tif"))
-  .rtz <- terra::raster(download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", destfile = "utcoffset.tif"))
+  # Get tifs from assets repo. Maybe something better later!
+  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", destfile = "lcc.tif")
+  .rlcc <- terra::rast("lcc.tif")
+  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", destfile = "tree.tif")
+  .rtree <- terra::rast("tree.tif")
+  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", destfile = "seedgrow.tif")
+  .rd1 <- terra::rast("seedgrow.tif")
+  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", destfile = "utcoffset.tif")
+  .rtz <- terra::rast("utcoffset.tif")
 
-  message("Reading tifs and removing assets")
+  message("Reading tifs and removing assets from local")
 
   # Remove once downloaded and read
   file.remove(list.files(pattern = "*.tif"))

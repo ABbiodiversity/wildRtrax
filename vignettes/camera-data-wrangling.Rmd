@@ -86,6 +86,7 @@ eh14_summarised <- wt_summarise_cam(
 ```{r eval=FALSE, echo=TRUE, include=TRUE}
 
 library(wildRtrax)
+
 Sys.setenv(WT_USERNAME = "*****",
            WT_PASSWORD = "*****")
 wt_auth()

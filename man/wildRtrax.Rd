@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
+wildRtrax is an R package that enables environmental sensor users to create comprehensive work flows for managing and analyzing data.
 }
 \seealso{
 Useful links:

@@ -15,7 +15,7 @@ utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext"
                          "presence", "tasks", "report", "|>", "cam", "aru", "pc",
                          "dat", "tag_start", "tag_clip_url", "species", "filetype","method","proj4string","unsafe","wac_info",
                          "file_type","length_seconds","input","species_code","recording_date","occur","visit","list_all","FileName",
-                         "ResultMinute","ResultStartSeconds","SegmentDurationSeconds","RankOrder","ZeroSignal","late19","index_variable",
+                         "ResultMinute","ResultStartSeconds","SegmentDurationSeconds","RankOrder","ZeroSignal","index_variable",
                          "ggplot","aes","index_value","geom_boxplot","scale_fill_viridis_d","theme_bw","facet_wrap","theme","guides","guide_legend",
                          "xlab","ylab","ggtitle","INDIR","IN FILE","DURATION","OFFSET","Dur","DATE","TIME","AUTO ID*","Fmin","Fmax",
                          "ALFL", "Quality", "RDA1", "RDA2", "Score", "Unknown", "YRWA", "abiotic_codes", "abundance",
@@ -40,4 +40,4 @@ utils::globalVariables(c("%>>%", ".", "name", "size_Mb", "file_path", "file_ext"
                          "tag_spectrogram_url",
                          "task_method",
                          "wt_spp_table","<<-","clip_type","output_filename","image_date_time",
-                         "unlist", "PC", "sens","organizationId","organizationName"))
+                         "unlist", "PC", "sens","organizationId","organizationName","spectrogram_url","longer","start_times"))

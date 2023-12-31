@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```{r setup, echo=FALSE, include=FALSE, eval=TRUE}
 # Attach package
 library(wildRtrax)
-library(tidyverse)
+library(dplyr)
 ```
 
 ## Set up WildTrax credentials

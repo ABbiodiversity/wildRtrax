@@ -289,6 +289,7 @@ wt_flac_info <- function(path) {
 #' @return Output will return to the specific root directory
 
 wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir, path_to_ap = "C:\\AP\\AnalysisPrograms.exe") {
+
   # Make sure at least (and only) one of x or audio_folder has been supplied
   if (is.null(x) & is.null(audio_dir)) {
     stop(
@@ -331,18 +332,12 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
     files <- list.files(audio_dir, pattern = supported_formats, full.names = TRUE)
   }
 
-  # Plan how to resolve futures
-  future::plan(multisession, workers = 2)
-
-  # Track progress of run
-  # progressr::with_progress({
-  #   p <- progressr::progressor(steps = nrow(files))
     files <- files %>>%
-      "Starting AP run - this may take a while depending on your machine..." %>>%
+      "Starting AnalysisPrograms run - this may take a while depending on your machine and how many files you want to process..." %>>%
       tibble::as_tibble() %>%
       dplyr::rename("file_path" = 1) %>%
       furrr::future_map(.x = .$file_path, .f = ~ suppressMessages(system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)), furrr_options(seed = T)))
-  # })
+
   return(message('Done!'))
 
 }
@@ -357,7 +352,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #' @param input_dir Character; A folder path where outputs from \code{`wt_run_ap`} are stored.
 #' @param purpose Character; type of filtering you can choose from
 #'
-#' @import tidyverse lubridate magick
+#' @import lubridate magick dplyr tidyr ggplot2
 #' @export
 #'
 #' @examples
@@ -388,18 +383,18 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   if (dir.exists(input_dir)) {
     ind <-
       fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) %>%
-      map_dfr( ~ read_csv(., show_col_types = F)) %>%
-      relocate(c(FileName, ResultMinute)) %>%
-      select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
-      pivot_longer(!c(FileName, ResultMinute),
+      purrr::map_dfr( ~ read_csv(., show_col_types = F)) %>%
+      dplyr::relocate(c(FileName, ResultMinute)) %>%
+      dplyr::select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
+      tidyr::pivot_longer(!c(FileName, ResultMinute),
                    names_to = "index_variable",
                    values_to = "index_value")
 
     ldfcs <-
       fs::dir_info(input_dir, regexp = "*__2Maps.png", recurse = T) %>%
-      select(path) %>%
-      rename("image" = 1) %>%
-      mutate(file_name = str_replace(basename(image), '__2Maps.png', ''))
+      dplyr::select(path) %>%
+      dplyr::rename("image" = 1) %>%
+      dplyr::mutate(file_name = str_replace(basename(image), '__2Maps.png', ''))
 
   } else {
     stop("Cannot find this directory")
@@ -407,32 +402,32 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
 
   # Join the indices and LDFCs to the media
   joined <- files %>%
-    inner_join(., ind, by = c("file_name" = "FileName")) %>%
-    inner_join(., ldfcs, by = c("file_name" = "file_name")) %>>%
+    dplyr::inner_join(., ind, by = c("file_name" = "FileName")) %>%
+    dplyr::inner_join(., ldfcs, by = c("file_name" = "file_name")) %>>%
     "Files joined!"
 
   joined_purpose <- joined %>%
-    filter(index_variable %in% purpose_list)
+    dplyr::filter(index_variable %in% purpose_list)
 
   # Plot a summary of the indices
   plotted <- joined_purpose %>%
-    ggplot(., aes(x=julian, y=index_value, group=julian, fill=index_variable)) +
-    geom_boxplot() +
-    scale_fill_viridis_d() +
-    theme_bw() +
-    facet_wrap(~index_variable, scales = "free_y") +
-    theme(legend.position="right", legend.box = "horizontal") +
-    guides(fill = guide_legend(title="New Legend Title")) +
-    guides(fill = guide_legend(nrow = 25, ncol = 1)) +
-    xlab("Julian Date") +
-    ylab("Index value") +
-    ggtitle("Summary of indices")
+    ggplot2::ggplot(., aes(x=julian, y=index_value, group=julian, fill=index_variable)) +
+    ggplot2::geom_boxplot() +
+    ggplot2::scale_fill_viridis_d() +
+    ggplot2::theme_bw() +
+    ggplot2::facet_wrap(~index_variable, scales = "free_y") +
+    ggplot2::theme(legend.position="right", legend.box = "horizontal") +
+    ggplot2::guides(fill = guide_legend(title="New Legend Title")) +
+    ggplot2::guides(fill = guide_legend(nrow = 25, ncol = 1)) +
+    ggplot2::xlab("Julian Date") +
+    ggplot2::ylab("Index value") +
+    ggplot2::ggtitle("Summary of indices")
 
   # Plot the LDFC
   ldfc <- joined_purpose %>%
-    select(image) %>%
-    distinct() %>%
-    map(function(x){magick::image_read(x)}) %>%
+    dplyr::select(image) %>%
+    dplyr::distinct() %>%
+    purrr::map(function(x){magick::image_read(x)}) %>%
     do.call("c", .) %>%
     magick::image_append()
 
@@ -463,14 +458,15 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
 #'
 
 wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "left", aggregate = NULL) {
+
   # Load wav object from path
   wav_object <- tuneR::readWave(path)
 
   # Sampling frequency
   sampling_frequency <- wav_object@samp.rate
+
   # Recording duration
-  recording_duration <-
-    length(wav_object@left) / sampling_frequency
+  recording_duration <- length(wav_object@left) / sampling_frequency
 
   # Check that channel is set to either left or right
   if (!(channel == "left" | channel == "right")) {
@@ -488,6 +484,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 
   # Remove DC offset
   wav_object <- wav_object - mean(wav_object)
+
   # Set breaks
   breaks <- seq(0, recording_duration, 300)
   if (breaks[length(breaks)] != recording_duration) {
@@ -667,7 +664,7 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
 #' @param task_method Character; Method type of the task. Options are 1SPM, 1SPT and None. See Methods(https://www.wildtrax.ca/home/resources/guide/acoustic-data/acoustic-tagging-methods.html) in WildTrax for more details.
 #' @param task_length Numeric; Task length in seconds. Must be between 1 - 1800 and can be up to two decimal places.
 #'
-#' @import dplyr tidyr readr pipeR stringr lubridate tibble
+#' @import dplyr tidyr readr stringr lubridate tibble
 #' @importFrom lubridate ymd_hms with_tz
 #' @export
 #'
@@ -694,7 +691,7 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
   req_methods <- c("1SPM","1SPT","None")
 
   if (!(task_method %in% req_methods)) {
-    stop("This isn't an accepted method.")
+    stop("This isn't an accepted method. Use 1SPM, 1SPT or None.")
   }
 
   if ((is.numeric(task_length) & task_length >= 1 & task_length < 1800)==FALSE) {
@@ -833,7 +830,7 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
 #' @param score_filter Numeric; Filter the detections by score
 #' @param task_length Numeric; length of the task in seconds
 #'
-#' @import dplyr tidyr readr pipeR stringr lubridate tibble
+#' @import dplyr tidyr readr lubridate tibble
 #' @export
 #'
 #' @return A csv formatted as a WildTrax tag template

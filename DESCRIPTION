@@ -8,7 +8,7 @@ Authors@R:
            email = "agmacpha@ualberta.ca"),
       person(given = "Marcus",
              family = "Becker",
-             role = c("aut", "cre"),
+             role = c("aut"),
              email = "mabecker@ualberta.ca"),
       person(given = "Elly",
              family = "Knight",
@@ -16,7 +16,7 @@ Authors@R:
              email = "ecknight@ualberta.ca"))
 Author: Alex MacPhail
 Maintainer: Marcus Becker <mabecker@ualberta.ca>
-Description: wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
+Description: wildRtrax is an R package that enables environmental sensor users to create comprehensive work flows for managing and analyzing data.
 Depends: R (>= 4.1.0)
 License: MIT + file LICENSE
 Imports:
@@ -25,6 +25,7 @@ Imports:
     fs,
     furrr,
     tibble,
+    utils,
     tidyr (>= 1.0.2),
     lubridate,
     tools,
@@ -36,7 +37,6 @@ Imports:
     readr,
     sf,
     stringr,
-    tidyverse,
     purrr,
     rlang,
     unmarked,
@@ -47,7 +47,8 @@ Imports:
     progressr,
     rmarkdown,
     markdown,
-    QPAD
+    QPAD,
+    ggplot2
 Suggests: 
     testthat (>= 3.0.0),
     usethis,
