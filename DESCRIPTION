@@ -25,7 +25,6 @@ Imports:
     fs,
     furrr,
     tibble,
-    utils,
     tidyr (>= 1.0.2),
     lubridate,
     tools,

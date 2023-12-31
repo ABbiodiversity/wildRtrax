@@ -17,8 +17,6 @@
 #' @param end_col The column indicating the end date of the camera location
 #'
 #' @import dplyr lubridate tidyr
-#' @importFrom stringr str_detect
-#' @importFrom rlang is_missing
 #' @export
 #'
 #' @examples
@@ -35,17 +33,17 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
                              start_col = NULL, end_col = NULL) {
 
   # Make sure one of raw_data or effort_data is supplied
-  if (is_missing(raw_data) & is.null(effort_data)) {
+  if (rlang::is_missing(raw_data) & is.null(effort_data)) {
     stop("Please supply a value for one of `raw_data` or `effort_data`.")
   }
 
   # Check that only one is supplied
-  if(!is_missing(raw_data) & !is.null(effort_data)) {
+  if(!rlang::is_missing(raw_data) & !is.null(effort_data)) {
     stop("Please only supply a value for one of `raw_data` or `effort_data`.")
   }
 
   # Parse the raw or effort data to get time ranges for each camera deployment.
-  if (!is_missing(raw_data)) {
+  if (!rlang::is_missing(raw_data)) {
     x <- raw_data %>%
       mutate(image_date_time = ymd_hms(image_date_time)) %>%
       group_by(project_id, location) %>%
@@ -169,7 +167,6 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
 #' @param remove_domestic Logical; Should domestic animal tags (e.g. cows) be removed? Defaults to TRUE.
 #'
 #' @import dplyr lubridate
-#' @importFrom stringr str_detect
 #' @export
 #'
 #' @examples
@@ -222,7 +219,7 @@ wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = image
   x <- filter(x, !species_common_name %in% t)
   if (remove_domestic) {
     # All tags in WildTrax that refer to domestic animals begin with 'Domestic __'
-    x <- filter(x, !str_detect(species_common_name, "^Domestic"))
+    x <- filter(x, !stringr::str_detect(species_common_name, "^Domestic"))
   }
 
   # Create ordered dataframe, and calculate time interval between images.

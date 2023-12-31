@@ -352,7 +352,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #' @param input_dir Character; A folder path where outputs from \code{`wt_run_ap`} are stored.
 #' @param purpose Character; type of filtering you can choose from
 #'
-#' @import lubridate magick dplyr tidyr ggplot2
+#' @import lubridate magick dplyr tidyr ggplot2 readr
 #' @export
 #'
 #' @examples
@@ -383,7 +383,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   if (dir.exists(input_dir)) {
     ind <-
       fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) %>%
-      purrr::map_dfr( ~ read_csv(., show_col_types = F)) %>%
+      purrr::map_dfr( ~ readr::read_csv(., show_col_types = F)) %>%
       dplyr::relocate(c(FileName, ResultMinute)) %>%
       dplyr::select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
       tidyr::pivot_longer(!c(FileName, ResultMinute),
