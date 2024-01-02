@@ -367,5 +367,3 @@
     offset=log(p) + log(A) + log(q))
 
 }
-
-
