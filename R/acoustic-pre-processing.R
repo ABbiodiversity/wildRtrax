@@ -8,8 +8,6 @@
 #' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, `wt_audio_scanner` will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
 #'
 #' @import fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr seewave progressr
-#' @importFrom lubridate year ymd_hms yday with_tz
-#' @importFrom rlang env_has current_env
 #' @export
 #'
 #' @examples
@@ -41,15 +39,21 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   df <- tibble::as_tibble(x = path)
 
   df <- df %>>%
-    'Readining files from directory...' %>>%
+    'Reading files from directory...' %>>%
       mutate(file_path = future_map(
         .x = value,
         .f = function(x) {
-          p$tick()  # Increment progress bar
           fs::dir_ls(path = x, regexp = file_type_reg, recurse = TRUE, fail = FALSE)
         },
         .options = furrr_options(seed = TRUE)
       ))
+
+  # Check if nothing was returned
+  if (nrow(df) == 0) {
+    stop (
+      "No files of the specified file type were found in this directory."
+    )
+  }
 
   # Create the main tibble
   df <- df %>%
@@ -62,23 +66,25 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
                   file_type = tolower(tools::file_ext(file_path))) %>%
     # Parse location, recording date time and other temporal columns
     tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = FALSE) %>%
-    dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)'),
-                  recording_date_time = case_when(tz == "" ~ lubridate::ymd_hms(recording_date_time), TRUE ~ lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = tz)),
-                  julian = lubridate::yday(recording_date_time),
-                  year = lubridate::year(recording_date_time),
-                  gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE),
-                  year = lubridate::year(recording_date_time)) %>%
+    dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)'))
+
+  if(tz == ""){
+    df <- df %>%
+      mutate(recording_date_time = lubridate::ymd_hms(recording_date_time))
+  } else if (tz != "") {
+    df <- df %>%
+      mutate(recording_date_time = lubridate::force_tz(lubridate::ymd_hms(recording_date_time), tzone = tz))
+  }
+
+  df <- df %>%
+    mutate(julian = lubridate::yday(recording_date_time),
+           year = lubridate::year(recording_date_time),
+           gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE),
+           year = lubridate::year(recording_date_time)) %>%
     dplyr::arrange(location, recording_date_time) %>%
     dplyr::group_by(location, year, julian) %>%
     dplyr::mutate(time_index = dplyr::row_number()) %>% # Create time index - this is an ordered list of the recording per day, e.g. first recording of the day = 1, second equals 2, etc.
     dplyr::ungroup()
-
-  # Check if nothing was returned
-  if (nrow(df) == 0) {
-    stop (
-      "No files of the specified file type were found in this directory."
-    )
-  }
 
   if (extra_cols == FALSE) {
     df_final_simple <- df # Omit the extra columns if chosen
@@ -86,60 +92,77 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
 
     # Filter out the unsafe recordings - re-append later
     df_unsafe <- df %>%
-      filter(unsafe == "Unsafe")
+      dplyr::filter(unsafe == "Unsafe") %>%
+      dplyr::select(-unsafe)
     df <- df %>%
-      filter(unsafe == "Safe")
+      dplyr::filter(unsafe == "Safe") %>%
+      dplyr::select(-unsafe)
 
     # Scan the wav files first
     if ("wav" %in% df$file_type) {
-      with_progress({p <- progressr::progressor(steps = nrow(df))
       df_wav <- df %>>%
         "Working on wav files..." %>>%
-        dplyr::filter(file_type == "wav") %>% #Make sure things are safe if needed
+        dplyr::filter(file_type == "wav")
+      with_progress({p <- progressr::progressor(steps = nrow(df_wav))
+      df_wav <- df_wav %>%
         dplyr::mutate(data = furrr::future_map(.x = file_path, .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
         dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]), 2)),
                       sample_rate = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["sample.rate"]]), 2)),
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
-        dplyr::select(-c(data, unsafe))
+        dplyr::select(-data)
       })
     }
 
     #Then wac files
     if ("wac" %in% df$file_type) {
-      with_progress({p <- progressr::progressor(steps = nrow(df))
       df_wac <- df %>>%
         "Working on wac files..." %>>%
-        dplyr::filter(file_type == "wac") %>%
+        dplyr::filter(file_type == "wac")
+      with_progress({p <- progressr::progressor(steps = nrow(df_wac))
+      df_wac <- df_wac %>%
         dplyr::mutate(wac_info = furrr::future_map(.x = file_path, .f = ~ wt_wac_info(.x), .progress = TRUE, .options = furrr_options(seed = TRUE)),
                       sample_rate = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
                       length_seconds = purrr::map_dbl(.x = wac_info, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
                       n_channels = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
-        dplyr::select(-c(wac_info, unsafe))
+        dplyr::select(-wac_info)
       })
     }
 
     #Finally flac
     if ("flac" %in% df$file_type) {
-      with_progress({p <- progressr::progressor(steps = nrow(df))
       df_flac <- df %>>%
         "Working on flac files..." %>>%
-        dplyr::filter(file_type == "flac") %>%
+        dplyr::filter(file_type == "flac")
+      with_progress({p <- progressr::progressor(steps = nrow(df_flac))
+      df_flac <- df_flac %>%
         dplyr::mutate(flac_info = furrr::future_map(.x = file_path, .f = ~ wt_flac_info(.x), .options = furrr_options(seed = TRUE)),
-                      sample_rate = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["sample_rate"]])),
-                      length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
-                      n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
-        dplyr::select(-c(data, unsafe))
+                      sample_rate = purrr::map_dbl(.x = flac_info, .f = ~ purrr::pluck(.x, 1)),
+                      length_seconds = purrr::map_dbl(.x = flac_info, .f = ~ round(purrr::pluck(.x, 3), 2)),
+                      n_channels = 0) %>%
+        dplyr::select(-flac_info)
       })
     }
   }
 
   # Stitch together
-  df_list <- mget(c("df_final_simple", "df_wav", "df_wac", "df_flac", "df_unsafe"), envir = .GlobalEnv)
-  df_final <- dplyr::bind_rows(df_list) %>%
-      select_if(~any(!is.na(unsafe)))
-
-  df_final <- df_final %>%
-    select(-unsafe)
+  # Stitch together
+  if (rlang::env_has(rlang::current_env(), "df_final_simple")) {
+    df_final <- df_final_simple
+  } else if (exists("df_wav") & !exists("df_wac") & !exists("df_flac")) {
+    df_final <- dplyr::bind_rows(df_wav, df_unsafe)
+  } else if (exists("df_wav") & exists("df_wac") & !exists("df_flac")) {
+    df_final <- dplyr::bind_rows(df_wav, df_wac, df_unsafe)
+  } else if (exists("df_wav") & !exists("df_wac") & exists("df_flac")) {
+    df_final <- dplyr::bind_rows(df_wav, df_flac, df_unsafe)
+  } else if (!exists("df_wav") & exists("df_wac") & !exists("df_flac")) {
+    df_final <- dplyr::bind_rows(df_wac, df_unsafe)
+  } else if (!exists("df_wav") & !exists("df_wac") & exists("df_flac")) {
+    df_final <- dplyr::bind_rows(df_flac, df_unsafe)
+  } else if (!exists("df_wav") & exists("df_wac") & exists("df_flac")) {
+    df_final <- dplyr::bind_rows(df_wac, df_flac, df_unsafe)
+  } else if (exists("df_wav") & exists("df_wac") & exists("df_flac")) {
+    df_final <- dplyr::bind_rows(df_wac, df_wav, df_flac, df_unsafe)
+  }
 
   # Return final data frame
   return(df_final)
@@ -251,11 +274,11 @@ wt_flac_info <- function(path) {
     stop("This is not a flac file.")
   }
 
-  newfile <- gsub(".flac$", ".wav", input)
+  newfile <- gsub(".flac", ".wav", path)
 
-  seewave::wav2flac(input, reverse = T)
+  seewave::wav2flac(path, reverse = T)
 
-  info <- tuneR::readWave(newfile, from = 0, to = Inf, units = "seconds", header = T)
+  info <- tuneR::readWave(newfile, header = T)
 
   file.remove(newfile)
 
@@ -446,7 +469,6 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
 #' @param aggregate Aggregate detections by this number of seconds, if desired
 #'
 #' @import tuneR dplyr
-#' @importFrom seewave spectro
 #' @export
 #'
 #' @examples
@@ -614,16 +636,16 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
                   length_seconds = round(length_seconds,0))
 
   too_long <- inp %>%
-    filter(longer == FALSE)
+    dplyr::filter(longer == FALSE)
 
   if (nrow(too_long) > 1) {
     stop('Segment is longer than duration. Choose a shorter segment length.')
   }
 
   inp2 <- inp %>%
-    mutate(start_times = map2(.x = length_seconds, .y = segment_length, .f = ~seq(0, .x - .y, by = .y))) %>%
-    unnest(start_times) %>%
-    mutate(val = max(start_times) + segment_length,
+    dplyr::mutate(start_times = map2(.x = length_seconds, .y = segment_length, .f = ~seq(0, .x - .y, by = .y))) %>%
+    tidyr::unnest(start_times) %>%
+    dplyr::mutate(val = max(start_times) + segment_length,
            ry = case_when(val < length_sec ~ "Modulo", TRUE ~ "Fixed"))
 
   inp2 %>>%
@@ -664,8 +686,7 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
 #' @param task_method Character; Method type of the task. Options are 1SPM, 1SPT and None. See Methods(https://www.wildtrax.ca/home/resources/guide/acoustic-data/acoustic-tagging-methods.html) in WildTrax for more details.
 #' @param task_length Numeric; Task length in seconds. Must be between 1 - 1800 and can be up to two decimal places.
 #'
-#' @import dplyr tidyr readr stringr lubridate tibble
-#' @importFrom lubridate ymd_hms with_tz
+#' @import dplyr tibble
 #' @export
 #'
 #' @examples
@@ -742,8 +763,7 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
 #' @param tz Character; Assigns a timezone to the recording files. Use `OlsonNames()` to get a list of valid names.
 #' @param freq_bump Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification
 #'
-#' @import dplyr tidyr readr pipeR stringr lubridate tibble
-#' @importFrom lubridate ymd_hms with_tz
+#' @import dplyr tidyr readr tibble
 #' @export
 #'
 #' @examples
