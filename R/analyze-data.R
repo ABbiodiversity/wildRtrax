@@ -1,6 +1,6 @@
 #' Set of analysis functions
 #'
-#' @section Summarise your camera data by location, time interval, and species.
+#' @section Summarise camera data by location, time interval, and species.
 #'
 #' @description This function takes your independent detection data and summarises it by location, specified time interval, and species.
 #'
@@ -154,10 +154,9 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day", varia
 
 }
 
+#' Evaluate independent camera detections
 #'
-#' Evaluate independent detections in your camera data
-#'
-#' @description Create independent detections dataframe using camera data from WildTrax
+#' @description Create an independent detections dataframe using camera data from WildTrax
 #'
 #' @param x A dataframe of camera data; preferably, the main report from `wt_download_report()`.
 #' @param threshold Numeric; time interval to parse out independent detections.

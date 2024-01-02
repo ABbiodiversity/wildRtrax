@@ -2,7 +2,7 @@
 % Please edit documentation in R/analyze-data.R
 \name{wt_ind_detect}
 \alias{wt_ind_detect}
-\title{Evaluate independent detections in your camera data}
+\title{Evaluate independent camera detections}
 \usage{
 wt_ind_detect(
   x,
@@ -30,7 +30,7 @@ wt_ind_detect(
 A dataframe of independent detections in your camera data, based on the threshold you specified. The df wil include information about the duration of each detection, the number of images, the average number of individual animals per image, and the max number of animals in the detection.
 }
 \description{
-Create independent detections dataframe using camera data from WildTrax
+Create an independent detections dataframe using camera data from WildTrax
 }
 \examples{
 \dontrun{

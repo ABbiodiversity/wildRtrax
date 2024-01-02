@@ -40,13 +40,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
 
   df <- df %>>%
     'Reading files from directory...' %>>%
-      mutate(file_path = future_map(
-        .x = value,
-        .f = function(x) {
-          fs::dir_ls(path = x, regexp = file_type_reg, recurse = TRUE, fail = FALSE)
-        },
-        .options = furrr_options(seed = TRUE)
-      ))
+      dplyr::mutate(file_path = future_map(.x = value, .f = ~fs::dir_ls(path = x, regexp = file_type_reg, recurse = TRUE, fail = FALSE), .options = furrr_options(seed = TRUE)))
 
   # Check if nothing was returned
   if (nrow(df) == 0) {
@@ -70,14 +64,14 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
 
   if(tz == ""){
     df <- df %>%
-      mutate(recording_date_time = lubridate::ymd_hms(recording_date_time))
+      dplyr::mutate(recording_date_time = lubridate::ymd_hms(recording_date_time))
   } else if (tz != "") {
     df <- df %>%
-      mutate(recording_date_time = lubridate::force_tz(lubridate::ymd_hms(recording_date_time), tzone = tz))
+      dplyr::mutate(recording_date_time = lubridate::force_tz(lubridate::ymd_hms(recording_date_time), tzone = tz))
   }
 
   df <- df %>%
-    mutate(julian = lubridate::yday(recording_date_time),
+    dplyr::mutate(julian = lubridate::yday(recording_date_time),
            year = lubridate::year(recording_date_time),
            gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE),
            year = lubridate::year(recording_date_time)) %>%
@@ -103,7 +97,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       df_wav <- df %>>%
         "Working on wav files..." %>>%
         dplyr::filter(file_type == "wav")
-      with_progress({p <- progressr::progressor(steps = nrow(df_wav))
+      progressr::with_progress({p <- progressr::progressor(steps = nrow(df_wav))
       df_wav <- df_wav %>%
         dplyr::mutate(data = furrr::future_map(.x = file_path, .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
         dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]), 2)),
@@ -118,7 +112,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       df_wac <- df %>>%
         "Working on wac files..." %>>%
         dplyr::filter(file_type == "wac")
-      with_progress({p <- progressr::progressor(steps = nrow(df_wac))
+      progressr::with_progress({p <- progressr::progressor(steps = nrow(df_wac))
       df_wac <- df_wac %>%
         dplyr::mutate(wac_info = furrr::future_map(.x = file_path, .f = ~ wt_wac_info(.x), .progress = TRUE, .options = furrr_options(seed = TRUE)),
                       sample_rate = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
@@ -133,7 +127,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       df_flac <- df %>>%
         "Working on flac files..." %>>%
         dplyr::filter(file_type == "flac")
-      with_progress({p <- progressr::progressor(steps = nrow(df_flac))
+      progressr::with_progress({p <- progressr::progressor(steps = nrow(df_flac))
       df_flac <- df_flac %>%
         dplyr::mutate(flac_info = furrr::future_map(.x = file_path, .f = ~ wt_flac_info(.x), .options = furrr_options(seed = TRUE)),
                       sample_rate = purrr::map_dbl(.x = flac_info, .f = ~ purrr::pluck(.x, 1)),
@@ -275,11 +269,8 @@ wt_flac_info <- function(path) {
   }
 
   newfile <- gsub(".flac", ".wav", path)
-
   seewave::wav2flac(path, reverse = T)
-
   info <- tuneR::readWave(newfile, header = T)
-
   file.remove(newfile)
 
   return(
@@ -292,15 +283,15 @@ wt_flac_info <- function(path) {
 
 }
 
-#' Get a variety of acoustic index output from audio
+#' Get acoustic index values from audio
 #'
 #' @description For generating acoustic indices and false-colour spectrograms using QUT Ecoacoustics **A**nalysis **P**rograms software. See \url{https://github.com/QutEcoacoustics/audio-analysis} for information about usage and installation of the AP software.
 #' Note that this function relies on having this software installed locally.
 #'
 #' This function will batch calculate summary and spectral acoustic indices and generate false-colour spectrograms for a folder of audio files using the Towsey.Acoustic configuration (yml) file from the AP software.
-#' You can use the output from \code{`wt_audio_scanner`} in the function, or define a local folder with audio files directly.
+#' You can use the output from \code{`wt_audio_scanner()`} in the function, or define a local folder with audio files directly.
 #'
-#' @param x (optional) A data frame or tibble; must contain the absolute audio file path and file name. Use output from \code{`wt_audio_scanner`}.
+#' @param x (optional) A data frame or tibble; must contain the absolute audio file path and file name. Use output from \code{`wt_audio_scanner()`}.
 #' @param fp_col If x is supplied, the column containing the audio file paths. Defaults to file_path.
 #' @param audio_dir (optional) Character; path to directory storing audio files.
 #' @param output_dir Character; path to directory where you want outputs to be stored.
@@ -359,7 +350,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
       "Starting AnalysisPrograms run - this may take a while depending on your machine and how many files you want to process..." %>>%
       tibble::as_tibble() %>%
       dplyr::rename("file_path" = 1) %>%
-      furrr::future_map(.x = .$file_path, .f = ~ suppressMessages(system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)), furrr_options(seed = T)))
+      furrr::future_map(.x = .$file_path, .f = ~suppressMessages(system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)), furrr_options(seed = T)))
 
   return(message('Done!'))
 
@@ -367,12 +358,12 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 
 #' Extract and plot relevant acoustic index metadata and LDFCs
 #'
-#' @description This function will use a list of media files from a `wt_*` work flow and outputs from `wt_run_ap`
+#' @description This function will use a list of media files from a `wt_*` work flow and outputs from `wt_run_ap()`
 #' in order to generate summary plots of acoustic indices and long-duration false-colour spectrograms. This can
 #' be viewed as the "final step" in interpreting acoustic index and LDFC values from your recordings.
 #'
-#' @param x A data frame or tibble; must contain the file name. Use output from \code{`wt_audio_scanner`}.
-#' @param input_dir Character; A folder path where outputs from \code{`wt_run_ap`} are stored.
+#' @param x A data frame or tibble; must contain the file name. Use output from \code{`wt_audio_scanner()`}.
+#' @param input_dir Character; A folder path where outputs from \code{`wt_run_ap()`} are stored.
 #' @param purpose Character; type of filtering you can choose from
 #'
 #' @import lubridate magick dplyr tidyr ggplot2 readr
@@ -567,7 +558,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
           end_time_s = max(time)
         ) %>%
         dplyr::ungroup() %>%
-        mutate(detection_length = end_time_s - start_time_s)
+        dplyr::mutate(detection_length = end_time_s - start_time_s)
       aggregated <- TRUE
     } else {
       sl
@@ -673,15 +664,15 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
 #' The following suite of functions will help you wrangle media and data together
 #' in order to upload them to WildTrax. You can make tasks(https://www.wildtrax.ca/home/resources/guide/projects/aru-projects.html)
 #' and tags(https://www.wildtrax.ca/home/resources/guide/acoustic-data/acoustic-tagging-methods.html) using the results from a
-#' `wt_audio_scanner` tibble or the hits from one of two Wildlife Acoustics programs Songscope() and Kaleidoscpe().
+#' `wt_audio_scanner()` tibble or the hits from one of two Wildlife Acoustics programs Songscope() and Kaleidoscpe().
 #'
 #' Creating tasks from media
 #'
 #' @section `wt_make_aru_tasks`
 #'
-#' @description `wt_make_aru_tasks` uses a `wt_audio_scanner` input tibble to create a task template to upload to a WildTrax project.
+#' @description `wt_make_aru_tasks()` uses a `wt_audio_scanner()` input tibble to create a task template to upload to a WildTrax project.
 #'
-#' @param input Character; An input `wt_audio_scanner` tibble. If not a `wt_audio_scanner` tibble, the data must contain at minimum the location, recording_date_time and file_path as columns.
+#' @param input Character; An input `wt_audio_scanner()` tibble. If not a `wt_audio_scanner()` tibble, the data must contain at minimum the location, recording_date_time and file_path as columns.
 #' @param output Character; Path where the output task csv file will be stored
 #' @param task_method Character; Method type of the task. Options are 1SPM, 1SPT and None. See Methods(https://www.wildtrax.ca/home/resources/guide/acoustic-data/acoustic-tagging-methods.html) in WildTrax for more details.
 #' @param task_length Numeric; Task length in seconds. Must be between 1 - 1800 and can be up to two decimal places.
@@ -737,7 +728,7 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
     tibble::add_column(internal_task_id = "", .after = "taskComments")
 
   no_length <- tasks %>%
-    filter(is.na(taskLength))
+    dplyr::filter(is.na(taskLength))
 
   warning(nrow(no_length), ' rows are shorter than the desired task length')
 
@@ -874,15 +865,15 @@ wt_songscope_tags <- function (input, output = c("env","csv"),
 
   #Cleaning things up for the tag template
   in_tbl_wtd <- in_tbl %>%
-    rename("file_path" = 1) %>%
-    rename("startTime" = 2) %>%
-    rename("tagLength" = 3) %>%
-    rename("level" = 4) %>%
-    rename("Quality" = 5) %>%
-    rename("Score" = 6) %>%
-    rename("recognizer" = 7) %>%
-    rename("comments"= 8) %>%
-    mutate(file_name = tools::file_path_sans_ext(gsub("^.*(\\\\|/)", "", file_path))) %>%
+    dplyr::rename("file_path" = 1) %>%
+    dplyr::rename("startTime" = 2) %>%
+    dplyr::rename("tagLength" = 3) %>%
+    dplyr::rename("level" = 4) %>%
+    dplyr::rename("Quality" = 5) %>%
+    dplyr::rename("Score" = 6) %>%
+    dplyr::rename("recognizer" = 7) %>%
+    dplyr::rename("comments"= 8) %>%
+    dplyr::mutate(file_name = tools::file_path_sans_ext(gsub("^.*(\\\\|/)", "", file_path))) %>%
     tidyr::separate(file_name, into = c("location", "recordingDate"),
                     sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
     dplyr::mutate(startTime = as.numeric(startTime)) %>%
@@ -900,15 +891,15 @@ wt_songscope_tags <- function (input, output = c("env","csv"),
       dplyr::ungroup() %>%
       dplyr::mutate(vocalization = vocalization_type) %>%
       tibble::add_column(abundance = 1, .after= "vocalization") %>%
-      relocate(startTime, .after = abundance) %>%
-      relocate(tagLength, .after = startTime) %>%
+      dplyr::relocate(startTime, .after = abundance) %>%
+      dplyr::relocate(tagLength, .after = startTime) %>%
       tibble::add_column(minFreq = "", .after= "tagLength") %>%
       tibble::add_column(maxFreq = "", .after= "minFreq") %>%
       tibble::add_column(internal_tag_id = "", .after = "maxFreq") %>%
-      select(location, recordingDate, method, taskLength, transcriber, species,
+      dplyr::select(location, recordingDate, method, taskLength, transcriber, species,
              speciesIndividualNumber, vocalization, abundance, startTime, tagLength,
              minFreq, maxFreq, internal_tag_id, Quality, Score) %>%
-      filter(Score >= score_filter)
+      dplyr::filter(Score >= score_filter)
   } else if (method == "1SPT") {
     in_tbl_wtd <- in_tbl_wtd %>%
       tibble::add_column(method = "1SPT", .after = "recordingDate") %>%
@@ -921,15 +912,15 @@ wt_songscope_tags <- function (input, output = c("env","csv"),
       dplyr::filter(!speciesIndividualNumber > 1) %>%
       dplyr::mutate(vocalization = vocalization_type) %>%
       tibble::add_column(abundance = 1, .after= "vocalization") %>%
-      relocate(startTime, .after = abundance) %>%
-      relocate(tagLength, .after = startTime) %>%
+      dplyr::relocate(startTime, .after = abundance) %>%
+      dplyr::relocate(tagLength, .after = startTime) %>%
       tibble::add_column(minFreq = "", .after= "tagLength") %>%
       tibble::add_column(maxFreq = "", .after= "minFreq") %>%
       tibble::add_column(internal_tag_id = "", .after = "maxFreq") %>%
-      select(location, recordingDate, method, taskLength, transcriber, species,
+      dplyr::select(location, recordingDate, method, taskLength, transcriber, species,
              speciesIndividualNumber, vocalization, abundance, startTime, tagLength,
              minFreq, maxFreq, internal_tag_id, Quality, Score) %>%
-      filter(Score >= score_filter)
+      dplyr::filter(Score >= score_filter)
   } else {
     stop("Only USPM and 1SPT uploads are supported at this time")
   }

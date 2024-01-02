@@ -2,7 +2,7 @@
 % Please edit documentation in R/convenience-functions.R
 \name{wt_tidy_species}
 \alias{wt_tidy_species}
-\title{Filter the species list to the groups of interest from wt_get_species}
+\title{Filter species from a report}
 \usage{
 wt_tidy_species(
   data,
@@ -25,7 +25,7 @@ This function filters the species provided in WildTrax reports to only the group
 }
 \examples{
 \dontrun{
-dat.tmtt <- wt_tidy_species(dat,
+dat.tidy <- wt_tidy_species(dat,
 remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"),
 zerofill = TRUE)
 }

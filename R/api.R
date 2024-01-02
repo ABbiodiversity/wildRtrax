@@ -12,7 +12,6 @@
 #' wt_auth(force = FALSE)
 #' }
 #'
-#'
 
 wt_auth <- function(force = FALSE) {
 
@@ -26,14 +25,13 @@ wt_auth <- function(force = FALSE) {
 
 }
 
-#' Get download summary
+#' Get a download summary from WildTrax
 #'
 #' @description Obtain a table listing projects that the user is able to download data for
 #'
 #' @param sensor_id Can be one of "ARU", "CAM", or "PC"
 #'
-#' @importFrom httr content
-#' @importFrom dplyr select mutate across everything
+#' @import httr dplyr
 #'
 #' @export
 #'
@@ -71,13 +69,13 @@ wt_get_download_summary <- function(sensor_id) {
                      tasks,
                      #aoi = my_aoi,
                      status) |>
-    mutate(across(everything(), unlist))
+    dplyr::mutate(dplyr::across(dplyr::everything(), unlist))
 
 }
 
-#' Download Reports
+#' Download formatted reports from WildTrax
 #'
-#' @description Download ARU, Camera, or Point Count data from a project
+#' @description Download various ARU, camera, or point count data from projects across WildTrax
 #'
 #' @param project_id Numeric; the project ID number that you would like to download data for. Use `wt_get_download_summary()` to retrieve these IDs.
 #' @param sensor_id Character; Can either be "ARU", "CAM", or "PC".
@@ -253,7 +251,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   # List data files, read into R as a list
   files <- gsub(".csv", "", list.files(td, pattern = ".csv", recursive = TRUE))
   files.full <- list.files(td, pattern = ".csv", full.names = TRUE, recursive = TRUE)
-  x <- purrr::map(.x = files.full, .f = ~ read_csv(., fileEncoding = "UTF-8-BOM")) %>%
+  x <- purrr::map(.x = files.full, .f = ~ readr::read_csv(.)) %>%
     purrr::set_names(files)
 
   # Remove weather columns, if desired

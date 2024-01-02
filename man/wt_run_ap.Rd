@@ -2,7 +2,7 @@
 % Please edit documentation in R/acoustic-pre-processing.R
 \name{wt_run_ap}
 \alias{wt_run_ap}
-\title{Get a variety of acoustic index output from audio}
+\title{Get acoustic index values from audio}
 \usage{
 wt_run_ap(
   x = NULL,
@@ -13,7 +13,7 @@ wt_run_ap(
 )
 }
 \arguments{
-\item{x}{(optional) A data frame or tibble; must contain the absolute audio file path and file name. Use output from \code{`wt_audio_scanner`}.}
+\item{x}{(optional) A data frame or tibble; must contain the absolute audio file path and file name. Use output from \code{`wt_audio_scanner()`}.}
 
 \item{fp_col}{If x is supplied, the column containing the audio file paths. Defaults to file_path.}
 
@@ -31,5 +31,5 @@ For generating acoustic indices and false-colour spectrograms using QUT Ecoacous
 Note that this function relies on having this software installed locally.
 
 This function will batch calculate summary and spectral acoustic indices and generate false-colour spectrograms for a folder of audio files using the Towsey.Acoustic configuration (yml) file from the AP software.
-You can use the output from \code{`wt_audio_scanner`} in the function, or define a local folder with audio files directly.
+You can use the output from \code{`wt_audio_scanner()`} in the function, or define a local folder with audio files directly.
 }

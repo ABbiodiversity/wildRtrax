@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{wt_get_download_summary}
 \alias{wt_get_download_summary}
-\title{Get download summary}
+\title{Get a download summary from WildTrax}
 \usage{
 wt_get_download_summary(sensor_id)
 }

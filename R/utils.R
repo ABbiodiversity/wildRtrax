@@ -133,8 +133,7 @@
 #'
 #' @keywords internal
 #'
-#' @import QPAD dplyr intrval terra
-#' @importFrom suntools sunriset
+#' @import QPAD dplyr intrval terra utils
 
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
@@ -151,7 +150,7 @@
   utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", destfile = "utcoffset.tif")
   .rtz <- terra::rast("utcoffset.tif")
 
-  message("Reading tifs and removing assets from local")
+  message("Removing assets from local")
 
   # Remove once downloaded and read
   file.remove(list.files(pattern = "*.tif"))
@@ -287,7 +286,6 @@
 #' @keywords internal
 #'
 #' @import QPAD dplyr intrval
-#'
 
 .make_off <- function(spp, x){
 

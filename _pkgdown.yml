@@ -12,6 +12,7 @@ articles:
   - acoustic-pre-processing
   - acoustic-data-wrangling
   - camera-data-wrangling
+  - tutorials
 reference:
 - contents:
   - wt_auth

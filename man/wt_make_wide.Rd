@@ -2,7 +2,7 @@
 % Please edit documentation in R/convenience-functions.R
 \name{wt_make_wide}
 \alias{wt_make_wide}
-\title{Convert to a wide survey by species dataframe.}
+\title{Convert to a wide survey by species dataframe}
 \usage{
 wt_make_wide(data, sound = "all")
 }
@@ -19,8 +19,8 @@ This function converts a long-formatted report into a wide survey by species dat
 }
 \examples{
 \dontrun{
-dat.clean <- wt_tidy_species(dat)
-dat.tmtt <- wt_replace_tmtt(dat.clean)
+dat.tidy <- wt_tidy_species(dat)
+dat.tmtt <- wt_replace_tmtt(dat.tidy)
 dat.wide <- wt_make_wide(dat.tmtt, sound="all")
 }
 }
