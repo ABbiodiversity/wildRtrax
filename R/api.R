@@ -350,7 +350,6 @@ wt_get_species <- function(){
 
 }
 
-
 #' Download acoustic tags
 #'
 #' @description Downloads acoustic tags (mp3 and jpg) in an organized format for other purposes.
