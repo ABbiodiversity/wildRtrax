@@ -51,7 +51,8 @@ This is an experimental function from wildRtrax.
 ## Species counts
 ```{r eval=T, include=T, echo=F}
 
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
 
 in_tbl_wtd <- data
 
