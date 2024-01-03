@@ -424,7 +424,7 @@ wt_format_occupancy <- function(data,
 
     if(nrow(siteCovs)!=locs){
       siteCovs <- NULL
-      warning('length of siteCovs dataframe does not match observation data, removing from unmarked object')
+      warning('Length of siteCovs dataframe does not match observation data')
     }
 
     else{
@@ -497,18 +497,18 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALS
   }
 
   #Make prediction object
-  cat("Extracting covariates for offset calculation - be patient")
+  cat("Extracting covariates for offset calculation. This may take a moment.")
   x <- .make_x(data)
 
   #Load QPAD estimates
-  cat("\nLoading QPAD estimates: ")
+  cat("\nLoading QPAD estimates... ")
   load_BAM_QPAD(version)
 
   #Make the species list
   if("all" %in% species) spp <- sort(intersect(getBAMspecieslist(), colnames(data))) else spp <- species
 
   #Set up the offset loop
-  cat("\nCalculating offsets")
+  cat("\nCalculating offsets...")
   off <- matrix(0, nrow(x), length(spp))
   colnames(off) <- spp
 

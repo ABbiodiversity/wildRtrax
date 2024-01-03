@@ -150,11 +150,6 @@
   utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", destfile = "utcoffset.tif")
   .rtz <- terra::rast("utcoffset.tif")
 
-  message("Removing assets from local")
-
-  # Remove once downloaded and read
-  file.remove(list.files(pattern = "*.tif"))
-
   crs <- terra::crs(.rtree)
 
   #get vars
@@ -233,6 +228,11 @@
     ltz <- 0
   }
 
+  message("Removing geospatial assets from local")
+
+  # Remove once downloaded and read
+  file.remove(list.files(pattern = "*.tif$"))
+
   #sunrise time adjusted by offset
   ok_dt <- !is.na(dtm)
   dtm[is.na(dtm)] <- mean(dtm, na.rm=TRUE)
@@ -290,12 +290,12 @@
 .make_off <- function(spp, x){
 
   if (length(spp) > 1L)
-    stop("spp argument must be length 1, please loop or map for multiple species")
+    stop("spp argument must be length 1. Use a loop or map for multiple species.")
   spp <- as.character(spp)
 
   #checks
   if (!(spp %in% getBAMspecieslist()))
-    stop(sprintf("Species %s has no QPAD estimate", spp))
+    stop(sprintf("Species %s has no QPAD estimate available", spp))
 
   #constant for NA cases
   cf0 <- exp(unlist(coefBAMspecies(spp, 0, 0)))
