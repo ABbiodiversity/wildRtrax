@@ -29,13 +29,6 @@ library(wildRtrax)
 library(dplyr)
 ```
 
-```{r, warning = F, message = F, eval = T, include = F, echo = F}
-# Start by getting everything you need
-Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
-wt_auth()
-my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
-  tibble::as_tibble()
-```
 ```{r, warning = F, message = F, eval = F, include = T, echo = T}
 # Start by getting everything you need
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
@@ -48,16 +41,17 @@ my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "
 
 Now let's start cleaning things up a bit. We don't need certain abiotic codes so let's remove those with `wt_tidy_species()`,
 
-```{r, tidy-chunk, eval = T, echo = T, warning = F, message = F}
+```{r, tidy-chunk, eval = F, echo = T, warning = F, message = F}
 my_tidy_data <- wt_tidy_species(my_report, remove = "mammal", zerofill=F)
 
 # Difference in rows
 round((nrow(my_tidy_data)/nrow(my_report)),2)
 ```
 
+
 So about 5% of detections were mammals. Next, convert TMTT counts to numeric:
 
-```{r, eval = T, echo = T, warning = F, message = F}
+```{r, eval = F, echo = T, warning = F, message = F}
 my_tmtt_data <- wt_replace_tmtt(data = my_tidy_data, calc = "round")
 
 ```
@@ -86,7 +80,7 @@ head(my_offset_data)
 
 You can also perform a single-season, single-species occupancy work flow using `wt_format_occupancy()` once the data is downloaded.
 
-```{r, eval = T, echo = T, warning = F, message = F}
+```{r, eval = F, echo = T, warning = F, message = F}
 dat.occu <- wt_format_occupancy(my_report, species="WTSP", siteCovs=NULL)
 mod <- unmarked::occu(~ 1 ~ 1, dat.occu)
 mod

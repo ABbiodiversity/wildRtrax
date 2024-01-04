@@ -80,13 +80,6 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     dplyr::mutate(time_index = dplyr::row_number()) %>% # Create time index - this is an ordered list of the recording per day, e.g. first recording of the day = 1, second equals 2, etc.
     dplyr::ungroup()
 
-  # Check if nothing was returned
-  if (nrow(df) == 0) {
-    stop (
-      "There were no files of the type specified in file_path in the directory path specified."
-    )
-  }
-
   if (extra_cols == FALSE) {
     df_final_simple <- df # Omit the extra columns if chosen
   } else {

@@ -253,7 +253,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 #' dat.tmtt <- wt_replace_tmtt(dat.tidy)
 #' dat.wide <- wt_make_wide(dat.tmtt, sound="all")
 #' }
-#' @return A dataframe in wide format with one column per species and one row per task where values in species columns are total abundance in the task.
+#' @return A dataframe identical to input with observations of the specified groups removed.
 
 wt_make_wide <- function(data, sound="all", sensor="ARU"){
 
@@ -285,28 +285,24 @@ wt_make_wide <- function(data, sound="all", sensor="ARU"){
                   values_fill = 0,
                   names_sort = TRUE)
 
-  #Make it wide
-  #TO DO: COME BACK TO THE ERROR HANDLING
-  #  options(warn=-1)
+  }
 
+  #Steps for point count data
   if(sensor=="PC"){
 
-  wide <- summed %>%
-    dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_, TRUE ~ individual_count) %>% as.numeric()) %>%
-    dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
-    tidyr::pivot_wider(id_cols = organization:task_method,
-                names_from = "species_code",
-                values_from = "individual_count",
-                values_fn = sum,
-                values_fill = 0,
-                names_sort = TRUE)
+    #Make it wide and return field names to point count format
+    wide <- data %>%
+      dplyr::mutate(individual_count = case_when(grepl('^C',individual_count) ~ NA_real_,
+                                          TRUE ~ as.numeric(individual_count))) %>%
+      dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
+      tidyr::pivot_wider(id_cols = organization:survey_duration_method,
+                  names_from = "species_code",
+                  values_from = "individual_count",
+                  values_fn = sum,
+                  values_fill = 0,
+                  names_sort = TRUE)
 
   }
-  #  options(warn=0)
-  #Warn about NAs in the data
-  # if(!is.na(warnings(wide))){
-  #   warning('Non-numeric values in abundance field have been converted to zeros')
-  # }
 
   return(wide)
 
