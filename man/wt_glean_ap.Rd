@@ -7,9 +7,9 @@
 wt_glean_ap(x = NULL, input_dir, purpose = c("quality", "abiotic", "biotic"))
 }
 \arguments{
-\item{x}{A data frame or tibble; must contain the file name. Use output from \code{`wt_audio_scanner`}.}
+\item{x}{A data frame or tibble; must contain the file name. Use output from \code{`wt_audio_scanner()`}.}
 
-\item{input_dir}{Character; A folder path where outputs from \code{`wt_run_ap`} are stored.}
+\item{input_dir}{Character; A folder path where outputs from \code{`wt_run_ap()`} are stored.}
 
 \item{purpose}{Character; type of filtering you can choose from}
 }
@@ -17,7 +17,7 @@ wt_glean_ap(x = NULL, input_dir, purpose = c("quality", "abiotic", "biotic"))
 Output will return the merged tibble with all information, the summary plots of the indices and the LDFC
 }
 \description{
-This function will use a list of media files from a \verb{wt_*} work flow and outputs from \code{wt_run_ap}
+This function will use a list of media files from a \verb{wt_*} work flow and outputs from \code{wt_run_ap()}
 in order to generate summary plots of acoustic indices and long-duration false-colour spectrograms. This can
 be viewed as the "final step" in interpreting acoustic index and LDFC values from your recordings.
 }

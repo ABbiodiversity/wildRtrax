@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 )
 
 library(wildRtrax)
-library(tidyverse)
+library(dplyr)
 
 # Set the directory path
 load("package.RData")
@@ -51,16 +51,15 @@ You might want to select recordings between certain times of day or year, or fil
 
 ```{r, echo=TRUE, include=TRUE, eval=T, warning = F, message = F}
 files %>%
-  select(-file_path)
+  dplyr::select(-file_path)
 
 ```
 
 ```{r, echo=TRUE, include=TRUE, eval=T, warning = F, message = F}
-library(lubridate)
 
 files %>%
-  mutate(hour = hour(recording_date_time)) %>%
-  filter(julian == 176, 
+  dplyr::mutate(hour = lubridate::hour(recording_date_time)) %>%
+  dplyr::filter(julian == 176, 
          hour %in% c(4:8))
 
 ```
@@ -130,7 +129,7 @@ s['output']
 Make tasks at any time using a `wt_*` standard data set with `wt_make_aru_tasks()`.
 
 ```{r eval=F, message=FALSE, warning=FALSE, include=T}
-wt_make_aru_tasks(input = files %>% dplyr::select(-file_path), task_method = "1SPT", task_length = 180)
+wt_make_aru_tasks(input = files %>% select(-file_path), task_method = "1SPT", task_length = 180)
 
 ```
 
@@ -172,8 +171,8 @@ And then download the project data you wish to compare it to:
 ```{r eval=F, message=FALSE, warning=FALSE, include=T}
 my_projects <- wt_get_download_summary(sensor_id = 'ARU') %>%
   tibble::as_tibble() %>%
-  dplyr::filter(grepl('Big Grids',project)) %>% # Customized as needed
-  dplyr::mutate(data = purrr::map(.x = project_id, .f = ~wt_download_report(project_id = .x, sensor_id = 'ARU', weather_cols = F, reports = 'main')))
+  filter(grepl('Big Grids',project)) %>% # Customized as needed
+  mutate(data = purrr::map(.x = project_id, .f = ~wt_download_report(project_id = .x, sensor_id = 'ARU', weather_cols = F, reports = 'main')))
 ```
 
 Alternatively, go to WildTrax to Organization > Recordings > Manage > Download Recordings to get a list of all recordings. Then either filter out or do an anti-join on `location` and `recording_date_time`. That should give you the remaining list of media that has not been processed or uploaded to WildTrax yet.
