@@ -220,7 +220,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 #' dat.tmtt <- wt_replace_tmtt(dat.clean)
 #' dat.wide <- wt_make_wide(dat.tmtt, sound="all")
 #' }
-#' @return A dataframe identical to input with observations of the specified groups removed.
+#' @return A dataframe in wide format with one column per species and one row per task where values in species columns are total abundance in the task. 
 
 wt_make_wide <- function(data, sound="all"){
 
