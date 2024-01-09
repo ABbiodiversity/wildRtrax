@@ -27,14 +27,16 @@ test_that("Replacing TMTT", {
 })
 
 test_that('Making ecosys21 wide', {
-  ecosys21_wide <- wt_make_wide(ecosys21_tmtt, sound = "all")
+  ecosys21_wide <- wt_make_wide(ecosys21_tmtt, sound = "all", sensor = 'ARU')
   expect_condition(ncol(ecosys21_wide) > ncol(ecosys21_tmtt))
 })
 
 test_that('Getting QPAD offsets', {
-  ecosys21_qpad <- wt_qpad_offsets(ecosys21_tmtt, species = "OVEN", version = 3, together = F, sensor = 'ARU')
+  ecosys21_qpad <- wt_qpad_offsets(ecosys21_wide, species = "all", version = 3, together = T, sensor = 'ARU')
   expect_condition(ncol(ecosys21_qpad) == 1)
 })
+
+
 
 test_that('Occupancy formatting', {
   mpb_occu <- wt_format_occupancy(ecosys21_tmtt, species = "OVEN")
