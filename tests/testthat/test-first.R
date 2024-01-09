@@ -10,34 +10,34 @@ test_that("Authentication works correctly", {
   })
 
 test_that("Downloading report", {
-  mpb <- wt_download_report(605, 'ARU', 'main', FALSE)
-  expect_true(!is.null(mpb))
+  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
+  expect_true(!is.null(ecosys21))
 })
 
 test_that("Tidying species", {
-  mpb_tidy <- wt_tidy_species(mpb, remove = c("mammal", "abiotic", "amphibians"))
-  expect_true(nrow(mpb_tidy) < nrow(mpb))
+  ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians"), zerofill = T)
+  expect_true(nrow(ecosys21_tidy) < nrow(ecosys21))
 })
 
 test_that("Replacing TMTT", {
-  mpb_tmtt <- wt_replace_tmtt(mpb_tidy) %>%
+  ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round") %>%
     select(individual_count) %>%
     distinct()
-  expect_condition(!('TMTT' %in% mpb_tmtt))
+  expect_condition(!('TMTT' %in% ecosys21_tmtt))
 })
 
-test_that('Making data wide', {
-  mpb_wide <- wt_make_wide(mpb_tmtt, sound = "all")
-  expect_condition(ncol(mpb_wide) > ncol(mpb_tmtt))
+test_that('Making ecosys21 wide', {
+  ecosys21_wide <- wt_make_wide(ecosys21_tmtt, sound = "all")
+  expect_condition(ncol(ecosys21_wide) > ncol(ecosys21_tmtt))
 })
 
 test_that('Getting QPAD offsets', {
-  mpb_qpad <- wt_qpad_offsets(mpb_tmtt, species = "OVEN", version = 3, together = F, sensor = 'ARU')
-  expect_condition(ncol(mpb_qpad) == 1)
+  ecosys21_qpad <- wt_qpad_offsets(ecosys21_tmtt, species = "OVEN", version = 3, together = F, sensor = 'ARU')
+  expect_condition(ncol(ecosys21_qpad) == 1)
 })
 
 test_that('Occupancy formatting', {
-  mpb_occu <- wt_format_occupancy(mpb_tmtt, species = "OVEN")
+  mpb_occu <- wt_format_occupancy(ecosys21_tmtt, species = "OVEN")
   expect_condition(class(mpb_occu)[1] == 'unmarkedFrameOccu')
 })
 
