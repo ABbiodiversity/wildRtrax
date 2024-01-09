@@ -37,7 +37,6 @@ vembedr::embed_url("https://www.youtube.com/watch?v=bckccZFRq7s&ab_channel=-abmi
 [BirdNET](https://birdnet.cornell.edu/) is an avian multi-species classifier. WildTrax utilizes the [BirdNET API](https://github.com/kahst/BirdNET-Analyzer) to automatically detect species in recordings uploaded to projects once the task is Transcribed. The results can then be retrieved using `wt_download_report()`:
 ```{r, eval=T, include=F, message=F, warning=F}
 library(wildRtrax)
-library(tidyverse)
 
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
@@ -59,31 +58,31 @@ The results from the `main` report can then be anti-joined against the `birdnet`
 ```{r}
 
 birdnet_report <- data[[1]] %>%
-  filter(is_species_allowed_in_project == 't',
+  dplyr::filter(is_species_allowed_in_project == 't',
          confidence > 50) %>%
-  add_column(observer = 'BirdNET') %>%
-  select(location, recording_date_time, observer, species_code) %>%
-  distinct()
+  tibble::add_column(observer = 'BirdNET') %>%
+  dplyr::select(location, recording_date_time, observer, species_code) %>%
+  dplyr::distinct()
 
 main_report <- data[[2]] %>%
   wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect"), zerofill = F) %>%
-  select(location, recording_date_time, observer, species_code) %>%
-  distinct()
+  dplyr::select(location, recording_date_time, observer, species_code) %>%
+  dplyr::distinct()
 
-merged_data <- bind_rows(birdnet_report, main_report) %>% arrange(location, recording_date_time) %>%
-  group_by(location, recording_date_time, observer, species_code) %>%
-  mutate(presence = row_number()) %>%
-  ungroup() %>%
-  pivot_wider(names_from = species_code, values_from = presence, values_fill = 0) %>%
-  pivot_longer(cols = -c(location, recording_date_time, observer), names_to = "species_code", values_to = "presence")
+merged_data <- dplyr::bind_rows(birdnet_report, main_report) %>% dplyr::arrange(location, recording_date_time) %>%
+  dplyr::group_by(location, recording_date_time, observer, species_code) %>%
+  dplyr::mutate(presence = row_number()) %>%
+  dplyr::ungroup() %>%
+  tidyr::pivot_wider(names_from = species_code, values_from = presence, values_fill = 0) %>%
+  tidyr::pivot_longer(cols = -c(location, recording_date_time, observer), names_to = "species_code", values_to = "presence")
 
 merged_data %>%
-  filter(observer == "BirdNET" & presence == 1) %>%
-  select(location, recording_date_time, species_code) %>%
-  anti_join(
+  dplyr::filter(observer == "BirdNET" & presence == 1) %>%
+  dplyr::select(location, recording_date_time, species_code) %>%
+  dplyr::anti_join(
     merged_data %>%
-      filter(observer != "BirdNET") %>%
-      select(location, recording_date_time, species_code, presence),
+      dplyr::filter(observer != "BirdNET") %>%
+      dplyr::select(location, recording_date_time, species_code, presence),
     by = c("location", "recording_date_time", "species_code")
   )
 
