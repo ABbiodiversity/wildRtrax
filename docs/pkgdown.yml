@@ -8,7 +8,8 @@ articles:
   audio-data-concepts: audio-data-concepts.html
   camera-data-wrangling: camera-data-wrangling.html
   introduction: introduction.html
-last_built: 2023-12-21T20:23Z
+  tutorials: tutorials.html
+last_built: 2024-01-09T18:17Z
 urls:
   reference: https://abbiodiversity.github.io/wildRtrax/reference
   article: https://abbiodiversity.github.io/wildRtrax/articles

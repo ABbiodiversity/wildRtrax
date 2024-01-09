@@ -36,11 +36,18 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   }
 
   # Scan files, gather metadata
-  df <- tibble::as_tibble(x = path)
-
-  df <- df %>>%
+  df <- tibble::as_tibble(x = path) %>>%
     'Reading files from directory...' %>>%
-      dplyr::mutate(file_path = future_map(.x = value, .f = ~fs::dir_ls(path = x, regexp = file_type_reg, recurse = TRUE, fail = FALSE), .options = furrr_options(seed = TRUE)))
+    dplyr::mutate(file_path = future_map(
+      .x = value,
+      .f = ~ fs::dir_ls(
+        path = x,
+        regexp = file_type_reg,
+        recurse = TRUE,
+        fail = FALSE
+      ),
+      .options = furrr_options(seed = TRUE)
+    ))
 
   # Check if nothing was returned
   if (nrow(df) == 0) {
