@@ -19,7 +19,9 @@ knitr::opts_chunk$set(
 
 This vignette provides a series of additional tutorials to help you with using wildRtrax. 
 
-## wildRtrax Public Webinar
+# Webinars 
+
+## wildRtrax 1.1.0 Public Webinar
 
 In this webinar, Alex MacPhail, Marcus Becker and Elly Knight, take you on a tour of the main components of the package, including authenticating into [WildTrax](https://www.wildtrax.ca) directly in R, downloading data reports as data frames, and an introduction to various functions that aid in downstream analyses of both ARU and remote camera data.
 
@@ -28,11 +30,24 @@ vembedr::embed_url("https://www.youtube.com/watch?v=bckccZFRq7s&ab_channel=-abmi
 
 ```
 
-## False negative detection using BirdNET
+# Acoustic data
 
-[BirdNET]() is an avian multi-species classifier. WildTrax utilizes the [BirdNET API]() to automatically detect species in recordings uploaded to projects once the task is Transcribed. The results can then be retrieved using `wt_download_report()`:
+## Detect missing species using BirdNET
 
-```{r, eval=T, include=T, message=F, warning=F}
+[BirdNET](https://birdnet.cornell.edu/) is an avian multi-species classifier. WildTrax utilizes the [BirdNET API](https://github.com/kahst/BirdNET-Analyzer) to automatically detect species in recordings uploaded to projects once the task is Transcribed. The results can then be retrieved using `wt_download_report()`:
+```{r, eval=T, include=F, message=F, warning=F}
+library(wildRtrax)
+library(tidyverse)
+
+Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
+wt_auth()
+data <- wt_download_report(605,'ARU',c('birdnet','main'))
+
+```
+```{r, eval=F, include=T, message=F, warning=F}
+library(wildRtrax)
+library(tidyverse)
+
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
 data <- wt_download_report(605,'ARU',c('birdnet','main'))
@@ -44,7 +59,7 @@ The results from the `main` report can then be anti-joined against the `birdnet`
 ```{r}
 
 birdnet_report <- data[[1]] %>%
-  filter(is_species_allowed_in_project == TRUE,
+  filter(is_species_allowed_in_project == 't',
          confidence > 50) %>%
   add_column(observer = 'BirdNET') %>%
   select(location, recording_date_time, observer, species_code) %>%
@@ -56,25 +71,21 @@ main_report <- data[[2]] %>%
   distinct()
 
 merged_data <- bind_rows(birdnet_report, main_report) %>% arrange(location, recording_date_time) %>%
-  filter(location == "1081-NE") %>%
   group_by(location, recording_date_time, observer, species_code) %>%
   mutate(presence = row_number()) %>%
   ungroup() %>%
   pivot_wider(names_from = species_code, values_from = presence, values_fill = 0) %>%
-  slice(1:2)
+  pivot_longer(cols = -c(location, recording_date_time, observer), names_to = "species_code", values_to = "presence")
 
-data_long <- merged_data %>%
-  pivot_longer(cols = -c(location, recording_date_time, observer), names_to = "species_code", values_to = "presence") 
-
-# Calculate the total number of detections by BirdNET
-total_birdnet_detections <- data_long %>%
-  filter(observer == "BirdNET") %>%
-  summarise(total_detections = sum(presence))
-
-
-# Calculate the false positive rate
-false_positive_rate <- false_positives$false_positives / total_birdnet_detections$total_detections
-
+merged_data %>%
+  filter(observer == "BirdNET" & presence == 1) %>%
+  select(location, recording_date_time, species_code) %>%
+  anti_join(
+    merged_data %>%
+      filter(observer != "BirdNET") %>%
+      select(location, recording_date_time, species_code, presence),
+    by = c("location", "recording_date_time", "species_code")
+  )
 
 ```
 
