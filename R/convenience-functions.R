@@ -275,8 +275,8 @@ wt_make_wide <- function(data, sound="all", sensor="ARU"){
 
     #Make it wide
     wide <- summed %>%
-      dplyr::mutate(individual_count = dplyr::case_when(grepl('^C',individual_count) ~ NA_real_,
-                                          TRUE ~ as.numeric(individual_count))) %>%
+      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_,
+                                                 TRUE ~ individual_count) %>% as.numeric()) %>%
       dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
       tidyr::pivot_wider(id_cols = organization:task_method,
                   names_from = "species_code",
@@ -292,8 +292,8 @@ wt_make_wide <- function(data, sound="all", sensor="ARU"){
 
     #Make it wide and return field names to point count format
     wide <- data %>%
-      dplyr::mutate(individual_count = case_when(grepl('^C',individual_count) ~ NA_real_,
-                                          TRUE ~ as.numeric(individual_count))) %>%
+      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_,
+                                                 TRUE ~ individual_count) %>% as.numeric()) %>%
       dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
       tidyr::pivot_wider(id_cols = organization:survey_duration_method,
                   names_from = "species_code",
