@@ -30,6 +30,7 @@ Imports:
     jsonlite,
     lubridate,
     magick,
+    magrittr,
     markdown,
     pipeR,
     progressr,

@@ -71,7 +71,7 @@ main_report <- data[[2]] %>%
 
 merged_data <- dplyr::bind_rows(birdnet_report, main_report) %>% dplyr::arrange(location, recording_date_time) %>%
   dplyr::group_by(location, recording_date_time, observer, species_code) %>%
-  dplyr::mutate(presence = row_number()) %>%
+  dplyr::mutate(presence = dplyr::row_number()) %>%
   dplyr::ungroup() %>%
   tidyr::pivot_wider(names_from = species_code, values_from = presence, values_fill = 0) %>%
   tidyr::pivot_longer(cols = -c(location, recording_date_time, observer), names_to = "species_code", values_to = "presence")

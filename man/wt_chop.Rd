@@ -7,7 +7,7 @@
 wt_chop(input = NULL, segment_length = NULL, output_folder = NULL)
 }
 \arguments{
-\item{input}{A tibble; A single row from a \code{`wt_audio_scanner`} tibble}
+\item{input}{A \code{`wt_audio_scanner`} tibble of files}
 
 \item{segment_length}{Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used}
 
