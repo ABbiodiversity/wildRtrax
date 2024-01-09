@@ -324,8 +324,7 @@ wt_get_species <- function(){
     httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-all-species"),
     accept = "application/json",
     httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
-    httr::user_agent(u),
-    httr::progress()
+    httr::user_agent(u)
   )
 
   if (spp$status_code == 200) {
