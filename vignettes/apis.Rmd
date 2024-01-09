@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```{r setup, echo=FALSE, include=FALSE, eval=TRUE}
 # Attach package
 library(wildRtrax)
-library(tidyverse)
+library(dplyr)
 ```
 
 ## Set up WildTrax credentials
@@ -65,7 +65,7 @@ my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "
 my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
 ```
-```{r}
+```{r, eval=T}
 head(my_report)
 
 ```
@@ -91,35 +91,22 @@ spp_table <- wt_get_species()
 # Download the WildTrax species table
 spp_table <- wt_get_species()
 ```
-```{r}
+```{r, eval=T}
 head(spp_table)
 
 ```
 
 WildTrax also pre-formats ARU to point count (PC) data depending on the type of analysis you wish to perform. See the [Boreal Avian Modelling project](https://borealbirds.ca/) website and GitHub [repositories](https://github.com/borealbirds) to find out more on integration of avian point count and ARU data.
 
-```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
-# As point count format
-aru_as_aru <- wt_download_report(project_id = 605 , sensor_id = 'ARU', reports = "main", weather_cols = F)
+```{r, echo=T, include=T, eval=T, warning=F, message = FALSE}
+# As ARU format
+my_report
 ```
 ```{r, echo=F, include=F, eval=T, warning=F, message = FALSE}
 # As point count format
-aru_as_aru <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F)
-```
-```{r}
-# As point count format
-head(aru_as_aru)
-
-```
-```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
-# As ARU format
 aru_as_pc <- wt_download_report(project_id = 605, sensor_id = 'PC', reports = "main", weather_cols = F)
 ```
-```{r, echo=F, include=F, eval=T, warning=F, message = FALSE}
-# As ARU format
-aru_as_pc <- wt_download_report(project_id = 605, sensor_id = 'PC', reports = "main", weather_cols = F)
-```
-```{r}
+```{r, eval=T}
 # As point count format
 head(aru_as_pc)
 

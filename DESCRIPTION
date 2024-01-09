@@ -1,6 +1,6 @@
 Package: wildRtrax
 Title: Environmental sensor data management and analytics to and from WildTrax
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: 
     c(person(given = "Alex",
            family = "MacPhail",
@@ -8,50 +8,51 @@ Authors@R:
            email = "agmacpha@ualberta.ca"),
       person(given = "Marcus",
              family = "Becker",
-             role = c("aut", "cre"),
+             role = c("aut"),
              email = "mabecker@ualberta.ca"),
       person(given = "Elly",
              family = "Knight",
              role = "aut",
              email = "ecknight@ualberta.ca"))
-Author: Alex MacPhail
+Author: Alex MacPhail <agmacpha@ualberta.ca>
 Maintainer: Marcus Becker <mabecker@ualberta.ca>
-Description: wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
+Description: wildRtrax is an R package that enables environmental sensor users to create comprehensive work flows for managing and analyzing data.
 Depends: R (>= 4.1.0)
 License: MIT + file LICENSE
 Imports:
     dplyr (>= 1.0.0),
-    future,
     fs,
     furrr,
-    tibble,
-    tidyr (>= 1.0.2),
-    lubridate,
-    tools,
-    pipeR,
-    tuneR,
+    future,
+    ggplot2,
+    httr,
     intrval,
     jsonlite,
+    lubridate,
     magick,
+    markdown,
+    pipeR,
+    progressr,
+    purrr,
+    QPAD,
     readr,
+    rlang,
+    rmarkdown,
+    seewave,
     sf,
     stringr,
-    tidyverse,
-    purrr,
-    rlang,
-    unmarked,
-    seewave,
     suntools,
     terra,
-    httr,
-    progressr,
-    rmarkdown,
-    markdown,
-    QPAD
+    tibble,
+    tidyr (>= 1.0.2),
+    tools,
+    tuneR,
+    unmarked,
+    vembedr
 Suggests: 
+    knitr,
     testthat (>= 3.0.0),
-    usethis,
-    knitr
+    usethis
 Remotes: psolymos/QPAD
 VignetteBuilder: knitr
 Encoding: UTF-8

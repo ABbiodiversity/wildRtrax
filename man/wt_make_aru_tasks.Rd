@@ -12,7 +12,7 @@ wt_make_aru_tasks(
 )
 }
 \arguments{
-\item{input}{Character; An input \code{wt_audio_scanner} tibble. If not a \code{wt_audio_scanner} tibble, the data must contain at minimum the location, recording_date_time and file_path as columns.}
+\item{input}{Character; An input \code{wt_audio_scanner()} tibble. If not a \code{wt_audio_scanner()} tibble, the data must contain at minimum the location, recording_date_time and file_path as columns.}
 
 \item{output}{Character; Path where the output task csv file will be stored}
 
@@ -27,7 +27,7 @@ It's important that if the media hasn't been uploaded to WildTrax, that you do t
 In parallel, you can select the files you want and upload and generate tasks in a project.
 }
 \description{
-\code{wt_make_aru_tasks} uses a \code{wt_audio_scanner} input tibble to create a task template to upload to a WildTrax project.
+\code{wt_make_aru_tasks()} uses a \code{wt_audio_scanner()} input tibble to create a task template to upload to a WildTrax project.
 }
 \details{
 Prepare media and data for upload to WildTrax
@@ -35,7 +35,7 @@ Prepare media and data for upload to WildTrax
 The following suite of functions will help you wrangle media and data together
 in order to upload them to WildTrax. You can make tasks(https://www.wildtrax.ca/home/resources/guide/projects/aru-projects.html)
 and tags(https://www.wildtrax.ca/home/resources/guide/acoustic-data/acoustic-tagging-methods.html) using the results from a
-\code{wt_audio_scanner} tibble or the hits from one of two Wildlife Acoustics programs Songscope() and Kaleidoscpe().
+\code{wt_audio_scanner()} tibble or the hits from one of two Wildlife Acoustics programs Songscope() and Kaleidoscpe().
 
 Creating tasks from media
 }

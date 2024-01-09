@@ -1,3 +1,12 @@
+# wildRtrax 1.1.1
+
+## Minor changes
+
+* `wt_chop()` now recurses across all input files
+* Addition of [Camera data wrangling vignette]()
+* Moving geospatial assets to new repository to lighten package size. Request for the tifs are now made only through usage of `wt_qpad_offsets()`
+* General slimming down of dependencies
+
 # wildRtrax 1.1.0
 
 ## Major changes
