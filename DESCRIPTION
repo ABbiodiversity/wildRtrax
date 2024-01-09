@@ -8,7 +8,7 @@ Authors@R:
            email = "agmacpha@ualberta.ca"),
       person(given = "Marcus",
              family = "Becker",
-             role = c("aut"),
+             role = c("aut","cre"),
              email = "mabecker@ualberta.ca"),
       person(given = "Elly",
              family = "Knight",
