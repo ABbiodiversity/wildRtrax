@@ -251,7 +251,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   # List data files, read into R as a list
   files <- gsub(".csv", "", list.files(td, pattern = ".csv", recursive = TRUE))
   files.full <- list.files(td, pattern = ".csv", full.names = TRUE, recursive = TRUE)
-  x <- purrr::map(.x = files.full, .f = ~ readr::read_csv(.)) %>%
+  x <- purrr::map(.x = files.full, .f = ~ readr::read_csv(., show_col_types = F, skip_empty_rows = T)) %>%
     purrr::set_names(files)
 
   # Remove weather columns, if desired
