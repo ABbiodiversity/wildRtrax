@@ -149,7 +149,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
 
   if (!project_id %in% i$project_id) {
     stop("The project_id you specified is not among the projects you are able to download for.", call. = TRUE)
-  } else if (sensor_value == 'ARU' & sensor_id == 'PC'){
+  } else if (sensor_value == 'PC' & sensor_id == 'ARU'){
     stop('You will not be able to convert a PC project to ARU since the data does not contain media.', call. = TRUE)
   }
 
