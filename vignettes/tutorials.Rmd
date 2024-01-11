@@ -56,7 +56,6 @@ data <- wt_download_report(605,'ARU',c('birdnet','main'))
 The results from the `main` report can then be anti-joined against the `birdnet` report to determine if any species were detected than a human did not find. It's recommended to use high threshold values from BirdNET and species that should occur or be allowed in the project.
 
 ```{r}
-
 birdnet_report <- data[[1]] %>%
   dplyr::filter(is_species_allowed_in_project == 't',
          confidence > 50) %>%

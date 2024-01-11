@@ -108,7 +108,7 @@ wt_get_download_summary <- function(sensor_id) {
 #'  \item main
 #'  \item project
 #'  \item location
-#'  \item point count
+#'  \item point_count
 #'  \item definitions
 #' }
 #'
@@ -138,11 +138,19 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     stop("Please authenticate with wt_auth().", call. = FALSE)
 
   # Check if the project_id is valid:
-  i <- wt_get_download_summary(sensor_id = sensor_id)
-  i <- unlist(i$project_id)
+  i <- wt_get_download_summary(sensor = sensor_id) %>%
+    tibble::as_tibble() %>%
+    dplyr::select(project_id, sensor)
 
-  if (!project_id %in% i) {
+  sensor_value <- i %>%
+    rename('id' = 1) %>%
+    dplyr::filter(id == project_id) %>%
+    dplyr::pull(sensor)
+
+  if (!project_id %in% i$project_id) {
     stop("The project_id you specified is not among the projects you are able to download for.", call. = TRUE)
+  } else if (sensor_value == 'ARU' & sensor_id == 'PC'){
+    stop('You will not be able to convert a PC project to ARU since the data does not contain media.', call. = TRUE)
   }
 
   # Make sure report is specified
@@ -213,6 +221,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   if ("megadetector" %in% reports) query_list$megaDetectorReport <- TRUE
   if ("megaclassifier" %in% reports) query_list$megaClassifierReport <- TRUE
 
+  # Include metadata
   query_list$includeMetaData <- TRUE
   query_list$splitLocation <- TRUE
 
@@ -221,7 +230,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   # tmp directory
   td <- tempdir()
 
-  # Create POST request
+  # Create GET request
   r <- httr::GET(
     httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
     query = query_list,
@@ -231,7 +240,6 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     httr::write_disk(tmp),
     httr::progress()
     )
-
 
   # Stop if an error or bad request occurred
   if (httr::http_error(r))
@@ -248,11 +256,13 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   abstract <- list.files(td, pattern = "*_abstract.csv", full.names = TRUE, recursive = TRUE)
   file.remove(abstract)
 
-  # List data files, read into R as a list
-  files <- gsub(".csv", "", list.files(td, pattern = ".csv", recursive = TRUE))
-  files.full <- list.files(td, pattern = ".csv", full.names = TRUE, recursive = TRUE)
+  # Remove special characters
+  list.files(td, pattern = "*.csv", full.names = TRUE) %>%
+    purrr::map(~file.rename(.x, gsub("[:()?!~;]", "", .x)))
+  files.full <- list.files(td, pattern= "*.csv", full.names = TRUE)
+  files.less <- basename(files.full)
   x <- purrr::map(.x = files.full, .f = ~ readr::read_csv(., show_col_types = F, skip_empty_rows = T)) %>%
-    purrr::set_names(files)
+    purrr::set_names(files.less)
 
   # Remove weather columns, if desired
   if(weather_cols) {
