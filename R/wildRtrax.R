@@ -104,4 +104,4 @@ utils::globalVariables(c(".",
                            "write.csv",
                            "chardis", "chardismax", "chardur", "chardurmax", "distance1",
                            "survey_id","survey_date","survey_duration_method","observer","durationMethod","survey_distance_method",
-                           "task_id","task_duration","task_distance","location_id","is_missing","n_days_effort"))
+                           "task_id","task_duration","task_distance","location_id","is_missing","n_days_effort","sensor"))

@@ -51,7 +51,7 @@ Valid values for argument \code{report} when \code{sensor_id} = "PC" currently a
 \item main
 \item project
 \item location
-\item point count
+\item point_count
 \item definitions
 }
 }
