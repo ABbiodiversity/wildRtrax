@@ -143,14 +143,12 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     dplyr::select(project_id, sensor)
 
   sensor_value <- i %>%
-    rename('id' = 1) %>%
-    dplyr::filter(id == project_id) %>%
+    dplyr::rename('id' = 1) %>%
+    dplyr::filter(id %in% project_id) %>%
     dplyr::pull(sensor)
 
   if (!project_id %in% i$project_id) {
     stop("The project_id you specified is not among the projects you are able to download for.", call. = TRUE)
-  } else if (sensor_value == 'PC' & sensor_id == 'ARU'){
-    stop('You will not be able to convert a PC project to ARU since the data does not contain media.', call. = TRUE)
   }
 
   # Make sure report is specified
@@ -160,7 +158,6 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   }
 
   # Allowable reports for each sensor
-
   cam <- c("main", "project", "location", "image_set", "image_report", "tag", "megadetector", "megaclassifier", "definitions")
   aru <- c("main", "project", "location", "birdnet", "recording", "tag", "definitions")
   pc <- c("main", "project", "location", "point_count", "definitions")
@@ -261,7 +258,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     purrr::map(~file.rename(.x, gsub("[:()?!~;]", "", .x)))
   files.full <- list.files(td, pattern= "*.csv", full.names = TRUE)
   files.less <- basename(files.full)
-  x <- purrr::map(.x = files.full, .f = ~ readr::read_csv(., show_col_types = F, skip_empty_rows = T)) %>%
+  x <- purrr::map(.x = files.full, .f = ~ suppressWarnings(readr::read_csv(., show_col_types = F, skip_empty_rows = T, col_types = cols()))) %>%
     purrr::set_names(files.less)
 
   # Remove weather columns, if desired
