@@ -737,7 +737,9 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
   no_length <- tasks %>%
     dplyr::filter(is.na(taskLength))
 
-  warning(nrow(no_length), ' rows are shorter than the desired task length')
+  if ((nrow(no_length)) > 0) {
+    message(nrow(no_length), ' rows are shorter than the desired task length')
+  }
 
   if (!is.null(tasks)) {
     message("Converted list of recordings to WildTrax tasks. Go to your WildTrax organization > Recordings Tab > Manage > Upload Recordings.
