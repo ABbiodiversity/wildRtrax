@@ -9,7 +9,7 @@ wt_make_wide(data, sound = "all", sensor = "ARU")
 \arguments{
 \item{data}{WildTrax main report or tag report from the \code{wt_download_report()} function.}
 
-\item{sound}{Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering). Note this functionality is only available for the ARU sensor.}
+\item{sound}{Character; vocalization type(s) to retain ("all", "Song", "Call", "Non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering). Note this functionality is only available for the ARU sensor.}
 
 \item{sensor}{Character; can be one of "ARU" or "PC"}
 }

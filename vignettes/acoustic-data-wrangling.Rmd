@@ -42,7 +42,7 @@ my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "
 Now let's start cleaning things up a bit. We don't need certain abiotic codes so let's remove those with `wt_tidy_species()`,
 
 ```{r, tidy-chunk, eval = F, echo = T, warning = F, message = F}
-my_tidy_data <- wt_tidy_species(my_report, remove = "mammal", zerofill=F)
+my_tidy_data <- wt_tidy_species(my_report, remove = "mammal", zerofill=F, sensor = 'ARU')
 
 # Difference in rows
 round((nrow(my_tidy_data)/nrow(my_report)),2)
@@ -59,7 +59,7 @@ my_tmtt_data <- wt_replace_tmtt(data = my_tidy_data, calc = "round")
 and finally widen the data into a species matrix.
 
 ```{r, eval = F, echo = T, warning = F, message = F}
-my_wide_data <- wt_make_wide(data = my_tmtt_data, sound = "all")
+my_wide_data <- wt_make_wide(data = my_tmtt_data, sound = "all", sensor = 'ARU')
 
 head(my_wide_data)
 
@@ -70,7 +70,7 @@ head(my_wide_data)
 Now you can calculate statistical offsets to account for imperfection detection following the QPAD method.
 
 ```{r, eval = F, echo = T, warning = F, message = F}
-my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version = 3, together = TRUE)
+my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version = 3, together = TRUE, sensor = 'ARU')
 
 head(my_offset_data)
 
@@ -81,7 +81,7 @@ head(my_offset_data)
 You can also perform a single-season, single-species occupancy work flow using `wt_format_occupancy()` once the data is downloaded.
 
 ```{r, eval = F, echo = T, warning = F, message = F}
-dat.occu <- wt_format_occupancy(my_report, species="WTSP", siteCovs=NULL)
+dat.occu <- wt_format_occupancy(my_report, species="WTSP", siteCovs=NULL, sensor = 'ARU')
 mod <- unmarked::occu(~ 1 ~ 1, dat.occu)
 mod
 
