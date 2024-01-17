@@ -101,7 +101,7 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 wt_tidy_species <- function(data,
                             remove = c("mammal", "amphibian", "abiotic", "insect", "unknown"),
                             zerofill = TRUE,
-                            sensor = "ARU"){
+                            sensor = c("ARU","PC")){
 
   #Rename fields if PC
   if(sensor=="PC"){
@@ -241,7 +241,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 #' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values. This function is best preceded by the`wt_tidy_species` and `wt_replace_tmtt` functions  to ensure 'TMTT' and amphibian calling index values are not converted to zeros.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
-#' @param sound Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering). Note this functionality is only available for the ARU sensor.
+#' @param sound Character; vocalization type(s) to retain ("all", "Song", "Call", "Non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering). Note this functionality is only available for the ARU sensor.
 #' @param sensor Character; can be one of "ARU" or "PC"
 #'
 #' @import dplyr
@@ -275,8 +275,7 @@ wt_make_wide <- function(data, sound="all", sensor="ARU"){
 
     #Make it wide
     wide <- summed %>%
-      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_,
-                                                 TRUE ~ individual_count) %>% as.numeric()) %>%
+      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_, TRUE ~ individual_count) %>% as.numeric()) %>%
       dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
       tidyr::pivot_wider(id_cols = organization:task_method,
                   names_from = "species_code",
@@ -292,8 +291,7 @@ wt_make_wide <- function(data, sound="all", sensor="ARU"){
 
     #Make it wide and return field names to point count format
     wide <- data %>%
-      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_,
-                                                 TRUE ~ individual_count) %>% as.numeric()) %>%
+      dplyr::mutate(individual_count = as.numeric(individual_count)) %>%
       dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
       tidyr::pivot_wider(id_cols = organization:survey_duration_method,
                   names_from = "species_code",
