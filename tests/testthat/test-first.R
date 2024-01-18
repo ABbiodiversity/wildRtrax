@@ -115,7 +115,7 @@ test_that('Occupancy formatting', {
 test_that('QPAD for PC', {
   pc_data <- wt_download_report(2016, 'PC', 'main', FALSE)
   pc_tidy <- wt_tidy_species(pc_data, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, sensor = 'PC')
-  pc_wide <- wt_make_wide(pc_tidy, sound = "all", sensor = "PC")
+  pc_wide <- wt_make_wide(pc_tidy, sound = "all", sensor = 'PC')
   pc_qpad <- wt_qpad_offsets(pc_wide, species = "OVEN", version = 3, together = F, sensor = 'PC')
   expect_true(ncol(pc_qpad) == 1)
 })

@@ -72,9 +72,17 @@ head(my_report)
 
 An easy way to download multiple projects at once is to use `wt_get_download_summary()` and then filter by a substring in order to get the project ids to download the data.
 
-```{r echo=T, eval=FALSE, warning = F, message = F}
+```{r echo=T, include=T, eval=FALSE, warning = F, message = F}
 # Download all of the published Ecosystem Health ARU data to a single object
-eh_projects <- wt_get_download_summary(sensor_id = "ARU") %>%
+wt_get_download_summary(sensor_id = "ARU") %>%
+  tibble::as_tibble() %>%
+  dplyr::filter(grepl('^Ecosystem Health',project)) %>%
+  dplyr::mutate(data = purrr::map(.x = project_id, .f = ~wt_download_report(project_id = .x, sensor_id = "ARU", weather_cols = F, reports = "main")))
+
+```
+```{r echo=T, include=F, eval=T, warning = F, message = F}
+# Download all of the published Ecosystem Health ARU data to a single object
+wt_get_download_summary(sensor_id = "ARU") %>%
   tibble::as_tibble() %>%
   dplyr::filter(grepl('^Ecosystem Health',project)) %>%
   dplyr::mutate(data = purrr::map(.x = project_id, .f = ~wt_download_report(project_id = .x, sensor_id = "ARU", weather_cols = F, reports = "main")))
