@@ -84,7 +84,7 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
 #' @param remove Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "unknown"). Defaults to retaining bird group only.
-#' @param zerofill Logical; indicates if zerofilling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
+#' @param zerofill Logical; indicates if zero-filling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
 #' @param sensor Character; can be one of "ARU" or "PC"
 #'
 #' @import dplyr
@@ -92,16 +92,24 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #'
 #' @examples
 #' \dontrun{
-#' dat.tidy <- wt_tidy_species(dat,
-#' remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"),
+#' dat.tidy <- wt_tidy_species(data,
+#' remove=c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"),
 #' zerofill = TRUE)
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
 wt_tidy_species <- function(data,
-                            remove = c("mammal", "amphibian", "abiotic", "insect", "unknown"),
+                            remove = c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"),
                             zerofill = TRUE,
                             sensor = c("ARU","PC")){
+
+  if (!(remove %in% c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"))){
+    stop("Select one remove option from birds, mammals, amphibians, abiotic, insects or unknown.")
+  }
+
+  if (!(sensor %in% c("ARU","PC"))){
+    stop("Select one sensor option from ARU or PC.")
+  }
 
   #Rename fields if PC
   if(sensor=="PC"){
@@ -110,12 +118,16 @@ wt_tidy_species <- function(data,
              recording_date_time = survey_date)
   }
 
+  if('birds' %in% remove){
+    message('Note that there are only QPAD offsets for birds.')
+  }
+
   #Convert to the sql database labels for species class
   remove <- dplyr::case_when(remove=="mammal" ~ "MAMMALIA",
                       remove=="amphibian" ~ "AMPHIBIA",
                       remove=="abiotic" ~ "ABIOTIC",
                       remove=="insect" ~ "INSECTA",
-                      remove=="bird" ~ "AVES",
+                      remove=="birds" ~ "AVES",
                       !is.na(remove) ~ remove)
 
   .species <- wt_get_species()
@@ -191,7 +203,7 @@ wt_tidy_species <- function(data,
 #'
 #' @examples
 #' \dontrun{
-#' dat.tmtt <- wt_replace_tmtt(dat, calc="round")
+#' dat.tmtt <- wt_replace_tmtt(data, calc="round")
 #' }
 #' @return A dataframe identical to input with 'TMTT' entries in the abundance column replaced by integer values.
 
