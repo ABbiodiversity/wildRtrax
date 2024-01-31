@@ -69,10 +69,47 @@ test_that("Replacing TMTT", {
 })
 
 test_that('Making wide', {
-  ecosys21_tidy <- wt_tidy_species(ecosys21_aru, remove = c("mammals", "abiotic", "amphibians"), zerofill = T, "ARU")
+  ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammals", "abiotic", "amphibians"), zerofill = T, "ARU")
   ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round")
   ecosys21_wide <- wt_make_wide(ecosys21_tmtt, sound = "all", sensor = 'ARU')
   expect_true(ncol(ecosys21_wide) > ncol(ecosys21_tmtt))
+})
+
+test_that('Zerofill and tmtt are respected after wide', {
+  # add a location with 0 birds observed
+  ecosys21_mod_row <- slice(ecosys21, 1)
+  ecosys21_mod_row$species_code <- "MOBA"
+  ecosys21_mod_row$species_scientific_name <- NA
+  ecosys21_mod_row$vocalization <- "Non-vocal"
+  ecosys21_mod_row$location_id <- ecosys21_mod_row$location_id+max(ecosys21$location_id)
+  ecosys21_mod <- bind_rows(ecosys21, ecosys21_mod_row)
+
+  # all locations from input should be present in outputs unless not transcribed
+  ecosys21_locs <- ecosys21_mod %>% filter(aru_task_status == "Transcribed") %>%
+    distinct(location_id)
+
+  ecosys21_tidy <- wt_tidy_species(ecosys21_mod, remove = c("mammals", "abiotic", "amphibians"), zerofill = T, "ARU")
+  ecosys21_locs %>% anti_join(ecosys21_tidy, by = "location_id") %>%
+    pull(location_id) %>%
+    expect_length(0)
+
+  ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round")
+  ecosys21_locs %>% anti_join(ecosys21_tmtt, by = "location_id") %>%
+    pull(location_id) %>%
+    expect_length(0)
+
+  ecosys21_wide <- wt_make_wide(ecosys21_tmtt, sound = "all", sensor = 'ARU')
+  ecosys21_locs %>% anti_join(ecosys21_wide, by = "location_id") %>%
+    pull(location_id) %>%
+    expect_length(0)
+
+  # total abundance should be 0
+  filter(ecosys21_wide, location_id == ecosys21_mod_row$location_id) %>%
+    rowwise() %>%
+    mutate(tot_birds = sum(c_across(matches("^....$")))) %>%
+    pull(tot_birds) %>%
+    expect_equal(0)
+
 })
 
 test_that('Getting QPAD offsets', {
