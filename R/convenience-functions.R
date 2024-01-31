@@ -103,7 +103,7 @@ wt_tidy_species <- function(data,
                             zerofill = TRUE,
                             sensor = c("ARU","PC")){
 
-  if (!(remove %in% c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"))){
+  if (any(!(remove %in% c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown")))){
     stop("Select one remove option from birds, mammals, amphibians, abiotic, insects or unknown.")
   }
 
