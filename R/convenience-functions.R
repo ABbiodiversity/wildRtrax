@@ -80,10 +80,10 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 
 #' Filter species from a report
 #'
-#' @description This function filters the species provided in WildTrax reports to only the groups of interest. The groups available for filtering are mammal, bird, amphibian, abiotic, insect, and unknown. Zero-filling functionality is available to ensure all surveys are retained in the dataset if no observations of the group of interest are available.
+#' @description This function filters the species provided in WildTrax reports to only the groups of interest. The groups available for filtering are mammals, birds, amphibians, abiotic, insects, and unknown. Zero-filling functionality is available to ensure all surveys are retained in the dataset if no observations of the group of interest are available.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
-#' @param remove Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "unknown"). Defaults to retaining bird group only.
+#' @param remove Character; groups to filter from the report ("mammals", "birds", "amphibians", "abiotic", "insects", "unknown"). Defaults to retaining birds group only.
 #' @param zerofill Logical; indicates if zero-filling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
 #' @param sensor Character; can be one of "ARU" or "PC"
 #'
@@ -93,13 +93,13 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #' @examples
 #' \dontrun{
 #' dat.tidy <- wt_tidy_species(data,
-#' remove=c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"),
+#' remove=c("mammals", "amphibians", "abiotic", "insects", "unknown"),
 #' zerofill = TRUE)
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
 wt_tidy_species <- function(data,
-                            remove = c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"),
+                            remove = c("mammals", "amphibians", "abiotic", "insects", "unknown"),
                             zerofill = TRUE,
                             sensor = c("ARU","PC")){
 
@@ -123,10 +123,10 @@ wt_tidy_species <- function(data,
   }
 
   #Convert to the sql database labels for species class
-  remove <- dplyr::case_when(remove=="mammal" ~ "MAMMALIA",
-                      remove=="amphibian" ~ "AMPHIBIA",
+  remove <- dplyr::case_when(remove=="mammals" ~ "MAMMALIA",
+                      remove=="amphibians" ~ "AMPHIBIA",
                       remove=="abiotic" ~ "ABIOTIC",
-                      remove=="insect" ~ "INSECTA",
+                      remove=="insects" ~ "INSECTA",
                       remove=="birds" ~ "AVES",
                       !is.na(remove) ~ remove)
 
