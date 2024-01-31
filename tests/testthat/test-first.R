@@ -6,10 +6,10 @@ test_that("Authentication works correctly", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
   expect_true(!is.null(wt_get_download_summary(sensor_id = 'ARU')))
-  })
+})
 
 test_that("Downloading ARU report", {
-  ecosys21_aru <- wt_download_report(605, 'ARU', 'main', FALSE)
+  ecosys21_aru <- wt_download_report(685, 'ARU', 'main', FALSE)
   expect_true(!is.null(ecosys21))
 })
 
@@ -36,7 +36,7 @@ test_that("Testing a Private Project", {
 test_that("Downloading ARU as PC report", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21_as_pc <- wt_download_report(605, 'PC', 'main', FALSE)
+  ecosys21_as_pc <- wt_download_report(685, 'PC', 'main', FALSE)
   expect_true(!is.null(ecosys21_as_pc))
 })
 
@@ -50,7 +50,7 @@ test_that("Attempting PC as ARU report", {
 test_that("Tidying species", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
+  ecosys21 <- wt_download_report(685, 'ARU', 'main', FALSE)
   ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, "ARU")
   expect_true(nrow(ecosys21_tidy) < nrow(ecosys21))
 })
@@ -58,7 +58,7 @@ test_that("Tidying species", {
 test_that("Replacing TMTT", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
+  ecosys21 <- wt_download_report(685, 'ARU', 'main', FALSE)
   ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, "ARU")
   ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round") %>%
     select(individual_count) %>%
@@ -69,7 +69,7 @@ test_that("Replacing TMTT", {
 test_that('Making wide', {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
+  ecosys21 <- wt_download_report(685, 'ARU', 'main', FALSE)
   ecosys21_tidy <- wt_tidy_species(ecosys21_aru, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, "ARU")
   ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round")
   ecosys21_wide <- wt_make_wide(ecosys21_tmtt, sound = "all", sensor = 'ARU')
@@ -79,7 +79,7 @@ test_that('Making wide', {
 test_that('Getting QPAD offsets', {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
+  ecosys21 <- wt_download_report(685, 'ARU', 'main', FALSE)
   ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, "ARU")
   ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round")
   ecosys21_wide <- wt_make_wide(ecosys21_tmtt, sound = "all", sensor = 'ARU')
@@ -92,7 +92,7 @@ wt_make_wide(ecosys21_tmtt, sound = "all", sensor = 'ARU')
 test_that('Occupancy formatting', {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
+  ecosys21 <- wt_download_report(685, 'ARU', 'main', FALSE)
   ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, "ARU")
   ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round")
   occu <- wt_format_occupancy(ecosys21_tmtt, species = "OVEN")
