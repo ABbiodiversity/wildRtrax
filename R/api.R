@@ -254,8 +254,9 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   file.remove(abstract)
 
   # Remove special characters
-  list.files(td, pattern = "*.csv", full.names = TRUE) %>%
-    purrr::map(~file.rename(.x, gsub("[:()?!~;]", "", .x)))
+  list.files(td, pattern = "*.csv") %>%
+    purrr::map(~file.rename(file.path(td, .x),
+                            file.path(td, gsub("[:()?!~;]", "", .x))))
   files.full <- list.files(td, pattern= "*.csv", full.names = TRUE)
   files.less <- basename(files.full)
   x <- purrr::map(.x = files.full, .f = ~ suppressWarnings(readr::read_csv(., show_col_types = F, skip_empty_rows = T, col_types = cols()))) %>%
