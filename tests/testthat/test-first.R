@@ -10,7 +10,7 @@ test_that("Authentication works correctly", {
 
 test_that("Downloading ARU report", {
   ecosys21_aru <- wt_download_report(685, 'ARU', 'main', FALSE)
-  expect_true(!is.null(ecosys21))
+  expect_true(!is.null(ecosys21_aru))
 })
 
 test_that("Downloading CAM report", {
@@ -120,16 +120,11 @@ test_that('Getting QPAD offsets', {
   expect_condition(ncol(ecosys21_qpad) == 1)
 })
 
-wt_make_wide(ecosys21_tmtt, sound = "all", sensor = 'ARU')
-
 test_that('Occupancy formatting', {
-  Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
-  wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(685, 'ARU', 'main', FALSE)
   ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammals", "abiotic", "amphibians"), zerofill = T, "ARU")
   ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round")
   occu <- wt_format_occupancy(ecosys21_tmtt, species = "OVEN")
-  expect_condition(class(occu)[1] == 'unmarkedFrameOccu')
+  expect_s4_class(occu, 'unmarkedFrameOccu')
 })
 
 ##wt_audio_scanner
