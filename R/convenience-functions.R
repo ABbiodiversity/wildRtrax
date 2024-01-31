@@ -170,9 +170,15 @@ wt_tidy_species <- function(data,
       dplyr::distinct()
 
     #see if there are any that have been removed
-    none <- suppressMessages(anti_join(visit, filtered)) %>%
+    none_id <- anti_join(visit, filtered,
+                      by = join_by(organization, project_id, location_id, recording_date_time,
+                                   task_id))
+    none <- semi_join(data, none_id,
+              by = join_by(organization, project_id, location_id, recording_date_time,
+                           task_id)) %>%
       dplyr::mutate(species_code = "NONE",
-             species_common_name = "NONE")
+             species_common_name = "NONE",
+             individual_count = ifelse(is.numeric(filtered$individual_count), 0, "0"))
 
     #add to the filtered data
     filtered.none <- suppressMessages(full_join(filtered, none)) %>%
