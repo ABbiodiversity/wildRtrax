@@ -6,7 +6,7 @@
 \usage{
 wt_tidy_species(
   data,
-  remove = c("mammal", "amphibian", "abiotic", "insect", "unknown"),
+  remove = c("mammals", "amphibians", "abiotic", "insects", "unknown"),
   zerofill = TRUE,
   sensor = c("ARU", "PC")
 )
@@ -14,9 +14,9 @@ wt_tidy_species(
 \arguments{
 \item{data}{WildTrax main report or tag report from the \code{wt_download_report()} function.}
 
-\item{remove}{Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "unknown"). Defaults to retaining bird group only.}
+\item{remove}{Character; groups to filter from the report ("mammals", "birds", "amphibians", "abiotic", "insects", "unknown"). Defaults to retaining birds group only.}
 
-\item{zerofill}{Logical; indicates if zerofilling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.}
+\item{zerofill}{Logical; indicates if zero-filling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.}
 
 \item{sensor}{Character; can be one of "ARU" or "PC"}
 }
@@ -24,12 +24,12 @@ wt_tidy_species(
 A dataframe identical to input with observations of the specified groups removed.
 }
 \description{
-This function filters the species provided in WildTrax reports to only the groups of interest. The groups available for filtering are mammal, bird, amphibian, abiotic, insect, and unknown. Zero-filling functionality is available to ensure all surveys are retained in the dataset if no observations of the group of interest are available.
+This function filters the species provided in WildTrax reports to only the groups of interest. The groups available for filtering are mammals, birds, amphibians, abiotic, insects, and unknown. Zero-filling functionality is available to ensure all surveys are retained in the dataset if no observations of the group of interest are available.
 }
 \examples{
 \dontrun{
-dat.tidy <- wt_tidy_species(dat,
-remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"),
+dat.tidy <- wt_tidy_species(data,
+remove=c("mammals", "amphibians", "abiotic", "insects", "unknown"),
 zerofill = TRUE)
 }
 }

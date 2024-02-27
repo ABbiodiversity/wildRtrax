@@ -140,17 +140,28 @@
   # Download message
   message("Downloading geospatial assets. This may take a moment.")
 
-  # Get tifs from assets repo. Maybe something better later!
-  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", destfile = "lcc.tif")
-  .rlcc <- terra::rast("lcc.tif")
-  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", destfile = "tree.tif")
-  .rtree <- terra::rast("tree.tif")
-  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", destfile = "seedgrow.tif")
-  .rd1 <- terra::rast("seedgrow.tif")
-  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", destfile = "utcoffset.tif")
-  .rtz <- terra::rast("utcoffset.tif")
+  out_dir <- tempdir()
 
-  crs <- terra::crs(.rtree)
+  do_dl <- length(list.files(tempdir(), pattern = "lcc.tif")) == 0
+
+  if(do_dl){
+    utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif",
+                         destfile = file.path(out_dir, "lcc.tif"))
+    utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif",
+                         destfile = file.path(out_dir, "tree.tif"))
+    utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif",
+                         destfile = file.path(out_dir, "seedgrow.tif"))
+    utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif",
+                         destfile = file.path(out_dir, "utcoffset.tif"))
+  }
+
+  # Get tifs from assets repo. Maybe something better later!
+  .rlcc <- terra::rast(file.path(out_dir, "lcc.tif"))
+  .rtree <- terra::rast(file.path(out_dir, "tree.tif"))
+  .rd1 <- terra::rast(file.path(out_dir, "seedgrow.tif"))
+  .rtz <- terra::rast(file.path(out_dir, "utcoffset.tif"))
+
+  crs <- terra::crs(.rlcc)
 
   #get vars
   date <- str_sub(data$recording_date_time, 1, 10)
@@ -227,11 +238,6 @@
   if(tz=="utc"){
     ltz <- 0
   }
-
-  message("Removing geospatial assets from local")
-
-  # Remove once downloaded and read
-  file.remove(list.files(pattern = "*.tif$"))
 
   #sunrise time adjusted by offset
   ok_dt <- !is.na(dtm)
