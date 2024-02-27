@@ -107,7 +107,7 @@ wt_tidy_species <- function(data,
     stop("Select one remove option from birds, mammals, amphibians, abiotic, insects or unknown.")
   }
 
-  if (!(sensor %in% c("ARU","PC"))){
+  if (length(sensor) > 1||!any(sensor %in% c("ARU","PC"))){
     stop("Select one sensor option from ARU or PC.")
   }
 
