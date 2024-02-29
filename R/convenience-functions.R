@@ -83,8 +83,13 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #' @description This function filters the species provided in WildTrax reports to only the groups of interest. The groups available for filtering are mammal, bird, amphibian, abiotic, insect, and unknown. Zero-filling functionality is available to ensure all surveys are retained in the dataset if no observations of the group of interest are available.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
+<<<<<<< HEAD
 #' @param remove Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown"). Defaults to retaining bird group only.
 #' @param zerofill Logical; indicates if zerofilling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
+=======
+#' @param remove Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "unknown"). Defaults to retaining bird group only.
+#' @param zerofill Logical; indicates if zero-filling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
+>>>>>>> 63be6f4242aa8e5482b0cea355f8352d7741be7b
 #' @param sensor Character; can be one of "ARU" or "PC"
 #'
 #' @import dplyr
@@ -92,16 +97,33 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #'
 #' @examples
 #' \dontrun{
+<<<<<<< HEAD
 #' dat.tidy <- wt_tidy_species(dat,
 #' remove=c("mammal", "amphibian", "abiotic", "insect", "human", unknown"),
+=======
+#' dat.tidy <- wt_tidy_species(data,
+#' remove=c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"),
+>>>>>>> 63be6f4242aa8e5482b0cea355f8352d7741be7b
 #' zerofill = TRUE)
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
 wt_tidy_species <- function(data,
+<<<<<<< HEAD
                             remove = c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"),
+=======
+                            remove = c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"),
+>>>>>>> 63be6f4242aa8e5482b0cea355f8352d7741be7b
                             zerofill = TRUE,
-                            sensor = "ARU"){
+                            sensor = c("ARU","PC")){
+
+  if (!(remove %in% c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"))){
+    stop("Select one remove option from birds, mammals, amphibians, abiotic, insects or unknown.")
+  }
+
+  if (!(sensor %in% c("ARU","PC"))){
+    stop("Select one sensor option from ARU or PC.")
+  }
 
   #Rename fields if PC
   if(sensor=="PC"){
@@ -110,13 +132,21 @@ wt_tidy_species <- function(data,
              recording_date_time = survey_date)
   }
 
+  if('birds' %in% remove){
+    message('Note that there are only QPAD offsets for birds.')
+  }
+
   #Convert to the sql database labels for species class
   remove <- dplyr::case_when(remove=="mammal" ~ "MAMMALIA",
                       remove=="amphibian" ~ "AMPHIBIA",
                       remove=="abiotic" ~ "ABIOTIC",
                       remove=="insect" ~ "INSECTA",
+<<<<<<< HEAD
                       remove=="bird" ~ "AVES",
                       remove=="human" ~ "HUMAN ACTIVITY",
+=======
+                      remove=="birds" ~ "AVES",
+>>>>>>> 63be6f4242aa8e5482b0cea355f8352d7741be7b
                       !is.na(remove) ~ remove)
 
   .species <- wt_get_species()
@@ -192,7 +222,7 @@ wt_tidy_species <- function(data,
 #'
 #' @examples
 #' \dontrun{
-#' dat.tmtt <- wt_replace_tmtt(dat, calc="round")
+#' dat.tmtt <- wt_replace_tmtt(data, calc="round")
 #' }
 #' @return A dataframe identical to input with 'TMTT' entries in the abundance column replaced by integer values.
 
@@ -242,7 +272,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 #' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values. This function is best preceded by the`wt_tidy_species` and `wt_replace_tmtt` functions  to ensure 'TMTT' and amphibian calling index values are not converted to zeros.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
-#' @param sound Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering). Note this functionality is only available for the ARU sensor.
+#' @param sound Character; vocalization type(s) to retain ("all", "Song", "Call", "Non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering). Note this functionality is only available for the ARU sensor.
 #' @param sensor Character; can be one of "ARU" or "PC"
 #'
 #' @import dplyr
@@ -276,8 +306,7 @@ wt_make_wide <- function(data, sound="all", sensor="ARU"){
 
     #Make it wide
     wide <- summed %>%
-      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_,
-                                                 TRUE ~ individual_count) %>% as.numeric()) %>%
+      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_, TRUE ~ individual_count) %>% as.numeric()) %>%
       dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
       tidyr::pivot_wider(id_cols = organization:task_method,
                   names_from = "species_code",
@@ -293,8 +322,7 @@ wt_make_wide <- function(data, sound="all", sensor="ARU"){
 
     #Make it wide and return field names to point count format
     wide <- data %>%
-      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_,
-                                                 TRUE ~ individual_count) %>% as.numeric()) %>%
+      dplyr::mutate(individual_count = as.numeric(individual_count)) %>%
       dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
       tidyr::pivot_wider(id_cols = organization:survey_duration_method,
                   names_from = "species_code",

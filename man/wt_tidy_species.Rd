@@ -8,7 +8,7 @@ wt_tidy_species(
   data,
   remove = c("mammal", "amphibian", "abiotic", "insect", "unknown"),
   zerofill = TRUE,
-  sensor = "ARU"
+  sensor = c("ARU", "PC")
 )
 }
 \arguments{

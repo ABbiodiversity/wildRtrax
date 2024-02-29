@@ -65,7 +65,7 @@ birdnet_report <- data[[1]] %>%
   dplyr::distinct()
 
 main_report <- data[[2]] %>%
-  wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect"), zerofill = F) %>%
+  wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect"), zerofill = F, 'ARU') %>%
   dplyr::select(location, recording_date_time, observer, species_code) %>%
   dplyr::distinct()
 
