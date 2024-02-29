@@ -10,21 +10,21 @@ test_that("Authentication works correctly", {
   })
 
 test_that("Downloading ARU report", {
-  ecosys21_aru <- wt_download_report(605, 'ARU', 'main', FALSE)
-  expect_true(!is.null(ecosys21))
+  ecosys21_aru <- wt_download_report(620, 'ARU', 'main', FALSE)
+  expect_true(!is.null(ecosys21_aru))
 })
 
 test_that("Downloading CAM report", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21_cam <- wt_download_report(799, 'CAM', 'main', FALSE)
+  ecosys21_cam <- wt_download_report(296, 'CAM', 'main', FALSE)
   expect_true(!is.null(ecosys21_cam))
 })
 
 test_that("Downloading PC report", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  lpb_pc <- wt_download_report(888, 'PC', 'main', FALSE)
+  lpb_pc <- wt_download_report(887, 'PC', 'main', FALSE)
   expect_true(!is.null(lpb_pc))
 })
 
@@ -37,24 +37,35 @@ test_that("Testing a Private Project", {
 test_that("Downloading ARU as PC report", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21_as_pc <- wt_download_report(605, 'PC', 'main', FALSE)
+  ecosys21_as_pc <- wt_download_report(620, 'PC', 'main', FALSE)
   expect_true(!is.null(ecosys21_as_pc))
 })
 
 test_that("Attempting PC as ARU report", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21_as_pc <- wt_download_report(888, 'ARU', 'main', FALSE)
-  expect_true(!is.null(ecosys21_as_pc))
+  expect_error(wt_download_report(887, 'ARU', 'main', FALSE))
 })
 
-test_that("Tidying species", {
+test_that("Tidying species zero-filling true", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
-  ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians"), zerofill = T)
+  ecosys21 <- wt_download_report(620, 'ARU', 'main', FALSE)
+  ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians","unknown"), zerofill = T)
   expect_true(nrow(ecosys21_tidy) < nrow(ecosys21))
 })
+
+test_that("Tidying species zero-filling false", {
+  Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
+  wt_auth(force = TRUE)
+  ecosys21 <- wt_download_report(620, 'ARU', 'main', FALSE)
+  ecosys21_tidy_f <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians","unknown"), zerofill = F)
+  expect_true(nrow(ecosys21_tidy) < nrow(ecosys21))
+})
+
+
+
+
 
 test_that("Replacing TMTT", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
