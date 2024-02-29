@@ -254,8 +254,13 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   file.remove(abstract)
 
   # Remove special characters
-  list.files(td, pattern = "*.csv", full.names = TRUE) %>%
-    purrr::map(~file.rename(.x, gsub("[:()?!~;]", "", .x)))
+  list.files(td, pattern = "*.csv", full.names = TRUE) %>% map(~ {
+    directory <- dirname(.x)
+    old_filename <- basename(.x)
+    new_filename <- gsub("[:()?!~;]", "", old_filename)
+    new_path <- file.path(directory, new_filename)
+    file.rename(.x, new_path)
+  })
   files.full <- list.files(td, pattern= "*.csv", full.names = TRUE)
   files.less <- basename(files.full)
   x <- purrr::map(.x = files.full, .f = ~ suppressWarnings(readr::read_csv(., show_col_types = F,
@@ -271,7 +276,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   }
 
   # Return the requested report(s)
-  report <- paste(reports, collapse = "|")
+  report <- paste(paste0("_",reports), collapse = "|")
   x <- x[grepl(report, names(x))]
   # Return a dataframe if only 1 element in the list (i.e., only 1 report requested)
   if (length(x) == 1) {
