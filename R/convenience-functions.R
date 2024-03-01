@@ -92,7 +92,7 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #'
 #' @examples
 #' \dontrun{
-#' dat.tidy <- wt_tidy_species(dat, remove=c("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown"), zeorfill = T, sensor = 'ARU')}
+#' dat.tidy <- wt_tidy_species(dat, remove=c("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown"), zerofill = T, sensor = 'ARU')}
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
 wt_tidy_species <- function(data,
