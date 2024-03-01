@@ -19,6 +19,6 @@ This function uses a lookup table of model-predicted values to replace 'TMTT' en
 }
 \examples{
 \dontrun{
-dat.tmtt <- wt_replace_tmtt(dat, calc="round")
+dat.tmtt <- wt_replace_tmtt(data, calc="round")
 }
 }

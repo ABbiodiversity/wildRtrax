@@ -9,7 +9,7 @@ wt_qpad_offsets(
   species = c("all"),
   version = 3,
   together = FALSE,
-  sensor = "ARU"
+  sensor = ""
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ wt_qpad_offsets(
 \item{sensor}{Character; can be one of "ARU" or "PC"}
 }
 \value{
-An object of class unmarkedFrameOccu. See \code{unmarked::unmarkedFrameOccu} for details.
+A dataframe containing the QPAD values either by themselves or with the original wide data if together = T
 }
 \description{
 This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds. This function requires download of the \code{QPAD} R package and should be used on the output of the \code{wt_format_wide} function
@@ -36,7 +36,7 @@ devtools::install_github("borealbirds/QPAD")
 dat.clean <- wt_tidy_species(dat)
 dat.tmtt <- wt_replace_tmtt(dat.clean)
 dat.wide <- wt_make_wide(dat.tmtt, sound="all")
-dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE)
+dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE, sensor = "ARU")
 }
 }
 \references{

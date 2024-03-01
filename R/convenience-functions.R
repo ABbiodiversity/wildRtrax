@@ -92,18 +92,23 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #'
 #' @examples
 #' \dontrun{
-#' dat.tidy <- wt_tidy_species(dat, remove=c("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown"), zerofill = T, sensor = 'ARU')}
+#' dat.tidy <- wt_tidy_species(dat, remove=c("mammal", "unknown"),
+#' zerofill = T, sensor = 'ARU')}
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
 wt_tidy_species <- function(data,
-                            remove = c("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown"),
+                            remove = "",
                             zerofill = TRUE,
                             sensor = c("ARU","PC")) {
+
+  if (is.null(remove)) {
+    remove <- ""
+    message('Not removing any species')
+  }
 
   if (any(!(remove %in% c("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown")))) {
     stop("Select one remove option from bird, mammal, amphibian, abiotic, insect, human or unknown.")
   }
-
 
   if (!(sensor %in% c("ARU","PC"))){
     stop("Select one sensor option from ARU or PC.")
@@ -117,7 +122,7 @@ wt_tidy_species <- function(data,
   }
 
   if('bird' %in% remove){
-    message('Note that there are only QPAD offsets for birds.')
+    message('Note: By removing birds, you will not be able to use wt_qpad_offsets since QPAD offsets are only available for birds.')
   }
 
   #Convert to the sql database labels for species class
@@ -127,7 +132,7 @@ wt_tidy_species <- function(data,
                       remove=="insect" ~ "INSECTA",
                       remove=="bird" ~ "AVES",
                       remove=="human" ~ "HUMAN ACTIVITY",
-                      !is.na(remove) ~ remove)
+                      remove=="" ~ remove)
 
   .species <- wt_get_species()
 
@@ -479,11 +484,11 @@ wt_format_occupancy <- function(data,
 #' dat.clean <- wt_tidy_species(dat)
 #' dat.tmtt <- wt_replace_tmtt(dat.clean)
 #' dat.wide <- wt_make_wide(dat.tmtt, sound="all")
-#' dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE)
+#' dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE, sensor = "ARU")
 #' }
-#' @return An object of class unmarkedFrameOccu. See `unmarked::unmarkedFrameOccu` for details.
+#' @return A dataframe containing the QPAD values either by themselves or with the original wide data if together = T
 
-wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALSE, sensor="ARU"){
+wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALSE, sensor="") {
 
   #Rename fields if PC
   if(sensor=="PC"){

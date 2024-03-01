@@ -157,7 +157,7 @@
   time <- str_sub(data$recording_date_time, 12, 19)
   lon <- as.numeric(data$longitude)
   lat <- as.numeric(data$latitude)
-  dur <- as.numeric(str_sub(data$task_duration, -100, -2))
+  dur <- as.numeric(data$task_duration)
   dis <- Inf
 
   #parse date+time into POSIXlt
