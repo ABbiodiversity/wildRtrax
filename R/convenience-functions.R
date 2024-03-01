@@ -83,13 +83,8 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #' @description This function filters the species provided in WildTrax reports to only the groups of interest. The groups available for filtering are mammal, bird, amphibian, abiotic, insect, and unknown. Zero-filling functionality is available to ensure all surveys are retained in the dataset if no observations of the group of interest are available.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
-<<<<<<< HEAD
 #' @param remove Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown"). Defaults to retaining bird group only.
 #' @param zerofill Logical; indicates if zerofilling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
-=======
-#' @param remove Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "unknown"). Defaults to retaining bird group only.
-#' @param zerofill Logical; indicates if zero-filling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
->>>>>>> 63be6f4242aa8e5482b0cea355f8352d7741be7b
 #' @param sensor Character; can be one of "ARU" or "PC"
 #'
 #' @import dplyr
@@ -97,29 +92,18 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #'
 #' @examples
 #' \dontrun{
-<<<<<<< HEAD
-#' dat.tidy <- wt_tidy_species(dat,
-#' remove=c("mammal", "amphibian", "abiotic", "insect", "human", unknown"),
-=======
-#' dat.tidy <- wt_tidy_species(data,
-#' remove=c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"),
->>>>>>> 63be6f4242aa8e5482b0cea355f8352d7741be7b
-#' zerofill = TRUE)
-#' }
+#' dat.tidy <- wt_tidy_species(dat, remove=c("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown"), zeorfill = T, sensor = 'ARU')}
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
 wt_tidy_species <- function(data,
-<<<<<<< HEAD
-                            remove = c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"),
-=======
-                            remove = c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"),
->>>>>>> 63be6f4242aa8e5482b0cea355f8352d7741be7b
+                            remove = c("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown"),
                             zerofill = TRUE,
-                            sensor = c("ARU","PC")){
+                            sensor = c("ARU","PC")) {
 
-  if (!(remove %in% c("birds", "mammals", "amphibians", "abiotic", "insects", "unknown"))){
-    stop("Select one remove option from birds, mammals, amphibians, abiotic, insects or unknown.")
+  if (any(!(remove %in% c("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown")))) {
+    stop("Select one remove option from bird, mammal, amphibian, abiotic, insect, human or unknown.")
   }
+
 
   if (!(sensor %in% c("ARU","PC"))){
     stop("Select one sensor option from ARU or PC.")
@@ -132,7 +116,7 @@ wt_tidy_species <- function(data,
              recording_date_time = survey_date)
   }
 
-  if('birds' %in% remove){
+  if('bird' %in% remove){
     message('Note that there are only QPAD offsets for birds.')
   }
 
@@ -141,12 +125,8 @@ wt_tidy_species <- function(data,
                       remove=="amphibian" ~ "AMPHIBIA",
                       remove=="abiotic" ~ "ABIOTIC",
                       remove=="insect" ~ "INSECTA",
-<<<<<<< HEAD
                       remove=="bird" ~ "AVES",
                       remove=="human" ~ "HUMAN ACTIVITY",
-=======
-                      remove=="birds" ~ "AVES",
->>>>>>> 63be6f4242aa8e5482b0cea355f8352d7741be7b
                       !is.na(remove) ~ remove)
 
   .species <- wt_get_species()
