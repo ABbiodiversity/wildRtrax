@@ -39,24 +39,23 @@ my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "
 
 ## Data wrangling
 
-Now let's start cleaning things up a bit. We don't need certain abiotic codes so let's remove those with `wt_tidy_species()`,
+Now let's start cleaning things up a bit. We don't need certain abiotic and mammal codes so let's remove those with `wt_tidy_species()`,
 
 ```{r, tidy-chunk, eval = F, echo = T, warning = F, message = F}
-my_tidy_data <- wt_tidy_species(my_report, remove = "mammal", zerofill=F, sensor = 'ARU')
+my_tidy_data <- wt_tidy_species(my_report, remove = c("abiotic","mammal"), zerofill=F, sensor = 'ARU')
 
 # Difference in rows
 round((nrow(my_tidy_data)/nrow(my_report)),2)
 ```
 
-
-So about 5% of detections were mammals. Next, convert TMTT counts to numeric:
+So about 5% of detections were mammals. Next, convert TMTT (too many to tag) counts to numeric:
 
 ```{r, eval = F, echo = T, warning = F, message = F}
 my_tmtt_data <- wt_replace_tmtt(data = my_tidy_data, calc = "round")
 
 ```
 
-and finally widen the data into a species matrix.
+and finally, widen the data into a species matrix.
 
 ```{r, eval = F, echo = T, warning = F, message = F}
 my_wide_data <- wt_make_wide(data = my_tmtt_data, sound = "all", sensor = 'ARU')
@@ -67,7 +66,7 @@ head(my_wide_data)
 
 ## Offsets
 
-Now you can calculate statistical offsets to account for imperfection detection following the QPAD method.
+Now you can calculate statistical offsets to account for imperfect detection following the [QPAD method](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12106).
 
 ```{r, eval = F, echo = T, warning = F, message = F}
 my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version = 3, together = TRUE, sensor = 'ARU')
