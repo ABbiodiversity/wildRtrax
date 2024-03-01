@@ -9,15 +9,15 @@ test_that("Authentication works correctly", {
   })
 
 test_that("Downloading ARU report", {
-  ecosys21_aru <- wt_download_report(620, 'ARU', 'main', FALSE)
-  expect_true(!is.null(ecosys21_aru))
+  cypress_hills_aru <- wt_download_report(620, 'ARU', 'main', FALSE)
+  expect_true(!is.null(cypress_hills))
 })
 
 test_that("Downloading CAM report", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21_cam <- wt_download_report(296, 'CAM', 'main', FALSE)
-  expect_true(!is.null(ecosys21_cam))
+  abmi_amph_cam <- wt_download_report(391, 'CAM', 'main', FALSE)
+  expect_true(!is.null(abmi_amph_cam))
 })
 
 test_that("Downloading PC report", {
@@ -36,8 +36,8 @@ test_that("Testing a Private Project", {
 test_that("Downloading ARU as PC report", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21_as_pc <- wt_download_report(620, 'PC', 'main', FALSE)
-  expect_true(!is.null(ecosys21_as_pc))
+  cypress_hills_as_pc <- wt_download_report(620, 'PC', 'main', FALSE)
+  expect_true(!is.null(cypress_hills_as_pc))
 })
 
 test_that("Attempting PC as ARU report", {
@@ -49,67 +49,63 @@ test_that("Attempting PC as ARU report", {
 test_that("Tidying species zero-filling true", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(620, 'ARU', 'main', FALSE)
-  ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians","unknown"), zerofill = T)
-  expect_true(nrow(ecosys21_tidy) < nrow(ecosys21))
+  cypress_hills <- wt_download_report(620, 'ARU', 'main', FALSE)
+  cypress_hills_tidy <- wt_tidy_species(cypress_hills, remove = c("mammal", "abiotic", "amphibian","unknown"), zerofill = T)
+  expect_true(nrow(cypress_hills_tidy) < nrow(cypress_hills))
 })
 
 test_that("Tidying species zero-filling false", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(620, 'ARU', 'main', FALSE)
-  ecosys21_tidy_f <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians","unknown"), zerofill = F)
-  expect_true(nrow(ecosys21_tidy) < nrow(ecosys21))
+  cypress_hills <- wt_download_report(620, 'ARU', 'main', FALSE)
+  cypress_hills_tidy_f <- wt_tidy_species(cypress_hills, remove = c("mammal", "abiotic", "amphibian","unknown"), zerofill = F)
+  expect_true(nrow(cypress_hills_tidy_f) < nrow(cypress_hills))
 })
-
-
-
-
 
 test_that("Replacing TMTT", {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
-  ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, "ARU")
-  ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round") %>%
+  cypress_hills <- wt_download_report(620, 'ARU', 'main', FALSE)
+  cypress_hills_tidy <- wt_tidy_species(cypress_hills, remove = c("mammal", "abiotic", "amphibian"), zerofill = T, "ARU")
+  cypress_hills_tmtt <- wt_replace_tmtt(cypress_hills_tidy, calc = "round") %>%
     select(individual_count) %>%
     distinct()
-  expect_true(!('TMTT' %in% ecosys21_tmtt))
+  expect_true(!('TMTT' %in% cypress_hills_tmtt))
+
 })
 
 test_that('Making wide', {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
-  ecosys21_tidy <- wt_tidy_species(ecosys21_aru, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, "ARU")
-  ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round")
-  ecosys21_wide <- wt_make_wide(ecosys21_tmtt, sound = "all", sensor = 'ARU')
-  expect_true(ncol(ecosys21_wide) > ncol(ecosys21_tmtt))
+  cypress_hills_aru <- wt_download_report(620, 'ARU', 'main', FALSE)
+  cypress_hills_tidy <- wt_tidy_species(ecypress_hills_aru, remove = c("mammal", "abiotic", "amphibian"), zerofill = T, "ARU")
+  cypress_hills_tmtt <- wt_replace_tmtt(cypress_hills_tidy, calc = "round")
+  cypress_hills_wide <- wt_make_wide(cypress_hills_tmtt, sound = "all", sensor = 'ARU')
+  expect_true(ncol(cypress_hills_wide) > ncol(cypress_hills_tmtt))
 })
 
 test_that('Getting QPAD offsets', {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
-  ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, "ARU")
-  ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round")
-  ecosys21_wide <- wt_make_wide(ecosys21_tmtt, sound = "all", sensor = 'ARU')
-  ecosys21_qpad <- wt_qpad_offsets(ecosys21_wide, species = "all", version = 3, together = F, sensor = 'ARU')
-  expect_condition(ncol(ecosys21_qpad) == 1)
+  cypress_hills <- wt_download_report(620, 'ARU', 'main', FALSE)
+  cypress_hills_tidy <- wt_tidy_species(cypress_hills, remove = c("mammal", "abiotic", "amphibian"), zerofill = T, "ARU")
+  cypress_hills_tmtt <- wt_replace_tmtt(cypress_hills_tidy, calc = "round")
+  cypress_hills_wide <- wt_make_wide(cypress_hills_tmtt, sound = "all", sensor = 'ARU')
+  cypress_hills_qpad <- wt_qpad_offsets(cypress_hills_wide, species = "all", version = 3, together = F, sensor = 'ARU')
+  expect_true(ncol(cypress_hills_qpad) > 1)
 })
-
-wt_make_wide(ecosys21_tmtt, sound = "all", sensor = 'ARU')
 
 test_that('Occupancy formatting', {
   Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
   wt_auth(force = TRUE)
-  ecosys21 <- wt_download_report(605, 'ARU', 'main', FALSE)
-  ecosys21_tidy <- wt_tidy_species(ecosys21, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, "ARU")
-  ecosys21_tmtt <- wt_replace_tmtt(ecosys21_tidy, calc = "round")
-  occu <- wt_format_occupancy(ecosys21_tmtt, species = "OVEN")
-  expect_condition(class(occu)[1] == 'unmarkedFrameOccu')
+  cypress_hills <- wt_download_report(620, 'ARU', 'main', FALSE)
+  cypress_hills_tidy <- wt_tidy_species(cypress_hills, remove = c("mammal", "abiotic", "amphibian"), zerofill = T, "ARU")
+  cypress_hills_tmtt <- wt_replace_tmtt(cypress_hills_tidy, calc = "round")
+  occu <- wt_format_occupancy(cypress_hills_tmtt, species = "OVEN")
+  expect_true(class(occu)[1] == 'unmarkedFrameOccu')
 })
 
+##Pre-processing
 ##wt_audio_scanner
 ##wt_run_ap
 ##wt_glean_ap
@@ -123,24 +119,48 @@ test_that('Occupancy formatting', {
 
 ################################### Point count test suite
 
-test_that('QPAD for PC', {
-  pc_data <- wt_download_report(2016, 'PC', 'main', FALSE)
-  pc_tidy <- wt_tidy_species(pc_data, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, sensor = 'PC')
+test_that('QPAD for PC together false', {
+  pc_data <- wt_download_report(887, 'PC', 'main', FALSE)
+  pc_tidy <- wt_tidy_species(pc_data, remove = c("unknown"), zerofill = T, sensor = 'PC')
   pc_wide <- wt_make_wide(pc_tidy, sound = "all", sensor = 'PC')
   pc_qpad <- wt_qpad_offsets(pc_wide, species = "OVEN", version = 3, together = F, sensor = 'PC')
-  expect_true(ncol(pc_qpad) == 1)
+  expect_true(ncol(pc_wide) > ncol(pc_qpad))
+})
+
+test_that('QPAD for PC together true', {
+  pc_data <- wt_download_report(887, 'PC', 'main', FALSE)
+  pc_tidy <- wt_tidy_species(pc_data, remove = c("unknown"), zerofill = T, sensor = 'PC')
+  pc_wide <- wt_make_wide(pc_tidy, sound = "all", sensor = 'PC')
+  pc_qpad <- wt_qpad_offsets(pc_wide, species = "OVEN", version = 3, together = T, sensor = 'PC')
+  expect_true(ncol(pc_qpad) > ncol(pc_wide))
+})
+
+test_that('QPAD for PC zerofill false together false', {
+  pc_data <- wt_download_report(887, 'PC', 'main', FALSE)
+  pc_tidy <- wt_tidy_species(pc_data, remove = c("unknown"), zerofill = F, sensor = 'PC')
+  pc_wide <- wt_make_wide(pc_tidy, sound = "all", sensor = 'PC')
+  pc_qpad <- wt_qpad_offsets(pc_wide, species = "OVEN", version = 3, together = F, sensor = 'PC')
+  expect_true(ncol(pc_wide) > ncol(pc_qpad))
+})
+
+test_that('QPAD for PC zetrofill false', {
+  pc_data <- wt_download_report(887, 'PC', 'main', FALSE)
+  pc_tidy <- wt_tidy_species(pc_data, remove = c("unknown"), zerofill = F, sensor = 'PC')
+  pc_wide <- wt_make_wide(pc_tidy, sound = "all", sensor = 'PC')
+  pc_qpad <- wt_qpad_offsets(pc_wide, species = "OVEN", version = 3, together = T, sensor = 'PC')
+  expect_true(ncol(pc_qpad) > ncol(pc_wide))
 })
 
 test_that('Occupancy for PC', {
-  pc_data <- wt_download_report(2016, 'PC', 'main', FALSE)
-  pc_tidy <- wt_tidy_species(pc_data, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, sensor = 'PC')
+  pc_data <- wt_download_report(887, 'PC', 'main', FALSE)
+  pc_tidy <- wt_tidy_species(pc_data, remove = c("unknown"), zerofill = T, sensor = 'PC')
   occu <- wt_format_occupancy(pc_tidy, species = "OVEN")
   expect_condition(class(occu)[1] == 'unmarkedFrameOccu')
 })
 
 
 test_that('Error for TMTT', {
-  pc_data <- wt_download_report(2016, 'PC', 'main', FALSE)
-  pc_tidy <- wt_tidy_species(pc_data, remove = c("mammal", "abiotic", "amphibians"), zerofill = T, sensor = 'PC')
+  pc_data <- wt_download_report(887, 'PC', 'main', FALSE)
+  pc_tidy <- wt_tidy_species(pc_data, remove = c("unknown"), zerofill = T, sensor = 'PC')
   expect_error(wt_replace_tmtt(pc_tidy, calc = 'round'))
 })
