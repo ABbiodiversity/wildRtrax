@@ -207,7 +207,7 @@ wt_tidy_species <- function(data,
 #'
 #' @examples
 #' \dontrun{
-#' dat.tmtt <- wt_replace_tmtt(data, calc="round")
+#' dat.tmtt <- wt_replace_tmtt(dat, calc="round")
 #' }
 #' @return A dataframe identical to input with 'TMTT' entries in the abundance column replaced by integer values.
 
