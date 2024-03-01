@@ -40,7 +40,7 @@ library(wildRtrax)
 
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
-data <- wt_download_report(605,'ARU',c('birdnet','main'))
+data <- wt_download_report(620,'ARU',c('birdnet','main'),F)
 
 ```
 ```{r, eval=F, include=T, message=F, warning=F}
@@ -48,13 +48,13 @@ library(wildRtrax)
 
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
-data <- wt_download_report(605,'ARU',c('birdnet','main'))
+data <- wt_download_report(620,'ARU',c('birdnet','main'),F)
 
 ```
 
 The results from the `main` report can then be anti-joined against the `birdnet` report to determine if any species were detected than a human did not find. It's recommended to use high threshold values from BirdNET and species that should occur or be allowed in the project.
 
-```{r}
+```{r, eval=F, include=T, message=F, warning=F}
 library(magrittr)
 
 birdnet_report <- data[[1]] %>%
@@ -65,7 +65,7 @@ birdnet_report <- data[[1]] %>%
   dplyr::distinct()
 
 main_report <- data[[2]] %>%
-  wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect"), zerofill = F, 'ARU') %>%
+  wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect"), zerofill = F, sensor = 'ARU') %>%
   dplyr::select(location, recording_date_time, observer, species_code) %>%
   dplyr::distinct()
 

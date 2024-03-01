@@ -57,12 +57,12 @@ Using the project_id number in the download summary you can then use `wt_downloa
 
 ```{r echo=TRUE, include=TRUE, eval=F, warning = FALSE, message = FALSE}
 # Download the project report
-my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+my_report <- wt_download_report(project_id = 620, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
 ```
 ```{r echo=F, include=F, eval=T, warning = FALSE, message = FALSE}
 # Download the project report
-my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+my_report <- wt_download_report(project_id = 620, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
 ```
 ```{r, eval=T}
@@ -80,7 +80,7 @@ wt_get_download_summary(sensor_id = "ARU") %>%
   dplyr::mutate(data = purrr::map(.x = project_id, .f = ~wt_download_report(project_id = .x, sensor_id = "ARU", weather_cols = F, reports = "main")))
 
 ```
-```{r echo=T, include=F, eval=T, warning = F, message = F}
+```{r echo=T, include=F, eval=F, warning = F, message = F}
 # Download all of the published Ecosystem Health ARU data to a single object
 wt_get_download_summary(sensor_id = "ARU") %>%
   tibble::as_tibble() %>%
@@ -100,7 +100,7 @@ spp_table <- wt_get_species()
 spp_table <- wt_get_species()
 ```
 ```{r, eval=T}
-head(spp_table)
+spp_table |> arrange(species_code)
 
 ```
 
@@ -112,7 +112,7 @@ my_report
 ```
 ```{r, echo=F, include=F, eval=T, warning=F, message = FALSE}
 # As point count format
-aru_as_pc <- wt_download_report(project_id = 605, sensor_id = 'PC', reports = "main", weather_cols = F)
+aru_as_pc <- wt_download_report(project_id = 620, sensor_id = 'PC', reports = "main", weather_cols = F)
 ```
 ```{r, eval=T}
 # As point count format
