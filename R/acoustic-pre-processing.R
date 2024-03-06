@@ -835,7 +835,7 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
     dplyr::relocate(minFreq, .after = tagLength) %>%
     dplyr::relocate(maxFreq, .after = minFreq) %>%
     dplyr::relocate(internal_tag_id, .after = maxFreq) %>%
-    dplyr::drop_na()
+    tidyr::drop_na()
   
   #Write the file
   return(write.csv(in_tbl_wtd, file = output, row.names = F))
