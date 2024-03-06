@@ -765,10 +765,9 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
 #'
 #' @param input Character; The path to the input csv
 #' @param output Character; Path where the output file will be stored
-#' @param tz Character; Assigns a timezone to the recording files. Use `OlsonNames()` to get a list of valid names.
 #' @param freq_bump Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification
 #'
-#' @import dplyr tidyr readr stringr lubridate tibble lubridate
+#' @import dplyr tidyr readr tibble
 #' @export
 #'
 #' @examples
@@ -778,15 +777,15 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
 #'
 #' @return A csv formatted as a WildTrax tag template
 
-wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
-  
+wt_kaleidoscope_tags <- function (input, output, freq_bump = T) {
+
   #Check to see if the input exists and reading it in
   if (file.exists(input)) {
     in_tbl <- readr::read_csv(input, col_names = TRUE, na = c("", "NA"), col_types = cols())
   } else {
     stop ("File cannot be found")
   }
-  
+
   #Cleaning things up for the tag template
   in_tbl_wtd <- in_tbl %>%
     dplyr::select(INDIR, `IN FILE`, DURATION, OFFSET, Dur, DATE, TIME, `AUTO ID*`, Fmin, Fmax) %>%
@@ -796,6 +795,7 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
     dplyr::relocate(recordingDate, .after = location) %>%
     dplyr::mutate(recordingDate = stringr::str_remove(recordingDate,'.+?(?:__)')) %>%
     # Create date/time fields
+    dplyr::mutate(recordingDate = lubridate::ymd_hms(recordingDate)) %>% #Apply a time zone if necessary
     dplyr::rename("taskLength" = 5,
                   "startTime" = 6,
                   "tagLength" = 7,
@@ -836,12 +836,12 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
     dplyr::relocate(maxFreq, .after = minFreq) %>%
     dplyr::relocate(internal_tag_id, .after = maxFreq) %>%
     tidyr::drop_na()
-  
+
   #Write the file
   return(write.csv(in_tbl_wtd, file = output, row.names = F))
-  
+
   print("Converted to WildTrax tags. Go to your WildTrax project > Manage > Upload Tags.")
-  
+
 }
 
 #' Convert Songscope output to tags
