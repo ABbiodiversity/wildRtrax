@@ -791,13 +791,13 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
   #Cleaning things up for the tag template
   in_tbl_wtd <- in_tbl %>%
     dplyr::select(INDIR, `IN FILE`, DURATION, OFFSET, Dur, DATE, TIME, `AUTO ID*`, Fmin, Fmax) %>%
-    tidyr::separate(`IN FILE`, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
+    tidyr::separate(`IN FILE`, into = c("location", "recordingDate"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
     dplyr::select(-(DATE:TIME)) %>%
     dplyr::relocate(location) %>%
-    dplyr::relocate(recording_date_time, .after = location) %>%
-    dplyr::mutate(recording_date_time = stringr::str_remove(recording_date_time,'.+?(?:__)')) %>%
+    dplyr::relocate(recordingDate, .after = location) %>%
+    dplyr::mutate(recordingDate = stringr::str_remove(recordingDate,'.+?(?:__)')) %>%
     # Create date/time fields
-    dplyr::mutate(recording_date_time = lubridate::with_tz(lubridate::ymd_hms(recording_date_time), tzone = tz)) %>% #Apply a time zone if necessary
+    dplyr::mutate(recordingDate = lubridate::force_tz(lubridate::ymd_hms(recordingDate), tzone = tz)) %>% #Apply a time zone if necessary
     dplyr::rename("taskLength" = 5,
                   "startTime" = 6,
                   "tagLength" = 7,
@@ -811,16 +811,16 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
                                       species == "L_freq_Bat" ~ "LowF",
                                       TRUE ~ species),
                   startTime = dplyr::case_when(startTime == 0 ~ 0.1, TRUE ~ startTime)) %>% #Adjusting startTime parameter
-    tibble::add_column(method = "1SPT", .after = "recording_date_time") %>%
+    tibble::add_column(method = "1SPT", .after = "recordingDate") %>%
     tibble::add_column(transcriber = "Not Assigned", .after = "taskLength") %>%
-    dplyr::group_by(location, recording_date_time, taskLength, species) %>%
+    dplyr::group_by(location, recordingDate, taskLength, species) %>%
     dplyr::mutate(speciesIndividualNumber = row_number()) %>%
     dplyr::ungroup() %>%
     tibble::add_column(vocalization = "", .after = "speciesIndividualNumber") %>%
     tibble::add_column(abundance = 1, .after= "vocalization") %>%
     dplyr::mutate(vocalization = case_when(species == "Noise" ~ "Non-vocal", TRUE ~ "Call")) %>%
     tibble::add_column(internal_tag_id = "", .after = "maxFreq") %>%
-    dplyr::mutate(recording_date_time = as.character(recording_date_time)) %>%
+    dplyr::mutate(recordingDate = as.character(recordingDate)) %>%
     dplyr::rowwise() %>%
     dplyr::mutate(tagLength = dplyr::case_when(tagLength > taskLength ~ taskLength, TRUE ~ tagLength)) %>%
     dplyr::mutate(tagLength = dplyr::case_when(is.na(tagLength) ~ taskLength - startTime, TRUE ~ tagLength),
