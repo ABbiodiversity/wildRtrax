@@ -780,14 +780,14 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
 #' @return A csv formatted as a WildTrax tag template
 
 wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
-
+  
   #Check to see if the input exists and reading it in
   if (file.exists(input)) {
     in_tbl <- readr::read_csv(input, col_names = TRUE, na = c("", "NA"), col_types = cols())
   } else {
     stop ("File cannot be found")
   }
-
+  
   #Cleaning things up for the tag template
   in_tbl_wtd <- in_tbl %>%
     dplyr::select(INDIR, `IN FILE`, DURATION, OFFSET, Dur, DATE, TIME, `AUTO ID*`, Fmin, Fmax) %>%
@@ -837,12 +837,12 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
     dplyr::relocate(minFreq, .after = tagLength) %>%
     dplyr::relocate(maxFreq, .after = minFreq) %>%
     dplyr::relocate(internal_tag_id, .after = maxFreq)
-
+  
   #Write the file
   return(write.csv(in_tbl_wtd, file = output, row.names = F))
-
+  
   print("Converted to WildTrax tags. Go to your WildTrax project > Manage > Upload Tags.")
-
+  
 }
 
 #' Convert Songscope output to tags
