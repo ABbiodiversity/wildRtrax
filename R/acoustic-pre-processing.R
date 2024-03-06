@@ -768,13 +768,12 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
 #' @param tz Character; Assigns a timezone to the recording files. Use `OlsonNames()` to get a list of valid names.
 #' @param freq_bump Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification
 #'
-#' @import dplyr tidyr readr pipeR stringr lubridate tibble
-#' @importFrom lubridate ymd_hms with_tz
+#' @import dplyr tidyr readr stringr lubridate tibble lubridate
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' wt_kaleidoscope_tags(input = input.csv, output = tags.csv, tz = "", freq_bump = T)
+#' wt_kaleidoscope_tags(input = input.csv, output = tags.csv, freq_bump = T)
 #' }
 #'
 #' @return A csv formatted as a WildTrax tag template
@@ -797,7 +796,6 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
     dplyr::relocate(recordingDate, .after = location) %>%
     dplyr::mutate(recordingDate = stringr::str_remove(recordingDate,'.+?(?:__)')) %>%
     # Create date/time fields
-    dplyr::mutate(recordingDate = lubridate::force_tz(lubridate::ymd_hms(recordingDate), tzone = tz)) %>% #Apply a time zone if necessary
     dplyr::rename("taskLength" = 5,
                   "startTime" = 6,
                   "tagLength" = 7,
@@ -836,7 +834,8 @@ wt_kaleidoscope_tags <- function (input, output, tz, freq_bump = T) {
     dplyr::relocate(tagLength, .after = startTime) %>%
     dplyr::relocate(minFreq, .after = tagLength) %>%
     dplyr::relocate(maxFreq, .after = minFreq) %>%
-    dplyr::relocate(internal_tag_id, .after = maxFreq)
+    dplyr::relocate(internal_tag_id, .after = maxFreq) %>%
+    dplyr::drop_na()
   
   #Write the file
   return(write.csv(in_tbl_wtd, file = output, row.names = F))
