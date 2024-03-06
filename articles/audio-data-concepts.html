@@ -174,9 +174,9 @@ audio files. Here’s one way to do it using <code>ggspectro</code> in
 also a very powerful command line tool that can build spectrograms as
 well. Processing time here is much faster given R doesn’t have to read
 in the file as an S4 wave object. More on this later.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Or try a bash command using SoX</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#cd /path/to/file &amp;&amp; for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">#Or try a bash command using SoX</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#cd /path/to/file &amp;&amp; for file in *.wav; do outfile="${file%.*}.png"; title_in_pic="${file%.*}"; sox "$file" -n spectrogram -l -m -t "$title_in_pic" -o "$outfile"; done</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="from-the-field-to-the-office">From the field to the office<a class="anchor" aria-label="anchor" href="#from-the-field-to-the-office"></a>
