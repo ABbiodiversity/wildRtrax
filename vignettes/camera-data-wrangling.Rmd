@@ -12,7 +12,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-The use of camera traps in ecological studies has become increasingly popular for monitoring wildlife. Managing and analyzing camera trap data efficiently is crucial for extracting meaningful insights. In this vignette, we will explore how to perform camera data wrangling, specifically focusing on the ABMI's [Ecosystem Health 2014 data set]().
+The use of camera traps in ecological studies has become increasingly popular for monitoring wildlife. Managing and analyzing camera trap data efficiently is important for extracting meaningful and accurate insights. In this vignette, we will explore how to perform camera data wrangling, specifically focusing on the ABMI's [Ecosystem Health 2014 data set](https://portal.wildtrax.ca/home/camera-deployments.html?sensorId=CAM&projectId=205).
 
 Use the `wt_download_report()` function to retrieve the main report for the CAM sensor in the Ecosystem Health 2014 project:
 

@@ -3,7 +3,7 @@
 ## Major changes
 
 * `wt_chop()` now recurses across all input files
-* Moving geospatial assets to new repository to lighten package size. Request are now made only through usage of `wt_qpad_offsets()`.
+* Moving geospatial assets to new repository to lighten package size. Requests are now made only through usage of `wt_qpad_offsets()`.
 
 ## Minor changes
 
