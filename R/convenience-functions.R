@@ -109,7 +109,7 @@ wt_tidy_species <- function(data,
   }
 
   #Rename fields if PC
-  if("survey_id" %in% data |> names()){
+  if("survey_url" %in% colnames(data)){
     data <- data %>%
       rename(task_id=survey_id,
              recording_date_time = survey_date)
@@ -150,7 +150,7 @@ wt_tidy_species <- function(data,
     filtered.sp <- dplyr::filter(filtered, species_code!="NONE")
 
     #Translate point count field names back
-    if("survey_id" %in% data |> names()){
+    if("survey_url" %in% colnames(data)){
       filtered.sp <- filtered.sp %>%
         rename(survey_id=task_id,
                survey_date = recording_date_time)
@@ -178,7 +178,7 @@ wt_tidy_species <- function(data,
       dplyr::arrange(organization, project_id, location, recording_date_time)
 
     #Translate point count field names back
-    if("survey_id" %in% data |> names()){
+    if("survey_url" %in% colnames(data)){
       filtered.none <- filtered.none %>%
         rename(survey_id=task_id,
                survey_date = recording_date_time)
@@ -210,7 +210,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 
   #check if it's ARU data
   if(!"recording_date_time" %in% colnames(data)){
-    stop("The `wt_replace_tmmtt` function only works on data from the ARU sensor")
+    stop("The `wt_replace_tmtt` function only works on data from the ARU sensor")
   }
 
   check_none <- data |>
@@ -261,7 +261,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 #' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values. This function is best preceded by the`wt_tidy_species` and `wt_replace_tmtt` functions  to ensure 'TMTT' and amphibian calling index values are not converted to zeros.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
-#' @param sound Character; vocalization type(s) to retain ("all", "Song", "Call", "Non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering). Note this functionality is only available for the ARU sensor.
+#' @param sound Character; vocalization type(s) to retain ("all", "Song", "Call", "Non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).
 #'
 #' @import dplyr
 #' @export
@@ -277,7 +277,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 wt_make_wide <- function(data, sound="all"){
 
   #Steps for ARU data
-  if("survey_id" %in% data |> names()){
+  if(!"survey_url" %in% colnames(data)){
 
     #Filter to first detection per individual
     summed <- data %>%
@@ -306,7 +306,7 @@ wt_make_wide <- function(data, sound="all"){
   }
 
   #Steps for point count data
-  if("survey_id" %in% data |> names()){
+  if("survey_url" %in% colnames(data)){
 
     #Make it wide and return field names to point count format
     wide <- data %>%
@@ -348,11 +348,12 @@ wt_format_occupancy <- function(data,
                                 siteCovs=NULL){
 
   #Rename fields if PC
-  if("survey_id" %in% data |> names()){
+  if("survey_url" %in% colnames(data)){
     data <- data %>%
       rename(task_id=survey_id,
              recording_date_time = survey_date,
-             observer_id = observer)
+             observer_id = observer,
+             task_method = survey_duration_method)
   }
 
   #Wrangle observations and observation covariates for the species of interest
@@ -488,10 +489,10 @@ wt_format_occupancy <- function(data,
 #' }
 #' @return A dataframe containing the QPAD values either by themselves or with the original wide data if together = T
 
-wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALSE, sensor="") {
+wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALSE) {
 
   #Rename fields if PC
-  if("survey_id" %in% data |> names()){
+  if("survey_url" %in% colnames(data)){
     data <- data %>%
       rename(task_id=survey_id,
              recording_date_time = survey_date,
@@ -545,7 +546,7 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALS
                    rename_with(.fn=~paste0(.x, ".off")))
 
     #Translate point count field names back
-    if("survey_id" %in% data |> names()){
+    if("survey_url" %in% colnames(data)){
       out <- out %>%
         rename(survey_id=task_id,
                survey_date = recording_date_time,
