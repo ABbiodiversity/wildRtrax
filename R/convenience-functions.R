@@ -218,6 +218,15 @@ wt_replace_tmtt <- function(data, calc="round"){
     stop("The `wt_replace_tmmtt` function only works on data from the ARU sensor")
   }
 
+  check_none <- data |>
+    select(species_code) |>
+    distinct() |>
+    pull()
+
+  if (length(check_none) == 1 && check_none == 'NONE') {
+    stop('There are no species in this project')
+  }
+
   #load tmtt lookup table
   .tmtt <- readRDS(system.file("extdata", "tmtt_predictions.rds", package="wildRtrax"))
 
