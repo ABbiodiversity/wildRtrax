@@ -4,7 +4,7 @@
 \alias{wt_tidy_species}
 \title{Filter species from a report}
 \usage{
-wt_tidy_species(data, remove = "", zerofill = TRUE, sensor = c("ARU", "PC"))
+wt_tidy_species(data, remove = "", zerofill = TRUE)
 }
 \arguments{
 \item{data}{WildTrax main report or tag report from the \code{wt_download_report()} function.}
@@ -12,8 +12,6 @@ wt_tidy_species(data, remove = "", zerofill = TRUE, sensor = c("ARU", "PC"))
 \item{remove}{Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown"). Defaults to retaining bird group only.}
 
 \item{zerofill}{Logical; indicates if zerofilling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.}
-
-\item{sensor}{Character; can be one of "ARU" or "PC"}
 }
 \value{
 A dataframe identical to input with observations of the specified groups removed.
@@ -23,6 +21,6 @@ This function filters the species provided in WildTrax reports to only the group
 }
 \examples{
 \dontrun{
-dat.tidy <- wt_tidy_species(dat, remove=c("mammal", "unknown"),
-zerofill = T, sensor = 'ARU')}
+dat.tidy <- wt_tidy_species(dat, remove=c("mammal", "unknown"), zerofill = T)
+}
 }

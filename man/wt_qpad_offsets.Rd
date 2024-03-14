@@ -4,13 +4,7 @@
 \alias{wt_qpad_offsets}
 \title{Get QPAD offsets}
 \usage{
-wt_qpad_offsets(
-  data,
-  species = c("all"),
-  version = 3,
-  together = FALSE,
-  sensor = ""
-)
+wt_qpad_offsets(data, species = c("all"), version = 3, together = FALSE)
 }
 \arguments{
 \item{data}{Dataframe output from the \code{wt_make_wide()} function.}
@@ -20,8 +14,6 @@ wt_qpad_offsets(
 \item{version}{Numeric; version of QPAD offsets to use (2, or 3). Defaults to 3.}
 
 \item{together}{Logical; whether or not offsets should be bound to the input dataframe or returned as a separate object.}
-
-\item{sensor}{Character; can be one of "ARU" or "PC"}
 }
 \value{
 A dataframe containing the QPAD values either by themselves or with the original wide data if together = T
@@ -36,7 +28,7 @@ devtools::install_github("borealbirds/QPAD")
 dat.clean <- wt_tidy_species(dat)
 dat.tmtt <- wt_replace_tmtt(dat.clean)
 dat.wide <- wt_make_wide(dat.tmtt, sound="all")
-dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE, sensor = "ARU")
+dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE)
 }
 }
 \references{
