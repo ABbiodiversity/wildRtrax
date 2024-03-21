@@ -52,10 +52,10 @@ data <- wt_download_report(620,'ARU',c('birdnet','main'),F)
 
 ```
 
-The results from the `main` report can then be anti-joined against the `birdnet` report to determine if any species were detected than a human did not find. It's recommended to use high threshold values from BirdNET and species that should occur or be allowed in the project.
+When downloading multiple reports, the `data` object then becomes a list of tibbles. The results from the `main` report can then be anti-joined against the `birdnet` report to determine if any species were detected than a human did not find. It's recommended to use high threshold values from BirdNET and species that should occur or be allowed in the project.
 
 ```{r, eval=F, include=T, message=F, warning=F}
-library(magrittr)
+library(tidyverse)
 
 birdnet_report <- data[[1]] %>%
   dplyr::filter(is_species_allowed_in_project == 't',
@@ -65,7 +65,7 @@ birdnet_report <- data[[1]] %>%
   dplyr::distinct()
 
 main_report <- data[[2]] %>%
-  wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect"), zerofill = F, sensor = 'ARU') %>%
+  wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect"), zerofill = F) %>%
   dplyr::select(location, recording_date_time, observer, species_code) %>%
   dplyr::distinct()
 
@@ -76,7 +76,7 @@ merged_data <- dplyr::bind_rows(birdnet_report, main_report) %>% dplyr::arrange(
   tidyr::pivot_wider(names_from = species_code, values_from = presence, values_fill = 0) %>%
   tidyr::pivot_longer(cols = -c(location, recording_date_time, observer), names_to = "species_code", values_to = "presence")
 
-merged_data %>%
+missing_detections <- merged_data %>%
   dplyr::filter(observer == "BirdNET" & presence == 1) %>%
   dplyr::select(location, recording_date_time, species_code) %>%
   dplyr::anti_join(
@@ -86,5 +86,9 @@ merged_data %>%
     by = c("location", "recording_date_time", "species_code")
   )
 
+nrow(missing_detections)
+
 ```
+
+Therefore, BirdNET did not detect any additional species.
 

@@ -10,7 +10,7 @@ test_that("Authentication works correctly", {
   })
 
 test_that("Downloading ARU report", {
-  cypress_hills_aru <- wt_download_report(620, 'ARU', 'main', FALSE)
+  cypress_hills_aru <- wt_download_report(620, 'ARU', 'tag', FALSE)
   expect_true(!is.null(cypress_hills))
 })
 
