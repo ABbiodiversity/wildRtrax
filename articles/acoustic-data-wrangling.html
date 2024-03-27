@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">wildRtrax</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,12 +53,15 @@
     <a class="dropdown-item" href="../articles/apis.html">APIs</a>
     <a class="dropdown-item" href="../articles/acoustic-pre-processing.html">Acoustic pre-processing</a>
     <a class="dropdown-item" href="../articles/acoustic-data-wrangling.html">Acoustic data wrangling</a>
+    <a class="dropdown-item" href="../articles/camera-data-wrangling.html">Camera data wrangling</a>
+    <a class="dropdown-item" href="../articles/tutorials.html">Tutorials</a>
   </div>
 </li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.2.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.1.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.1</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.0</h6>
@@ -113,38 +116,191 @@ method</a>: <code><a href="../reference/wt_qpad_offsets.html">wt_qpad_offsets()<
 <code class="sourceCode R"><span><span class="co"># Start by getting everything you need</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>WT_USERNAME <span class="op">=</span> <span class="st">'guest'</span>, WT_PASSWORD <span class="op">=</span> <span class="st">'Apple123'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/wt_auth.html">wt_auth</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">my_report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">605</span>, sensor_id <span class="op">=</span> <span class="st">'ARU'</span>, reports <span class="op">=</span> <span class="st">"main"</span>, weather_cols <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">my_report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">620</span>, sensor_id <span class="op">=</span> <span class="st">'ARU'</span>, reports <span class="op">=</span> <span class="st">"main"</span>, weather_cols <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Downloading: 8.2 kB     Downloading: 8.2 kB     Downloading: 8.2 kB     Downloading: 8.2 kB     Downloading: 8.2 kB     Downloading: 8.2 kB     Downloading: 16 kB     Downloading: 16 kB     Downloading: 16 kB     Downloading: 16 kB     Downloading: 16 kB     Downloading: 16 kB     Downloading: 25 kB     Downloading: 25 kB     Downloading: 25 kB     Downloading: 25 kB     Downloading: 25 kB     Downloading: 25 kB     Downloading: 25 kB     Downloading: 25 kB     Downloading: 25 kB     Downloading: 25 kB     Downloading: 33 kB     Downloading: 33 kB     Downloading: 33 kB     Downloading: 33 kB     Downloading: 33 kB     Downloading: 33 kB     Downloading: 41 kB     Downloading: 41 kB     Downloading: 41 kB     Downloading: 41 kB     Downloading: 41 kB     Downloading: 41 kB     Downloading: 43 kB     Downloading: 43 kB     Downloading: 43 kB     Downloading: 43 kB     Downloading: 43 kB     Downloading: 43 kB     Downloading: 43 kB     Downloading: 43 kB</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="data-wrangling">Data wrangling<a class="anchor" aria-label="anchor" href="#data-wrangling"></a>
 </h2>
 <p>Now let’s start cleaning things up a bit. We don’t need certain
-abiotic codes so let’s remove those with
+abiotic and mammal codes so let’s remove those with
 <code><a href="../reference/wt_tidy_species.html">wt_tidy_species()</a></code>,</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">my_tidy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_tidy_species.html">wt_tidy_species</a></span><span class="op">(</span><span class="va">my_report</span>, remove <span class="op">=</span> <span class="st">"mammal"</span>, zerofill<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">my_tidy_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_tidy_species.html">wt_tidy_species</a></span><span class="op">(</span><span class="va">my_report</span>, remove <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mammal"</span><span class="op">)</span>, zerofill<span class="op">=</span><span class="cn">F</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Difference in rows</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">my_tidy_data</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">my_report</span><span class="op">)</span><span class="op">)</span>,<span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p>So about 5% of detections were mammals. Next, convert TMTT counts to
-numeric:</p>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">my_tidy_data</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">my_report</span><span class="op">)</span><span class="op">)</span>,<span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.85</span></span></code></pre></div>
+<p>So about 15% of detections were mammals. Next, convert TMTT (too many
+to tag) counts to numeric:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_tmtt_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_replace_tmtt.html">wt_replace_tmtt</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">my_tidy_data</span>, calc <span class="op">=</span> <span class="st">"round"</span><span class="op">)</span></span></code></pre></div>
-<p>and finally widen the data into a species matrix.</p>
+<p>and finally, widen the data into a species matrix.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_wide_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_make_wide.html">wt_make_wide</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">my_tmtt_data</span>, sound <span class="op">=</span> <span class="st">"all"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_wide_data</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_wide_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 77</span></span></span>
+<span><span class="co">#&gt;   organization project_id location  location_id location_buffer_m longitude</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> BU                  620 CHPP-WP-2       <span style="text-decoration: underline;">94</span>518 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> BU                  620 CHPP-WP-2       <span style="text-decoration: underline;">94</span>518 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 71 more variables: latitude &lt;dbl&gt;, equipment_make &lt;lgl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   equipment_model &lt;lgl&gt;, recording_id &lt;dbl&gt;, recording_date_time &lt;dttm&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   task_id &lt;dbl&gt;, aru_task_status &lt;chr&gt;, task_duration &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   task_method &lt;chr&gt;, AMCR &lt;dbl&gt;, AMRE &lt;dbl&gt;, AMRO &lt;dbl&gt;, BAOR &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   BBMA &lt;dbl&gt;, BCCH &lt;dbl&gt;, BHCO &lt;dbl&gt;, BHGR &lt;dbl&gt;, CANG &lt;dbl&gt;, CEDW &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   CHSP &lt;dbl&gt;, CONI &lt;dbl&gt;, COPO &lt;dbl&gt;, CORA &lt;dbl&gt;, COYE &lt;dbl&gt;, DEJU &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   DUFL &lt;dbl&gt;, EAPH &lt;dbl&gt;, GCKI &lt;dbl&gt;, GHOW &lt;dbl&gt;, HAWO &lt;dbl&gt;, HOWR &lt;dbl&gt;, …</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="offsets">Offsets<a class="anchor" aria-label="anchor" href="#offsets"></a>
 </h2>
-<p>Now you can calculate statistical offsets to account for imperfection
-detection following the QPAD method.</p>
+<p>Now you can calculate statistical offsets to account for imperfect
+detection following the <a href="https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12106" class="external-link">QPAD
+method</a>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_offset_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_qpad_offsets.html">wt_qpad_offsets</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">my_wide_data</span>, species <span class="op">=</span> <span class="st">"all"</span>, version <span class="op">=</span> <span class="fl">3</span>, together <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Extracting covariates for offset calculation. This may take a moment.</span></span>
+<span><span class="co">#&gt; Loading QPAD estimates... BAM QPAD parameter estimates loaded, version 3 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Calculating offsets...</span></span>
+<span><span class="co">#&gt;  AMCR</span></span>
+<span><span class="co">#&gt;  AMRE</span></span>
+<span><span class="co">#&gt;  AMRO</span></span>
+<span><span class="co">#&gt;  BAOR</span></span>
+<span><span class="co">#&gt;  BBMA</span></span>
+<span><span class="co">#&gt;  BCCH</span></span>
+<span><span class="co">#&gt;  BHCO</span></span>
+<span><span class="co">#&gt;  CEDW</span></span>
+<span><span class="co">#&gt;  CHSP</span></span>
+<span><span class="co">#&gt;  CORA</span></span>
+<span><span class="co">#&gt;  COYE</span></span>
+<span><span class="co">#&gt;  DEJU</span></span>
+<span><span class="co">#&gt;  DUFL</span></span>
+<span><span class="co">#&gt;  EAPH</span></span>
+<span><span class="co">#&gt;  GCKI</span></span>
+<span><span class="co">#&gt;  HAWO</span></span>
+<span><span class="co">#&gt;  HOWR</span></span>
+<span><span class="co">#&gt;  LEFL</span></span>
+<span><span class="co">#&gt;  LISP</span></span>
+<span><span class="co">#&gt;  MODO</span></span>
+<span><span class="co">#&gt;  OCWA</span></span>
+<span><span class="co">#&gt;  PISI</span></span>
+<span><span class="co">#&gt;  RBNU</span></span>
+<span><span class="co">#&gt;  RCKI</span></span>
+<span><span class="co">#&gt;  RECR</span></span>
+<span><span class="co">#&gt;  RTHU</span></span>
+<span><span class="co">#&gt;  SAVS</span></span>
+<span><span class="co">#&gt;  SWTH</span></span>
+<span><span class="co">#&gt;  TEWA</span></span>
+<span><span class="co">#&gt;  TRES</span></span>
+<span><span class="co">#&gt;  VEER</span></span>
+<span><span class="co">#&gt;  WAVI</span></span>
+<span><span class="co">#&gt;  WBNU</span></span>
+<span><span class="co">#&gt;  WCSP</span></span>
+<span><span class="co">#&gt;  WEWP</span></span>
+<span><span class="co">#&gt;  WISN</span></span>
+<span><span class="co">#&gt;  YBSA</span></span>
+<span><span class="co">#&gt;  YEWA</span></span>
+<span><span class="co">#&gt;  YRWA</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_offset_data</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_offset_data</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   organization project_id  location location_id location_buffer_m longitude</span></span>
+<span><span class="co">#&gt; 1           BU        620 CHPP-WP-1       94515                NA -110.2968</span></span>
+<span><span class="co">#&gt; 2           BU        620 CHPP-WP-1       94515                NA -110.2968</span></span>
+<span><span class="co">#&gt; 3           BU        620 CHPP-WP-1       94515                NA -110.2968</span></span>
+<span><span class="co">#&gt; 4           BU        620 CHPP-WP-1       94515                NA -110.2968</span></span>
+<span><span class="co">#&gt; 5           BU        620 CHPP-WP-2       94518                NA -110.2974</span></span>
+<span><span class="co">#&gt; 6           BU        620 CHPP-WP-2       94518                NA -110.2974</span></span>
+<span><span class="co">#&gt;   latitude equipment_make equipment_model recording_id recording_date_time</span></span>
+<span><span class="co">#&gt; 1 49.65529             NA              NA       211651 2021-07-05 04:32:00</span></span>
+<span><span class="co">#&gt; 2 49.65529             NA              NA       211677 2021-07-09 06:06:00</span></span>
+<span><span class="co">#&gt; 3 49.65529             NA              NA       211676 2021-07-10 05:07:00</span></span>
+<span><span class="co">#&gt; 4 49.65529             NA              NA       211662 2021-07-10 22:10:00</span></span>
+<span><span class="co">#&gt; 5 49.65272             NA              NA       211669 2021-07-04 02:40:00</span></span>
+<span><span class="co">#&gt; 6 49.65272             NA              NA       285273 2021-07-05 02:40:00</span></span>
+<span><span class="co">#&gt;   task_id aru_task_status task_duration task_method AMCR AMRE AMRO BAOR BBMA</span></span>
+<span><span class="co">#&gt; 1  180890     Transcribed           180        1SPT    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 2  180916     Transcribed           180        1SPT    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 3  180915     Transcribed           180        1SPT    1    1    4    0    1</span></span>
+<span><span class="co">#&gt; 4  180901     Transcribed           180        1SPT    0    0    1    0    0</span></span>
+<span><span class="co">#&gt; 5  180908     Transcribed           180        1SPT    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 6  264441     Transcribed           180        1SPT    0    0    0    0    0</span></span>
+<span><span class="co">#&gt;   BCCH BHCO BHGR CANG CEDW CHSP CONI COPO CORA COYE DEJU DUFL EAPH GCKI GHOW</span></span>
+<span><span class="co">#&gt; 1    0    0    1    0    0    0    0    0    2    0    0    0    0    0    1</span></span>
+<span><span class="co">#&gt; 2    0    0    1    0    0    1    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 3    0    0    0    0    0    0    0    0    2    0    1    0    0    0    0</span></span>
+<span><span class="co">#&gt; 4    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 5    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 6    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt;   HAWO HOWR LAZB LEFL LIBA LIRA LISP LITF LIWI MGWA MOBA MODO MORA MOWI OCWA</span></span>
+<span><span class="co">#&gt; 1    0    0    0    2    0    0    0    0    0    0    0    1    0    0    0</span></span>
+<span><span class="co">#&gt; 2    0    3    1    2    0    0    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 3    0    2    0    1    0    0    0    0    0    0    0    1    0    0    0</span></span>
+<span><span class="co">#&gt; 4    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 5    0    0    0    0    0    0    0    0    1    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 6    0    0    0    0    0    1    0    0    0    0    0    0    0    1    0</span></span>
+<span><span class="co">#&gt;   PISI RBNU RCKI RECR RNSA RTHU SAVS SWTH TEWA TRES UNBI UNKN UNPA UNSA UNTR</span></span>
+<span><span class="co">#&gt; 1    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 2    0    2    0    0    0    0    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 3    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 4    0    0    0    0    0    1    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt; 5    0    0    0    0    0    0    0    0    0    0    0    0    0    0    1</span></span>
+<span><span class="co">#&gt; 6    0    0    0    0    0    0    0    0    0    0    0    0    0    0    0</span></span>
+<span><span class="co">#&gt;   UNWA UNWX UPCH VEER WAVI WBNU WCSP WEWP WISN YBSA YEWA YRWA AMCR.off</span></span>
+<span><span class="co">#&gt; 1    0    0    0    1    0    0    2    1    1    0    0    0 2.370102</span></span>
+<span><span class="co">#&gt; 2    0    0    0    1    0    0    2    1    0    0    2    0 2.370102</span></span>
+<span><span class="co">#&gt; 3    0    0    0    1    1    0    1    1    0    0    1    0 2.370102</span></span>
+<span><span class="co">#&gt; 4    0    0    0    0    0    0    0    0    0    0    0    0 2.369905</span></span>
+<span><span class="co">#&gt; 5    0    0    0    0    0    0    0    0    0    0    0    0 2.370102</span></span>
+<span><span class="co">#&gt; 6    0    0    0    0    0    0    0    0    0    0    0    0 2.370102</span></span>
+<span><span class="co">#&gt;    AMRE.off  AMRO.off  BAOR.off   BBMA.off  BCCH.off  BHCO.off   CEDW.off</span></span>
+<span><span class="co">#&gt; 1 0.4167774 1.0271415 0.7239005   2.542484 0.3703048 0.1061239 0.05242081</span></span>
+<span><span class="co">#&gt; 2 0.4167774 1.0271415 0.7239005   2.542484 0.3703048 0.1061239 0.05242081</span></span>
+<span><span class="co">#&gt; 3 0.4167774 1.0271415 0.7239005   2.542484 0.3703048 0.1061239 0.05242081</span></span>
+<span><span class="co">#&gt; 4 0.4078807 0.3843135 0.7239005 -14.091866 0.3703048 0.1061239 0.05242081</span></span>
+<span><span class="co">#&gt; 5 0.4167774 1.0271415 0.7239005   2.537825 0.3703048 0.1061239 0.05242081</span></span>
+<span><span class="co">#&gt; 6 0.4167774 1.0271415 0.7239005   2.537478 0.3703048 0.1061239 0.05242081</span></span>
+<span><span class="co">#&gt;    CHSP.off  CORA.off  COYE.off   DEJU.off  DUFL.off  EAPH.off   GCKI.off</span></span>
+<span><span class="co">#&gt; 1 0.5916778  1.972791 0.8977079  0.9107690 0.1678111 0.9805074 -0.5905164</span></span>
+<span><span class="co">#&gt; 2 0.5916778  1.972791 0.8977079  0.9107690 0.1678111 0.9805074 -0.5905164</span></span>
+<span><span class="co">#&gt; 3 0.5916778  1.972791 0.8977079  0.9107690 0.1678111 0.9805074 -0.5905164</span></span>
+<span><span class="co">#&gt; 4 0.5916778 -1.506756 0.8976880 -0.2123905 0.1678111 0.9805074 -1.2850892</span></span>
+<span><span class="co">#&gt; 5 0.5916778  1.972791 0.8977079  0.9107690 0.1678111 0.9805074 -0.5905167</span></span>
+<span><span class="co">#&gt; 6 0.5916778  1.972791 0.8977079  0.9107690 0.1678111 0.9805074 -0.5905167</span></span>
+<span><span class="co">#&gt;    HAWO.off  HOWR.off   LEFL.off   LISP.off MODO.off  OCWA.off   PISI.off</span></span>
+<span><span class="co">#&gt; 1 0.4959508  1.083148 0.06602909  0.8481771 1.195639 0.6732180  0.1894495</span></span>
+<span><span class="co">#&gt; 2 0.4959508  1.083148 0.06602909  0.8481771 1.195639 0.6732178  0.1894495</span></span>
+<span><span class="co">#&gt; 3 0.4959508  1.083148 0.06602909  0.8481771 1.195639 0.6732158  0.1894495</span></span>
+<span><span class="co">#&gt; 4 0.4959508 -1.376223 0.06590519 -2.3580608 1.109186 0.6732180 -5.6283000</span></span>
+<span><span class="co">#&gt; 5 0.4959508  1.083148 0.06602909  0.8481771 1.195639 0.6732178  0.1894495</span></span>
+<span><span class="co">#&gt; 6 0.4959508  1.083148 0.06602909  0.8481771 1.195639 0.6732176  0.1894495</span></span>
+<span><span class="co">#&gt;    RBNU.off RCKI.off   RECR.off  RTHU.off   SAVS.off  SWTH.off TEWA.off</span></span>
+<span><span class="co">#&gt; 1 0.7345163 1.092762 0.08661238 -2.474842  0.9633483 1.1630042 0.271135</span></span>
+<span><span class="co">#&gt; 2 0.7345163 1.092710 0.08661238 -2.474842  0.9633483 1.1630042 0.271135</span></span>
+<span><span class="co">#&gt; 3 0.7345163 1.092650 0.08661238 -2.474842  0.9633483 1.1630042 0.271135</span></span>
+<span><span class="co">#&gt; 4 0.7345163 1.090702 0.08661238 -2.474842 -1.3818771 0.8410931 0.271135</span></span>
+<span><span class="co">#&gt; 5 0.7345163 1.092762 0.08661238 -2.474842  0.9633483 1.1630042 0.271135</span></span>
+<span><span class="co">#&gt; 6 0.7345163 1.092762 0.08661238 -2.474842  0.9633483 1.1630042 0.271135</span></span>
+<span><span class="co">#&gt;    TRES.off VEER.off  WAVI.off  WBNU.off WCSP.off  WEWP.off WISN.off  YBSA.off</span></span>
+<span><span class="co">#&gt; 1  1.020597 1.310133 0.3371337 0.6905176 1.277016 0.8691736 1.917213 0.8460558</span></span>
+<span><span class="co">#&gt; 2  1.020597 1.310133 0.3371337 0.6905176 1.277016 0.8691736 1.917213 0.8460558</span></span>
+<span><span class="co">#&gt; 3  1.020597 1.310133 0.3371337 0.6905176 1.277016 0.8691736 1.917213 0.8460558</span></span>
+<span><span class="co">#&gt; 4 -3.446437 1.310133 0.3371337 0.6905176 1.277016 0.8691736 1.917213 0.8460557</span></span>
+<span><span class="co">#&gt; 5  1.020597 1.310133 0.3371337 0.6905176 1.277016 0.8691736 1.917213 0.8460558</span></span>
+<span><span class="co">#&gt; 6  1.020597 1.310133 0.3371337 0.6905176 1.277016 0.8691736 1.917213 0.8460558</span></span>
+<span><span class="co">#&gt;    YEWA.off  YRWA.off</span></span>
+<span><span class="co">#&gt; 1  0.441793 0.3537681</span></span>
+<span><span class="co">#&gt; 2  0.441793 0.3537681</span></span>
+<span><span class="co">#&gt; 3  0.441793 0.3537681</span></span>
+<span><span class="co">#&gt; 4 -4.234049 0.2395314</span></span>
+<span><span class="co">#&gt; 5  0.441793 0.3537681</span></span>
+<span><span class="co">#&gt; 6  0.441793 0.3537681</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="occupancy-modelling">Occupancy modelling<a class="anchor" aria-label="anchor" href="#occupancy-modelling"></a>
@@ -153,9 +309,22 @@ detection following the QPAD method.</p>
 flow using <code><a href="../reference/wt_format_occupancy.html">wt_format_occupancy()</a></code> once the data is
 downloaded.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dat.occu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_format_occupancy.html">wt_format_occupancy</a></span><span class="op">(</span><span class="va">my_report</span>, species<span class="op">=</span><span class="st">"WTSP"</span>, siteCovs<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">dat.occu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_format_occupancy.html">wt_format_occupancy</a></span><span class="op">(</span><span class="va">my_report</span>, species<span class="op">=</span><span class="st">"OVEN"</span>, siteCovs<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span>
 <span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="fu">unmarked</span><span class="fu">::</span><span class="fu"><a href="https://rbchan.github.io/unmarked/reference/occu.html" class="external-link">occu</a></span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">~</span> <span class="fl">1</span>, <span class="va">dat.occu</span><span class="op">)</span></span>
-<span><span class="va">mod</span></span></code></pre></div>
+<span><span class="va">mod</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Call:</span></span>
+<span><span class="co">#&gt; unmarked::occu(formula = ~1 ~ 1, data = dat.occu)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Occupancy:</span></span>
+<span><span class="co">#&gt;  Estimate  SE   z P(&gt;|z|)</span></span>
+<span><span class="co">#&gt;     -16.7 NaN NaN     NaN</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Detection:</span></span>
+<span><span class="co">#&gt;  Estimate  SE   z P(&gt;|z|)</span></span>
+<span><span class="co">#&gt;     -6.46 NaN NaN     NaN</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; AIC: 4</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

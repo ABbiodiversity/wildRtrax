@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">wildRtrax</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,12 +53,15 @@
     <a class="dropdown-item" href="../articles/apis.html">APIs</a>
     <a class="dropdown-item" href="../articles/acoustic-pre-processing.html">Acoustic pre-processing</a>
     <a class="dropdown-item" href="../articles/acoustic-data-wrangling.html">Acoustic data wrangling</a>
+    <a class="dropdown-item" href="../articles/camera-data-wrangling.html">Camera data wrangling</a>
+    <a class="dropdown-item" href="../articles/tutorials.html">Tutorials</a>
   </div>
 </li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-news">News</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-news">
     <h6 class="dropdown-header" data-toc-skip>Releases</h6>
+    <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.2.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.1.0</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.1</h6>
     <h6 class="dropdown-header" data-toc-skip>wildRtrax 1.0.0</h6>
@@ -127,52 +130,52 @@ projects that you can download data for.</p>
 <span><span class="va">my_projects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_get_download_summary.html">wt_get_download_summary</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="st">'ARU'</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_projects</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organization_id organization                                       project</span></span>
-<span><span class="co">#&gt; 1               5         ABMI          ABMI Adopt-a-Camera ARU Surveys 2017</span></span>
-<span><span class="co">#&gt; 2               1           BU                   Big Grid Pilot Program 2014</span></span>
-<span><span class="co">#&gt; 3               5         ABMI                                     Big Grids</span></span>
-<span><span class="co">#&gt; 4               1           BU                                     Big Grids</span></span>
-<span><span class="co">#&gt; 5               5         ABMI                               BirdNET Example</span></span>
-<span><span class="co">#&gt; 6               1           BU Boreal Avian Modelling Project Re-visits 2019</span></span>
+<span><span class="co">#&gt;   organization_id organization                                 project</span></span>
+<span><span class="co">#&gt; 1               5         ABMI    ABMI Adopt-a-Camera ARU Surveys 2017</span></span>
+<span><span class="co">#&gt; 2               5         ABMI Before-After Dose Response Project 2021</span></span>
+<span><span class="co">#&gt; 3               1           BU             Big Grid Pilot Program 2014</span></span>
+<span><span class="co">#&gt; 4               5         ABMI                               Big Grids</span></span>
+<span><span class="co">#&gt; 5               1           BU                               Big Grids</span></span>
+<span><span class="co">#&gt; 6               5         ABMI                         BirdNET Example</span></span>
 <span><span class="co">#&gt;   project_id sensor tasks                      status</span></span>
 <span><span class="co">#&gt; 1         42    ARU   309 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 2         32    ARU   733          Published - Public</span></span>
-<span><span class="co">#&gt; 3        381    ARU  2226 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 4         31    ARU  7594          Published - Public</span></span>
-<span><span class="co">#&gt; 5       2349    ARU     1 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 6        161    ARU   187          Published - Public</span></span></code></pre></div>
+<span><span class="co">#&gt; 2        686    ARU  1873 Published - Map+Report Only</span></span>
+<span><span class="co">#&gt; 3         32    ARU   733          Published - Public</span></span>
+<span><span class="co">#&gt; 4        381    ARU  2226 Published - Map+Report Only</span></span>
+<span><span class="co">#&gt; 5         31    ARU  7594          Published - Public</span></span>
+<span><span class="co">#&gt; 6       2349    ARU     1 Published - Map+Report Only</span></span></code></pre></div>
 <p>Using the project_id number in the download summary you can then use
 <code><a href="../reference/wt_download_report.html">wt_download_report()</a></code> to access the species data. You can
 also find the project_id number in the url of a WildTrax project,
 e.g. <a href="https://www.wildtrax.ca/home/aru-tasks.html?projectId=605&amp;sensorId=ARU" class="external-link uri">https://www.wildtrax.ca/home/aru-tasks.html?projectId=605&amp;sensorId=ARU</a>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Download the project report</span></span>
-<span><span class="va">my_report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">605</span>, sensor_id <span class="op">=</span> <span class="st">'ARU'</span>, reports <span class="op">=</span> <span class="st">"main"</span>, weather_cols <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span><span class="va">my_report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">620</span>, sensor_id <span class="op">=</span> <span class="st">'ARU'</span>, reports <span class="op">=</span> <span class="st">"main"</span>, weather_cols <span class="op">=</span> <span class="cn">F</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">my_report</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 31</span></span></span>
-<span><span class="co">#&gt;   organization project_id location location_id location_buffer_m longitude</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> ABMI                605 1081-NE        <span style="text-decoration: underline;">90</span>251              <span style="text-decoration: underline;">5</span>500     -<span style="color: #BB0000;">114.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> ABMI                605 1081-NE        <span style="text-decoration: underline;">90</span>251              <span style="text-decoration: underline;">5</span>500     -<span style="color: #BB0000;">114.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> ABMI                605 1081-NE        <span style="text-decoration: underline;">90</span>251              <span style="text-decoration: underline;">5</span>500     -<span style="color: #BB0000;">114.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> ABMI                605 1081-NE        <span style="text-decoration: underline;">90</span>251              <span style="text-decoration: underline;">5</span>500     -<span style="color: #BB0000;">114.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> ABMI                605 1081-NE        <span style="text-decoration: underline;">90</span>251              <span style="text-decoration: underline;">5</span>500     -<span style="color: #BB0000;">114.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> ABMI                605 1081-NE        <span style="text-decoration: underline;">90</span>251              <span style="text-decoration: underline;">5</span>500     -<span style="color: #BB0000;">114.</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 25 more variables: latitude &lt;dbl&gt;, equipment_make &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   equipment_model &lt;chr&gt;, recording_id &lt;int&gt;, recording_date_time &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   task_id &lt;int&gt;, aru_task_status &lt;chr&gt;, task_duration &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt;   organization project_id location  location_id location_buffer_m longitude</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 25 more variables: latitude &lt;dbl&gt;, equipment_make &lt;lgl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   equipment_model &lt;lgl&gt;, recording_id &lt;dbl&gt;, recording_date_time &lt;dttm&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   task_id &lt;dbl&gt;, aru_task_status &lt;chr&gt;, task_duration &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   task_method &lt;chr&gt;, species_code &lt;chr&gt;, species_common_name &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   species_scientific_name &lt;chr&gt;, individual_order &lt;int&gt;, tag_id &lt;int&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   species_scientific_name &lt;chr&gt;, individual_order &lt;dbl&gt;, tag_id &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   individual_count &lt;chr&gt;, vocalization &lt;chr&gt;, detection_time &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   tag_duration &lt;dbl&gt;, rms_peak_dbfs &lt;dbl&gt;, tag_is_verified &lt;chr&gt;, …</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;">#   tag_duration &lt;dbl&gt;, rms_peak_dbfs &lt;dbl&gt;, tag_is_verified &lt;lgl&gt;, …</span></span></span></code></pre></div>
 <p>An easy way to download multiple projects at once is to use
 <code><a href="../reference/wt_get_download_summary.html">wt_get_download_summary()</a></code> and then filter by a substring in
 order to get the project ids to download the data.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Download all of the published Ecosystem Health ARU data to a single object</span></span>
-<span><span class="va">eh_projects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_get_download_summary.html">wt_get_download_summary</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="st">"ARU"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span><span class="fu"><a href="../reference/wt_get_download_summary.html">wt_get_download_summary</a></span><span class="op">(</span>sensor_id <span class="op">=</span> <span class="st">"ARU"</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^Ecosystem Health'</span>,<span class="va">project</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span>.x <span class="op">=</span> <span class="va">project_id</span>, .f <span class="op">=</span> <span class="op">~</span><span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="va">.x</span>, sensor_id <span class="op">=</span> <span class="st">"ARU"</span>, weather_cols <span class="op">=</span> <span class="cn">F</span>, reports <span class="op">=</span> <span class="st">"main"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -184,138 +187,68 @@ by WildTrax.</p>
 <code class="sourceCode R"><span><span class="co"># Download the WildTrax species table</span></span>
 <span><span class="va">spp_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_get_species.html">wt_get_species</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">spp_table</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
-<span><span class="co">#&gt;   species_id species_code species_common_name species_class species_order</span></span>
-<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>       <span style="text-decoration: underline;">4</span>474 4474         Lizards and Snakes  REPTILIA      Squamata     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>       <span style="text-decoration: underline;">4</span>478 4478         Serpentes Suborder  REPTILIA      Squamata     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>       <span style="text-decoration: underline;">4</span>479 4479         Lacertilia Suborder REPTILIA      Squamata     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>       <span style="text-decoration: underline;">4</span>486 4486         Tortoise Family     REPTILIA      Squamata     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>       <span style="text-decoration: underline;">4</span>480 4480         Viperidae Family    REPTILIA      Squamata     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>       <span style="text-decoration: underline;">4</span>481 4481         Colubridae Family   REPTILIA      Squamata     </span></span>
+<code class="sourceCode R"><span><span class="va">spp_table</span> <span class="op">|&gt;</span> <span class="fu">arrange</span><span class="op">(</span><span class="va">species_code</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4,442 × 6</span></span></span>
+<span><span class="co">#&gt;    species_id species_code species_common_name       species_class species_order</span></span>
+<span><span class="co">#&gt;         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>       <span style="text-decoration: underline;">2</span>780 10           Wolves, Coyotes and Alli… MAMMALIA      Carnivora    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>       <span style="text-decoration: underline;">2</span>705 100          Barren-ground Caribou     MAMMALIA      Artiodactyla </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>       <span style="text-decoration: underline;">2</span>738 105          Porcupine Caribou         MAMMALIA      Artiodactyla </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>       <span style="text-decoration: underline;">2</span>735 106          Peary Caribou             MAMMALIA      Artiodactyla </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>       <span style="text-decoration: underline;">2</span>750 107          Varying Lemming           MAMMALIA      Rodentia     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>       <span style="text-decoration: underline;">2</span>618 108          Bird                      AVES          <span style="color: #BB0000;">NA</span>           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>       <span style="text-decoration: underline;">2</span>616 109          Bear                      MAMMALIA      Carnivora    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>       <span style="text-decoration: underline;">2</span>694 110          Train                     NONE          <span style="color: #BB0000;">NA</span>           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>       <span style="text-decoration: underline;">2</span>728 114          Kermode Bear              MAMMALIA      Carnivora    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>       <span style="text-decoration: underline;">2</span>819 129          Opossum                   MAMMALIA      Didelphimorp…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4,432 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: species_scientific_name &lt;chr&gt;</span></span></span></code></pre></div>
 <p>WildTrax also pre-formats ARU to point count (PC) data depending on
 the type of analysis you wish to perform. See the <a href="https://borealbirds.ca/" class="external-link">Boreal Avian Modelling project</a>
 website and GitHub <a href="https://github.com/borealbirds" class="external-link">repositories</a> to find out more
 on integration of avian point count and ARU data.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># As point count format</span></span>
-<span><span class="va">aru_as_aru</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">605</span> , sensor_id <span class="op">=</span> <span class="st">'ARU'</span>, reports <span class="op">=</span> <span class="st">"main"</span>, weather_cols <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># As ARU format</span></span>
+<span><span class="va">my_report</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 388 × 31</span></span></span>
+<span><span class="co">#&gt;    organization project_id location  location_id location_buffer_m longitude</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> BU                  620 CHPP-WP-1       <span style="text-decoration: underline;">94</span>515 <span style="color: #BB0000;">NA</span>                    -<span style="color: #BB0000;">110.</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 378 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 25 more variables: latitude &lt;dbl&gt;, equipment_make &lt;lgl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   equipment_model &lt;lgl&gt;, recording_id &lt;dbl&gt;, recording_date_time &lt;dttm&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   task_id &lt;dbl&gt;, aru_task_status &lt;chr&gt;, task_duration &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   task_method &lt;chr&gt;, species_code &lt;chr&gt;, species_common_name &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   species_scientific_name &lt;chr&gt;, individual_order &lt;dbl&gt;, tag_id &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   individual_count &lt;chr&gt;, vocalization &lt;chr&gt;, detection_time &lt;dbl&gt;, …</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># As point count format</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">aru_as_aru</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organization project_id location location_id location_buffer_m longitude</span></span>
-<span><span class="co">#&gt; 1         ABMI        605  1081-NE       90251              5500 -114.3343</span></span>
-<span><span class="co">#&gt; 2         ABMI        605  1081-NE       90251              5500 -114.3343</span></span>
-<span><span class="co">#&gt; 3         ABMI        605  1081-NE       90251              5500 -114.3343</span></span>
-<span><span class="co">#&gt; 4         ABMI        605  1081-NE       90251              5500 -114.3343</span></span>
-<span><span class="co">#&gt; 5         ABMI        605  1081-NE       90251              5500 -114.3343</span></span>
-<span><span class="co">#&gt; 6         ABMI        605  1081-NE       90251              5500 -114.3343</span></span>
-<span><span class="co">#&gt;   latitude         equipment_make equipment_model recording_id</span></span>
-<span><span class="co">#&gt; 1 53.64621 Wildlife Acoustics Inc             SM4       212868</span></span>
-<span><span class="co">#&gt; 2 53.64621 Wildlife Acoustics Inc             SM4       212868</span></span>
-<span><span class="co">#&gt; 3 53.64621 Wildlife Acoustics Inc             SM4       212868</span></span>
-<span><span class="co">#&gt; 4 53.64621 Wildlife Acoustics Inc             SM4       212868</span></span>
-<span><span class="co">#&gt; 5 53.64621 Wildlife Acoustics Inc             SM4       212868</span></span>
-<span><span class="co">#&gt; 6 53.64621 Wildlife Acoustics Inc             SM4       212457</span></span>
-<span><span class="co">#&gt;   recording_date_time task_id aru_task_status task_duration task_method</span></span>
-<span><span class="co">#&gt; 1 2021-04-06 07:29:00  181962     Transcribed           60s        1SPM</span></span>
-<span><span class="co">#&gt; 2 2021-04-06 07:29:00  181962     Transcribed           60s        1SPM</span></span>
-<span><span class="co">#&gt; 3 2021-04-06 07:29:00  181962     Transcribed           60s        1SPM</span></span>
-<span><span class="co">#&gt; 4 2021-04-06 07:29:00  181962     Transcribed           60s        1SPM</span></span>
-<span><span class="co">#&gt; 5 2021-04-06 07:29:00  181962     Transcribed           60s        1SPM</span></span>
-<span><span class="co">#&gt; 6 2021-04-09 00:00:00  181997     Transcribed           60s        1SPM</span></span>
-<span><span class="co">#&gt;   species_code    species_common_name species_scientific_name individual_order</span></span>
-<span><span class="co">#&gt; 1         BOWA       Bohemian Waxwing     BOMBYCILLA GARRULUS                1</span></span>
-<span><span class="co">#&gt; 2         BCCH Black-capped Chickadee    POECILE ATRICAPILLUS                1</span></span>
-<span><span class="co">#&gt; 3         CANG           Canada Goose       BRANTA CANADENSIS                1</span></span>
-<span><span class="co">#&gt; 4         BCCH Black-capped Chickadee    POECILE ATRICAPILLUS                3</span></span>
-<span><span class="co">#&gt; 5         BCCH Black-capped Chickadee    POECILE ATRICAPILLUS                2</span></span>
-<span><span class="co">#&gt; 6         NONE                   NONE                                       NA</span></span>
-<span><span class="co">#&gt;    tag_id individual_count vocalization detection_time tag_duration</span></span>
-<span><span class="co">#&gt; 1 2429111                1         Call           4.34         1.08</span></span>
-<span><span class="co">#&gt; 2 2429109                1         Call           0.89         1.88</span></span>
-<span><span class="co">#&gt; 3 2429114             TMTT         Call           0.01         5.03</span></span>
-<span><span class="co">#&gt; 4 2429118                1         Call          30.45         1.33</span></span>
-<span><span class="co">#&gt; 5 2429112                1         Call           6.69         0.78</span></span>
-<span><span class="co">#&gt; 6      NA                                           NA           NA</span></span>
-<span><span class="co">#&gt;   rms_peak_dbfs tag_is_verified tag_rating    observer observer_id</span></span>
-<span><span class="co">#&gt; 1        -65.84               t         NA Nola Sheets        1257</span></span>
-<span><span class="co">#&gt; 2        -67.12               t          2 Nola Sheets        1257</span></span>
-<span><span class="co">#&gt; 3        -36.42               f         NA Nola Sheets        1257</span></span>
-<span><span class="co">#&gt; 4        -59.40               t          2 Nola Sheets        1257</span></span>
-<span><span class="co">#&gt; 5        -69.40               t          1 Nola Sheets        1257</span></span>
-<span><span class="co">#&gt; 6            NA                         NA   Joel Kwek         822</span></span>
-<span><span class="co">#&gt;   species_individual_comments task_comments</span></span>
-<span><span class="co">#&gt; 1                                          </span></span>
-<span><span class="co">#&gt; 2                                          </span></span>
-<span><span class="co">#&gt; 3                                          </span></span>
-<span><span class="co">#&gt; 4                                          </span></span>
-<span><span class="co">#&gt; 5                                          </span></span>
-<span><span class="co">#&gt; 6</span></span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># As ARU format</span></span>
-<span><span class="va">aru_as_pc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_download_report.html">wt_download_report</a></span><span class="op">(</span>project_id <span class="op">=</span> <span class="fl">605</span>, sensor_id <span class="op">=</span> <span class="st">'PC'</span>, reports <span class="op">=</span> <span class="st">"main"</span>, weather_cols <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># As point count format</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">aru_as_pc</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   organization               project project_id location location_id</span></span>
-<span><span class="co">#&gt; 1         ABMI Ecosystem Health 2021        605   281-NE       90153</span></span>
-<span><span class="co">#&gt; 2         ABMI Ecosystem Health 2021        605   160-SE       94541</span></span>
-<span><span class="co">#&gt; 3         ABMI Ecosystem Health 2021        605   304-NE       90231</span></span>
-<span><span class="co">#&gt; 4         ABMI Ecosystem Health 2021        605   305-NW       90226</span></span>
-<span><span class="co">#&gt; 5         ABMI Ecosystem Health 2021        605   305-SE       90225</span></span>
-<span><span class="co">#&gt; 6         ABMI Ecosystem Health 2021        605   281-SW       90150</span></span>
-<span><span class="co">#&gt;   location_buffer_m latitude longitude            survey_id</span></span>
-<span><span class="co">#&gt; 1              5500 58.42413 -117.6082 ARU_recording:212720</span></span>
-<span><span class="co">#&gt; 2              5500 59.17057 -118.2075 ARU_recording:212678</span></span>
-<span><span class="co">#&gt; 3              5500 58.37364 -119.6523 ARU_recording:212630</span></span>
-<span><span class="co">#&gt; 4              5500 58.32438 -119.2640 ARU_recording:212999</span></span>
-<span><span class="co">#&gt; 5              5500 58.32438 -119.2640 ARU_recording:212956</span></span>
-<span><span class="co">#&gt; 6              5500 58.42413 -117.6082 ARU_recording:212652</span></span>
-<span><span class="co">#&gt;            survey_date</span></span>
-<span><span class="co">#&gt; 1  2021-03-31 00:00:00</span></span>
-<span><span class="co">#&gt; 2  2021-03-31 02:00:00</span></span>
-<span><span class="co">#&gt; 3  2021-03-31 02:00:00</span></span>
-<span><span class="co">#&gt; 4  2021-03-31 07:44:00</span></span>
-<span><span class="co">#&gt; 5  2021-03-31 07:44:00</span></span>
-<span><span class="co">#&gt; 6  2021-03-31 07:44:00</span></span>
-<span><span class="co">#&gt;                                                               survey_url</span></span>
-<span><span class="co">#&gt; 1 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=182713</span></span>
-<span><span class="co">#&gt; 2 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=182465</span></span>
-<span><span class="co">#&gt; 3 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=182834</span></span>
-<span><span class="co">#&gt; 4 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=182005</span></span>
-<span><span class="co">#&gt; 5 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=182083</span></span>
-<span><span class="co">#&gt; 6 https://portal.wildtrax.ca/home/aru-tasks/recording.html?taskId=182779</span></span>
-<span><span class="co">#&gt;    observer survey_distance_method survey_duration_method detection_distance</span></span>
-<span><span class="co">#&gt; 1 ARU(9234)                 0m-INF                 0-1min             0m-INF</span></span>
-<span><span class="co">#&gt; 2 ARU(9788)                 0m-INF                 0-1min             0m-INF</span></span>
-<span><span class="co">#&gt; 3 ARU(9234)                 0m-INF                 0-1min             0m-INF</span></span>
-<span><span class="co">#&gt; 4 ARU(e28a)                 0m-INF                 0-1min             0m-INF</span></span>
-<span><span class="co">#&gt; 5 ARU(e28a)                 0m-INF                 0-1min             0m-INF</span></span>
-<span><span class="co">#&gt; 6 ARU(5e3f)                 0m-INF                 0-1min             0m-INF</span></span>
-<span><span class="co">#&gt;   detection_time species_code            species_common_name</span></span>
-<span><span class="co">#&gt; 1         0-1min         GHOW               Great Horned Owl</span></span>
-<span><span class="co">#&gt; 2                        NONE                           NONE</span></span>
-<span><span class="co">#&gt; 3                        NONE                           NONE</span></span>
-<span><span class="co">#&gt; 4         0-1min         PIWO            Pileated Woodpecker</span></span>
-<span><span class="co">#&gt; 5         0-1min         ATTW American Three-toed Woodpecker</span></span>
-<span><span class="co">#&gt; 6         0-1min         UNWO        Unidentified Woodpecker</span></span>
-<span><span class="co">#&gt;   species_scientific_name individual_count detection_heard detection_seen</span></span>
-<span><span class="co">#&gt; 1        BUBO VIRGINIANUS                2               t              f</span></span>
-<span><span class="co">#&gt; 2                                                        f              f</span></span>
-<span><span class="co">#&gt; 3                                                        f              f</span></span>
-<span><span class="co">#&gt; 4      DRYOCOPUS PILEATUS                1               t              f</span></span>
-<span><span class="co">#&gt; 5       PICOIDES DORSALIS                1               t              f</span></span>
-<span><span class="co">#&gt; 6                                        1               t              f</span></span>
-<span><span class="co">#&gt;   detection_comments</span></span>
-<span><span class="co">#&gt; 1                   </span></span>
-<span><span class="co">#&gt; 2                   </span></span>
-<span><span class="co">#&gt; 3                   </span></span>
-<span><span class="co">#&gt; 4                   </span></span>
-<span><span class="co">#&gt; 5                   </span></span>
-<span><span class="co">#&gt; 6</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 23</span></span></span>
+<span><span class="co">#&gt;   organization project         project_id location location_id location_buffer_m</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>            </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">94</span>517 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">94</span>518 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 17 more variables: latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, survey_id &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   survey_date &lt;dttm&gt;, survey_url &lt;chr&gt;, observer &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   survey_distance_method &lt;chr&gt;, survey_duration_method &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   detection_distance &lt;chr&gt;, detection_time &lt;chr&gt;, species_code &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   species_common_name &lt;chr&gt;, species_scientific_name &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   individual_count &lt;chr&gt;, detection_heard &lt;lgl&gt;, detection_seen &lt;lgl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   detection_comments &lt;chr&gt;</span></span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

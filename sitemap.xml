@@ -16,9 +16,6 @@
     <loc>https://abbiodiversity.github.io/wildRtrax/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/SECURITY.html</loc>
-  </url>
-  <url>
     <loc>https://abbiodiversity.github.io/wildRtrax/SUPPORT.html</loc>
   </url>
   <url>
@@ -34,10 +31,16 @@
     <loc>https://abbiodiversity.github.io/wildRtrax/articles/audio-data-concepts.html</loc>
   </url>
   <url>
+    <loc>https://abbiodiversity.github.io/wildRtrax/articles/camera-data-wrangling.html</loc>
+  </url>
+  <url>
     <loc>https://abbiodiversity.github.io/wildRtrax/articles/index.html</loc>
   </url>
   <url>
     <loc>https://abbiodiversity.github.io/wildRtrax/articles/introduction.html</loc>
+  </url>
+  <url>
+    <loc>https://abbiodiversity.github.io/wildRtrax/articles/tutorials.html</loc>
   </url>
   <url>
     <loc>https://abbiodiversity.github.io/wildRtrax/authors.html</loc>
