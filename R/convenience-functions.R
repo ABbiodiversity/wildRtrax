@@ -196,7 +196,8 @@ wt_tidy_species <- function(data,
 #'
 #' @param data Dataframe of WildTrax observations, for example the summary report.
 #' @param calc Character; method to convert model predictions to integer ("round", "ceiling", or "floor"). See `?round()` for details.
-#' @import dplyr
+#'
+#' @import dplyr tidyr
 #' @export
 #'
 #' @examples

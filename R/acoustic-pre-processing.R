@@ -599,7 +599,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #'
 #' @description "Chops" up wav files into many smaller files of a desired duration
 #'
-#' @param input A \code{`wt_audio_scanner`} tibble of files
+#' @param input A data frame or tibble containing information about audio files
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
 #' @param output_folder Character; output path to where the segments will be stored
 #'
@@ -608,8 +608,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #'
 #' @examples
 #' \dontrun{
-#' wt_chop(input = my_audio_tibble,
-#'  segment_length = 60, output_folder "/where/i/store/my/chopped/files")
+#' wt_chop(input = my_files, segment_length = 60, output_folder = "output_folder")
 #' }
 #'
 #' @return Segmented files written to the output_folder

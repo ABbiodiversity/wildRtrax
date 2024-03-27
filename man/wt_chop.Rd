@@ -7,7 +7,7 @@
 wt_chop(input = NULL, segment_length = NULL, output_folder = NULL)
 }
 \arguments{
-\item{input}{A \code{`wt_audio_scanner`} tibble of files}
+\item{input}{A data frame or tibble containing information about audio files}
 
 \item{segment_length}{Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used}
 
@@ -21,8 +21,7 @@ Segmented files written to the output_folder
 }
 \examples{
 \dontrun{
-wt_chop(input = my_audio_tibble,
- segment_length = 60, output_folder "/where/i/store/my/chopped/files")
+wt_chop(input = my_files, segment_length = 60, output_folder = "output_folder")
 }
 
 }

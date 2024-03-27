@@ -19,7 +19,7 @@
 #' @param detection_id_col Defaults to `detection`. The column indicating the detection id
 #' @param start_col_det Defaults to `start_time`. The column indicating the start time of the independent detections
 #'
-#' @import dplyr lubridate tidyr
+#' @import dplyr lubridate tidyr rlang
 #' @export
 #'
 #' @examples
@@ -203,7 +203,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 #' @param remove_human Logical; Should human and human-related tags (e.g. vehicles) be removed? Defaults to TRUE.
 #' @param remove_domestic Logical; Should domestic animal tags (e.g. cows) be removed? Defaults to TRUE.
 #'
-#' @import dplyr lubridate
+#' @import dplyr lubridate rlang
 #' @export
 #'
 #' @examples
@@ -213,7 +213,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 #'
 #' @return A dataframe of independent detections in your camera data, based on the threshold you specified. The df wil include information about the duration of each detection, the number of images, the average number of individual animals per image, and the max number of animals in the detection.
 
-wt_ind_detect <- function(x, threshold, units = "minutes",  datetime_col = image_date_time, remove_human = TRUE, remove_domestic = TRUE) {
+wt_ind_detect <- function(x, threshold, units = "minutes", datetime_col = image_date_time, remove_human = TRUE, remove_domestic = TRUE) {
 
   # Check that x is a dataframe
   if (!is.data.frame(x)) {

@@ -55,34 +55,34 @@ data <- wt_download_report(620,'ARU',c('birdnet','main'),F)
 
 When downloading multiple reports, the `data` object then becomes a list of tibbles. The results from the `main` report can then be anti-joined against the `birdnet` report to determine if any species were detected than a human did not find. It's recommended to use high threshold values from BirdNET and species that should occur or be allowed in the project.
 
-```{r, eval=F, include=T, message=F, warning=F}
-library(tidyverse)
+```{r, eval=T, include=T, message=F, warning=F}
 
-birdnet_report <- data[[1]] %>%
+birdnet_report <- data[[1]] |>
   dplyr::filter(is_species_allowed_in_project == 't',
-         confidence > 50) %>%
-  tibble::add_column(observer = 'BirdNET') %>%
-  dplyr::select(location, recording_date_time, observer, species_code) %>%
+         confidence > 50) |>
+  tibble::add_column(observer = 'BirdNET') |>
+  dplyr::select(location, recording_date_time, observer, species_code) |>
   dplyr::distinct()
 
-main_report <- data[[2]] %>%
-  wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect"), zerofill = F) %>%
-  dplyr::select(location, recording_date_time, observer, species_code) %>%
+main_report <- data[[2]] |>
+  wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect"), zerofill = F) |>
+  dplyr::select(location, recording_date_time, observer, species_code) |>
   dplyr::distinct()
 
-merged_data <- dplyr::bind_rows(birdnet_report, main_report) %>% dplyr::arrange(location, recording_date_time) %>%
-  dplyr::group_by(location, recording_date_time, observer, species_code) %>%
-  dplyr::mutate(presence = dplyr::row_number()) %>%
-  dplyr::ungroup() %>%
-  tidyr::pivot_wider(names_from = species_code, values_from = presence, values_fill = 0) %>%
+merged_data <- dplyr::bind_rows(birdnet_report, main_report) |>
+  dplyr::arrange(location, recording_date_time) |>
+  dplyr::group_by(location, recording_date_time, observer, species_code) |>
+  dplyr::mutate(presence = dplyr::row_number()) |>
+  dplyr::ungroup() |>
+  tidyr::pivot_wider(names_from = species_code, values_from = presence, values_fill = 0) |>
   tidyr::pivot_longer(cols = -c(location, recording_date_time, observer), names_to = "species_code", values_to = "presence")
 
-missing_detections <- merged_data %>%
-  dplyr::filter(observer == "BirdNET" & presence == 1) %>%
-  dplyr::select(location, recording_date_time, species_code) %>%
+missing_detections <- merged_data |>
+  dplyr::filter(observer == "BirdNET" & presence == 1) |>
+  dplyr::select(location, recording_date_time, species_code) |>
   dplyr::anti_join(
-    merged_data %>%
-      dplyr::filter(observer != "BirdNET") %>%
+    merged_data |>
+      dplyr::filter(observer != "BirdNET") |>
       dplyr::select(location, recording_date_time, species_code, presence),
     by = c("location", "recording_date_time", "species_code")
   )
