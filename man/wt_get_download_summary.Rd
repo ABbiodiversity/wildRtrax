@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{wt_get_download_summary}
 \alias{wt_get_download_summary}
-\title{Get download summary}
+\title{Get a download summary from WildTrax}
 \usage{
 wt_get_download_summary(sensor_id)
 }
@@ -10,7 +10,7 @@ wt_get_download_summary(sensor_id)
 \item{sensor_id}{Can be one of "ARU", "CAM", or "PC"}
 }
 \value{
-a dataframe listing the projects that the user can download data for, including: project name, id, year, number of tags, and status.
+A dataframe listing the projects that the user can download data for, including: project name, id, year, number of tasks, a geographic bounding box and project status.
 }
 \description{
 Obtain a table listing projects that the user is able to download data for

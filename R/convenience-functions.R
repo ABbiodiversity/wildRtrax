@@ -64,7 +64,7 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
     tibble::as_tibble() %>%
     tibble::rownames_to_column(var = "location_from") %>%
     tidyr::pivot_longer(cols = -location_from, names_to = "distance_to", values_to = "distance") %>%
-    mutate(distance_to = str_replace(distance_to, "V","")) %>%
+    dplyr::mutate(distance_to = str_replace(distance_to, "V","")) %>%
     dplyr::mutate_at(vars(location_from, distance, distance_to), as.numeric) %>%
     dplyr::filter(!distance == 0) %>%
     dplyr::left_join(., location_ids, by = c("location_from" = "id")) %>%
@@ -78,35 +78,54 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 
 }
 
-#' Filter the species list to the groups of interest from wt_get_species
+#' Filter species from a report
 #'
 #' @description This function filters the species provided in WildTrax reports to only the groups of interest. The groups available for filtering are mammal, bird, amphibian, abiotic, insect, and unknown. Zero-filling functionality is available to ensure all surveys are retained in the dataset if no observations of the group of interest are available.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
-#' @param remove Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "unknown"). Defaults to retaining bird group only.
+#' @param remove Character; groups to filter from the report ("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown"). Defaults to retaining bird group only.
 #' @param zerofill Logical; indicates if zerofilling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
+#'
 #' @import dplyr
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' dat.tmtt <- wt_tidy_species(dat,
-#' remove=c("mammal", "amphibian", "abiotic", "insect", "unknown"),
-#' zerofill = TRUE)
+#' dat.tidy <- wt_tidy_species(dat, remove=c("mammal", "unknown"), zerofill = T)
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
-wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "insect", "bird", "unknown"), zerofill = TRUE){
+wt_tidy_species <- function(data,
+                            remove = "",
+                            zerofill = TRUE) {
 
-  dat <- data
+  if (is.null(remove)) {
+    stop('Not removing any species')
+  }
+
+  if (any(!(remove %in% c("mammal", "bird", "amphibian", "abiotic", "insect", "human", "unknown")))) {
+    stop("Select remove options from bird, mammal, amphibian, abiotic, insect, human or unknown.")
+  }
+
+  #Rename fields if PC
+  if("survey_url" %in% colnames(data)){
+    data <- data %>%
+      rename(task_id=survey_id,
+             recording_date_time = survey_date)
+  }
+
+  if('bird' %in% remove){
+    message('Note: By removing birds, you will not be able to use wt_qpad_offsets since QPAD offsets are only available for birds.')
+  }
 
   #Convert to the sql database labels for species class
-  remove <- case_when(remove=="mammal" ~ "MAMMALIA",
+  remove <- dplyr::case_when(remove=="mammal" ~ "MAMMALIA",
                       remove=="amphibian" ~ "AMPHIBIA",
                       remove=="abiotic" ~ "ABIOTIC",
                       remove=="insect" ~ "INSECTA",
                       remove=="bird" ~ "AVES",
-                      !is.na(remove) ~ remove)
+                      remove=="human" ~ "HUMAN ACTIVITY",
+                      remove=="" ~ remove)
 
   .species <- wt_get_species()
 
@@ -114,7 +133,7 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
   species.remove <- .species %>%
     dplyr::filter(species_class %in% remove)
 
-  #add the unknowns if requested
+  #Add the unknowns if requested
   if("unknown" %in% remove){
     species.remove <- .species %>%
       dplyr::filter(str_sub(species_common_name, 1, 12)=="Unidentified") %>%
@@ -122,12 +141,19 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
   }
 
   #Remove those codes from the data
-  filtered <- dplyr::filter(dat, !species_code %in% species.remove$species_code)
+  filtered <- dplyr::filter(data, !species_code %in% species.remove$species_code)
 
   #if you don't need nones, remove other NONEs & return the filtered object
   if(zerofill==FALSE){
 
     filtered.sp <- dplyr::filter(filtered, species_code!="NONE")
+
+    #Translate point count field names back
+    if("survey_url" %in% colnames(data)){
+      filtered.sp <- filtered.sp %>%
+        rename(survey_id=task_id,
+               survey_date = recording_date_time)
+    }
 
     return(filtered.sp)
   }
@@ -135,19 +161,27 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
   #if you do need nones, add them
   if(zerofill==TRUE){
 
-    #first identify the unique visits (replace this with task_id in the future)
-    visit <- dat %>%
-      dplyr::select(-species_code, -species_common_name, -individual_order, -detection_time, -vocalization, -individual_count, -species_individual_comments, -tag_is_verified) %>%
-      unique()
+    #first identify the unique visits (task_id)
+    visit <- data %>%
+      dplyr::select(task_id) %>%
+      dplyr::distinct()
 
     #see if there are any that have been removed
     none <- suppressMessages(anti_join(visit, filtered)) %>%
-      mutate(species_code = "NONE",
-             species_common_name = "NONE")
+      dplyr::mutate(species_code = "NONE",
+             species_common_name = "NONE",
+             species_scientific_name = "NONE")
 
     #add to the filtered data
     filtered.none <- suppressMessages(full_join(filtered, none)) %>%
-      arrange(organization, project_id, location, recording_date_time, detection_time, individual_order)
+      dplyr::arrange(organization, project_id, location, recording_date_time)
+
+    #Translate point count field names back
+    if("survey_url" %in% colnames(data)){
+      filtered.none <- filtered.none %>%
+        rename(survey_id=task_id,
+               survey_date = recording_date_time)
+    }
 
     #return the filtered object with nones added
     return(filtered.none)
@@ -156,22 +190,37 @@ wt_tidy_species <- function(data, remove=c("mammal", "amphibian", "abiotic", "in
 
 }
 
-#' Replace 'TMTT' abundance entries with model-predicted values.
+#' Replace 'TMTT' abundance with model-predicted values
 #'
 #' @description This function uses a lookup table of model-predicted values to replace 'TMTT' entries in listener-processed ARU data from WildTrax. The model-predicted values were produced using estimated abundances for 'TMTT' entries in mixed effects model with a Poisson distribution and random effects for species and observer.
 #'
 #' @param data Dataframe of WildTrax observations, for example the summary report.
 #' @param calc Character; method to convert model predictions to integer ("round", "ceiling", or "floor"). See `?round()` for details.
-#' @import dplyr
+#'
+#' @import dplyr tidyr
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' dat.tmtt <- replace_tmtt(dat, calc="round")
+#' dat.tmtt <- wt_replace_tmtt(dat, calc="round")
 #' }
 #' @return A dataframe identical to input with 'TMTT' entries in the abundance column replaced by integer values.
 
 wt_replace_tmtt <- function(data, calc="round"){
+
+  #check if it's ARU data
+  if(!"recording_date_time" %in% colnames(data)){
+    stop("The `wt_replace_tmtt` function only works on data from the ARU sensor")
+  }
+
+  check_none <- data |>
+    select(species_code) |>
+    distinct() |>
+    pull()
+
+  if (length(check_none) == 1 && check_none == 'NONE') {
+    stop('There are no species in this project')
+  }
 
   #load tmtt lookup table
   .tmtt <- readRDS(system.file("extdata", "tmtt_predictions.rds", package="wildRtrax"))
@@ -181,16 +230,18 @@ wt_replace_tmtt <- function(data, calc="round"){
     dplyr::filter(individual_count=="TMTT")
 
   #replace values with random selection from bootstraps
-  dat.abun <- dat.tmtt %>%
-    mutate(species_code = ifelse(species_code %in% .tmtt$species_code, species_code, "species"),
-           observer_id = as.integer(ifelse(observer_id %in% .tmtt$observer_id, observer_id, 0))) %>%
-    data.frame() %>%
-    inner_join(.tmtt %>% select(species_code, observer_id, pred), by=c("species_code", "observer_id")) %>%
-    mutate(individual_count = case_when(calc == "round" ~ round(pred),
-                                 calc == "ceiling" ~ ceiling(pred),
-                                 calc == "floor" ~ floor(pred),
-                                 TRUE ~ NA_real_)) %>%
-    select(-pred)
+  if(nrow(dat.tmtt) > 0){
+    dat.abun <- dat.tmtt %>%
+      mutate(species_code = ifelse(species_code %in% .tmtt$species_code, species_code, "species"),
+             observer_id = as.integer(ifelse(observer_id %in% .tmtt$observer_id, observer_id, 0))) %>%
+      data.frame() %>%
+      inner_join(.tmtt %>% select(species_code, observer_id, pred), by=c("species_code", "observer_id")) %>%
+      mutate(individual_count = case_when(calc == "round" ~ round(pred),
+                                          calc == "ceiling" ~ ceiling(pred),
+                                          calc == "floor" ~ floor(pred),
+                                          TRUE ~ NA_real_)) %>%
+      select(-pred)
+  } else { dat.abun <- dat.tmtt }
 
   #join back to data
   out <- data %>%
@@ -205,75 +256,84 @@ wt_replace_tmtt <- function(data, calc="round"){
 
 }
 
-#' Convert to a wide survey by species dataframe.
+#' Convert to a wide survey by species dataframe
 #'
 #' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values. This function is best preceded by the`wt_tidy_species` and `wt_replace_tmtt` functions  to ensure 'TMTT' and amphibian calling index values are not converted to zeros.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
-#' @param sound Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).
+#' @param sound Character; vocalization type(s) to retain ("all", "Song", "Call", "Non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).
+#'
 #' @import dplyr
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' dat.clean <- wt_tidy_species(dat)
-#' dat.tmtt <- wt_replace_tmtt(dat.clean)
+#' dat.tidy <- wt_tidy_species(dat)
+#' dat.tmtt <- wt_replace_tmtt(dat.tidy)
 #' dat.wide <- wt_make_wide(dat.tmtt, sound="all")
 #' }
 #' @return A dataframe identical to input with observations of the specified groups removed.
 
 wt_make_wide <- function(data, sound="all"){
 
-  #Filter to first detection per individual
-  summed <- data %>%
-    group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, individual_order) %>%
-    mutate(first = max(detection_time)) %>%
-    ungroup() %>%
-    dplyr::filter(detection_time==first)
+  #Steps for ARU data
+  if(!"survey_url" %in% colnames(data)){
 
-  #Remove undesired sound types
-  if(!"all" %in% sound){
+    #Filter to first detection per individual
+    summed <- data %>%
+      dplyr::group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, individual_order) %>%
+      dplyr::mutate(first = max(detection_time)) %>%
+      dplyr::ungroup() %>%
+      dplyr::filter(detection_time==first)
 
-    #Sigh, make it title case
-    sound <- str_to_title(sound)
+    #Remove undesired sound types
+    if(!"all" %in% sound){
+      sound <- str_to_title(sound)
+      summed <- dplyr::filter(summed, vocalization %in% sound)
+    }
 
-    #Filter
-    summed <- dplyr::filter(summed, vocalization %in% sound)
+    #Make it wide
+    wide <- summed %>%
+      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_, TRUE ~ as.character(individual_count)) %>% as.numeric()) %>%
+      dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
+      tidyr::pivot_wider(id_cols = organization:task_method,
+                  names_from = "species_code",
+                  values_from = "individual_count",
+                  values_fn = sum,
+                  values_fill = 0,
+                  names_sort = TRUE)
 
   }
 
-  #Make it wide
-  #TO DO: COME BACK TO THE ERROR HANDLING
-  #  options(warn=-1)
-  wide <- summed %>%
-    mutate(individual_count = case_when(grepl('^C',individual_count) ~ NA_real_, TRUE ~ as.numeric(individual_count))) %>%
-    filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
-    pivot_wider(id_cols = organization:task_method,
-                names_from = "species_code",
-                values_from = "individual_count",
-                values_fn = sum,
-                values_fill = 0,
-                names_sort = TRUE)
-  #  options(warn=0)
+  #Steps for point count data
+  if("survey_url" %in% colnames(data)){
 
-  #Warn about NAs in the data
-  # if(!is.na(warnings(wide))){
-  #   warning('Non-numeric values in abundance field have been converted to zeros')
-  # }
+    #Make it wide and return field names to point count format
+    wide <- data %>%
+      dplyr::mutate(individual_count = as.numeric(individual_count)) %>%
+      dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
+      tidyr::pivot_wider(id_cols = organization:survey_duration_method,
+                  names_from = "species_code",
+                  values_from = "individual_count",
+                  values_fn = sum,
+                  values_fill = 0,
+                  names_sort = TRUE)
+
+  }
 
   return(wide)
 
 }
 
-#' Format WildTrax report for occupancy modelling.
+#' Format WildTrax report for occupancy modelling
 #'
 #' @description This function formats the summary report from the `wt_download_report()` function into an unmarked object for occupancy modelling. The current version only includes formatting for the ARU sensor and for single species single season models.
 #'
 #' @param data Summary report of WildTrax observations from the `wt_download_report()` function. Currently only functioning for the ARU sensor.
 #' @param species Character; four-letter alpha code for the species desired for occupancy modelling.
 #' @param siteCovs Optional dataframe of site covariates. Must contain a column with the same values as the location field in the data, with one row per unique value of location (i.e., one row per site).
-#' @import dplyr lubridate
-#' @importFrom unmarked unmarkedFrameOccu
+#'
+#' @import dplyr lubridate unmarked
 #' @export
 #'
 #' @examples
@@ -287,81 +347,90 @@ wt_format_occupancy <- function(data,
                                 species,
                                 siteCovs=NULL){
 
+  #Rename fields if PC
+  if("survey_url" %in% colnames(data)){
+    data <- data %>%
+      rename(task_id=survey_id,
+             recording_date_time = survey_date,
+             observer_id = observer,
+             task_method = survey_duration_method)
+  }
+
   #Wrangle observations and observation covariates for the species of interest
   visits <- data %>%
     dplyr::filter(species_code==species) %>%
     dplyr::select(location, recording_date_time) %>%
-    unique() %>%
-    mutate(occur=1) %>%
-    right_join(data %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(occur=1) %>%
+    dplyr::right_join(data %>%
                  dplyr::select(location, recording_date_time, observer_id, task_method) %>%
-                 unique(),
+                 dplyr::distinct(),
                by=c("location", "recording_date_time")) %>%
-    mutate(occur = ifelse(is.na(occur), 0, 1),
+    dplyr::mutate(occur = ifelse(is.na(occur), 0, 1),
            doy = yday(recording_date_time),
            hr = as.numeric(hour(recording_date_time) + minute(recording_date_time)/60)) %>%
-    group_by(location) %>%
-    arrange(recording_date_time) %>%
-    mutate(visit = row_number()) %>%
-    ungroup()
+    dplyr::group_by(location) %>%
+    dplyr::arrange(recording_date_time) %>%
+    dplyr::mutate(visit = row_number()) %>%
+    dplyr::ungroup()
 
   #Create location X recording dataframe of observations (1 for detected, 0 for undetected)
   y <- visits %>%
     dplyr::select(location, visit, occur) %>%
-    pivot_wider(id_cols = location, names_from = visit, values_from = occur) %>%
-    arrange(location) %>%
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = occur) %>%
+    dplyr::arrange(location) %>%
     dplyr::select(-location) %>%
     data.frame()
 
   #Create location X recording dataframes for observation covariates (doy = day of year, hr = hour of day, method = processing method, observer = observer ID)
   doy <- visits %>%
     dplyr::select(location, visit, doy) %>%
-    pivot_wider(id_cols = location, names_from = visit, values_from = doy) %>%
-    arrange(location) %>%
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = doy) %>%
+    dplyr::arrange(location) %>%
     dplyr::select(-location) %>%
     data.frame()
 
   doy2 <- visits %>%
-    mutate(doy2 = doy^2) %>%
+    dplyr::mutate(doy2 = doy^2) %>%
     dplyr::select(location, visit, doy2) %>%
-    pivot_wider(id_cols = location, names_from = visit, values_from = doy2) %>%
-    arrange(location) %>%
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = doy2) %>%
+    dplyr::arrange(location) %>%
     dplyr::select(-location) %>%
     data.frame()
 
   hr <- visits %>%
     dplyr::select(location, visit, hr) %>%
-    pivot_wider(id_cols = location, names_from = visit, values_from = hr) %>%
-    arrange(location) %>%
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = hr) %>%
+    dplyr::arrange(location) %>%
     dplyr::select(-location) %>%
     data.frame()
 
   hr2 <- visits %>%
-    mutate(hr2 = hr^2) %>%
+    dplyr::mutate(hr2 = hr^2) %>%
     dplyr::select(location, visit, hr2) %>%
-    pivot_wider(id_cols = location, names_from = visit, values_from = hr2) %>%
-    arrange(location) %>%
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = hr2) %>%
+    dplyr::arrange(location) %>%
     dplyr::select(-location) %>%
     data.frame()
 
   method <- visits %>%
     dplyr::select(location, visit, task_method) %>%
-    mutate(task_method = as.factor(task_method)) %>%
-    pivot_wider(id_cols = location, names_from = visit, values_from = task_method) %>%
-    arrange(location) %>%
+    dplyr::mutate(task_method = as.factor(task_method)) %>%
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = task_method) %>%
+    dplyr::arrange(location) %>%
     dplyr::select(-location) %>%
     data.frame()
 
   observer <- visits %>%
     dplyr::select(location, visit, observer_id) %>%
-    mutate(observer = as.factor(observer_id)) %>%
-    pivot_wider(id_cols = location, names_from = visit, values_from = observer) %>%
-    arrange(location) %>%
+    dplyr::mutate(observer = as.factor(observer_id)) %>%
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = observer) %>%
+    dplyr::arrange(location) %>%
     dplyr::select(-location) %>%
     data.frame()
 
   #Create a list of the observation covariates
-  obsCovs <- list(doy=doy, doy2=doy2, hr=hr, hr2 = hr2, method=method, observer=observer)
+  obsCovs <- list(doy=doy, doy2=doy2, hr=hr, hr2=hr2, observer=observer)
 
   #Order site covs dataframe if one is provided
   if(!is.null(siteCovs)){
@@ -371,7 +440,7 @@ wt_format_occupancy <- function(data,
 
     if(nrow(siteCovs)!=locs){
       siteCovs <- NULL
-      warning('length of siteCovs dataframe does not match observation data, removing from unmarked object')
+      warning('Length of siteCovs dataframe does not match observation data')
     }
 
     else{
@@ -384,9 +453,9 @@ wt_format_occupancy <- function(data,
   #Put together as an unmarked object for single species occupancy models
   options(warn=-1)
   if(is.null(siteCovs)){
-    umf <- unmarkedFrameOccu(y=y, siteCovs=NULL, obsCovs=obsCovs)
+    umf <- unmarked::unmarkedFrameOccu(y=y, siteCovs=NULL, obsCovs=obsCovs)
   } else {
-    umf <- unmarkedFrameOccu(y=y, siteCovs=siteCovs, obsCovs=obsCovs)
+    umf <- unmarked::unmarkedFrameOccu(y=y, siteCovs=siteCovs, obsCovs=obsCovs)
   }
   options(warn=0)
 
@@ -418,23 +487,43 @@ wt_format_occupancy <- function(data,
 #' dat.wide <- wt_make_wide(dat.tmtt, sound="all")
 #' dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE)
 #' }
-#' @return An object of class unmarkedFrameOccu. See `unmarked::unmarkedFrameOccu` for details.
+#' @return A dataframe containing the QPAD values either by themselves or with the original wide data if together = T
 
-wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=TRUE){
+wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALSE) {
+
+  #Rename fields if PC
+  if("survey_url" %in% colnames(data)){
+    data <- data %>%
+      rename(task_id=survey_id,
+             recording_date_time = survey_date,
+             observer_id = observer) %>%
+      rowwise() %>%
+      mutate(durationMethod = ifelse(str_sub(survey_duration_method, -1, -1)=="+",
+                                     str_sub(survey_duration_method, -100, -2),
+                                     survey_duration_method),
+             chardur = str_locate_all(durationMethod, "-"),
+             chardurmax = max(chardur),
+             task_duration = as.numeric(str_sub(durationMethod, chardurmax+1, -4))*60,
+             chardis = str_locate_all(survey_distance_method, "-"),
+             chardismax = max(chardis),
+             distance1 = str_sub(survey_distance_method, chardismax+1, -2),
+             task_distance = ifelse(distance1 %in% c("AR", "IN"), Inf, as.numeric(distance1))) %>%
+      ungroup()
+  }
 
   #Make prediction object
-  cat("Extracting covariates for offset calculation - be patient")
+  cat("Extracting covariates for offset calculation. This may take a moment.")
   x <- .make_x(data)
 
   #Load QPAD estimates
-  cat("\nLoading QPAD estimates: ")
+  cat("\nLoading QPAD estimates... ")
   load_BAM_QPAD(version)
 
   #Make the species list
   if("all" %in% species) spp <- sort(intersect(getBAMspecieslist(), colnames(data))) else spp <- species
 
   #Set up the offset loop
-  cat("\nCalculating offsets")
+  cat("\nCalculating offsets...")
   off <- matrix(0, nrow(x), length(spp))
   colnames(off) <- spp
 
@@ -446,15 +535,24 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=TRUE
   }
 
   #Return output as dataframe if separate output requested
-  if(together==TRUE){
+  if(together==FALSE){
     return(data.frame(off))
   }
 
   #Put together if requested
-  if(together==FALSE){
+  if(together==TRUE){
     out <- cbind(data,
                  data.frame(off) %>%
                    rename_with(.fn=~paste0(.x, ".off")))
+
+    #Translate point count field names back
+    if("survey_url" %in% colnames(data)){
+      out <- out %>%
+        rename(survey_id=task_id,
+               survey_date = recording_date_time,
+               observer = observer_id) %>%
+        dplyr::select(-durationMethod, -chardur, -chardurmax, -task_duration, -chardis, -chardismax, -distance1, -task_distance)
+    }
 
     return(out)
   }
@@ -462,4 +560,3 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=TRUE
   cat("\nDone!")
 
 }
-

@@ -1,3 +1,16 @@
+# wildRtrax 1.2.0
+
+## Major changes
+
+* `wt_chop()` now recurses across all input files
+* Moving geospatial assets to new repository to lighten package size. Asset requests are now made only through usage of `wt_qpad_offsets()`.
+
+## Minor changes
+
+* Improvements to APIs and acoustic convenience functions to resolve issues and PRs
+* Improvements to test suite, testing dependencies, code coverage
+* Addition of [Camera data wrangling vignette](https://abbiodiversity.github.io/wildRtrax/articles/camera-data-wrangling.html) and additional [tutorials](https://abbiodiversity.github.io/wildRtrax/articles/tutorials.html)
+
 # wildRtrax 1.1.0
 
 ## Major changes

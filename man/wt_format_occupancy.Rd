@@ -2,7 +2,7 @@
 % Please edit documentation in R/convenience-functions.R
 \name{wt_format_occupancy}
 \alias{wt_format_occupancy}
-\title{Format WildTrax report for occupancy modelling.}
+\title{Format WildTrax report for occupancy modelling}
 \usage{
 wt_format_occupancy(data, species, siteCovs = NULL)
 }

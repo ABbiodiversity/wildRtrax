@@ -4,7 +4,7 @@
 \alias{wt_qpad_offsets}
 \title{Get QPAD offsets}
 \usage{
-wt_qpad_offsets(data, species = c("all"), version = 3, together = TRUE)
+wt_qpad_offsets(data, species = c("all"), version = 3, together = FALSE)
 }
 \arguments{
 \item{data}{Dataframe output from the \code{wt_make_wide()} function.}
@@ -16,7 +16,7 @@ wt_qpad_offsets(data, species = c("all"), version = 3, together = TRUE)
 \item{together}{Logical; whether or not offsets should be bound to the input dataframe or returned as a separate object.}
 }
 \value{
-An object of class unmarkedFrameOccu. See \code{unmarked::unmarkedFrameOccu} for details.
+A dataframe containing the QPAD values either by themselves or with the original wide data if together = T
 }
 \description{
 This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds. This function requires download of the \code{QPAD} R package and should be used on the output of the \code{wt_format_wide} function

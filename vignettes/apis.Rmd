@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 ```{r setup, echo=FALSE, include=FALSE, eval=TRUE}
 # Attach package
 library(wildRtrax)
-library(tidyverse)
+library(dplyr)
 ```
 
 ## Set up WildTrax credentials
@@ -57,24 +57,32 @@ Using the project_id number in the download summary you can then use `wt_downloa
 
 ```{r echo=TRUE, include=TRUE, eval=F, warning = FALSE, message = FALSE}
 # Download the project report
-my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+my_report <- wt_download_report(project_id = 620, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
 ```
 ```{r echo=F, include=F, eval=T, warning = FALSE, message = FALSE}
 # Download the project report
-my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+my_report <- wt_download_report(project_id = 620, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
 ```
-```{r}
+```{r, eval=T}
 head(my_report)
 
 ```
 
 An easy way to download multiple projects at once is to use `wt_get_download_summary()` and then filter by a substring in order to get the project ids to download the data.
 
-```{r echo=T, eval=FALSE, warning = F, message = F}
+```{r echo=T, include=T, eval=FALSE, warning = F, message = F}
 # Download all of the published Ecosystem Health ARU data to a single object
-eh_projects <- wt_get_download_summary(sensor_id = "ARU") %>%
+wt_get_download_summary(sensor_id = "ARU") %>%
+  tibble::as_tibble() %>%
+  dplyr::filter(grepl('^Ecosystem Health',project)) %>%
+  dplyr::mutate(data = purrr::map(.x = project_id, .f = ~wt_download_report(project_id = .x, sensor_id = "ARU", weather_cols = F, reports = "main")))
+
+```
+```{r echo=T, include=F, eval=F, warning = F, message = F}
+# Download all of the published Ecosystem Health ARU data to a single object
+wt_get_download_summary(sensor_id = "ARU") %>%
   tibble::as_tibble() %>%
   dplyr::filter(grepl('^Ecosystem Health',project)) %>%
   dplyr::mutate(data = purrr::map(.x = project_id, .f = ~wt_download_report(project_id = .x, sensor_id = "ARU", weather_cols = F, reports = "main")))
@@ -91,35 +99,22 @@ spp_table <- wt_get_species()
 # Download the WildTrax species table
 spp_table <- wt_get_species()
 ```
-```{r}
-head(spp_table)
+```{r, eval=T}
+spp_table |> arrange(species_code)
 
 ```
 
 WildTrax also pre-formats ARU to point count (PC) data depending on the type of analysis you wish to perform. See the [Boreal Avian Modelling project](https://borealbirds.ca/) website and GitHub [repositories](https://github.com/borealbirds) to find out more on integration of avian point count and ARU data.
 
-```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
-# As point count format
-aru_as_aru <- wt_download_report(project_id = 605 , sensor_id = 'ARU', reports = "main", weather_cols = F)
+```{r, echo=T, include=T, eval=T, warning=F, message = FALSE}
+# As ARU format
+my_report
 ```
 ```{r, echo=F, include=F, eval=T, warning=F, message = FALSE}
 # As point count format
-aru_as_aru <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F)
+aru_as_pc <- wt_download_report(project_id = 620, sensor_id = 'PC', reports = "main", weather_cols = F)
 ```
-```{r}
-# As point count format
-head(aru_as_aru)
-
-```
-```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
-# As ARU format
-aru_as_pc <- wt_download_report(project_id = 605, sensor_id = 'PC', reports = "main", weather_cols = F)
-```
-```{r, echo=F, include=F, eval=T, warning=F, message = FALSE}
-# As ARU format
-aru_as_pc <- wt_download_report(project_id = 605, sensor_id = 'PC', reports = "main", weather_cols = F)
-```
-```{r}
+```{r, eval=T}
 # As point count format
 head(aru_as_pc)
 

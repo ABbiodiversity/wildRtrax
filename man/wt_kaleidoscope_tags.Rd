@@ -4,14 +4,12 @@
 \alias{wt_kaleidoscope_tags}
 \title{Convert Kaleidoscope output to tags}
 \usage{
-wt_kaleidoscope_tags(input, output, tz, freq_bump = T)
+wt_kaleidoscope_tags(input, output, freq_bump = T)
 }
 \arguments{
 \item{input}{Character; The path to the input csv}
 
 \item{output}{Character; Path where the output file will be stored}
-
-\item{tz}{Character; Assigns a timezone to the recording files. Use \code{OlsonNames()} to get a list of valid names.}
 
 \item{freq_bump}{Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification}
 }
@@ -23,7 +21,7 @@ A csv formatted as a WildTrax tag template
 }
 \examples{
 \dontrun{
-wt_kaleidoscope_tags(input = input.csv, output = tags.csv, tz = "", freq_bump = T)
+wt_kaleidoscope_tags(input = input.csv, output = tags.csv, freq_bump = T)
 }
 
 }

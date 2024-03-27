@@ -2,14 +2,14 @@
 % Please edit documentation in R/convenience-functions.R
 \name{wt_make_wide}
 \alias{wt_make_wide}
-\title{Convert to a wide survey by species dataframe.}
+\title{Convert to a wide survey by species dataframe}
 \usage{
 wt_make_wide(data, sound = "all")
 }
 \arguments{
 \item{data}{WildTrax main report or tag report from the \code{wt_download_report()} function.}
 
-\item{sound}{Character; vocalization type(s) to retain ("all", "song", "call", "non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).}
+\item{sound}{Character; vocalization type(s) to retain ("all", "Song", "Call", "Non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).}
 }
 \value{
 A dataframe identical to input with observations of the specified groups removed.
@@ -19,8 +19,8 @@ This function converts a long-formatted report into a wide survey by species dat
 }
 \examples{
 \dontrun{
-dat.clean <- wt_tidy_species(dat)
-dat.tmtt <- wt_replace_tmtt(dat.clean)
+dat.tidy <- wt_tidy_species(dat)
+dat.tmtt <- wt_replace_tmtt(dat.tidy)
 dat.wide <- wt_make_wide(dat.tmtt, sound="all")
 }
 }
