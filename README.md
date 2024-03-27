@@ -1,5 +1,5 @@
 
-# wildRtrax <img src="man/figures/logo.png" width="80%" align="right" />
+# wildRtrax <img src="man/figures/logo.png" width="50%" align="right" />
 
 <!-- badges: start -->
 

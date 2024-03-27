@@ -35,6 +35,7 @@ vembedr::embed_url("https://www.youtube.com/watch?v=bckccZFRq7s&ab_channel=-abmi
 ## Detect missing species using BirdNET
 
 [BirdNET](https://birdnet.cornell.edu/) is an avian multi-species classifier. WildTrax utilizes the [BirdNET API](https://github.com/kahst/BirdNET-Analyzer) to automatically detect species in recordings uploaded to projects once the task is Transcribed. The results can then be retrieved using `wt_download_report()`:
+
 ```{r, eval=T, include=F, message=F, warning=F}
 library(wildRtrax)
 

@@ -29,11 +29,11 @@ library(wildRtrax)
 library(dplyr)
 ```
 
-```{r, warning = F, message = F, eval = F, include = T, echo = T}
+```{r, warning = F, message = F, eval = T, include = T, echo = T}
 # Start by getting everything you need
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
-my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
+my_report <- wt_download_report(project_id = 620, sensor_id = 'ARU', reports = "main", weather_cols = F) %>%
   tibble::as_tibble()
 ```
 
@@ -41,24 +41,24 @@ my_report <- wt_download_report(project_id = 605, sensor_id = 'ARU', reports = "
 
 Now let's start cleaning things up a bit. We don't need certain abiotic and mammal codes so let's remove those with `wt_tidy_species()`,
 
-```{r, tidy-chunk, eval = F, echo = T, warning = F, message = F}
-my_tidy_data <- wt_tidy_species(my_report, remove = c("abiotic","mammal"), zerofill=F, sensor = 'ARU')
+```{r, tidy-chunk, eval = T, echo = T, warning = F, message = F}
+my_tidy_data <- wt_tidy_species(my_report, remove = c("mammal"), zerofill=F)
 
 # Difference in rows
 round((nrow(my_tidy_data)/nrow(my_report)),2)
 ```
 
-So about 5% of detections were mammals. Next, convert TMTT (too many to tag) counts to numeric:
+So about 15% of detections were mammals. Next, convert TMTT (too many to tag) counts to numeric:
 
-```{r, eval = F, echo = T, warning = F, message = F}
+```{r, eval = T, echo = T, warning = F, message = F}
 my_tmtt_data <- wt_replace_tmtt(data = my_tidy_data, calc = "round")
 
 ```
 
 and finally, widen the data into a species matrix.
 
-```{r, eval = F, echo = T, warning = F, message = F}
-my_wide_data <- wt_make_wide(data = my_tmtt_data, sound = "all", sensor = 'ARU')
+```{r, eval = T, echo = T, warning = F, message = F}
+my_wide_data <- wt_make_wide(data = my_tmtt_data, sound = "all")
 
 head(my_wide_data)
 
@@ -68,8 +68,8 @@ head(my_wide_data)
 
 Now you can calculate statistical offsets to account for imperfect detection following the [QPAD method](https://besjournals.onlinelibrary.wiley.com/doi/full/10.1111/2041-210X.12106).
 
-```{r, eval = F, echo = T, warning = F, message = F}
-my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version = 3, together = TRUE, sensor = 'ARU')
+```{r, eval = T, echo = T, warning = F, message = F}
+my_offset_data <- wt_qpad_offsets(data = my_wide_data, species = "all", version = 3, together = TRUE)
 
 head(my_offset_data)
 
@@ -79,8 +79,8 @@ head(my_offset_data)
 
 You can also perform a single-season, single-species occupancy work flow using `wt_format_occupancy()` once the data is downloaded.
 
-```{r, eval = F, echo = T, warning = F, message = F}
-dat.occu <- wt_format_occupancy(my_report, species="WTSP", siteCovs=NULL, sensor = 'ARU')
+```{r, eval = T, echo = T, warning = F, message = F}
+dat.occu <- wt_format_occupancy(my_report, species="OVEN", siteCovs=NULL)
 mod <- unmarked::occu(~ 1 ~ 1, dat.occu)
 mod
 
