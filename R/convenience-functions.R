@@ -293,7 +293,7 @@ wt_make_wide <- function(data, sound="all"){
 
     #Make it wide
     wide <- summed %>%
-      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_, TRUE ~ individual_count) %>% as.numeric()) %>%
+      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_, TRUE ~ as.character(individual_count)) %>% as.numeric()) %>%
       dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
       tidyr::pivot_wider(id_cols = organization:task_method,
                   names_from = "species_code",
