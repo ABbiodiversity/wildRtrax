@@ -125,6 +125,7 @@ wt_tidy_species <- function(data,
                       remove=="insect" ~ "INSECTA",
                       remove=="bird" ~ "AVES",
                       remove=="human" ~ "HUMAN ACTIVITY",
+                      remove=="unknown" ~ "unknown",
                       remove=="" ~ remove)
 
   .species <- wt_get_species()
