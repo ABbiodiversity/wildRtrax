@@ -1,0 +1,179 @@
+---
+title: "How to use Classifier Reports"
+output: html_document
+date: "2024-04-15"
+author: "Elly Knight, Kevin Kelly, Alex MacPhail"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+# Deep learning in acoustic processing
+
+Recent advances in deep learning have led to the development of neural network models that can classify the sounds acoustic recordings, such as those produced by autonomous recording units (ARUs). These classifiers can be trained to detect just a single focal species, or to classify thousands of species. The process of using automated classifiers to extract species detections from acoustic recordings is collectively called "computer listening", and can be used to support, supplement, or even replace human listening by experts depending on the goals of the project. This tutorial will show you how to access and work with classifier results for recordings in WildTrax.
+
+## BirdNET
+[BirdNET](https://birdnet.cornell.edu/) is a deep learning classifier developed by the Cornell Lab of Ornithology that is trained to classify more than 6,000 of the world's most common bird species, including most North American bird species (Kahl et al). The model converts audio recordings into 3-second spectrograms and outputs a probability score for each species in each spectrogram.
+
+## Classifier performance
+Classifier scores can be converted to species detections by setting a threshold (e.g., 0.8) above which to consider a species present within a given spectrogram (Wood et al). Misclassification can still occur even above high score thresholds, however, so those detections are then often verified by a human observer to separate out true positives from false positives.
+
+Choosing a score threshold will depend on the goals of the project; however, threshold choice is a trade-off between false positives (i.e., incorrect classifications) and false negatives (i.e., missed detections; Priyadarshani et al., Knight et al). Choosing a high score threshold will minimize false positives, but will also result in false negatives. Choosing a low score threshold will minimize false negatives but will result in many false positives. The proportion of false positives at a given score threshold is typically measured by precision:
+
+$precision = \frac{tp}{tp + fp}$
+
+While the proportion of false negatives is measured as recall:
+
+$recall = \frac{tp}{tp + fn}$
+
+Where *tp* is the number of true positives, *fp* is the number of false positives, and *fn* is the number of false negatives.
+
+The threshold-agnostic performance of a classifier is then typically evaluated as the area under the curve (AUC) of a precision-recall curve. The corner of the precision recall curve can be used to select a score threshold.
+
+F-score is a combination of precision and recall and can also used to select a score threshold by selecting the peak value.
+
+$Fscore = \frac{2 * precision* recall}{precision + recall}$
+
+
+
+## BirdNET performance for Canadian birds
+
+ABMI has evaluated BirdNET with a dataset of 623 3-minute recordings. All species were annotated in each minute of each recording by our top expert listeners and further groomed for false positives and negatives. The dataset was selected to include at least 10 recordings with detections of the most common XYZ Canadian bird species. Recordings were primarily sourced from Alberta and Ontario to include variation in dialect. We evaluated BirdNET by comparing results with our expert dataset and pooling the total detections across species per minute of recording to calculate overall precision, recall, and F-score.
+
+
+
+```{r, eval=T, include=T, echo=F, message=F, warning=F}
+
+dat <- read.csv(file.path("G:/Shared drives/ABMI_Recognizers/HawkEars", "Results", "ExpertData", "ExpertData_PR_Total.csv")) |> 
+  dplyr::filter(classifier=="BirdNET", thresh >= 0.1)
+
+plot.p <- ggplot(dat) +
+  geom_line(aes(x=thresh, y=p), size=1.5) +
+  xlab("Score threshold") +
+  ylab("Precision") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  theme_bw()
+
+plot.r <- ggplot(dat) +
+  geom_line(aes(x=thresh, y=r), size=1.5) +
+  xlab("Score threshold") +
+  ylab("Recall") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  theme_bw()
+
+plot.f <- ggplot(dat) +
+  geom_line(aes(x=thresh, y=f), size=1.5) +
+  xlab("Score threshold") +
+  ylab("F-score") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  theme_bw()
+
+plot.pr <- ggplot(dat) +
+  geom_line(aes(x=r, y=p), size=1.5) +
+  xlab("Recall") +
+  ylab("Precision") +
+  theme_bw()
+
+gridExtra::grid.arrange(plot.p, plot.r, plot.f, plot.pr, ncol=2)
+
+
+```
+
+
+# Deep learning in WildTrax
+
+WildTrax uses the [BirdNET API](https://github.com/kahst/BirdNET-Analyzer) to automatically classify species in each 3 second window of all recordings uploaded to projects. The classifier is run overnight once the task is Transcribed and the report is available either via [WildTrax] (http://www.wildtrax.ca) or the `wildRtrax` R package the day following transcription.
+
+The sensitivity is set at 1.5 to reduce the probability of false positives and the score threshold is set low at 0.1 to allow users to set higher thresholds as needed. The list of species is filtered by eBird occurrence data for the week of recording, but not by location.
+
+## Downloading the classifier reports
+The results can then be retrieved using `wt_download_report()`:
+
+```{r, eval=T, include=F, message=F, warning=F}
+library(wildRtrax)
+
+Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
+wt_auth()
+data <- wt_download_report(620,'ARU',c('birdnet','main'),F)
+
+```
+```{r, eval=F, include=T, message=F, warning=F}
+library(wildRtrax)
+
+Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
+wt_auth()
+data <- wt_download_report(620,'ARU',c('birdnet','main'),F)
+
+```
+
+## Evaluating
+
+## Selecting a threshold
+
+## Converting scores to detections
+
+## Uploading to WildTrax for verification
+
+# Using deep learning results
+
+## Filter recordings for further selection
+
+The model can be filtered by eBird occurrence data to remove XYZ.
+
+## Check for additional species detected
+
+When downloading multiple reports, the `data` object then becomes a list of tibbles. The results from the `main` report can then be anti-joined against the `birdnet` report to determine if any species were detected than a human did not find. It's recommended to use high threshold values from BirdNET and species that should occur or be allowed in the project.
+
+```{r, eval=T, include=T, message=F, warning=F}
+
+birdnet_report <- data[[1]] |>
+  dplyr::filter(is_species_allowed_in_project == 't',
+         confidence > 50) |>
+  tibble::add_column(observer = 'BirdNET') |>
+  dplyr::select(location, recording_date_time, observer, species_code) |>
+  dplyr::distinct()
+
+main_report <- data[[2]] |>
+  wt_tidy_species(remove = c("mammal", "amphibian", "abiotic", "insect"), zerofill = F) |>
+  dplyr::select(location, recording_date_time, observer, species_code) |>
+  dplyr::distinct()
+
+merged_data <- dplyr::bind_rows(birdnet_report, main_report) |>
+  dplyr::arrange(location, recording_date_time) |>
+  dplyr::group_by(location, recording_date_time, observer, species_code) |>
+  dplyr::mutate(presence = dplyr::row_number()) |>
+  dplyr::ungroup() |>
+  tidyr::pivot_wider(names_from = species_code, values_from = presence, values_fill = 0) |>
+  tidyr::pivot_longer(cols = -c(location, recording_date_time, observer), names_to = "species_code", values_to = "presence")
+
+missing_detections <- merged_data |>
+  dplyr::filter(observer == "BirdNET" & presence == 1) |>
+  dplyr::select(location, recording_date_time, species_code) |>
+  dplyr::anti_join(
+    merged_data |>
+      dplyr::filter(observer != "BirdNET") |>
+      dplyr::select(location, recording_date_time, species_code, presence),
+    by = c("location", "recording_date_time", "species_code")
+  )
+
+nrow(missing_detections)
+
+```
+
+Therefore, BirdNET did not detect any additional species.
+
+## Presence only data
+
+## Occupancy modelling
+
+# Future WildTrax deep learning developments
+
+
+## HawkEars
+
