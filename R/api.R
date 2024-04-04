@@ -67,7 +67,6 @@ wt_get_download_summary <- function(sensor_id) {
                      project_id = id,
                      sensor = sensorId,
                      tasks,
-                     #aoi = my_aoi,
                      status) |>
     dplyr::mutate(dplyr::across(dplyr::everything(), unlist))
 
@@ -371,7 +370,6 @@ wt_get_species <- function(){
 #' @param input A data frame or tibble of the tag report i.e. wt_download_report(reports = "tag")
 #' @param output Directory to store the tags
 #' @param clip_type Character; either spectrogram or audio clips
-
 #'
 #' @import dplyr tibble readr
 #' @export
@@ -450,3 +448,115 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
   }
 
 }
+
+#' Download data from Data Discover
+#'
+#' @description Download various Data Discover results from projects across WildTrax
+#'
+#' @param boundary A bbox or list of vectors describing the geographic boundaries of your AOI. description description
+#' @param sensor  description description
+#' @param species A description description
+#'
+#' @import dplyr tibble readr jsonlite httr
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' dd <- wt_dd_summary(boundary = NULL, sensor = NULL, species = NULL)
+#'
+#' @return A tibble of projects and counts of the desired species. If nothing is specific the entire Data Discover data set is returned.
+
+
+wt_dd_summary <- function(boundary = NULL, sensor = NULL, species = NULL){
+
+  # Check if authentication has expired:
+  if (.wt_auth_expired())
+    stop("Please authenticate with wt_auth().", call. = FALSE)
+
+u <- getOption("HTTPUserAgent")
+if (is.null(u)) {
+  u <- sprintf("R/%s; R (%s)",
+               getRversion(),
+               paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
+}
+
+# Add wildRtrax version information:
+u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
+
+payload <- list(
+  isSpeciesTab = FALSE,
+  zoomLevel = 1,
+  bounds = list(
+    `_sw` = list(
+      lng = sw$lng,
+      lat = sw$lat
+    ),
+    `_ne` = list(
+      lng = ne$lng,
+      lat = ne$lat
+    )
+  ),
+  sensorId = "ARU",
+  polygonBoundary = NULL,
+  organizationIds = NULL,
+  projectIds = NULL,
+  speciesIds = list(species)  # Wrap the integer value in a list to make it an array
+)
+
+rr <- httr::POST(
+  httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-data-discoverer-long-lat-summary"),
+  query = query_list,
+  accept = "application/json",
+  httr::add_headers(
+    Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+    Origin = "https://discover.wildtrax.ca",
+    Pragma = "no-cache",
+    Referer = "https://discover.wildtrax.ca/"
+  ),
+  httr::user_agent(u),
+  httr::progress(),
+  body = payload,
+  encode = "json" # Specify that the payload should be encoded as JSON
+)
+
+rpps <- httr::content(rr)
+
+# Extracting data
+orgs <- map_chr(rpps$organizations, pluck, "organizationName")
+counts <- map_dbl(rpps$projects, pluck, "count")
+projectNames <- map(rpps$projects, ~pluck(., "projectName")) %>% map_chr(~ ifelse(is.null(.x), "", .x))
+projectIds <- map(rpps$projects, ~pluck(., "projectId")) %>% map_int(~ ifelse(is.null(.x), NA_integer_, .x))
+
+spp <- httr::POST(
+  httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-all-species"),
+  accept = "application/json",
+  httr::add_headers(Authorization = paste("Bearer", my_tok)),
+  httr::user_agent(u)
+)
+
+spps <- httr::content(spp)
+
+spp_table <- tibble(
+  species_id = map_dbl(spps, ~ ifelse(!is.null(.x$id), .x$id, NA)),
+  species_code = map_chr(spps, ~ ifelse(!is.null(.x$code), .x$code, NA)),
+  species_common_name = map_chr(spps, ~ ifelse(!is.null(.x$commonName), .x$commonName, NA)),
+  species_class = map_chr(spps, ~ ifelse(!is.null(.x$className), .x$className, NA)),
+  species_order = map_chr(spps, ~ ifelse(!is.null(.x$order), .x$order, NA)),
+  species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
+)
+
+# Create tibble
+rpps_tibble <- tibble(
+  projectId = projectIds,
+  project_name = projectNames,
+  species_id = 2441,
+  count = counts
+) |>
+  inner_join(spp_table, by = "species_id") |>
+  select(projectId, project_name, count, species_common_name, species_code, species_scientific_name) |>
+  distinct()
+
+return(rpps_tibble)
+
+}
+
