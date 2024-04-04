@@ -133,20 +133,23 @@
 #'
 #' @keywords internal
 #'
-#' @import QPAD dplyr intrval terra
-#' @importFrom suntools sunriset
+#' @import QPAD dplyr intrval terra utils
 
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
-  #Get the gis data
-  .rlcc <- terra::rast(system.file("extdata", "lcc.tif",
-                       package="wildRtrax"))
-  .rtree <- terra::rast(system.file("extdata", "tree.tif",
-                        package="wildRtrax"))
-  .rd1 <- terra::rast(system.file("extdata", "seedgrow.tif",
-                      package="wildRtrax"))
-  .rtz <- terra::rast(system.file("extdata", "utcoffset.tif",
-                      package="wildRtrax"))
+  # Download message
+  message("Downloading geospatial assets. This may take a moment.")
+
+  # Get tifs from assets repo. Maybe something better later!
+  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", destfile = "lcc.tif")
+  .rlcc <- terra::rast("lcc.tif")
+  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", destfile = "tree.tif")
+  .rtree <- terra::rast("tree.tif")
+  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", destfile = "seedgrow.tif")
+  .rd1 <- terra::rast("seedgrow.tif")
+  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", destfile = "utcoffset.tif")
+  .rtz <- terra::rast("utcoffset.tif")
+
   crs <- terra::crs(.rtree)
 
   #get vars
@@ -154,7 +157,7 @@
   time <- str_sub(data$recording_date_time, 12, 19)
   lon <- as.numeric(data$longitude)
   lat <- as.numeric(data$latitude)
-  dur <- as.numeric(str_sub(data$task_duration, -100, -2))
+  dur <- as.numeric(data$task_duration)
   dis <- Inf
 
   #parse date+time into POSIXlt
@@ -225,6 +228,11 @@
     ltz <- 0
   }
 
+  message("Removing geospatial assets from local")
+
+  # Remove once downloaded and read
+  file.remove(list.files(pattern = "*.tif$"))
+
   #sunrise time adjusted by offset
   ok_dt <- !is.na(dtm)
   dtm[is.na(dtm)] <- mean(dtm, na.rm=TRUE)
@@ -278,17 +286,16 @@
 #' @keywords internal
 #'
 #' @import QPAD dplyr intrval
-#'
 
 .make_off <- function(spp, x){
 
   if (length(spp) > 1L)
-    stop("spp argument must be length 1, please loop or map for multiple species")
+    stop("spp argument must be length 1. Use a loop or map for multiple species.")
   spp <- as.character(spp)
 
   #checks
   if (!(spp %in% getBAMspecieslist()))
-    stop(sprintf("Species %s has no QPAD estimate", spp))
+    stop(sprintf("Species %s has no QPAD estimate available", spp))
 
   #constant for NA cases
   cf0 <- exp(unlist(coefBAMspecies(spp, 0, 0)))

@@ -2,13 +2,13 @@
 % Please edit documentation in R/wildRtrax.R
 \docType{package}
 \name{wildRtrax}
-\alias{wildRtrax}
 \alias{wildRtrax-package}
+\alias{wildRtrax}
 \title{wildRtrax: A series of advanced user functions for environmental sensor data management and an}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-wildRtrax is an R package that enables environmental sensor data users to create comprehensive work flows for managing and analyzing data.
+wildRtrax is an R package that enables environmental sensor users to create comprehensive work flows for managing and analyzing data.
 }
 \seealso{
 Useful links:

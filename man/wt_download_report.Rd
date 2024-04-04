@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{wt_download_report}
 \alias{wt_download_report}
-\title{Download Reports}
+\title{Download formatted reports from WildTrax}
 \usage{
 wt_download_report(project_id, sensor_id, reports, weather_cols = TRUE)
 }
@@ -19,7 +19,7 @@ wt_download_report(project_id, sensor_id, reports, weather_cols = TRUE)
 If multiple report types are requested, a list object is returned; if only one, a dataframe.
 }
 \description{
-Download ARU, Camera, or Point Count data from a project
+Download various ARU, camera, or point count data from projects across WildTrax
 }
 \details{
 Valid values for argument \code{report} when \code{sensor_id} = "CAM" currently are:
@@ -51,7 +51,7 @@ Valid values for argument \code{report} when \code{sensor_id} = "PC" currently a
 \item main
 \item project
 \item location
-\item point count
+\item point_count
 \item definitions
 }
 }

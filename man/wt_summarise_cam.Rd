@@ -12,10 +12,13 @@ wt_summarise_cam(
   output_format = "wide",
   species_col = species_common_name,
   effort_data = NULL,
-  project_col = NULL,
-  station_col = NULL,
-  start_col = NULL,
-  end_col = NULL
+  project_col = project_id,
+  station_col = location,
+  date_time_col = image_date_time,
+  start_col = start_date,
+  end_col = end_date,
+  detection_id_col = detection,
+  start_col_det = start_time
 )
 }
 \arguments{
@@ -23,23 +26,29 @@ wt_summarise_cam(
 
 \item{raw_data}{The raw camera tag data, which is used to infer the effort (i.e. date ranges of operation) for each camera. Optionally, can supply effort_data directly instead.}
 
-\item{time_interval}{Character; Can be either "full", "month", "week", or "day".}
+\item{time_interval}{Character; Can be either "full", "month", "week", or "day" (default).}
 
-\item{variable}{Character; Can be either "presence", "detections", "counts", or "all" (if you want all three).}
+\item{variable}{Character; Can be either "detections" (default), "presence", "counts", or "all" (if you want all three).}
 
-\item{output_format}{Character; The format of the dataframe returned to you. Can be either "wide" or "long".}
+\item{output_format}{Character; The format of the dataframe returned to you. Can be either "wide" (default) or "long".}
 
-\item{species_col}{Defaults to \code{common_name}. The column referring to species. Use to switch between common and scientific names of species, if you have both.}
+\item{species_col}{Defaults to \code{species_common_name}. The column referring to species. Use to switch between common and scientific names of species, if you have both.}
 
 \item{effort_data}{Optionally supply your own effort data.}
 
-\item{project_col}{The column referring to project in your effort data.}
+\item{project_col}{Defaults to \code{project_id}. The column referring to project in your effort data.}
 
-\item{station_col}{The column referring to each individual camera station/location in your effort data.}
+\item{station_col}{Defaults to \code{location}. The column referring to each individual camera station/location in your effort data.}
 
-\item{start_col}{The column indicating the start date of the camera location}
+\item{date_time_col}{Defaults to \code{image_date_time}. The column referring to image date-time stamp.}
 
-\item{end_col}{The column indicating the end date of the camera location}
+\item{start_col}{Defaults to \code{start_date}. The column indicating the start date of the camera location}
+
+\item{end_col}{Defaults to \code{end_date}. The column indicating the end date of the camera location}
+
+\item{detection_id_col}{Defaults to \code{detection}. The column indicating the detection id}
+
+\item{start_col_det}{Defaults to \code{start_time}. The column indicating the start time of the independent detections}
 }
 \value{
 A dataframe summarising your camera data by location, time interval, and species.
@@ -47,7 +56,7 @@ A dataframe summarising your camera data by location, time interval, and species
 \description{
 This function takes your independent detection data and summarises it by location, specified time interval, and species.
 }
-\section{Summarise your camera data by location, time interval, and species.}{
+\section{Summarise camera data by location, time interval, and species.}{
 NA
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/convenience-functions.R
 \name{wt_replace_tmtt}
 \alias{wt_replace_tmtt}
-\title{Replace 'TMTT' abundance entries with model-predicted values.}
+\title{Replace 'TMTT' abundance with model-predicted values}
 \usage{
 wt_replace_tmtt(data, calc = "round")
 }
@@ -19,6 +19,6 @@ This function uses a lookup table of model-predicted values to replace 'TMTT' en
 }
 \examples{
 \dontrun{
-dat.tmtt <- replace_tmtt(dat, calc="round")
+dat.tmtt <- wt_replace_tmtt(dat, calc="round")
 }
 }
