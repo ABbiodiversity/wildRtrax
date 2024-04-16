@@ -238,7 +238,58 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
 
 
 
-
   return(new)
 
+}
+
+#'Function takes a BirdNET report and a Tasks list (from the same project) and creates a dataframe of WildTrax tags that can be uploaded to the project
+#'
+#'
+
+wt_format_detections <- function(BirdNET_report, Tasks_report, output = NULL, universal_threshold = ""){
+
+  #Define the fields required in the reports to create WildTrax tags
+  req_cols_tasks <- c("location", "recordingDate", "method", "taskLength", "status", "transcriber", "internal_task_id")
+  req_cols_tags <- c("location","recording_date_time","species_code","start_s","end_s")
+
+  #Tell the user if any reports are missing fields for the creation of WildTrax tags
+  task_prep <- Tasks_report
+
+  if (!all(req_cols_tasks %in% names(task_prep))){
+    stop("Tasks report is missing required columns")
+  }
+
+  tag_prep <- BirdNET_report
+
+  if (!all(req_cols_tags %in% names(tag_prep))){
+    stop("BirdNET report is missing required columns")
+  }
+
+  #Format date and time in Tasks report
+  tasks <- Tasks_report %>%
+    dplyr::mutate(recordingDate = as.POSIXct(recordingDate))
+
+  #Format the BirdNET report data to match the Tasks report and create necessary fields
+  selections <- BirdNET_report %>%
+    dplyr::rename(recordingDate = recording_date_time) %>%
+    dplyr::mutate(recordingDate = as.POSIXct(recordingDate)) %>%
+    dplyr::rename(species = species_code) %>%
+    dplyr::rename(startTime = start_s) %>%
+    dplyr::mutate(tagLength = (end_s - startTime)) %>%
+    tibble::add_column(speciesIndividualNumber = "") %>%
+    tibble::add_column(vocalization = "") %>%
+    tibble::add_column(abundance = "") %>%
+    tibble::add_column(minFreq = "") %>%
+    tibble::add_column(maxFreq = "") %>%
+    tibble::add_column(speciesIndividualComment = "") %>%
+    tibble::add_column(internal_tag_id = "")
+
+  #Merge the Tasks report and BirdNET report into one dataset, and remove unwanted data to generate a WildTrax tags dataset
+  tags <- selections %>%
+    dplyr::left_join(tasks, by = c("recordingDate" = "recordingDate", "location" = "location")) %>%
+    dplyr::filter(confidence >= universal_threshold) %>%
+    dplyr::filter(is_species_allowed_in_project == "t") %>%
+    dplyr::select(c(location, recordingDate, method, taskLength, transcriber, species, speciesIndividualNumber, vocalization, abundance, startTime, tagLength, minFreq, maxFreq, speciesIndividualComment, internal_tag_id))
+
+  return(tags)
 }
