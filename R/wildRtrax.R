@@ -1,6 +1,6 @@
-#' wildRtrax: A series of advanced user functions for environmental sensor data management and an
+#' wildRtrax: A series of functions for environmental sensor data management and analysis from WildTrax
 #'
-#' @author Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca} Elly Knight \email{ecknight@ualberta.ca}
+#' @author Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca}
 #' @docType package
 #' @name wildRtrax
 "_PACKAGE"
@@ -97,10 +97,20 @@ utils::globalVariables(c(".",
                            "time_lag",
                            "transcriber",
                            "unsafe",
+                           "spp_t",
+                           "spp",
+                           "full_bounds",
+                           "all_rpps_tibble",
+                          "all_result_tables",
                            "unzip",
                            "visit",
                            "vocalization",
                            "wac_info",
+                         "value",
+                         "species_id",
+                         "projectId",
+                         "project_name",
+                         "species_scientific_name",
                            "write.csv",
                            "chardis", "chardismax", "chardur", "chardurmax", "distance1",
                            "survey_id","survey_date","survey_duration_method","observer","durationMethod","survey_distance_method",

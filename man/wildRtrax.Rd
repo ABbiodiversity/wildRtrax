@@ -4,7 +4,7 @@
 \name{wildRtrax}
 \alias{wildRtrax-package}
 \alias{wildRtrax}
-\title{wildRtrax: A series of advanced user functions for environmental sensor data management and an}
+\title{wildRtrax: A series of functions for environmental sensor data management and analysis from WildTrax}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
@@ -18,5 +18,5 @@ Useful links:
 
 }
 \author{
-Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca} Elly Knight \email{ecknight@ualberta.ca}
+Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca}
 }
