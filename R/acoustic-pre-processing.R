@@ -603,7 +603,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
 #' @param output_folder Character; output path to where the segments will be stored
 #'
-#' @import tuneR future furrr lubridate dplyr pipeR
+#' @import tuneR furrr lubridate dplyr pipeR
 #' @export
 #'
 #' @examples

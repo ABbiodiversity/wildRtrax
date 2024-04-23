@@ -67,7 +67,6 @@ wt_get_download_summary <- function(sensor_id) {
                      project_id = id,
                      sensor = sensorId,
                      tasks,
-                     #aoi = my_aoi,
                      status) |>
     dplyr::mutate(dplyr::across(dplyr::everything(), unlist))
 
@@ -371,7 +370,6 @@ wt_get_species <- function(){
 #' @param input A data frame or tibble of the tag report i.e. wt_download_report(reports = "tag")
 #' @param output Directory to store the tags
 #' @param clip_type Character; either spectrogram or audio clips
-
 #'
 #' @import dplyr tibble readr
 #' @export
@@ -450,3 +448,219 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
   }
 
 }
+
+#' Download data from Data Discover
+#'
+#' @description Download Data Discover results from projects across WildTrax
+#'
+#' @param sensor  The sensor you wish to query from either 'ARU', 'CAM' or 'PC'
+#' @param species The species you want to search for (e.g. 'WTSP'). Multiple species can be included.
+#' @param zoom Zoom of the boundary area; default is 20 to allow to full zoom of locations but a broader zoom level can be used to group locations
+#' @param boundary The custom boundary you want to use. Defined as at least a four vertex polygon. Definition can also be a bbox
+#'
+#' @import dplyr tibble readr jsonlite httr
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' aoi <- list(
+#' c(-110.85438, 57.13472),
+#' c(-114.14364, 54.74858),
+#' c(-110.69368, 52.34150),
+#' c(-110.854385, 57.13472)
+#' )
+#'
+#' dd <- wt_dd_summary(sensor = 'ARU', species = 'WTSP', zoom = 20, boundary = aoi)
+#' }
+#'
+#' @return Return
+
+wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), zoom = 20, boundary = NULL) {
+
+  # Check if authentication has expired:
+  if (.wt_auth_expired())
+    stop("Please authenticate with wt_auth().", call. = FALSE)
+
+  # Set user agent
+  u <- getOption("HTTPUserAgent")
+  if (is.null(u)) {
+    u <- sprintf("R/%s; R (%s)",
+                 getRversion(),
+                 paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
+  }
+  u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
+
+  # Fetch species IDs if provided
+  if (!is.null(species)) {
+    spp_t <- suppressMessages(wt_get_species())
+    spp <- spp_t |>
+      filter(species_code %in% species) |>
+      pull(species_id)
+  }
+
+  # Validate boundary if provided
+  if (!is.null(boundary)) {
+    # Check the number of vertices
+    if (length(boundary) < 4) {
+      stop("Error: Boundary must have at least four vertices.")
+    }
+
+    # Check for closure
+    if (!identical(boundary[[1]], boundary[[length(boundary)]])) {
+      stop("Error: Boundary must form a closed polygon.")
+    }
+
+    if (length(unique(boundary[-c(1, length(boundary))])) != length(boundary[-c(1, length(boundary))])) {
+      stop("Error: Boundary contains duplicate vertices (excluding the first and last).")
+    }
+
+    # Check for valid coordinates
+    if (!all(sapply(boundary, function(coord) all(is.numeric(coord) & length(coord) == 2)))) {
+      stop("Error: Each coordinate pair must consist of valid latitude and longitude values.")
+    }
+  }
+
+  full_bounds <- list(
+    `_sw` = list(
+      lng = -140.0,
+      lat = 40
+    ),
+    `_ne` = list(
+      lng = 0,
+      lat = 90
+    )
+  )
+
+  # Initialize lists to store results
+  all_rpps_tibble <- list()
+  all_result_tables <- list()
+
+  # Iterate over each species
+  for (sp in spp) {
+
+    # Construct payload for httr::POST request
+    payload <- list(
+      isSpeciesTab = FALSE,
+      zoomLevel = zoom,
+      bounds = full_bounds,
+      sensorId = sensor,
+      polygonBoundary = boundary,
+      organizationIds = NULL,
+      projectIds = NULL,
+      speciesIds = list(sp)  # Wrap the integer value in a list to make it an array
+    )
+
+    # Make request to get-data-discoverer-long-lat-summary endpoint
+    rr <- httr::POST(
+      httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-data-discoverer-long-lat-summary"),
+      accept = "application/json",
+      httr::add_headers(
+        Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+        Origin = "https://discover.wildtrax.ca",
+        Pragma = "no-cache",
+        Referer = "https://discover.wildtrax.ca/"
+      ),
+      httr::user_agent(u),
+      body = payload,
+      encode = "json" # Specify that the payload should be encoded as JSON
+    )
+
+    # Construct payload for second httr::POST request
+    payload_small <- list(
+      isSpeciesTab = FALSE,
+      zoomLevel = zoom,
+      bounds = full_bounds,
+      sensorId = sensor,
+      polygonBoundary = boundary,
+      speciesIds = list(sp)
+    )
+
+    # Make request to get-data-discoverer-map-and-projects endpoint
+    rr2 <- httr::POST(
+      httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-data-discoverer-map-and-projects"),
+      accept = "application/json",
+      httr::add_headers(
+        Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+        Origin = "https://discover.wildtrax.ca",
+        Pragma = "no-cache",
+        Referer = "https://discover.wildtrax.ca/"
+      ),
+      httr::user_agent(u),
+      body = payload_small,
+      encode = "json" # Specify that the payload should be encoded as JSON
+    )
+
+    # Extract content from second request
+    mapproj <- httr::content(rr2)
+
+    # Extract features from response
+    features <- mapproj$map$features
+
+    # Initialize empty vectors to store data
+    count <- c()
+    longitude <- c()
+    latitude <- c()
+
+    # Iterate over features and extract data
+    for (feature in features) {
+      count <- c(count, feature$properties$count)
+      longitude <- c(longitude, feature$geometry$coordinates[[1]])
+      latitude <- c(latitude, feature$geometry$coordinates[[2]])
+    }
+
+    back_species <- spp_t |>
+      filter(species_id %in% sp) |>
+      select(species_code, species_common_name)
+
+    # Create tibble for result table
+    result_table <- tibble(
+      species = back_species$species_code,
+      species_common_name = back_species$species_common_name,
+      count = count,
+      longitude = longitude,
+      latitude = latitude
+    )
+
+    # Extracting data from second response
+    rpps <- httr::content(rr)
+    orgs <- purrr::map(rpps$organizations, ~pluck(., "organizationName")) |> map_chr(~ ifelse(is.null(.x), "", .x))
+    counts <- map_dbl(rpps$projects, pluck, "count")
+    projectNames <- map(rpps$projects, ~pluck(., "projectName")) |> map_chr(~ ifelse(is.null(.x), "", .x))
+    projectIds <- map(rpps$projects, ~pluck(., "projectId")) |> map_int(~ ifelse(is.null(.x), NA_integer_, .x))
+
+    # Create tibble for project summary
+    rpps_tibble <- tibble(
+      projectId = projectIds,
+      project_name = projectNames,
+      species_id = sp,
+      count = counts
+    ) |>
+      inner_join(spp_t, by = "species_id") |>
+      select(projectId, project_name, count, species_common_name, species_code, species_scientific_name) |>
+      distinct()
+
+    # Add results to lists
+    all_rpps_tibble[[length(all_rpps_tibble) + 1]] <- rpps_tibble
+    all_result_tables[[length(all_result_tables) + 1]] <- result_table
+  }
+
+  # Combine results
+  combined_rpps_tibble <- bind_rows(all_rpps_tibble)
+  combined_result_table <- bind_rows(all_result_tables)
+
+  # Check if any results found
+  if (nrow(combined_rpps_tibble) == 0) {
+    stop("No results were found on any of the search layers. Broaden your search and try again.")
+  }
+
+  if (nrow(combined_result_table) == 0) {
+    stop("No results were found on any of the search layers. Broaden your search and try again.")
+  }
+
+  # Return list containing combined project summaries and result tables
+  return(list(combined_rpps_tibble, combined_result_table))
+}
+
+
+
