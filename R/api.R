@@ -470,16 +470,24 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
 #' c(-110.854385, 57.13472)
 #' )
 #'
-#' dd <- wt_dd_summary(sensor = 'ARU', species = 'WTSP', zoom = 20, boundary = aoi)
+#' dd <- wt_dd_summary(sensor = 'ARU', species = 'White-throated Sparrow', zoom = 20, boundary = aoi)
 #' }
 #'
 #' @return Return
 
-wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), boundary = NULL) {
+wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary = NULL) {
 
-  # Check if authentication has expired:
-  if (.wt_auth_expired())
-    stop("Please authenticate with wt_auth().", call. = FALSE)
+  # Determine whether public or user
+  if (!exists("._wt_auth_env_$access_token")) {
+    message("Currently searching as a public user, access to data will be limited. Use wt_auth() to login.")
+    tok_used <- NULL
+  } else {
+    if (.wt_auth_expired()) {
+      stop("Please authenticate with wt_auth().", call. = FALSE)
+    } else {
+      tok_used <- paste("Bearer", .wt_auth_env$access_token)
+    }
+  }
 
   # Set user agent
   u <- getOption("HTTPUserAgent")
@@ -490,12 +498,47 @@ wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), bounda
   }
   u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
 
-  # Fetch species IDs if provided
+  ddspp <- httr::POST(
+    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/dd-get-species"),
+    accept = "application/json",
+    httr::add_headers(
+      Authorization = NULL,
+      Origin = "https://discover.wildtrax.ca",
+      Pragma = "no-cache",
+      Referer = "https://discover.wildtrax.ca/"
+    ),
+    httr::user_agent(u),
+    body = list(sensorId = sensor),
+    encode = "json" # Specify that the payload should be encoded as JSON
+  )
+
+  spp_t <- httr::content(ddspp)
+
+  species_tibble <- map_df(spp_t, ~{
+    # Check if each column exists in the list
+    commonName <- if ("commonName" %in% names(.x)) .x$commonName else NA
+    speciesId <- if ("speciesId" %in% names(.x)) .x$speciesId else NA
+    sciName <- if ("sciName" %in% names(.x)) .x$sciName else NA
+
+    tibble(species_common_name = commonName, species_id = speciesId, species_scientific_name = sciName)
+  })
+
+  # Fetch species if provided
   if (!is.null(species)) {
-    spp_t <- suppressMessages(wt_get_species())
-    spp <- spp_t |>
-      filter(species_code %in% species) |>
+    spp <- species_tibble |>
+      filter(species_common_name %in% species) |>
       pull(species_id)
+  }
+
+  # Test for bbox
+  if (class(boundary) == "bbox"){
+    boundary <- list(
+      c(boundary['xmin'], boundary['ymin']),
+      c(boundary['xmax'], boundary['ymin']),
+      c(boundary['xmax'], boundary['ymax']),
+      c(boundary['xmin'], boundary['ymax']),
+      c(boundary['xmin'], boundary['ymin']) # Closing the polygon
+    )
   }
 
   # Validate boundary if provided
@@ -520,6 +563,7 @@ wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), bounda
     }
   }
 
+  # Here's da earth.]That is a sweet earth you might say.
   full_bounds <- list(
     `_sw` = list(
       lng = -180.0,
@@ -541,7 +585,7 @@ wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), bounda
     # Construct payload for httr::POST request
     payload <- list(
       isSpeciesTab = FALSE,
-      zoomLevel = zoom,
+      zoomLevel = 20,
       bounds = full_bounds,
       sensorId = sensor,
       polygonBoundary = boundary,
@@ -555,7 +599,7 @@ wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), bounda
       httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-data-discoverer-long-lat-summary"),
       accept = "application/json",
       httr::add_headers(
-        Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+        Authorization = tok_used,
         Origin = "https://discover.wildtrax.ca",
         Pragma = "no-cache",
         Referer = "https://discover.wildtrax.ca/"
@@ -568,7 +612,7 @@ wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), bounda
     # Construct payload for second httr::POST request
     payload_small <- list(
       isSpeciesTab = FALSE,
-      zoomLevel = zoom,
+      zoomLevel = 20,
       bounds = full_bounds,
       sensorId = sensor,
       polygonBoundary = boundary,
@@ -580,7 +624,7 @@ wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), bounda
       httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-data-discoverer-map-and-projects"),
       accept = "application/json",
       httr::add_headers(
-        Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+        Authorization = tok_used,
         Origin = "https://discover.wildtrax.ca",
         Pragma = "no-cache",
         Referer = "https://discover.wildtrax.ca/"
@@ -608,13 +652,12 @@ wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), bounda
       latitude <- c(latitude, feature$geometry$coordinates[[2]])
     }
 
-    back_species <- spp_t |>
+    back_species <- species_tibble |>
       filter(species_id %in% sp) |>
-      select(species_code, species_common_name)
+      select(species_common_name)
 
     # Create tibble for result table
     result_table <- tibble(
-      species = back_species$species_code,
       species_common_name = back_species$species_common_name,
       count = count,
       longitude = longitude,
@@ -635,8 +678,8 @@ wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), bounda
       species_id = sp,
       count = counts
     ) |>
-      inner_join(spp_t, by = "species_id") |>
-      select(projectId, project_name, count, species_common_name, species_code, species_scientific_name) |>
+      inner_join(species_tibble, by = "species_id") |>
+      select(projectId, project_name, count, species_common_name, species_scientific_name) |>
       distinct()
 
     # Add results to lists
