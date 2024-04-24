@@ -455,7 +455,6 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
 #'
 #' @param sensor  The sensor you wish to query from either 'ARU', 'CAM' or 'PC'
 #' @param species The species you want to search for (e.g. 'WTSP'). Multiple species can be included.
-#' @param zoom Zoom of the boundary area; default is 20 to allow to full zoom of locations but a broader zoom level can be used to group locations
 #' @param boundary The custom boundary you want to use. Defined as at least a four vertex polygon. Definition can also be a bbox
 #'
 #' @import dplyr tibble readr jsonlite httr
@@ -476,7 +475,7 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
 #'
 #' @return Return
 
-wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), zoom = 20, boundary = NULL) {
+wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), boundary = NULL) {
 
   # Check if authentication has expired:
   if (.wt_auth_expired())
@@ -523,11 +522,11 @@ wt_dd_summary <- function(sensor = NULL, species = c('ARU', 'CAM', 'PC'), zoom =
 
   full_bounds <- list(
     `_sw` = list(
-      lng = -140.0,
-      lat = 40
+      lng = -180.0,
+      lat = -90
     ),
     `_ne` = list(
-      lng = 0,
+      lng = 180,
       lat = 90
     )
   )
