@@ -4,19 +4,12 @@
 \alias{wt_dd_summary}
 \title{Download data from Data Discover}
 \usage{
-wt_dd_summary(
-  sensor = NULL,
-  species = c("ARU", "CAM", "PC"),
-  zoom = 20,
-  boundary = NULL
-)
+wt_dd_summary(sensor = c("ARU", "CAM", "PC"), species = NULL, boundary = NULL)
 }
 \arguments{
 \item{sensor}{The sensor you wish to query from either 'ARU', 'CAM' or 'PC'}
 
 \item{species}{The species you want to search for (e.g. 'WTSP'). Multiple species can be included.}
-
-\item{zoom}{Zoom of the boundary area; default is 20 to allow to full zoom of locations but a broader zoom level can be used to group locations}
 
 \item{boundary}{The custom boundary you want to use. Defined as at least a four vertex polygon. Definition can also be a bbox}
 }
@@ -36,7 +29,7 @@ c(-110.69368, 52.34150),
 c(-110.854385, 57.13472)
 )
 
-dd <- wt_dd_summary(sensor = 'ARU', species = 'WTSP', zoom = 20, boundary = aoi)
+dd <- wt_dd_summary(sensor = 'ARU', species = 'White-throated Sparrow', zoom = 20, boundary = aoi)
 }
 
 }

@@ -47,6 +47,7 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_auth()` :camera: :sound: :bird: :bat:
   - `wt_get_download_summary()` :camera: :sound: :bird: :bat:
   - `wt_download_report()` :camera: :sound: :bird: :bat:
+  - `wt_dd_summary()` :camera: :sound: :bird: :bat:
     - Available reports: `main, project, location, recording, image_set, image, tag, point_count, megadetector, megaclassifer, birdnet`
   - `wt_get_species()` :camera: :sound: :bird: :bat:
   - `wt_download_tags()` :sound: :bat:
@@ -68,11 +69,11 @@ To report bugs, request additional features, or get help using the package, plea
 
 ## Contributors
 
-* `wildRtrax` is authored, created and maintained by [Alexander G. MacPhail](https://github.com/agmacpha) and [Marcus Becker](https://github.com/mabecker89), with significant contributions from [Dr. Elly Knight](https://github.com/ecknight) and [Dr. Richard Hedley](https://richardwhedley.wordpress.com/). We encourage ongoing contributions and collaborations to improve the package into the future. The [Alberta Biodiversity Monitoring Institute](https://abmi.ca) provides ongoing support, development and funding.
+We encourage ongoing contributions and collaborations to improve the package into the future. The [Alberta Biodiversity Monitoring Institute](https://abmi.ca) provides ongoing support, development and funding.
 
 ## License
 
-This R package is licensed under [MIT license](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE)© 2023 Marcus Becker, Alex MacPhail, Elly Knight and the [Alberta Biodiversity Monitoring Institute](https://abmi.ca).
+This R package is licensed under [MIT license](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE)©2024 [Alberta Biodiversity Monitoring Institute](https://abmi.ca).
 
 ## Code of Conduct
 

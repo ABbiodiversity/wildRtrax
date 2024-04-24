@@ -485,7 +485,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
     if (.wt_auth_expired()) {
       stop("Please authenticate with wt_auth().", call. = FALSE)
     } else {
-      tok_used <- paste("Bearer", .wt_auth_env$access_token)
+      tok_used <- paste("Bearer", ._wt_auth_env_$access_token)
     }
   }
 
@@ -531,7 +531,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
   }
 
   # Test for bbox
-  if (class(boundary) == "bbox"){
+  if (is(boundary,"bbox")){
     boundary <- list(
       c(boundary['xmin'], boundary['ymin']),
       c(boundary['xmax'], boundary['ymin']),
