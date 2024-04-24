@@ -531,7 +531,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
   }
 
   # Test for bbox
-  if (is(boundary,"bbox")){
+  if (inherits(boundary,"bbox")){
     boundary <- list(
       c(boundary['xmin'], boundary['ymin']),
       c(boundary['xmax'], boundary['ymin']),
