@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 # Attach package
 library(wildRtrax)
 library(dplyr)
+
+load("package.RData")
 ```
 
 ## Set up WildTrax credentials
@@ -140,10 +142,10 @@ Use custom bounding areas:
 ```{r, echo=T, include=T, eval=T, warning=F, message = FALSE}
 # Define a polygon
 my_aoi <- list(
-c(-110.85438, 57.13472),
-c(-114.14364, 54.74858),
-c(-110.69368, 52.34150),
-c(-110.854385, 57.13472)
+  c(-110.85438, 57.13472),
+  c(-114.14364, 54.74858),
+  c(-110.69368, 52.34150),
+  c(-110.85438, 57.13472)  # Adding the first coordinate to close the polygon
 )
 
 discover <- wt_dd_summary(sensor = "ARU", species = "White-throated Sparrow", boundary = my_aoi)
@@ -152,18 +154,15 @@ head(discover)
 
 ```
 
-```{r, echo=T, include=T, eval=T, warning=F, message = FALSE}
+```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
 library(sf)
 # Alberta bounding box
-xmin <- -120.00270
-ymin <- 48.99674
-xmax <- -109.99964
-ymax <- 60.00007
+abbox <- read_sf("...shp") |> 
+  filter(PRANOM == "Alberta") |>
+  st_transform(crs = 4326) |> # Shapefile of Alberta
+  st_bbox()
 
-# Create a bounding box object
-bounding_box <- st_bbox(matrix(c(xmin, ymin, xmax, ymax), nrow = 1))
-
-discover <- wt_dd_summary(sensor = "ARU", species = "White-throated Sparrow", boundary = bounding_box)
+discover <- wt_dd_summary(sensor = "ARU", species = "White-throated Sparrow", boundary = abbox)
 
 head(discover)
 

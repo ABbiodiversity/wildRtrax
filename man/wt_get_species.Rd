@@ -4,7 +4,10 @@
 \alias{wt_get_species}
 \title{Get the WildTrax species table}
 \usage{
-wt_get_species()
+wt_get_species(get_all = NULL)
+}
+\arguments{
+\item{get_all}{Don't truncate to important columns - gimme the whole species table!}
 }
 \value{
 A tibble of the WildTrax species table

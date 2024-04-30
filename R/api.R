@@ -299,6 +299,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
 #'
 #' @description Request for the WildTrax species table
 #'
+#'
 #' @import dplyr httr readr jsonlite
 #' @export
 #'
@@ -314,14 +315,6 @@ wt_get_species <- function(){
   # Check if authentication has expired:
   if (.wt_auth_expired())
     stop("Please authenticate with wt_auth().", call. = FALSE)
-
-  if (exists("wt_spp_table")) {
-    user_input <- readline("Do you want to overwrrite the current species table in your environment? (Y/N): ")
-
-    if (user_input == "N") {
-      stop("Stopping.")
-    }
-  }
 
   # User agent
   u <- getOption("HTTPUserAgent")
@@ -349,13 +342,13 @@ wt_get_species <- function(){
   spps <- httr::content(spp)
 
   spp_table <- tibble(
-    species_id = map_dbl(spps, ~ ifelse(!is.null(.x$id), .x$id, NA)),
-    species_code = map_chr(spps, ~ ifelse(!is.null(.x$code), .x$code, NA)),
-    species_common_name = map_chr(spps, ~ ifelse(!is.null(.x$commonName), .x$commonName, NA)),
-    species_class = map_chr(spps, ~ ifelse(!is.null(.x$className), .x$className, NA)),
-    species_order = map_chr(spps, ~ ifelse(!is.null(.x$order), .x$order, NA)),
-    species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
-  )
+      species_id = map_dbl(spps, ~ ifelse(!is.null(.x$id), .x$id, NA)),
+      species_code = map_chr(spps, ~ ifelse(!is.null(.x$code), .x$code, NA)),
+      species_common_name = map_chr(spps, ~ ifelse(!is.null(.x$commonName), .x$commonName, NA)),
+      species_class = map_chr(spps, ~ ifelse(!is.null(.x$className), .x$className, NA)),
+      species_order = map_chr(spps, ~ ifelse(!is.null(.x$order), .x$order, NA)),
+      species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
+    )
 
   message("Successfully downloaded the species table!")
 
@@ -477,18 +470,6 @@ wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")
 
 wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary = NULL) {
 
-  # Determine whether public or user
-  if (!exists("._wt_auth_env_$access_token")) {
-    message("Currently searching as a public user, access to data will be limited. Use wt_auth() to login.")
-    tok_used <- NULL
-  } else {
-    if (.wt_auth_expired()) {
-      stop("Please authenticate with wt_auth().", call. = FALSE)
-    } else {
-      tok_used <- paste("Bearer", ._wt_auth_env_$access_token)
-    }
-  }
-
   # Set user agent
   u <- getOption("HTTPUserAgent")
   if (is.null(u)) {
@@ -498,47 +479,64 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
   }
   u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
 
-  ddspp <- httr::POST(
-    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/dd-get-species"),
-    accept = "application/json",
-    httr::add_headers(
-      Authorization = NULL,
-      Origin = "https://discover.wildtrax.ca",
-      Pragma = "no-cache",
-      Referer = "https://discover.wildtrax.ca/"
-    ),
-    httr::user_agent(u),
-    body = list(sensorId = sensor),
-    encode = "json" # Specify that the payload should be encoded as JSON
-  )
+  # Determine whether public or user
+  if (!exists("._wt_auth_env_$access_token")) {
+    message("Currently searching as a public user, access to data will be limited. Use wt_auth() to login.")
+    tok_used <- NULL
 
-  spp_t <- httr::content(ddspp)
+    ddspp <- httr::POST(
+      httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/dd-get-species"),
+      accept = "application/json",
+      httr::add_headers(
+        Authorization = NULL,
+        Origin = "https://discover.wildtrax.ca",
+        Pragma = "no-cache",
+        Referer = "https://discover.wildtrax.ca/"
+      ),
+      httr::user_agent(u),
+      body = list(sensorId = sensor),
+      encode = "json" # Specify that the payload should be encoded as JSON
+    )
 
-  species_tibble <- map_df(spp_t, ~{
-    # Check if each column exists in the list
-    commonName <- if ("commonName" %in% names(.x)) .x$commonName else NA
-    speciesId <- if ("speciesId" %in% names(.x)) .x$speciesId else NA
-    sciName <- if ("sciName" %in% names(.x)) .x$sciName else NA
+    spp_t <- httr::content(ddspp)
 
-    tibble(species_common_name = commonName, species_id = speciesId, species_scientific_name = sciName)
-  })
+    species_tibble <- purrr::map_df(spp_t, ~{
+      # Check if each column exists in the list
+      commonName <- if ("commonName" %in% names(.x)) .x$commonName else NA
+      speciesId <- if ("speciesId" %in% names(.x)) .x$speciesId else NA
+      sciName <- if ("sciName" %in% names(.x)) .x$sciName else NA
+      tibble(species_common_name = commonName, species_id = speciesId, species_scientific_name = sciName)
+    })
 
-  # Fetch species if provided
-  if (!is.null(species)) {
-    spp <- species_tibble |>
-      filter(species_common_name %in% species) |>
-      pull(species_id)
+    # Fetch species if provided
+    if (!is.null(species)) {
+      spp <- species_tibble |>
+        filter(species_common_name %in% species) |>
+        pull(species_id)
+    }
+
+  } else {
+    if (.wt_auth_expired()) {
+      stop("Please authenticate with wt_auth().", call. = FALSE)
+    } else {
+      tok_used <- paste("Bearer", ._wt_auth_env_$access_token)
+      species_tibble <- wt_get_species()
+    }
   }
 
-  # Test for bbox
-  if (inherits(boundary,"bbox")){
-    boundary <- list(
-      c(boundary['xmin'], boundary['ymin']),
-      c(boundary['xmax'], boundary['ymin']),
-      c(boundary['xmax'], boundary['ymax']),
-      c(boundary['xmin'], boundary['ymax']),
-      c(boundary['xmin'], boundary['ymin']) # Closing the polygon
-    )
+  # Test for coordinate system
+  if (inherits(boundary, "bbox")) {
+    lat_valid <- boundary["ymin"] >= -90 & boundary["ymax"] <= 90
+    long_valid <- boundary["xmin"] >= -180 & boundary["xmax"] <= 180
+    if (!lat_valid | !long_valid) {
+      stop("Coordinate system for boundary or bbox must be in latitude and longitude")
+    }
+  } else if (inherits(boundary, "list")) {
+    lat_valid <- all(sapply(boundary, function(coord) coord[2] >= -90 & coord[2] <= 90))
+    long_valid <- all(sapply(boundary, function(coord) coord[1] >= -180 & coord[1] <= 180))
+    if (!lat_valid | !long_valid) {
+      stop("Coordinate system for boundary or bbox must be in latitude and longitude")
+    }
   }
 
   # Validate boundary if provided
@@ -550,7 +548,10 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
 
     # Check for closure
     if (!identical(boundary[[1]], boundary[[length(boundary)]])) {
-      stop("Error: Boundary must form a closed polygon.")
+      # If the first and last points are not identical, check if they are 'close enough'
+      if (!all(boundary[[1]] == boundary[[length(boundary)]])) {
+        stop("Error: Boundary must form a closed polygon.")
+      }
     }
 
     if (length(unique(boundary[-c(1, length(boundary))])) != length(boundary[-c(1, length(boundary))])) {
@@ -563,7 +564,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
     }
   }
 
-  # Here's da earth.]That is a sweet earth you might say.
+  # Here's da earth. That is a sweet earth you might say.
   full_bounds <- list(
     `_sw` = list(
       lng = -180.0,
@@ -574,6 +575,17 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       lat = 90
     )
   )
+
+  # Test for bbox
+  if (inherits(boundary,"bbox")){
+    boundary <- list(
+      c(boundary['xmin'], boundary['ymin']),
+      c(boundary['xmax'], boundary['ymin']),
+      c(boundary['xmax'], boundary['ymax']),
+      c(boundary['xmin'], boundary['ymax']),
+      c(boundary['xmin'], boundary['ymin']) # Closing the polygon
+    )
+  }
 
   # Initialize lists to store results
   all_rpps_tibble <- list()
