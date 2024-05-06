@@ -1,3 +1,12 @@
+# wildRtrax 1.3.0
+
+## Major changes
+
+* Addition of four new functions: `wt_dd_summary()`, birdnet functions
+* `wt_download_tags()` now becomes `wt_download_media` to support wider media downloads in batch from WildTrax
+
+## Minor changes
+
 # wildRtrax 1.2.0
 
 ## Major changes

@@ -360,8 +360,9 @@ wt_get_species <- function(){
 #'
 #' @description Download acoustic media in batch
 #'
-#' @param input
-#' @param output
+#' @param input The report data
+#' @param output The output folder
+#' @param type Either recording, tag_clip_spectrogram or tag_clip_audio
 #'
 #' @import dplyr tibble readr
 #' @export
@@ -369,12 +370,14 @@ wt_get_species <- function(){
 #' @examples
 #' \dontrun{
 #' dat.report <- wt_download_report() |>
-#' wt_download_media(input = my_tag_data)
+#' wt_download_media(output = "my/output/folder")
 #' }
 #'
 #' @return An organized folder of media. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
 
-wt_download_media <- function(input_data, output, type = c("recording")) {
+wt_download_media <- function(input, output, type = c("recording","tag_clip_audio","tag_clip_spectrogram")) {
+
+  input_data <- input
 
   # Check if input_data is provided and in the correct format
   if (missing(input_data) || !is.data.frame(input_data) && !is.matrix(input_data)) {
@@ -387,9 +390,9 @@ wt_download_media <- function(input_data, output, type = c("recording")) {
   }
 
   # Check if type is valid
-  valid_types <- c("recording", "spectrogram", "both")
+  valid_types <- c("recording","tag_clip_audio","tag_clip_spectrogram")
   if (!type %in% valid_types) {
-    stop("Invalid type. Valid types are 'recording', 'spectrogram', or 'both'.")
+    stop("Invalid type. Valid types are 'recording', 'tag_clip_spectrogram', or 'tag_clip_audio'.")
   }
 
   # Process based on type
@@ -399,7 +402,7 @@ wt_download_media <- function(input_data, output, type = c("recording")) {
         mutate(clip_file_name = file.path(output, basename(recording_url))) %>%
         furrr::future_walk2(.x = recording_url, .y = clip_file_name, .f = ~ download.file(.x, .y))
     },
-    type == "spectrogram" & "spectrogram_url" %in% colnames(input_data) ~ {
+    type == "tag_clip_spectrogram" & "spectrogram_url" %in% colnames(input_data) ~ {
       input_data %>%
         mutate(
           detection_time = as.character(detection_time),
@@ -408,7 +411,7 @@ wt_download_media <- function(input_data, output, type = c("recording")) {
         ) %>%
         furrr::future_walk2(.x = spectrogram_url, .y = clip_file_name, .f = ~ download.file(.x, .y))
     },
-    type == "both" & c("spectrogram_url", "clip_url") %in% colnames(input_data) ~ {
+    all(c("spectrogram_url", "clip_url") %in% colnames(input_data)) & c("tag_clip_spectrogram", "tag_clip_audio") %in% type ~ {
       input_data %>%
         mutate(
           detection_time = as.character(detection_time),
@@ -505,7 +508,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       stop("Please authenticate with wt_auth().", call. = FALSE)
     } else {
       tok_used <- paste("Bearer", ._wt_auth_env_$access_token)
-      species_tibble <- wt_get_species()
+      species_tibble <- suppressMessages(wt_get_species())
     }
   }
 

@@ -7,7 +7,7 @@
 #' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.
 #' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, `wt_audio_scanner` will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
 #'
-#' @import fs furrr tibble dplyr tidyr stringr tools pipeR tuneR purrr seewave progressr
+#' @import fs furrr tibble dplyr tidyr stringr tools tuneR purrr seewave
 #' @export
 #'
 #' @examples
@@ -36,17 +36,20 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   }
 
   # Scan files, gather metadata
-  df <- tibble::as_tibble(x = path) %>>%
-    'Reading files from directory...' %>>%
-    dplyr::mutate(file_path = future_map(
-      .x = .$value,
+  df <- tibble::as_tibble(x = path) |>
+    (function(df) {
+      cat("Reading files from directory...\n")
+      df
+    })() |>
+    dplyr::mutate(file_path = furrr::future_map(
+      .x = value,
       .f = ~ fs::dir_ls(
         path = .x,
         regexp = file_type_reg,
         recurse = TRUE,
         fail = FALSE
       ),
-      .options = furrr_options(seed = TRUE)
+      .options = furrr::furrr_options(seed = TRUE)
     ))
 
   # Check if nothing was returned
@@ -101,51 +104,38 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
 
     # Scan the wav files first
     if ("wav" %in% df$file_type) {
-      df_wav <- df %>>%
-        "Working on wav files..." %>>%
-        dplyr::filter(file_type == "wav")
-      progressr::with_progress({p <- progressr::progressor(steps = nrow(df_wav))
-      df_wav <- df_wav %>%
+      df_wav <- df %>%
+        dplyr::filter(file_type == "wav") %>%
         dplyr::mutate(data = furrr::future_map(.x = file_path, .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
         dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]), 2)),
                       sample_rate = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["sample.rate"]]), 2)),
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
         dplyr::select(-data)
-      })
     }
 
     #Then wac files
     if ("wac" %in% df$file_type) {
-      df_wac <- df %>>%
-        "Working on wac files..." %>>%
-        dplyr::filter(file_type == "wac")
-      progressr::with_progress({p <- progressr::progressor(steps = nrow(df_wac))
-      df_wac <- df_wac %>%
+      df_wac <- df %>%
+        dplyr::filter(file_type == "wac") %>%
         dplyr::mutate(wac_info = furrr::future_map(.x = file_path, .f = ~ wt_wac_info(.x), .progress = TRUE, .options = furrr_options(seed = TRUE)),
                       sample_rate = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
                       length_seconds = purrr::map_dbl(.x = wac_info, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
                       n_channels = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
         dplyr::select(-wac_info)
-      })
     }
 
     #Finally flac
     if ("flac" %in% df$file_type) {
-      df_flac <- df %>>%
-        "Working on flac files..." %>>%
-        dplyr::filter(file_type == "flac")
-      progressr::with_progress({p <- progressr::progressor(steps = nrow(df_flac))
-      df_flac <- df_flac %>%
+      df_flac <- df %>%
+        dplyr::filter(file_type == "flac") %>%
         dplyr::mutate(flac_info = furrr::future_map(.x = file_path, .f = ~ wt_flac_info(.x), .options = furrr_options(seed = TRUE)),
                       sample_rate = purrr::map_dbl(.x = flac_info, .f = ~ purrr::pluck(.x, 1)),
                       length_seconds = purrr::map_dbl(.x = flac_info, .f = ~ round(purrr::pluck(.x, 3), 2)),
                       n_channels = 0) %>%
         dplyr::select(-flac_info)
-      })
     }
   }
 
-  # Stitch together
   # Stitch together
   if (rlang::env_has(rlang::current_env(), "df_final_simple")) {
     df_final <- df_final_simple
@@ -304,7 +294,7 @@ wt_flac_info <- function(path) {
 #' @param output_dir Character; path to directory where you want outputs to be stored.
 #' @param path_to_ap Character; file path to the AnalysisPrograms software package. Defaults to "C:\\AP\\AnalysisPrograms.exe".
 #'
-#' @import dplyr stringr furrr progressr
+#' @import dplyr stringr furrr
 #' @export
 #'
 #' @return Output will return to the specific root directory
@@ -353,8 +343,9 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
     files <- list.files(audio_dir, pattern = supported_formats, full.names = TRUE)
   }
 
-    files <- files %>>%
-      "Starting AnalysisPrograms run - this may take a while depending on your machine and how many files you want to process..." %>>%
+    print("Starting AnalysisPrograms run - this may take a while depending on your machine and how many files you want to process...")
+
+    files <- files %>%
       tibble::as_tibble() %>%
       dplyr::rename("file_path" = 1) %>%
       furrr::future_map(.x = .$file_path, .f = ~suppressMessages(system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)), furrr_options(seed = T)))
@@ -424,8 +415,11 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   # Join the indices and LDFCs to the media
   joined <- files %>%
     dplyr::inner_join(., ind, by = c("file_name" = "FileName")) %>%
-    dplyr::inner_join(., ldfcs, by = c("file_name" = "file_name")) %>>%
-    "Files joined!"
+    dplyr::inner_join(., ldfcs, by = c("file_name" = "file_name"))
+
+  if(nrow(joined) > 0){
+    print('Files joined!')
+  }
 
   joined_purpose <- joined %>%
     dplyr::filter(index_variable %in% purpose_list)
@@ -603,7 +597,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
 #' @param output_folder Character; output path to where the segments will be stored
 #'
-#' @import tuneR furrr lubridate dplyr pipeR
+#' @import tuneR furrr lubridate dplyr
 #' @export
 #'
 #' @examples
@@ -645,8 +639,7 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
     dplyr::mutate(val = max(start_times) + segment_length,
            ry = case_when(val < length_sec ~ "Modulo", TRUE ~ "Fixed"))
 
-  inp2 %>>%
-    "Chopping the recording" %>>%
+  inp2 %>%
     furrr::future_pmap(
       ..1 = .$file_path,
       ..2 = .$recording_date_time,

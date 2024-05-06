@@ -1,6 +1,6 @@
 Package: wildRtrax
 Title: Environmental sensor data management and analytics to and from WildTrax
-Version: 1.2.0
+Version: 1.3.0
 Authors@R: 
     c(person(given = "Alex",
            family = "MacPhail",
@@ -32,8 +32,6 @@ Imports:
     magick,
     magrittr,
     markdown,
-    pipeR,
-    progressr,
     purrr,
     QPAD,
     readr,
