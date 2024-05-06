@@ -356,28 +356,25 @@ wt_get_species <- function(){
 
 }
 
-#' Download acoustic tags
+#' Download acoustic media
 #'
-#' @description Downloads acoustic tags (mp3 and jpg) in an organized format for other purposes.
+#' @description Downloads acoustic tags (mp3 and jpg) and recordings in batch
 #'
-#' @param input A data frame or tibble of the tag report i.e. wt_download_report(reports = "tag")
-#' @param output Directory to store the tags
-#' @param clip_type Character; either spectrogram or audio clips
+#' @param input
+#' @param output
 #'
 #' @import dplyr tibble readr
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' dat.report <- wt_download_report(reports = "tag")
-#' wt_download_tags(input = my_tag_data)
+#' dat.report <- wt_download_report() |>
+#' wt_download_media(input = my_tag_data)
 #' }
 #'
-#' @return An organized folder of clips and tags in the output directory. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
+#' @return An organized folder of media. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
 
-wt_download_tags <- function(input, output, clip_type = c("spectrogram","audio")) {
-
-  future::multisession()
+wt_download_media <- function(input, output) {
 
   input_data <- input
 
