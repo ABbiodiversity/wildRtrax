@@ -7,7 +7,7 @@
 #' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.
 #' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, `wt_audio_scanner` will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
 #'
-#' @import fs furrr tibble dplyr tidyr stringr tools tuneR purrr seewave
+#' @import fs furrr tibble dplyr tidyr stringr tuneR purrr seewave
 #' @export
 #'
 #' @examples
@@ -67,7 +67,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     dplyr::mutate(unsafe = dplyr::case_when(size_Mb <= 0.5 ~ "Unsafe", TRUE ~ "Safe")) %>% # Create safe scanning protocol, pretty much based on file size
     dplyr::select(file_path, size_Mb, unsafe) %>%
     dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", ""),
-                  file_type = tolower(tools::file_ext(file_path))) %>%
+                  file_type = tolower(strsplit(file_path, "\\.")[[2]])) %>%
     # Parse location, recording date time and other temporal columns
     tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = FALSE) %>%
     dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)'))
@@ -166,13 +166,12 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
 #'
 #' @param path Character; The wac file path
 #'
-#' @import tools
 #' @export
 #'
 #' @return a list with relevant information
 
 wt_wac_info <- function(path) {
-  if (tools::file_ext(path) != "wac") {
+  if (strsplit(path, "\\.")[[2]] != "wac") {
     stop("This is not a wac file.")
   }
 
@@ -254,14 +253,14 @@ wt_wac_info <- function(path) {
 #'
 #' @param path Character; The flac file path
 #'
-#' @import tools seewave tuneR
+#' @import seewave tuneR
 #' @export
 #'
 #' @return a list with relevant information
 
 wt_flac_info <- function(path) {
 
-  if (tools::file_ext(path) != "flac") {
+  if (strsplit(path, "\\.")[[2]] != "flac") {
     stop("This is not a flac file.")
   }
 
@@ -874,7 +873,7 @@ wt_songscope_tags <- function (input, output = c("env","csv"),
     dplyr::rename("Score" = 6) %>%
     dplyr::rename("recognizer" = 7) %>%
     dplyr::rename("comments"= 8) %>%
-    dplyr::mutate(file_name = tools::file_path_sans_ext(gsub("^.*(\\\\|/)", "", file_path))) %>%
+    dplyr::mutate(file_name = strsplit(basename(file_path), "\\.")[[1]]) %>%
     tidyr::separate(file_name, into = c("location", "recordingDate"),
                     sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
     dplyr::mutate(startTime = as.numeric(startTime)) %>%
