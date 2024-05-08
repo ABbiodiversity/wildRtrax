@@ -20,23 +20,20 @@ Description: wildRtrax is an R package that enables environmental sensor users t
 Depends: R (>= 4.1.0)
 License: MIT + file LICENSE
 Imports:
+    curl,
     dplyr (>= 1.0.0),
     fs,
     furrr,
-    future,
     ggplot2,
     httr,
     intrval,
     jsonlite,
     lubridate,
     magick,
-    magrittr,
-    markdown,
     purrr,
     QPAD,
     readr,
     rlang,
-    rmarkdown,
     seewave,
     sf,
     stringr,
@@ -44,14 +41,13 @@ Imports:
     terra,
     tibble,
     tidyr (>= 1.0.2),
-    tools,
     tuneR,
-    unmarked,
-    vembedr
+    unmarked
 Suggests: 
     knitr,
     testthat (>= 3.0.0),
-    usethis
+    usethis,
+    vembedr
 Remotes: psolymos/QPAD
 VignetteBuilder: knitr
 Encoding: UTF-8
