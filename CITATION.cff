@@ -1,9 +1,9 @@
 # -----------------------------------------------------------
-# CITATION file created with {cffr} R package, v1.0.0
+# CITATION file created with {cffr} R package, v0.5.0
 # See also: https://docs.ropensci.org/cffr/
 # -----------------------------------------------------------
-
-cff-version: 1.3.0
+ 
+cff-version: 1.2.0
 message: 'To cite package "wildRtrax" in publications use:'
 type: software
 license: MIT
@@ -11,7 +11,7 @@ title: 'wildRtrax: Environmental sensor data management and analytics to and fro
   WildTrax'
 version: 1.3.0
 abstract: wildRtrax is an R package that enables environmental sensor users to create
-  comprehensive work flows for managing and analyzing environmental sensor data to and from WildTrax
+  comprehensive work flows for managing and analyzing data.
 authors:
 - family-names: MacPhail
   given-names: Alex
@@ -37,11 +37,24 @@ references:
   url: https://www.R-project.org/
   authors:
   - name: R Core Team
+  location:
+    name: Vienna, Austria
+  year: '2024'
   institution:
     name: R Foundation for Statistical Computing
-    address: Vienna, Austria
-  year: '2024'
   version: '>= 4.1.0'
+- type: software
+  title: curl
+  abstract: 'curl: A Modern and Flexible Web Client for R'
+  notes: Imports
+  url: https://jeroen.r-universe.dev/curl
+  repository: https://CRAN.R-project.org/package=curl
+  authors:
+  - family-names: Ooms
+    given-names: Jeroen
+    email: jeroen@berkeley.edu
+    orcid: https://orcid.org/0000-0002-4035-0289
+  year: '2024'
 - type: software
   title: dplyr
   abstract: 'dplyr: A Grammar of Data Manipulation'
@@ -78,7 +91,7 @@ references:
     given-names: Jim
   - family-names: Wickham
     given-names: Hadley
-    email: hadley@rstudio.com
+    email: hadley@posit.co
   - family-names: Csárdi
     given-names: Gábor
     email: csardi.gabor@gmail.com
@@ -96,18 +109,6 @@ references:
   - family-names: Dancho
     given-names: Matt
     email: mdancho@business-science.io
-  year: '2024'
-- type: software
-  title: future
-  abstract: 'future: Unified Parallel and Distributed Processing in R for Everyone'
-  notes: Imports
-  url: https://future.futureverse.org
-  repository: https://CRAN.R-project.org/package=future
-  authors:
-  - family-names: Bengtsson
-    given-names: Henrik
-    email: henrikb@braju.com
-    orcid: https://orcid.org/0000-0002-7579-5165
   year: '2024'
 - type: software
   title: ggplot2
@@ -143,9 +144,8 @@ references:
   - family-names: Dunnington
     given-names: Dewey
     orcid: https://orcid.org/0000-0002-9415-4582
-  - family-names: Brand
+  - family-names: van den Brand
     given-names: Teun
-    name-particle: van den
     orcid: https://orcid.org/0000-0002-9335-7468
   year: '2024'
 - type: software
@@ -209,58 +209,6 @@ references:
     orcid: https://orcid.org/0000-0002-4035-0289
   year: '2024'
 - type: software
-  title: magrittr
-  abstract: 'magrittr: A Forward-Pipe Operator for R'
-  notes: Imports
-  url: https://magrittr.tidyverse.org
-  repository: https://CRAN.R-project.org/package=magrittr
-  authors:
-  - family-names: Bache
-    given-names: Stefan Milton
-    email: stefan@stefanbache.dk
-  - family-names: Wickham
-    given-names: Hadley
-    email: hadley@rstudio.com
-  year: '2024'
-- type: software
-  title: markdown
-  abstract: 'markdown: Render Markdown with ''commonmark'''
-  notes: Imports
-  url: https://github.com/rstudio/markdown
-  repository: https://CRAN.R-project.org/package=markdown
-  authors:
-  - family-names: Xie
-    given-names: Yihui
-    email: xie@yihui.name
-    orcid: https://orcid.org/0000-0003-0645-5666
-  - family-names: Allaire
-    given-names: JJ
-  - family-names: Horner
-    given-names: Jeffrey
-  year: '2024'
-- type: software
-  title: pipeR
-  abstract: 'pipeR: Multi-Paradigm Pipeline Implementation'
-  notes: Imports
-  url: https://renkun.me/pipeR
-  repository: https://CRAN.R-project.org/package=pipeR
-  authors:
-  - family-names: Ren
-    given-names: Kun
-    email: ken@renkun.me
-  year: '2024'
-- type: software
-  title: progressr
-  abstract: 'progressr: An Inclusive, Unifying API for Progress Updates'
-  notes: Imports
-  url: https://progressr.futureverse.org
-  repository: https://CRAN.R-project.org/package=progressr
-  authors:
-  - family-names: Bengtsson
-    given-names: Henrik
-    email: henrikb@braju.com
-  year: '2024'
-- type: software
   title: purrr
   abstract: 'purrr: Functional Programming Tools'
   notes: Imports
@@ -314,49 +262,6 @@ references:
   - family-names: Wickham
     given-names: Hadley
     email: hadley@posit.co
-  year: '2024'
-- type: software
-  title: rmarkdown
-  abstract: 'rmarkdown: Dynamic Documents for R'
-  notes: Imports
-  url: https://pkgs.rstudio.com/rmarkdown/
-  repository: https://CRAN.R-project.org/package=rmarkdown
-  authors:
-  - family-names: Allaire
-    given-names: JJ
-    email: jj@posit.co
-  - family-names: Xie
-    given-names: Yihui
-    email: xie@yihui.name
-    orcid: https://orcid.org/0000-0003-0645-5666
-  - family-names: Dervieux
-    given-names: Christophe
-    email: cderv@posit.co
-    orcid: https://orcid.org/0000-0003-4474-2498
-  - family-names: McPherson
-    given-names: Jonathan
-    email: jonathan@posit.co
-  - family-names: Luraschi
-    given-names: Javier
-  - family-names: Ushey
-    given-names: Kevin
-    email: kevin@posit.co
-  - family-names: Atkins
-    given-names: Aron
-    email: aron@posit.co
-  - family-names: Wickham
-    given-names: Hadley
-    email: hadley@posit.co
-  - family-names: Cheng
-    given-names: Joe
-    email: joe@posit.co
-  - family-names: Chang
-    given-names: Winston
-    email: winston@posit.co
-  - family-names: Iannone
-    given-names: Richard
-    email: rich@posit.co
-    orcid: https://orcid.org/0000-0003-3925-190X
   year: '2024'
 - type: software
   title: seewave
@@ -455,16 +360,6 @@ references:
   year: '2024'
   version: '>= 1.0.2'
 - type: software
-  title: tools
-  abstract: 'R: A Language and Environment for Statistical Computing'
-  notes: Imports
-  authors:
-  - name: R Core Team
-  institution:
-    name: R Foundation for Statistical Computing
-    address: Vienna, Austria
-  year: '2024'
-- type: software
   title: tuneR
   abstract: 'tuneR: Analysis of Music and Speech'
   notes: Imports
@@ -514,18 +409,6 @@ references:
     given-names: Lea
   year: '2024'
 - type: software
-  title: vembedr
-  abstract: 'vembedr: Embed Video in HTML'
-  notes: Imports
-  url: https://github.com/ijlyttle/vembedr
-  repository: https://CRAN.R-project.org/package=vembedr
-  authors:
-  - family-names: Lyttle
-    given-names: Ian
-    email: ian.lyttle@se.com
-    orcid: https://orcid.org/0000-0001-9962-4849
-  year: '2024'
-- type: software
   title: knitr
   abstract: 'knitr: A General-Purpose Package for Dynamic Report Generation in R'
   notes: Suggests
@@ -572,4 +455,16 @@ references:
     given-names: Andy
     email: andy.teucher@posit.co
     orcid: https://orcid.org/0000-0002-7840-692X
+  year: '2024'
+- type: software
+  title: vembedr
+  abstract: 'vembedr: Embed Video in HTML'
+  notes: Suggests
+  url: https://github.com/ijlyttle/vembedr
+  repository: https://CRAN.R-project.org/package=vembedr
+  authors:
+  - family-names: Lyttle
+    given-names: Ian
+    email: ian.lyttle@se.com
+    orcid: https://orcid.org/0000-0001-9962-4849
   year: '2024'
