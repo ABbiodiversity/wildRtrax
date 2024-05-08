@@ -133,7 +133,7 @@
 #'
 #' @keywords internal
 #'
-#' @import QPAD dplyr intrval terra utils
+#' @import QPAD dplyr intrval terra curl
 
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
@@ -141,13 +141,13 @@
   message("Downloading geospatial assets. This may take a moment.")
 
   # Get tifs from assets repo. Maybe something better later!
-  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", destfile = "lcc.tif")
+  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", "lcc.tif")
   .rlcc <- terra::rast("lcc.tif")
-  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", destfile = "tree.tif")
+  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", "tree.tif")
   .rtree <- terra::rast("tree.tif")
-  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", destfile = "seedgrow.tif")
+  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", "seedgrow.tif")
   .rd1 <- terra::rast("seedgrow.tif")
-  utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", destfile = "utcoffset.tif")
+  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", "utcoffset.tif")
   .rtz <- terra::rast("utcoffset.tif")
 
   crs <- terra::crs(.rtree)
