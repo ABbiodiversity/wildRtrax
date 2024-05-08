@@ -142,15 +142,15 @@
 
   # Get tifs from assets repo. Maybe something better later!
   utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", destfile = "lcc.tif")
-  rlcc <- terra::rast("lcc.tif")
+  .rlcc <- terra::rast("lcc.tif")
   utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", destfile = "tree.tif")
-  rtree <- terra::rast("tree.tif")
+  .rtree <- terra::rast("tree.tif")
   utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", destfile = "seedgrow.tif")
-  rd1 <- terra::rast("seedgrow.tif")
+  .rd1 <- terra::rast("seedgrow.tif")
   utils::download.file("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", destfile = "utcoffset.tif")
-  rtz <- terra::rast("utcoffset.tif")
+  .rtz <- terra::rast("utcoffset.tif")
 
-  crs <- terra::crs(rtree)
+  crs <- terra::crs(.rtree)
 
   #get vars
   date <- str_sub(data$recording_date_time, 1, 10)
@@ -203,7 +203,7 @@
   xy <- terra::project(xy, crs)
 
   #LCC4 and LCC2
-  vlcc <- terra::extract(rlcc, xy)$lcc
+  vlcc <- terra::extract(.rlcc, xy)$lcc
   lcclevs <- c("0"="", "1"="Conif", "2"="Conif", "3"="", "4"="",
                "5"="DecidMixed", "6"="DecidMixed", "7"="", "8"="Open", "9"="",
                "10"="Open", "11"="Open", "12"="Open", "13"="Open", "14"="Wet",
@@ -213,16 +213,16 @@
   levels(lcc2) <- c("Forest", "Forest", "OpenWet", "OpenWet")
 
   #TREE
-  vtree <- terra::extract(rtree, xy)$tree
+  vtree <- terra::extract(.rtree, xy)$tree
   TREE <- vtree / 100
   TREE[TREE %)(% c(0, 1)] <- 0
 
   #raster::extract seedgrow value (this is rounded)
-  d1 <- terra::extract(rd1, xy)$seedgrow
+  d1 <- terra::extract(.rd1, xy)$seedgrow
 
   #UTC offset + 7 makes Alberta 0 (MDT offset) for local times
   if(tz=="local"){
-    ltz <- terra::extract(rtz, xy)$utcoffset + 7
+    ltz <- terra::extract(.rtz, xy)$utcoffset + 7
   }
   if(tz=="utc"){
     ltz <- 0
