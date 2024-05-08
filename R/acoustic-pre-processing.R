@@ -67,7 +67,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     dplyr::mutate(unsafe = dplyr::case_when(size_Mb <= 0.5 ~ "Unsafe", TRUE ~ "Safe")) %>% # Create safe scanning protocol, pretty much based on file size
     dplyr::select(file_path, size_Mb, unsafe) %>%
     dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", ""),
-                  file_type = tolower(strsplit(file_path, "\\.")[[2]])) %>%
+                  file_type = sub('.*\\.(\\w+)$', '\\1', basename(file_path))) %>%
     # Parse location, recording date time and other temporal columns
     tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = FALSE) %>%
     dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)'))
@@ -171,7 +171,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
 #' @return a list with relevant information
 
 wt_wac_info <- function(path) {
-  if (strsplit(path, "\\.")[[2]] != "wac") {
+  if (sub('.*\\.(\\w+)$', '\\1', basename(path)) != "wac") {
     stop("This is not a wac file.")
   }
 
@@ -260,7 +260,7 @@ wt_wac_info <- function(path) {
 
 wt_flac_info <- function(path) {
 
-  if (strsplit(path, "\\.")[[2]] != "flac") {
+  if (sub('.*\\.(\\w+)$', '\\1', basename(path)) != "flac") {
     stop("This is not a flac file.")
   }
 
