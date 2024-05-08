@@ -2,8 +2,8 @@
 % Please edit documentation in R/wildRtrax.R
 \docType{package}
 \name{wildRtrax}
-\alias{wildRtrax}
 \alias{wildRtrax-package}
+\alias{wildRtrax}
 \title{wildRtrax: A series of functions for environmental sensor data management and analysis from WildTrax}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}

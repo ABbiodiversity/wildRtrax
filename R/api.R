@@ -137,7 +137,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     stop("Please authenticate with wt_auth().", call. = FALSE)
 
   # Check if the project_id is valid:
-  i <- wt_get_download_summary(sensor = sensor_id) %>%
+  i <- wt_get_download_summary(sensor_id = sensor_id) %>%
     tibble::as_tibble() %>%
     dplyr::select(project_id, sensor)
 
@@ -400,7 +400,7 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
     type == "recording" & "recording_url" %in% colnames(input_data) ~ {
       input_data %>%
         mutate(clip_file_name = file.path(output, basename(recording_url))) %>%
-        furrr::future_walk2(.x = recording_url, .y = clip_file_name, .f = ~ download.file(.x, .y))
+        furrr::future_walk2(.x = recording_url, .y = clip_file_name, .f = ~ download.file(.x, .y, "wb"))
     },
     type == "tag_clip_spectrogram" & "spectrogram_url" %in% colnames(input_data) ~ {
       input_data %>%
@@ -416,12 +416,12 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
         mutate(
           detection_time = as.character(detection_time),
           detection_time = gsub("\\.", "_", detection_time),
-          audio_file_type = tools::file_ext(clip_url),
+          audio_file_type = strsplit(clip_url, "\\.")[[2]],
           clip_file_name_spec = file.path(output, paste0(organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__", species_code, "__", individual_order, "__", detection_time, ".jpeg")),
           clip_file_name_audio = file.path(output, paste0(organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__", species_code, "__", individual_order, "__", detection_time, ".", audio_file_type))
         ) %>%
-        furrr::future_walk2(.x = spectrogram_url, .y = clip_file_name_spec, .f = ~ download.file(.x, .y)) %>%
-        furrr::future_walk2(.x = clip_url, .y = clip_file_name_audio, .f = ~ download.file(.x, .y))
+        furrr::future_walk2(.x = spectrogram_url, .y = clip_file_name_spec, .f = ~ download.file(.x, .y, "wb")) %>%
+        furrr::future_walk2(.x = clip_url, .y = clip_file_name_audio, .f = ~ download.file(.x, .y, "wb"))
     },
     TRUE ~ stop("Required columns are either 'recording_url', 'spectrogram_url', or 'clip_url'. Use wt_download_report(reports = 'recording' or 'tag') in order to get the correct media.")
   )

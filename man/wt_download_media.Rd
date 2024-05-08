@@ -5,17 +5,17 @@
 \title{Download acoustic media}
 \usage{
 wt_download_media(
-  input_data,
+  input,
   output,
   type = c("recording", "tag_clip_audio", "tag_clip_spectrogram")
 )
 }
 \arguments{
+\item{input}{The report data}
+
 \item{output}{The output folder}
 
 \item{type}{Either recording, tag_clip_spectrogram or tag_clip_audio}
-
-\item{input}{The report data}
 }
 \value{
 An organized folder of media. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
