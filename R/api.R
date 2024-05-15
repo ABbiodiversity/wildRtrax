@@ -451,7 +451,7 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
 #' c(-110.854385, 57.13472)
 #' )
 #'
-#' dd <- wt_dd_summary(sensor = 'ARU', species = 'White-throated Sparrow', zoom = 20, boundary = aoi)
+#' dd <- wt_dd_summary(sensor = 'ARU', species = 'White-throated Sparrow', boundary = aoi)
 #' }
 #'
 #' @return Return
