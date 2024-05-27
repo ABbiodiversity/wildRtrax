@@ -468,7 +468,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
   u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
 
   # Determine whether public or user
-  if (!exists("._wt_auth_env_$access_token")) {
+  if (!exists("access_token", envir = ._wt_auth_env_)) {
     message("Currently searching as a public user, access to data will be limited. Use wt_auth() to login.")
     tok_used <- NULL
 
