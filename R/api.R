@@ -364,7 +364,7 @@ wt_get_species <- function(){
 #' @param output The output folder
 #' @param type Either recording, tag_clip_spectrogram or tag_clip_audio
 #'
-#' @import dplyr tibble readr
+#' @import dplyr tibble purrr curl
 #' @export
 #'
 #' @examples
@@ -402,7 +402,7 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
         file_type = sub('.*\\.(\\w+)$', '\\1', basename(recording_url)),
         clip_file_name = paste0(output, "/", location, "_", format(recording_date_time, "%Y%m%d_%H%M%S"), ".", file_type)
       ) %>%
-      { purrr::map2_chr(.$recording_url, .$clip_file_name, ~ curl_download(.x, .y, mode = "wb")) }
+      { purrr::map2_chr(.$recording_url, .$clip_file_name, ~ curl::curl_download(.x, .y, mode = "wb")) }
 
   } else if (type == "tag_clip_spectrogram" & "spectrogram_url" %in% colnames(input_data)) {
     output_data <- input_data %>%
@@ -413,7 +413,7 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
           species_code, "__", individual_order, "__", detection_time, ".jpeg"
         ))
       ) %>%
-      { furrr::future_walk2(.$spectrogram_url, .$clip_file_name, ~ download.file(.x, .y)) }
+      { purrr::map2_chr(.$spectrogram_url, .$clip_file_name, ~ curl::curl_download(.x, .y, mode = "wb")) }
 
   } else if (all(c("spectrogram_url", "clip_url") %in% colnames(input_data)) & any(type %in% c("tag_clip_spectrogram", "tag_clip_audio"))) {
     output_data <- input_data %>%
@@ -430,8 +430,8 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
         ))
       ) %>%
       {
-        furrr::future_walk2(.$spectrogram_url, .$clip_file_name_spec, ~ download.file(.x, .y, mode = "wb"))
-        furrr::future_walk2(.$clip_url, .$clip_file_name_audio, ~ download.file(.x, .y, mode = "wb"))
+        purrr::map2_chr(.$spectrogram_url, .$clip_file_name_spec, ~ curl::curl_download(.x, .y, mode = "wb"))
+        purrr::map2_chr(.$clip_url, .$clip_file_name_audio, ~ curl::curl_download(.x, .y, mode = "wb"))
       }
 
   } else {
