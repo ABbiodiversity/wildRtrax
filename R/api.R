@@ -513,6 +513,10 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       spp <- species_tibble |>
         filter(species_common_name %in% species) |>
         pull(species_id)
+
+      if (is.null(spp)) {
+        stop("No species were found.")
+      }
     }
 
   } else {

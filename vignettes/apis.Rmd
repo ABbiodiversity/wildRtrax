@@ -126,11 +126,11 @@ head(aru_as_pc)
 
 Explore species and data within WildTrax's [Data Discover](https://discover.wildtrax.ca/) by employing the `wt_dd_summary()` function. Access a restricted portion of data, even without public user privileges. Utilize `wt_auth()` to uncover data pertinent to your account or those publicly available on WildTrax.
 
-```{r, echo=T, include=T, eval=T, warning=F, message = FALSE}
+```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
 discover <- wt_dd_summary(sensor = "ARU", species = "White-throated Sparrow", boundary = NULL)
 ```
 ```{r, echo=F, include=F, eval=T, warning=F, message = FALSE}
-discover <- wt_dd_summary(sensor = "ARU", species = "White-throated Sparrow", boundary = NULL)
+discover <- wt_dd_summary(sensor = "ARU", species = c("White-throated Sparrow"), boundary = NULL)
 ```
 ```{r, eval=T}
 head(discover)
@@ -142,6 +142,7 @@ Use custom bounding areas:
 ```{r, echo=T, include=T, eval=T, warning=F, message = FALSE}
 # Define a polygon
 my_aoi <- list(
+  c(-110.85438, 57.13472),
   c(-110.85438, 57.13472),
   c(-114.14364, 54.74858),
   c(-110.69368, 52.34150),
