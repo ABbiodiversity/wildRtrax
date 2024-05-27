@@ -396,35 +396,47 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
   }
 
   # Process based on type
-  output_data <- case_when(
-    type == "recording" & "recording_url" %in% colnames(input_data) ~ {
-      input_data %>%
-        mutate(clip_file_name = file.path(output, basename(recording_url))) %>%
-        furrr::future_walk2(.x = recording_url, .y = clip_file_name, .f = ~ download.file(.x, .y, "wb"))
-    },
-    type == "tag_clip_spectrogram" & "spectrogram_url" %in% colnames(input_data) ~ {
-      input_data %>%
-        mutate(
-          detection_time = as.character(detection_time),
-          detection_time = gsub("\\.", "_", detection_time),
-          clip_file_name = file.path(output, paste0(organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__", species_code, "__", individual_order, "__", detection_time, ".jpeg"))
-        ) %>%
-        furrr::future_walk2(.x = spectrogram_url, .y = clip_file_name, .f = ~ download.file(.x, .y))
-    },
-    all(c("spectrogram_url", "clip_url") %in% colnames(input_data)) & c("tag_clip_spectrogram", "tag_clip_audio") %in% type ~ {
-      input_data %>%
-        mutate(
-          detection_time = as.character(detection_time),
-          detection_time = gsub("\\.", "_", detection_time),
-          audio_file_type = strsplit(clip_url, "\\.")[[2]],
-          clip_file_name_spec = file.path(output, paste0(organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__", species_code, "__", individual_order, "__", detection_time, ".jpeg")),
-          clip_file_name_audio = file.path(output, paste0(organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__", species_code, "__", individual_order, "__", detection_time, ".", audio_file_type))
-        ) %>%
-        furrr::future_walk2(.x = spectrogram_url, .y = clip_file_name_spec, .f = ~ download.file(.x, .y, "wb")) %>%
-        furrr::future_walk2(.x = clip_url, .y = clip_file_name_audio, .f = ~ download.file(.x, .y, "wb"))
-    },
-    TRUE ~ stop("Required columns are either 'recording_url', 'spectrogram_url', or 'clip_url'. Use wt_download_report(reports = 'recording' or 'tag') in order to get the correct media.")
-  )
+  if (type == "recording" & "recording_url" %in% colnames(input_data)) {
+    output_data <- input_data %>%
+      mutate(
+        file_type = sub('.*\\.(\\w+)$', '\\1', basename(recording_url)),
+        clip_file_name = paste0(output, "/", location, "_", format(recording_date_time, "%Y%m%d_%H%M%S"), ".", file_type)
+      ) %>%
+      { purrr::map2_chr(.$recording_url, .$clip_file_name, ~ curl_download(.x, .y, mode = "wb")) }
+
+  } else if (type == "tag_clip_spectrogram" & "spectrogram_url" %in% colnames(input_data)) {
+    output_data <- input_data %>%
+      mutate(
+        detection_time = gsub("\\.", "_", as.character(detection_time)),
+        clip_file_name = file.path(output, paste0(
+          organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__",
+          species_code, "__", individual_order, "__", detection_time, ".jpeg"
+        ))
+      ) %>%
+      { furrr::future_walk2(.$spectrogram_url, .$clip_file_name, ~ download.file(.x, .y)) }
+
+  } else if (all(c("spectrogram_url", "clip_url") %in% colnames(input_data)) & any(type %in% c("tag_clip_spectrogram", "tag_clip_audio"))) {
+    output_data <- input_data %>%
+      mutate(
+        detection_time = gsub("\\.", "_", as.character(detection_time)),
+        audio_file_type = sub('.*\\.(\\w+)$', '\\1', clip_url),
+        clip_file_name_spec = file.path(output, paste0(
+          organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__",
+          species_code, "__", individual_order, "__", detection_time, ".jpeg"
+        )),
+        clip_file_name_audio = file.path(output, paste0(
+          organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__",
+          species_code, "__", individual_order, "__", detection_time, ".", audio_file_type
+        ))
+      ) %>%
+      {
+        furrr::future_walk2(.$spectrogram_url, .$clip_file_name_spec, ~ download.file(.x, .y, mode = "wb"))
+        furrr::future_walk2(.$clip_url, .$clip_file_name_audio, ~ download.file(.x, .y, mode = "wb"))
+      }
+
+  } else {
+    stop("Required columns are either 'recording_url', 'spectrogram_url', or 'clip_url'. Use wt_download_report(reports = 'recording' or 'tag') to get the correct media.")
+  }
 
   return(output_data)
 }
