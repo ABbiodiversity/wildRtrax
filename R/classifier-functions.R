@@ -270,7 +270,7 @@ wt_format_detections <- function(BirdNET_report, Tasks_report, output = NULL, un
     dplyr::mutate(recordingDate = as.POSIXct(recordingDate))
 
   #Format the BirdNET report data to match the Tasks report and create necessary fields
-  selections <- BirdNET_report %>%
+  selections <- BirdNET_dl %>%
     dplyr::rename(recordingDate = recording_date_time) %>%
     dplyr::mutate(recordingDate = as.POSIXct(recordingDate)) %>%
     dplyr::rename(species = species_code) %>%
@@ -279,10 +279,13 @@ wt_format_detections <- function(BirdNET_report, Tasks_report, output = NULL, un
     tibble::add_column(speciesIndividualNumber = "") %>%
     tibble::add_column(vocalization = "") %>%
     tibble::add_column(abundance = "") %>%
-    tibble::add_column(minFreq = "") %>%
-    tibble::add_column(maxFreq = "") %>%
+    tibble::add_column(minFreq = "200") %>%
+    tibble::add_column(maxFreq = "12000") %>%
     tibble::add_column(speciesIndividualComment = "") %>%
-    tibble::add_column(internal_tag_id = "")
+    tibble::add_column(internal_tag_id = "") %>%
+    dplyr::group_by(location, recordingDate, species) %>%
+    dplyr::mutate(speciesIndividualNumber = row_number()) %>%
+    dplyr::ungroup()
 
   #Merge the Tasks report and BirdNET report into one dataset, and remove unwanted data to generate a WildTrax tags dataset
   tags <- selections %>%
