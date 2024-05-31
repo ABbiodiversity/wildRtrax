@@ -1,7 +1,24 @@
 #' Functions for handling classifier reports
 #'
+#' @description Calculates precision, recall, and F-score of BirdNET for a requested sequence of thresholds. You can request the metrics at the minute level for recordings that are processed with the species per minute method (1SPM). You can also exclude species that are not allowed in the project from the BirdNET results before evaluation.
 #'
+#' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
+#' @param resolution Character; either "recording" to summarize at the entire recording level or "minute" to summarize the minute level if the `task_method` is "1SPM"
+#' @param remove_species Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report
+#' @param species Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSLF", "BOCH"))
+#' @param thresholds Numeric; start and end of sequence of score thresholds at which to calculate performance metrics
 #'
+#' @import dplyr
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
+#'
+#' eval <- wt_evaluate_classifier(data, resolution = "recording", remove_species = TRUE, thresholds = c(10, 99))
+#' }
+#'
+#' @return A tibble containing columsn for precision, recall, and F-score for each of the requested thresholds.
 
 wt_evaluate_classifier <- function(data, resolution = "recording", remove_species = TRUE,  species = NULL, thresholds = c(10, 99)){
 
@@ -88,9 +105,16 @@ wt_evaluate_classifier <- function(data, resolution = "recording", remove_specie
 
 }
 
+#' @description Internal function to calculate precision, recall, and F-score for a given score threshold.
 #'
+#' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
+#' @param threshold A single numeric value for score threshold
+#' @param human_total The total number of detections in the gold standard, typically from human listening data (e.g., the main report)
 #'
+#' @import dplyr
+#' @export
 #'
+#' @return A vector of precision, recall, F-score, and threshold
 
 wt_calculate_prf <- function(threshold, data, human_total){
 
@@ -103,10 +127,23 @@ wt_calculate_prf <- function(threshold, data, human_total){
 
 }
 
+#' @description Retrieves the score threshold that maximizes F-score, which is a tradeoff between precision and recall.
 #'
+#' @param data Tibble output from the `wt_evaluate_classifier()` function.
 #'
+#' @import dplyr
+#' @export
 #'
+#' @examples
+#' \dontrun{
+#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
 #'
+#' eval <- wt_evaluate_classifier(data, resolution = "recording", remove_species = TRUE, thresholds = c(10, 99))
+#'
+#'threshold_use <- wt_get_threshold(eval) |> print()
+#' }
+#'
+#' @return A single numeric value
 
 wt_get_threshold <- function(data){
 
@@ -120,12 +157,30 @@ wt_get_threshold <- function(data){
 
 }
 
+#' @description Converts and filters the `birdnet` report from score probabilities to detections using a specified score threshold. You can exclude species that are not allowed in the project from the BirdNET results before evaluation.
 #'
+#' @param data The `birdnet` report from the `wt_download_report()` function
+#' @param threshold Numeric; the desired score threshold
+#' @param remove_species Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report
+#' @param species Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSLF", "BOCH"))
 #'
+#' @import dplyr
+#' @export
 #'
+#' @examples
+#' \dontrun{
+#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
 #'
+#' eval <- wt_evaluate_classifier(data, resolution = "recording", remove_species = TRUE, thresholds = c(10, 99))
 #'
+#'threshold_use <- wt_get_threshold(eval) |> print()
 #'
+#'birdnet <- data[[1]]
+#'
+#'detections <- wt_classifier_detections(birdnet, threshold = threshold_use, remove_species = TRUE)
+#' }
+#'
+#' @return A tibble with the same fields as the `birdnet` report that contains only detections above the specified threshold.
 
 wt_classifier_detections <- function(data, threshold, remove_species = TRUE, species=NULL){
 
@@ -148,8 +203,24 @@ wt_classifier_detections <- function(data, threshold, remove_species = TRUE, spe
 
 }
 
+#' @description Check for species reported by BirdNET that the human listeners did not detect in our project.
 #'
+#' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
+#' #' @param remove_species Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report
+#' @param threshold Numeric; the desired score threshold
+#' @param resolution Character; either "recording" to identify any new species for each recording or "location" to identify new species for each location
 #'
+#' @import dplyr
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
+#'
+#'new <- wt_additional_species(data, remove_species = TRUE, threshold = 80, resolution="location")
+#' }
+#'
+#' @return A tibble with the same fields as the `birdnet` report with the highest scoring detection for each new species detection in each recording.
 
 wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, resolution="project"){
 
@@ -242,57 +313,67 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
 
 }
 
-#'Function takes a BirdNET report and a Tasks list (from the same project) and creates a dataframe of WildTrax tags that can be uploaded to the project
+#' @description Creates a dataframe of tags from the `birdnet` report that can be uploaded to a project via the WildTrax interface. This function will automatically remove species reported by BirdNET that are not allowed in the specified project to prevent errors during the tag upload process.
 #'
+#' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
+#' @param threshold Numeric; the desired score threshold
+#'
+#' @import dplyr
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
+#'
+#'tags_df <- wt_format_detections(data, threshold = threshold_use)
+#' }
+#'
+#' @return A tibble with each birdnet detection above a particular threshold as a detection for upload to WildTrax as tags.
 #'
 
-wt_format_detections <- function(BirdNET_report, Tasks_report, output = NULL, universal_threshold = ""){
+wt_format_detections <- function(data, threshold = 50){
 
   #Define the fields required in the reports to create WildTrax tags
-  req_cols_tasks <- c("location", "recordingDate", "method", "taskLength", "status", "transcriber", "internal_task_id")
-  req_cols_tags <- c("location","recording_date_time","species_code","start_s","end_s")
+  req_cols_tasks <- c("location", "recording_date_time", "task_method", "tag_duration", "aru_task_status", "observer_id", "task_id")
+  req_cols_tags <- c("location", "recording_date_time", "species_code", "start_s", "end_s")
 
   #Tell the user if any reports are missing fields for the creation of WildTrax tags
-  task_prep <- Tasks_report
+  task_prep <- data[[2]]
 
   if (!all(req_cols_tasks %in% names(task_prep))){
-    stop("Tasks report is missing required columns")
+    stop("Main report is missing required columns")
   }
 
-  tag_prep <- BirdNET_report
+  tag_prep <- data[[1]]
 
   if (!all(req_cols_tags %in% names(tag_prep))){
-    stop("BirdNET report is missing required columns")
+    stop("birdnet report is missing required columns")
   }
 
   #Format date and time in Tasks report
-  tasks <- Tasks_report %>%
-    dplyr::mutate(recordingDate = as.POSIXct(recordingDate))
+  tasks <- data[[2]] |>
+    dplyr::select(task_id, location, recording_date_time, task_method, task_duration, observer) |>
+    unique()
 
   #Format the BirdNET report data to match the Tasks report and create necessary fields
-  selections <- BirdNET_dl %>%
-    dplyr::rename(recordingDate = recording_date_time) %>%
-    dplyr::mutate(recordingDate = as.POSIXct(recordingDate)) %>%
-    dplyr::rename(species = species_code) %>%
-    dplyr::rename(startTime = start_s) %>%
-    dplyr::mutate(tagLength = (end_s - startTime)) %>%
-    tibble::add_column(speciesIndividualNumber = "") %>%
-    tibble::add_column(vocalization = "") %>%
-    tibble::add_column(abundance = "") %>%
-    tibble::add_column(minFreq = "200") %>%
-    tibble::add_column(maxFreq = "12000") %>%
-    tibble::add_column(speciesIndividualComment = "") %>%
-    tibble::add_column(internal_tag_id = "") %>%
-    dplyr::group_by(location, recordingDate, species) %>%
-    dplyr::mutate(speciesIndividualNumber = row_number()) %>%
+  selections <- data[[1]] |>
+    dplyr::mutate(tag_duration = (end_s - start_s)) |>
+    tibble::add_column(vocalization = NA,
+                       individual_count = NA,
+                       minFreq = "200",
+                       maxFreq = "12000",
+                       species_individual_comments = NA,
+                       tag_id = NA) |>
+    dplyr::group_by(location, recording_date_time, species_code) |>
+    dplyr::mutate(individual_order = row_number()) |>
     dplyr::ungroup()
 
-  #Merge the Tasks report and BirdNET report into one dataset, and remove unwanted data to generate a WildTrax tags dataset
-  tags <- selections %>%
-    dplyr::left_join(tasks, by = c("recordingDate" = "recordingDate", "location" = "location")) %>%
-    dplyr::filter(confidence >= universal_threshold) %>%
-    dplyr::filter(is_species_allowed_in_project == "t") %>%
-    dplyr::select(c(location, recordingDate, method, taskLength, transcriber, species, speciesIndividualNumber, vocalization, abundance, startTime, tagLength, minFreq, maxFreq, speciesIndividualComment, internal_tag_id))
+  #Merge the main and birdnet report into one dataset, and remove unwanted data to generate a WildTrax tags dataset
+  tags <- selections |>
+    dplyr::left_join(tasks, by = c( "recording_date_time", "location"), multiple="all") |>
+    dplyr::filter(confidence >= threshold,
+                  is_species_allowed_in_project == TRUE) |>
+    dplyr::select(c(task_id, location, recording_date_time, task_method, task_duration, observer, species_code, individual_order, vocalization, individual_count, start_s, tag_duration, minFreq, maxFreq, species_individual_comments, tag_id))
 
   return(tags)
 }
