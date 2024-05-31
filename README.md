@@ -62,7 +62,7 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_format_occupancy()` :sound: :bird:
   - `wt_qpad_offsets()` :sound: :bird:
 - Acoustic classification
-  - 
+  - `wt_evaluate_classifier`, `wt_calculate_prf`, `wt_get_threshold`, `wt_classifier_detections`, `wt_additional_species`
 
 ## Issues
 
