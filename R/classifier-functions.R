@@ -1,4 +1,4 @@
-#' Functions for handling classifier reports
+#' Evaluate a classifier
 #'
 #' @description Calculates precision, recall, and F-score of BirdNET for a requested sequence of thresholds. You can request the metrics at the minute level for recordings that are processed with the species per minute method (1SPM). You can also exclude species that are not allowed in the project from the BirdNET results before evaluation.
 #'
@@ -23,7 +23,7 @@
 wt_evaluate_classifier <- function(data, resolution = "recording", remove_species = TRUE,  species = NULL, thresholds = c(10, 99)){
 
   #Check if the data object is in the right format
-  if(class(data)!="list" | length(data)!=2 | str_sub(names(data)[1], -18, -1)!="birdnet_report.csv" | str_sub(names(data)[2], -15, -1)!="main_report.csv"){
+  if(!inherits(data, "list") | length(data)!=2 | str_sub(names(data)[1], -18, -1)!="birdnet_report.csv" | str_sub(names(data)[2], -15, -1)!="main_report.csv"){
     stop("The input for the `wt_evaluate_classifier()` function should be the output of the `wt_download_report()` function with the argument `reports=c('main', 'birdnet')`")
   }
 
@@ -105,6 +105,8 @@ wt_evaluate_classifier <- function(data, resolution = "recording", remove_specie
 
 }
 
+#' Internal evaluation function
+#'
 #' @description Internal function to calculate precision, recall, and F-score for a given score threshold.
 #'
 #' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
@@ -127,6 +129,8 @@ wt_calculate_prf <- function(threshold, data, human_total){
 
 }
 
+#' Identify optimal threshold
+#'
 #' @description Retrieves the score threshold that maximizes F-score, which is a tradeoff between precision and recall.
 #'
 #' @param data Tibble output from the `wt_evaluate_classifier()` function.
@@ -157,6 +161,8 @@ wt_get_threshold <- function(data){
 
 }
 
+#' Convert to detections
+#'
 #' @description Converts and filters the `birdnet` report from score probabilities to detections using a specified score threshold. You can exclude species that are not allowed in the project from the BirdNET results before evaluation.
 #'
 #' @param data The `birdnet` report from the `wt_download_report()` function
@@ -203,10 +209,12 @@ wt_classifier_detections <- function(data, threshold, remove_species = TRUE, spe
 
 }
 
+#' Find new species
+#'
 #' @description Check for species reported by BirdNET that the human listeners did not detect in our project.
 #'
 #' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
-#' #' @param remove_species Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report
+#' @param remove_species Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report
 #' @param threshold Numeric; the desired score threshold
 #' @param resolution Character; either "recording" to identify any new species for each recording or "location" to identify new species for each location
 #'
@@ -225,7 +233,7 @@ wt_classifier_detections <- function(data, threshold, remove_species = TRUE, spe
 wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, resolution="project"){
 
   #Check if the data object is in the right format
-  if(class(data)!="list" | length(data)!=2 | str_sub(names(data)[1], -18, -1)!="birdnet_report.csv" | str_sub(names(data)[2], -15, -1)!="main_report.csv"){
+  if(!inherits(data, "list") | length(data)!=2 | str_sub(names(data)[1], -18, -1)!="birdnet_report.csv" | str_sub(names(data)[2], -15, -1)!="main_report.csv"){
     stop("The input for the `wt_evaluate_classifier()` function should be the output of the `wt_download_report()` function with the argument `reports=c('main', 'birdnet')`")
   }
 

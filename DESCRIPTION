@@ -21,10 +21,12 @@ Depends: R (>= 4.1.0)
 License: MIT + file LICENSE
 Imports:
     dplyr (>= 1.0.0),
+    curl,
     fs,
     furrr,
     future,
     ggplot2,
+    gridExtra,
     httr,
     intrval,
     jsonlite,

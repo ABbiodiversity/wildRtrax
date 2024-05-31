@@ -1,14 +1,19 @@
 ---
 title: "How to use Classifier Reports"
-output: html_document
-date: "2024-05-31"
-author: "Elly Knight, Kevin Kelly, Alex MacPhail"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to use Classifier Reports}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(gridExtra)
 
 sys.source("C:/Users/elly/Documents/ABMI/WildTrax/wildRtrax_fork/R/classifier-functions.R", envir = knitr::knit_global())
 ```
