@@ -2,10 +2,13 @@
 
 ## Major changes
 
-* Addition of four new functions: `wt_dd_summary()`, birdnet functions
-* `wt_download_tags()` now becomes `wt_download_media` to support wider media downloads in batch from WildTrax
+* Addition of four new functions: `wt_dd_summary()`, 
+* `wt_download_tags()` now becomes `wt_download_media()` to support broader media downloads in batch from WildTrax
 
 ## Minor changes
+
+* Switch to `curl::curl_download()` for media and assets
+* 
 
 # wildRtrax 1.2.0
 

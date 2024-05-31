@@ -61,6 +61,8 @@ All functions begin with a `wt_*` prefix. Column names and metadata align with t
   - `wt_make_wide()` :sound: :bird: :bat:
   - `wt_format_occupancy()` :sound: :bird:
   - `wt_qpad_offsets()` :sound: :bird:
+- Acoustic classification
+  - 
 
 ## Issues
 
