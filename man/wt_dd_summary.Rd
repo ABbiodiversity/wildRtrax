@@ -29,7 +29,7 @@ c(-110.69368, 52.34150),
 c(-110.854385, 57.13472)
 )
 
-dd <- wt_dd_summary(sensor = 'ARU', species = 'White-throated Sparrow', zoom = 20, boundary = aoi)
+dd <- wt_dd_summary(sensor = 'ARU', species = 'White-throated Sparrow', boundary = aoi)
 }
 
 }
