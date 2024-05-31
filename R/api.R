@@ -300,7 +300,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
 #' @description Request for the WildTrax species table
 #'
 #'
-#' @import dplyr httr readr jsonlite
+#' @import dplyr httr readr
 #' @export
 #'
 #' @examples
@@ -364,7 +364,7 @@ wt_get_species <- function(){
 #' @param output The output folder
 #' @param type Either recording, tag_clip_spectrogram or tag_clip_audio
 #'
-#' @import dplyr tibble readr
+#' @import dplyr tibble purrr curl
 #' @export
 #'
 #' @examples
@@ -396,35 +396,47 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
   }
 
   # Process based on type
-  output_data <- case_when(
-    type == "recording" & "recording_url" %in% colnames(input_data) ~ {
-      input_data %>%
-        mutate(clip_file_name = file.path(output, basename(recording_url))) %>%
-        furrr::future_walk2(.x = recording_url, .y = clip_file_name, .f = ~ download.file(.x, .y, "wb"))
-    },
-    type == "tag_clip_spectrogram" & "spectrogram_url" %in% colnames(input_data) ~ {
-      input_data %>%
-        mutate(
-          detection_time = as.character(detection_time),
-          detection_time = gsub("\\.", "_", detection_time),
-          clip_file_name = file.path(output, paste0(organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__", species_code, "__", individual_order, "__", detection_time, ".jpeg"))
-        ) %>%
-        furrr::future_walk2(.x = spectrogram_url, .y = clip_file_name, .f = ~ download.file(.x, .y))
-    },
-    all(c("spectrogram_url", "clip_url") %in% colnames(input_data)) & c("tag_clip_spectrogram", "tag_clip_audio") %in% type ~ {
-      input_data %>%
-        mutate(
-          detection_time = as.character(detection_time),
-          detection_time = gsub("\\.", "_", detection_time),
-          audio_file_type = strsplit(clip_url, "\\.")[[2]],
-          clip_file_name_spec = file.path(output, paste0(organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__", species_code, "__", individual_order, "__", detection_time, ".jpeg")),
-          clip_file_name_audio = file.path(output, paste0(organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__", species_code, "__", individual_order, "__", detection_time, ".", audio_file_type))
-        ) %>%
-        furrr::future_walk2(.x = spectrogram_url, .y = clip_file_name_spec, .f = ~ download.file(.x, .y, "wb")) %>%
-        furrr::future_walk2(.x = clip_url, .y = clip_file_name_audio, .f = ~ download.file(.x, .y, "wb"))
-    },
-    TRUE ~ stop("Required columns are either 'recording_url', 'spectrogram_url', or 'clip_url'. Use wt_download_report(reports = 'recording' or 'tag') in order to get the correct media.")
-  )
+  if (type == "recording" & "recording_url" %in% colnames(input_data)) {
+    output_data <- input_data %>%
+      mutate(
+        file_type = sub('.*\\.(\\w+)$', '\\1', basename(recording_url)),
+        clip_file_name = paste0(output, "/", location, "_", format(recording_date_time, "%Y%m%d_%H%M%S"), ".", file_type)
+      ) %>%
+      { purrr::map2_chr(.$recording_url, .$clip_file_name, ~ curl::curl_download(.x, .y, mode = "wb")) }
+
+  } else if (type == "tag_clip_spectrogram" & "spectrogram_url" %in% colnames(input_data)) {
+    output_data <- input_data %>%
+      mutate(
+        detection_time = gsub("\\.", "_", as.character(detection_time)),
+        clip_file_name = file.path(output, paste0(
+          organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__",
+          species_code, "__", individual_order, "__", detection_time, ".jpeg"
+        ))
+      ) %>%
+      { purrr::map2_chr(.$spectrogram_url, .$clip_file_name, ~ curl::curl_download(.x, .y, mode = "wb")) }
+
+  } else if (all(c("spectrogram_url", "clip_url") %in% colnames(input_data)) & any(type %in% c("tag_clip_spectrogram", "tag_clip_audio"))) {
+    output_data <- input_data %>%
+      mutate(
+        detection_time = gsub("\\.", "_", as.character(detection_time)),
+        audio_file_type = sub('.*\\.(\\w+)$', '\\1', clip_url),
+        clip_file_name_spec = file.path(output, paste0(
+          organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__",
+          species_code, "__", individual_order, "__", detection_time, ".jpeg"
+        )),
+        clip_file_name_audio = file.path(output, paste0(
+          organization, "_", location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"), "__",
+          species_code, "__", individual_order, "__", detection_time, ".", audio_file_type
+        ))
+      ) %>%
+      {
+        purrr::map2_chr(.$spectrogram_url, .$clip_file_name_spec, ~ curl::curl_download(.x, .y, mode = "wb"))
+        purrr::map2_chr(.$clip_url, .$clip_file_name_audio, ~ curl::curl_download(.x, .y, mode = "wb"))
+      }
+
+  } else {
+    stop("Required columns are either 'recording_url', 'spectrogram_url', or 'clip_url'. Use wt_download_report(reports = 'recording' or 'tag') to get the correct media.")
+  }
 
   return(output_data)
 }
@@ -438,7 +450,7 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
 #' @param species The species you want to search for (e.g. 'WTSP'). Multiple species can be included.
 #' @param boundary The custom boundary you want to use. Defined as at least a four vertex polygon. Definition can also be a bbox
 #'
-#' @import dplyr tibble readr jsonlite httr
+#' @import dplyr tibble readr httr
 #' @export
 #'
 #' @examples
@@ -468,7 +480,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
   u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
 
   # Determine whether public or user
-  if (!exists("._wt_auth_env_$access_token")) {
+  if (!exists("access_token", envir = ._wt_auth_env_)) {
     message("Currently searching as a public user, access to data will be limited. Use wt_auth() to login.")
     tok_used <- NULL
 
@@ -501,6 +513,10 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       spp <- species_tibble |>
         filter(species_common_name %in% species) |>
         pull(species_id)
+
+      if (is.null(spp)) {
+        stop("No species were found.")
+      }
     }
 
   } else {

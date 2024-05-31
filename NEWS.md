@@ -2,13 +2,15 @@
 
 ## Major changes
 
-* Addition of four new functions: `wt_dd_summary()`, 
-* `wt_download_tags()` now becomes `wt_download_media()` to support broader media downloads in batch from WildTrax
+* Addition of four new functions: `wt_dd_summary()`, [BIRDNET FUNCTIONS]
+* `wt_download_tags()` now becomes `wt_download_media` to support broader media downloads in batch from WildTrax
 
 ## Minor changes
 
 * Switch to `curl::curl_download()` for media and assets
-* 
+* Removed dependencies `pipeR`, `progressr`, `jsonlite`, `future`, `furrr`, `tools`, `magrittr`, `markdown`, `rmarkdown` to increase package stability but reduces speed for functions such as `wt_audio_scanner`, `wt_run_ap`. Moved `vembedr` to suggests for vignettes
+
+---
 
 # wildRtrax 1.2.0
 
@@ -22,6 +24,8 @@
 * Improvements to APIs and acoustic convenience functions to resolve issues and PRs
 * Improvements to test suite, testing dependencies, code coverage
 * Addition of [Camera data wrangling vignette](https://abbiodiversity.github.io/wildRtrax/articles/camera-data-wrangling.html) and additional [tutorials](https://abbiodiversity.github.io/wildRtrax/articles/tutorials.html)
+
+---
 
 # wildRtrax 1.1.0
 
@@ -38,10 +42,14 @@
 * Work flow repairs to `wt_get_species()` and `wt_tidy_species()` (#21)
 * Replaced `utils::read.csv()` to `readr::read_csv()` in `wt_download_report()` (#20)
 
+---
+
 # wildRtrax 1.0.1
 
 * Patching API errors in `wt_download_report()`
 * Adding additional articles on [Acoustic data wrangling](https://abbiodiversity.github.io/wildRtrax/articles/acoustic-data-wrangling.html)
+
+---
 
 # wildRtrax 1.0.0
 
@@ -72,6 +80,8 @@
 ## Deprecated 
 
 * `wt_prob_det()`
+
+---
 
 # wildRtrax 0.1.0
 

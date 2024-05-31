@@ -7,7 +7,7 @@
 #' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.
 #' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, `wt_audio_scanner` will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
 #'
-#' @import fs furrr tibble dplyr tidyr stringr tuneR purrr seewave
+#' @import fs tibble dplyr tidyr stringr tuneR purrr seewave
 #' @export
 #'
 #' @examples
@@ -41,15 +41,14 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
       cat("Reading files from directory...\n")
       df
     })() |>
-    dplyr::mutate(file_path = furrr::future_map(
+    dplyr::mutate(file_path = purrr::map(
       .x = value,
       .f = ~ fs::dir_ls(
         path = .x,
         regexp = file_type_reg,
         recurse = TRUE,
         fail = FALSE
-      ),
-      .options = furrr::furrr_options(seed = TRUE)
+      )
     ))
 
   # Check if nothing was returned
@@ -62,7 +61,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
   # Create the main tibble
   df <- df %>%
     tidyr::unnest(file_path) %>%
-    dplyr::mutate(size_Mb = round(furrr::future_map_dbl(.x = file_path, .f = ~ fs::file_size(.x), .progress = TRUE, .options = furrr_options(seed = TRUE)) / 10e5, digits = 2),
+    dplyr::mutate(size_Mb = round(purrr::map_dbl(.x = file_path, .f = ~ fs::file_size(.x)) / 10e5, digits = 2),
                   file_path = as.character(file_path)) %>% # Convert file sizes to megabytes
     dplyr::mutate(unsafe = dplyr::case_when(size_Mb <= 0.5 ~ "Unsafe", TRUE ~ "Safe")) %>% # Create safe scanning protocol, pretty much based on file size
     dplyr::select(file_path, size_Mb, unsafe) %>%
@@ -106,7 +105,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     if ("wav" %in% df$file_type) {
       df_wav <- df %>%
         dplyr::filter(file_type == "wav") %>%
-        dplyr::mutate(data = furrr::future_map(.x = file_path, .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE), .progress = TRUE, .options = furrr_options(seed = TRUE))) %>%
+        dplyr::mutate(data = purrr::map(.x = file_path, .f = ~ tuneR::readWave(.x, from = 0, to = Inf, units = "seconds", header = TRUE))) %>%
         dplyr::mutate(length_seconds = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["samples"]]) / purrr::pluck(.x[["sample.rate"]]), 2)),
                       sample_rate = purrr::map_dbl(.x = data, .f = ~ round(purrr::pluck(.x[["sample.rate"]]), 2)),
                       n_channels = purrr::map_dbl(.x = data, .f = ~ purrr::pluck(.x[["channels"]]))) %>%
@@ -117,7 +116,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     if ("wac" %in% df$file_type) {
       df_wac <- df %>%
         dplyr::filter(file_type == "wac") %>%
-        dplyr::mutate(wac_info = furrr::future_map(.x = file_path, .f = ~ wt_wac_info(.x), .progress = TRUE, .options = furrr_options(seed = TRUE)),
+        dplyr::mutate(wac_info = purrr::map(.x = file_path, .f = ~ wt_wac_info(.x)),
                       sample_rate = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["sample_rate"]])),
                       length_seconds = purrr::map_dbl(.x = wac_info, .f = ~ round(purrr::pluck(.x[["length_seconds"]]), 2)),
                       n_channels = purrr::map_dbl(.x = wac_info, .f = ~ purrr::pluck(.x[["n_channels"]]))) %>%
@@ -128,7 +127,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     if ("flac" %in% df$file_type) {
       df_flac <- df %>%
         dplyr::filter(file_type == "flac") %>%
-        dplyr::mutate(flac_info = furrr::future_map(.x = file_path, .f = ~ wt_flac_info(.x), .options = furrr_options(seed = TRUE)),
+        dplyr::mutate(flac_info = purrr::map(.x = file_path, .f = ~ wt_flac_info(.x)),
                       sample_rate = purrr::map_dbl(.x = flac_info, .f = ~ purrr::pluck(.x, 1)),
                       length_seconds = purrr::map_dbl(.x = flac_info, .f = ~ round(purrr::pluck(.x, 3), 2)),
                       n_channels = 0) %>%
@@ -293,7 +292,7 @@ wt_flac_info <- function(path) {
 #' @param output_dir Character; path to directory where you want outputs to be stored.
 #' @param path_to_ap Character; file path to the AnalysisPrograms software package. Defaults to "C:\\AP\\AnalysisPrograms.exe".
 #'
-#' @import dplyr stringr furrr
+#' @import dplyr stringr
 #' @export
 #'
 #' @return Output will return to the specific root directory
@@ -347,7 +346,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
     files <- files %>%
       tibble::as_tibble() %>%
       dplyr::rename("file_path" = 1) %>%
-      furrr::future_map(.x = .$file_path, .f = ~suppressMessages(system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir)), furrr_options(seed = T)))
+      purrr::map(.x = .$file_path, .f = ~suppressMessages(system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir))))
 
   return(message('Done!'))
 
@@ -596,7 +595,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
 #' @param output_folder Character; output path to where the segments will be stored
 #'
-#' @import tuneR furrr lubridate dplyr
+#' @import tuneR lubridate dplyr
 #' @export
 #'
 #' @examples
@@ -639,7 +638,7 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
            ry = case_when(val < length_sec ~ "Modulo", TRUE ~ "Fixed"))
 
   inp2 %>%
-    furrr::future_pmap(
+    purrr::pmap(
       ..1 = .$file_path,
       ..2 = .$recording_date_time,
       ..3 = .$location,
@@ -648,8 +647,7 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
       ..6 = .$start_times,
       .f = ~ tuneR::writeWave(tuneR::readWave(..1, from = ..6, to = ..6 + ..5, units = "seconds"),
                               filename = paste0(outroot, "/", ..3, "_", format(..2 + lubridate::seconds(..6), "%Y%m%d_%H%M%S"), ".", ..4),
-                              extensible = T),
-      .options = furrr::furrr_options(seed = T))
+                              extensible = T))
 
   return(inp2)
 
