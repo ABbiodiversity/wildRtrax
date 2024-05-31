@@ -1,0 +1,387 @@
+---
+title: "How to use Classifier Reports"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to use Classifier Reports}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(gridExtra)
+
+sys.source("C:/Users/elly/Documents/ABMI/WildTrax/wildRtrax_fork/R/classifier-functions.R", envir = knitr::knit_global())
+```
+
+# Deep learning in acoustic processing
+
+Recent advances in deep learning have led to the development of neural network models that can classify the sounds within acoustic recordings, such as those captured by autonomous recording units (ARUs). These classifiers can be trained to detect just a single focal species, or to classify thousands of species. The process of using automated classifiers to extract species detections from acoustic recordings is collectively called "computer listening", and can be used to support, supplement, or even replace human listening by experts depending on the goals of the project. This tutorial will show you how to access and work with classifier results for recordings in WildTrax.
+
+## BirdNET
+[BirdNET](https://birdnet.cornell.edu/) is a deep learning classifier developed by the Cornell Lab of Ornithology that is trained to classify more than 6,000 of the world's most common bird species, including most North American bird species (Kahl et al. 2022). The model converts audio recordings into 3-second spectrograms and outputs a probability score for each species in each spectrogram.
+
+## Classifier performance
+Classifier scores can be converted to species detections by setting a threshold (e.g., 0.8) above which to consider a species present within a given spectrogram (Wood et al. 2024). Misclassification can still occur even above high score thresholds, however, so those detections are then often verified by a human observer to separate out true positives from false positives.
+
+Choosing a score threshold will depend on the goals of the project; however, threshold choice is a trade-off between false positives (i.e., incorrect classifications) and false negatives (i.e., missed detections; Priyadarshani et al. 2018, Knight et al. 2017). Choosing a high score threshold will minimize false positives, but will also result in false negatives. Choosing a low score threshold will minimize false negatives but will result in many false positives. The proportion of false positives at a given score threshold is typically measured by precision:
+
+$precision = \frac{tp}{tp + fp}$
+
+While the proportion of false negatives is measured as recall:
+
+$recall = \frac{tp}{tp + fn}$
+
+Where *tp* is the number of true positives, *fp* is the number of false positives, and *fn* is the number of false negatives.
+
+The threshold-agnostic performance of a classifier is then typically evaluated as the area under the curve (AUC) of a precision-recall curve. The corner of the precision recall curve can be used to select a score threshold.
+
+F-score is a combination of precision and recall and can also used to select a score threshold by selecting the peak value.
+
+$Fscore = \frac{2 * precision* recall}{precision + recall}$
+
+## BirdNET performance for Canadian birds
+
+ABMI has evaluated BirdNET with a dataset of 623 3-minute recordings. All species were annotated in each minute of each recording by our top expert listeners and further groomed for false positives and negatives. The dataset was selected to include at least 10 recordings with detections of the most common 203 Canadian bird species. Recordings were primarily sourced from Alberta and Ontario to include variation in dialect. We evaluated BirdNET by running it using the local eBird occurrence data for each recording and comparing results with our expert dataset and pooling the total detections across species per minute of recording to calculate overall precision, recall, and F-score.
+
+Precision ranged from 0.36 at a score threshold of 0.10 to 0.94 at a score threshold of 0.99 (Figure 1). Recall ranged from 0.01 at a score threshold of 0.99 to 0.36 of 0.1  F-score was similarly low, ranging from 0.03 at a score threshold of 0.01 to 0.36 at a score threshold of 0.99. Neither the precision-recall curve nor the plot of F-score relative to score threshold showed a typical concave down curve shape, suggesting that a low score threshold of 0.10 would be best to optimize trade-offs between precision and recall.
+
+```{r, eval=T, include=T, echo=F, message=F, warning=F}
+
+dat <- read.csv(file.path("G:/Shared drives/ABMI_Recognizers/HawkEars", "Results", "ExpertData", "ExpertData_PR_Total.csv")) |> 
+  dplyr::filter(classifier=="BirdNET", thresh >= 0.1)
+
+plot.p <- ggplot(dat) +
+  geom_line(aes(x=thresh, y=p), size=1.5) +
+  xlab("Score threshold") +
+  ylab("Precision") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  theme_bw()
+
+plot.r <- ggplot(dat) +
+  geom_line(aes(x=thresh, y=r), size=1.5) +
+  xlab("Score threshold") +
+  ylab("Recall") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  theme_bw()
+
+plot.f <- ggplot(dat) +
+  geom_line(aes(x=thresh, y=f), size=1.5) +
+  xlab("Score threshold") +
+  ylab("F-score") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  theme_bw()
+
+plot.pr <- ggplot(dat) +
+  geom_line(aes(x=r, y=p), size=1.5) +
+  xlab("Recall") +
+  ylab("Precision") +
+  theme_bw()
+
+gridExtra::grid.arrange(plot.p, plot.r, plot.f, plot.pr, ncol=2,
+                        bottom = "Figure 1. Precision, recall, and F-score of BirdNET  per minute of recording\ncompared to expert human listeners")
+
+```
+
+# Deep learning in WildTrax
+
+WildTrax uses BirdNET lite to automatically classify species in each 3 second window of all recordings that are uploaded to projects and transcribed. The classifier is run overnight once the task is Transcribed. Please visit the [BirdNET Github repository](https://github.com/kahst/BirdNET-Analyzer) to run BirdNET on your own computer if you wish to run BirdNET on large volumes of acoustic files.
+
+The sensitivity is set at 1.5 to reduce the probability of false positives and the score threshold is set low at 0.1 to allow users to set higher thresholds as needed. The list of species is filtered by eBird occurrence data for the week of recording, but not by location.
+
+## Downloading the classifier reports
+
+Once a task has been transcribed, the BirdNET report can be retrieved on the following day via [WildTrax](http://www.wildtrax.ca) or the `wildRtrax` R package using the `wt_download_report()` function. 
+
+Use the `wt_download_report()` function to download the BirdNET report and the main report for further analysis. We'll use the ABMI Ecosystem Health dataset from 2022 as an example dataset. The output will be a list of tibbles in alphabetical order.
+
+```{r, include=F, message=F, warning=F, echo=F, eval=T}
+library(wildRtrax)
+
+Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
+wt_auth()
+
+#This line will take a minute to run while it downloads the data
+data <- wt_download_report(project_id = 1144,
+                           sensor_id = "ARU",
+                           reports = c("main", "birdnet"), 
+                           weather_cols = FALSE)
+
+```
+
+```{r, include=T, eval=F}
+library(wildRtrax)
+
+Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
+wt_auth()
+
+#This line will take a minute to run while it downloads the data
+data <- wt_download_report(project_id = 1144,
+                           sensor_id = "ARU",
+                           reports = c("main", "birdnet"), 
+                           weather_cols = FALSE)
+
+```
+## Evaluating
+
+Because BirdNET is only run on transcribed recordings in WildTrax, we can combine the main report and the BirdNET report to evaluate the classifier's performance on a given dataset. The `wt_evaluate_classifier()` function takes the output from the `wt_download_report()` function when you request the `main` and `birdnet` reports and joins them together and then calculates precision, recall, and F-score for the requested sequences of thresholds. You can request the metrics at the minute level for recordings that are processed with the species per minute method (1SPM). You can also exclude species that are not allowed in the project from the BirdNET results before evaluation.
+
+```{r, message=F, warning=F}
+
+eval <- wt_evaluate_classifier(data,
+                              resolution = "recording",
+                              remove_species = TRUE,
+                              thresholds = c(10, 99))
+
+tail(eval, 5)
+```
+
+We can plot the results of our evaluation to get an idea of how BirdNET is performing.
+
+```{r, message=F, warning=F}
+plot.p <- ggplot(eval) +
+  geom_line(aes(x=threshold, y=precision), size=1.5) +
+  xlab("Score threshold") +
+  ylab("Precision") +
+  theme_bw()
+
+plot.r <- ggplot(eval) +
+  geom_line(aes(x=threshold, y=recall), size=1.5) +
+  xlab("Score threshold") +
+  ylab("Recall") +
+  theme_bw()
+
+plot.f <- ggplot(eval) +
+  geom_line(aes(x=threshold, y=fscore), size=1.5) +
+  xlab("Score threshold") +
+  ylab("F-score") +
+  theme_bw()
+
+plot.pr <- ggplot(eval) +
+  geom_line(aes(x=recall, y=precision), size=1.5) +
+  xlab("Recall") +
+  ylab("Precision") +
+  theme_bw()
+
+library(gridExtra)
+grid.arrange(plot.p, plot.r, plot.f, plot.pr, ncol=2)
+```
+
+## Selecting a threshold
+
+You can use the precision and recall values in the output of the `wt_evaluate_classifier()` function to select a score threshold manually, or you can use the `wt_get_threshold()` function to select the highest threshold that maximizes F-score.
+
+```{r, message=F, warning=F}
+
+threshold_use <- wt_get_threshold(eval) |> 
+  print()
+
+```
+
+## Converting scores to detections
+
+Once a threshold has been selected, the BirdNET report can be converted from score probabilities to detections using the `wt_classifier_detections()` function. Once again, you can exclude species that are not allowed in the project from the BirdNET results before evaluation.
+
+```{r, message=F, warning=F}
+
+birdnet <- data[[1]]
+
+detections <- wt_classifier_detections(birdnet,
+                                       threshold = threshold_use, 
+                                       remove_species = TRUE)
+
+```
+
+Remember, however, that all classifiers make mistakes, and that we have selected a score threshold that maximizes F-score. Let's look at what our precision is.
+
+```{r, message=F, warning=F}
+
+eval[eval$threshold==threshold_use,]
+
+```
+
+A precision at our chosen score threshold of approximately 0.48 means that over half of these detections are likely still false positives, we should probably visually verify to remove those false positives. We can use the `wt_format_detections()` function to format our detections object into the format required to upload to WildTrax for verification.
+
+# Using deep learning results in WildTrax
+
+Given that the overall recall rate of BirdNET is < 10% for precision values above 0.7, the detections should be used with caution in ecological analyses. From a detectability perspective, a recall rate of 10% means that your detection probability with BirdNET is 10% of what it would be with a human listener.
+
+## Check for additional species detected
+
+One of the potential valuable applications of BirdNET is to check for the presence of additional species in acoustic recordings that were not detected by human listeners. Ware et al. (2023) found that supplementing human listener data with verified computer listening results improved estimates of species richness, particularly for water-associated birds.
+
+We can use the `wt_additional_species()` function to check for species reported by BirdNET that the human listeners did not detect in our project. The input for this function should be the output from the `wt_download_report()` function when you request the `main` and `birdnet` reports and you will need to set a score threshold. The function reports the highest scoring detection for each new species detection in each recording. The output can then be converted with the `wt_upload_detection()` function to upload to WildTrax for verification.
+
+Let's use a high threshold (80) on our example dataset to see if any new species are detected. We can use the resolution argument to specify whether we want to look for new species in each recording, at each location, or in the entire project. Let's pretend we're interested in site-specific species richness and use the location argument.
+
+```{r, message=F, warning=F}
+
+new <- wt_additional_species(data, remove_species = TRUE, threshold = 80, resolution="location")
+
+#potential new detections
+nrow(new)
+
+table(new$species_code)
+
+```
+
+There are 28 potential new species detections in our dataset. We can use the `wt_format_detections()` function to format our output for upload to WildTrax and verification. 
+
+Uploading additional BirdNET derived tags to an existing task has some complications and doing so should be avoided.  This is because the "Individual" field is a key field in WildTrax and the value is filled in differently in manual vetting vs. BirdNET derived tags when using the `wt_format_detections()` function. The best thing to do is to create a new project/task with the same recordings, and choose the None method to allow for multiple tags of the same species and to avoid overlapping "Individual" tags that can create problems when editing tags later.
+
+If you have already created BirdNET tags using the task report from the previous uploaded tasks then you may need to download a new task report for the new tasks/project and re-create the BirdNET tags with the information from that task report.  If the tasks are in an entirely new project with no changes to the "Location", "Recording Date/Time", or the "Method" then the originally derived BirdNET tags file should work in the new project, but if you changed the method from 1SPT/1SPM to NONE then you will need to update that field before uploading to the new project.  You can either do this manually in the csv file, or you can use a task report from the new project and re-create the BirdNET tags using the `wt_format_detections()` function to ensure that all the field match up before uploading.  If any information in the BirdNET_tags csv doesn't match to the information about the tasks in the project then you will get an error when uploading the csv.
+
+## Individual calls
+
+Another potential use for BirdNET in WildTrax is to use it to detect individual calls as opposed to just the first call in each task (1SPT) or minute (1SPM). This might be of interest if you're using call rate in a behavioural analysis, or if you're looking for detections for tool development like distance estimation or building a focal species recognizer.
+
+You can use the workflow described above in the 'Deep learning in WildTrax' section for focal species for this purpose. Let's try it for Clay-coloured Sparrow.
+
+```{r, message=F, warning=F}
+
+#Evaluate classifier performance
+eval_ccsp <- wt_evaluate_classifier(data,
+                              resolution = "recording",
+                              remove_species = TRUE,
+                              species = "CCSP",
+                              thresholds = c(10, 99))
+
+#Get the best threshold
+threshold_ccsp <- wt_get_threshold(eval_yrwa)
+
+#Look at performance at that threshold
+eval_ccsp[eval_ccsp$threshold==threshold_ccsp,]
+
+#Convert to detections
+detections_ccsp <- wt_classifier_detections(birdnet,
+                                            threshold = threshold_ccsp, 
+                                            remove_species = TRUE,
+                                            species = "CCSP")
+
+#Format for upload to WildTrax
+#upload_ccsp <- wt_upload_detections(detections_ccsp)
+
+```
+
+As before, you'll probably want to upload your detections to WildTrax for verification, even though BirdNET performance for Clay-coloured Sparrow is pretty good. Use a new project with the "NONE" annotation method because this is just a single species.
+
+Let's take a look at our BirdNET output as call rate to see if it's higher at the beginning of the season, as we would expect.
+
+```{r, include=T, message=F, warning=F}
+library(lubridate)
+
+#Calculate detections per second and mean confidence in each recording
+rate_ccsp <- detections_ccsp |> 
+  group_by(location_id, recording_date_time, recording_length) |>
+  summarize(calls = n(),
+            confidence = mean(confidence),
+            .groups = "keep") |> 
+  ungroup() |> 
+  mutate(rate = calls/recording_length*60,
+         recording_date_time = ymd_hms(recording_date_time),
+         yday = yday(recording_date_time),
+         hour = hour(recording_date_time))
+
+#Filter to the sites with most recordings with detections
+occupied_ccsp <- rate_ccsp |> 
+  group_by(location_id) |> 
+  mutate(recordings = n()) |> 
+  ungroup() |> 
+  dplyr::filter(recordings >= 4)
+
+#Plot call rate by day of year
+ggplot(occupied_ccsp) + 
+  geom_point(aes(x=yday, y=rate)) +
+  geom_smooth(aes(x=yday, y=rate)) +
+  xlab("Day of year") +
+  ylab("Rate of Clay-coloured sparrow detections per minute") +
+  theme_bw()
+
+```
+
+## Other applications
+
+There are other potential ecological applications that BirdNET results could be used for; however, you would need to run it on more recordings than those already transcribed in WildTrax. Please visit the [BirdNET Github repository](https://github.com/kahst/BirdNET-Analyzer) to run BirdNET on your own computer if you wish to run BirdNET on large volumes of acoustic files. The decision to pursue other applications should be made with the effect of BirdNET's low recall rate in mind:
+
+1. Presence only data: BirdNET is unlikely to be reliable to confirm absences (e.g., Species at Risk) due to the low recall.
+
+2. Occupancy modelling: BirdNET data can be used for occupancy modelling (Wood et al. 2023), and there are approaches that can accommodate false positive error rates to preclude verification of all detections (Rhinehart et al. 2022). However, users should keep in mind that occupancy modelling is recommended only for detection probabilities > 30% and that recall from BirdNET may be too low for reliable occupancy estimates for many species (Knight et al. 2017).
+
+See Perez-Granados 2023 for a full review of BirdNET applications and performance.
+
+# Future WildTrax deep learning developments
+
+ABMI continues to develop our approaches to computer listening including large multispecies classifiers, smaller models for specific research projects, and the tools to implement and work with the output of those classifiers in the WildTrax ecosystem, including supporting our human listening methods.
+
+## HawkEars
+
+The next WildTrax release will be accompanied by the introduction of a new deep learning model that can classify 306 of Canada's most common bird species. HawkEars was developed by Jan Huus and will be implemented in the same fashion as BirdNET so that users will also be able to download a 'hawkears' report and use the same set of `wildRtrax` functions demonstrated above on it. HawkEars is also freely available from [Github](https://www.github.com/jhuus/HawkEars) for users that want to run it on large volumes of recordings.
+
+Initial tests of HawkEars on the same expert dataset as above suggest it performs much better than BirdNET for Canadian species, with more than double the recall and higher precision at score thresholds above 50 (Figure 2; Huus et al. *In prep*).
+
+```{r, eval=T, include=T, echo=F, message=F, warning=F}
+
+dat <- read.csv(file.path("G:/Shared drives/ABMI_Recognizers/HawkEars", "Results", "ExpertData", "ExpertData_PR_Total.csv")) |> 
+  dplyr::filter(thresh >= 0.1)
+
+plot.p <- ggplot(dat) +
+  geom_line(aes(x=thresh, y=p, colour=classifier), size=1.5) +
+  xlab("Score threshold") +
+  ylab("Precision") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  scale_colour_manual(values=c("black", "grey80")) +
+  theme_bw()
+
+plot.r <- ggplot(dat) +
+  geom_line(aes(x=thresh, y=r, colour=classifier), size=1.5) +
+  xlab("Score threshold") +
+  ylab("Recall") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  scale_colour_manual(values=c("black", "grey80")) +
+  theme_bw()
+
+plot.f <- ggplot(dat) +
+  geom_line(aes(x=thresh, y=f, colour=classifier), size=1.5) +
+  xlab("Score threshold") +
+  ylab("F-score") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  scale_colour_manual(values=c("black", "grey80")) +
+  theme_bw()
+
+plot.pr <- ggplot(dat) +
+  geom_line(aes(x=r, y=p, colour=classifier), size=1.5) +
+  xlab("Recall") +
+  ylab("Precision") +
+  scale_colour_manual(values=c("black", "grey80")) +
+  theme_bw()
+
+gridExtra::grid.arrange(plot.p, plot.r, plot.f, plot.pr, ncol=2,
+                        bottom = "Figure 2. Precision, recall, and F-score of BirdNET and HawkEars per minute of recording\ncompared to expert human listeners")
+
+```
+
+# Literature Cited
+
+Huus, J., E. C. Knight, K. Kelly, E. M. Bayne. *In prep*. HawkEars: A high-performing deep learning classifier for Canadian birds.
+
+Kahl, S., C. M. Wood, M. Eibl, and H. Klinck. 2021. BirdNET: A deep learning solution for avian diversity monitoring. Ecological Informatics 61:101236. https://doi.org/10.1016/j.ecoinf.2021.101236.
+
+Knight, E. C., K. C. Hannah, G. J. Foley, C. D. Scott, R. M. Brigham, and E. M. Bayne. 2017. Recommendations for acoustic recognizer performance assessment with application to five common automated signal recognition programs. Avian Conservation and Ecology 12:art14. https://doi.org/10.5751/ace-01114-120214.
+
+Priyadarshani, N., S. Marsland, and I. Castro. 2018. Automated birdsong recognition in complex acoustic environments: a review. Journal of Avian Biology 49:jav-01447. https://doi.org/10.1111/jav.01447.
+
+Rhinehart, T. A., D. Turek, and J. Kitzes. 2022. A continuous-score occupancy model that incorporates uncertain machine learning output from autonomous biodiversity surveys. Methods in Ecology and Evolution 13:1778–1789. https://doi.org/10.1111/2041-210x.13905.
+
+Ware, L., C. L. Mahon, L. McLeod, and J.-F. Jetté. 2023. Artificial intelligence (BirdNET) supplements manual methods to maximize bird species richness from acoustic data sets generated from regional monitoring. Canadian Journal of Zoology 101:1031–1051. https://doi.org/10.1139/cjz-2023-0044.
+
+Wood, C. M., and S. Kahl. 2024. Guidelines for appropriate use of BirdNET scores and other detector outputs. Journal of Ornithology:1–6. https://doi.org/10.1007/s10336-024-02144-5.
