@@ -152,7 +152,7 @@ wt_calculate_prf <- function(threshold, data, human_total){
 wt_get_threshold <- function(data){
 
   #Filter to highest Fscore
-  highest_fscore <- eval |>
+  highest_fscore <- data |>
     mutate(fscore = round(fscore, 2)) |>
     dplyr::filter(fscore==max(fscore))
 
