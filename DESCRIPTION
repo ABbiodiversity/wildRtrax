@@ -26,7 +26,6 @@ Imports:
     ggplot2,
     httr,
     intrval,
-    jsonlite,
     lubridate,
     magick,
     purrr,
