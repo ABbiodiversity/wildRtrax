@@ -390,3 +390,17 @@ gridExtra::grid.arrange(plot.p, plot.r, plot.f, plot.pr, ncol=2,
 ```
 
 # Literature Cited
+
+Huus, J., E. C. Knight, K. Kelly, E. M. Bayne. *In prep*. HawkEars: A high-performing deep learning classifier for Canadian birds.
+
+Kahl, S., C. M. Wood, M. Eibl, and H. Klinck. 2021. BirdNET: A deep learning solution for avian diversity monitoring. Ecological Informatics 61:101236. https://doi.org/10.1016/j.ecoinf.2021.101236.
+
+Knight, E. C., K. C. Hannah, G. J. Foley, C. D. Scott, R. M. Brigham, and E. M. Bayne. 2017. Recommendations for acoustic recognizer performance assessment with application to five common automated signal recognition programs. Avian Conservation and Ecology 12:art14. https://doi.org/10.5751/ace-01114-120214.
+
+Priyadarshani, N., S. Marsland, and I. Castro. 2018. Automated birdsong recognition in complex acoustic environments: a review. Journal of Avian Biology 49:jav-01447. https://doi.org/10.1111/jav.01447.
+
+Rhinehart, T. A., D. Turek, and J. Kitzes. 2022. A continuous-score occupancy model that incorporates uncertain machine learning output from autonomous biodiversity surveys. Methods in Ecology and Evolution 13:1778–1789. https://doi.org/10.1111/2041-210x.13905.
+
+Ware, L., C. L. Mahon, L. McLeod, and J.-F. Jetté. 2023. Artificial intelligence (BirdNET) supplements manual methods to maximize bird species richness from acoustic data sets generated from regional monitoring. Canadian Journal of Zoology 101:1031–1051. https://doi.org/10.1139/cjz-2023-0044.
+
+Wood, C. M., and S. Kahl. 2024. Guidelines for appropriate use of BirdNET scores and other detector outputs. Journal of Ornithology:1–6. https://doi.org/10.1007/s10336-024-02144-5.
