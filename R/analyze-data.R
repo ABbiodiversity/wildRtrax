@@ -19,7 +19,8 @@
 #' @param detection_id_col Defaults to `detection`. The column indicating the detection id
 #' @param start_col_det Defaults to `start_time`. The column indicating the start time of the independent detections
 #'
-#' @import dplyr lubridate tidyr rlang
+#' @import dplyr lubridate tidyr
+#' @importFrom rlang is_missing
 #' @export
 #'
 #' @examples
@@ -203,7 +204,8 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 #' @param remove_human Logical; Should human and human-related tags (e.g. vehicles) be removed? Defaults to TRUE.
 #' @param remove_domestic Logical; Should domestic animal tags (e.g. cows) be removed? Defaults to TRUE.
 #'
-#' @import dplyr lubridate rlang
+#' @import dplyr lubridate
+#' @importFrom rlang is_missing
 #' @export
 #'
 #' @examples
