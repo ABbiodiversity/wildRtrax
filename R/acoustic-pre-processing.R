@@ -5,14 +5,14 @@
 #' @param path Character; The path to the directory with audio files you wish to scan. Can be done recursively.
 #' @param file_type Character; Takes one of four values: wav, wac, flac or all. Use "all" if your directory contains many types of files.
 #' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.
-#' @param tz Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, `wt_audio_scanner` will assume the next valid time. Use `OlsonNames()` to get a list of valid names.
 #'
 #' @import fs tibble dplyr tidyr stringr tuneR purrr seewave
+#' @importFrom rlang env_has current_env
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T, tz = "US/Mountain")
+#' wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
 #' }
 #'
 #' @return A tibble with a summary of your audio files.
@@ -71,19 +71,14 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
     tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = FALSE) %>%
     dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)'))
 
-  if(tz == ""){
+  # old timezone stuff
     df <- df %>%
-      dplyr::mutate(recording_date_time = lubridate::ymd_hms(recording_date_time))
-  } else if (tz != "") {
-    df <- df %>%
-      dplyr::mutate(recording_date_time = lubridate::force_tz(lubridate::ymd_hms(recording_date_time), tzone = tz))
-  }
+      dplyr::mutate(recording_date_time = as.POSIXct(strptime(recording_date_time, format = "%Y-%m-%d %H:%M:%S")))
 
   df <- df %>%
     dplyr::mutate(julian = lubridate::yday(recording_date_time),
-           year = lubridate::year(recording_date_time),
-           gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE),
-           year = lubridate::year(recording_date_time)) %>%
+           year = as.numeric(format(recording_date_time,"%Y")),
+           gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE)) %>%
     dplyr::arrange(location, recording_date_time) %>%
     dplyr::group_by(location, year, julian) %>%
     dplyr::mutate(time_index = dplyr::row_number()) %>% # Create time index - this is an ordered list of the recording per day, e.g. first recording of the day = 1, second equals 2, etc.
@@ -362,7 +357,8 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #' @param input_dir Character; A folder path where outputs from \code{`wt_run_ap()`} are stored.
 #' @param purpose Character; type of filtering you can choose from
 #'
-#' @import lubridate magick dplyr tidyr ggplot2 readr
+#' @import magick dplyr tidyr ggplot2
+#' @importFrom readr read_csv
 #' @export
 #'
 #' @examples
@@ -595,7 +591,8 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
 #' @param output_folder Character; output path to where the segments will be stored
 #'
-#' @import tuneR lubridate dplyr
+#' @import tuneR dplyr
+#' @importFrom lubridate seconds
 #' @export
 #'
 #' @examples
@@ -751,7 +748,8 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
 #' @param output Character; Path where the output file will be stored
 #' @param freq_bump Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification
 #'
-#' @import dplyr tidyr readr tibble
+#' @import dplyr tidyr tibble
+#' @importFrom readr read_csv
 #' @export
 #'
 #' @examples
@@ -779,7 +777,7 @@ wt_kaleidoscope_tags <- function (input, output, freq_bump = T) {
     dplyr::relocate(recordingDate, .after = location) %>%
     dplyr::mutate(recordingDate = stringr::str_remove(recordingDate,'.+?(?:__)')) %>%
     # Create date/time fields
-    dplyr::mutate(recordingDate = lubridate::ymd_hms(recordingDate)) %>% #Apply a time zone if necessary
+    dplyr::mutate(recording_date_time = as.POSIXct(strptime(recording_date_time, format = "%Y-%m-%d %H:%M:%S"))) %>% #Apply a time zone if necessary
     dplyr::rename("taskLength" = 5,
                   "startTime" = 6,
                   "tagLength" = 7,
@@ -839,7 +837,9 @@ wt_kaleidoscope_tags <- function (input, output, freq_bump = T) {
 #' @param score_filter Numeric; Filter the detections by score
 #' @param task_length Numeric; length of the task in seconds
 #'
-#' @import dplyr tidyr readr lubridate tibble
+#' @import dplyr tidyr tibble
+#' @importFrom readr read_table
+#' @importFrom lubridate yday
 #' @export
 #'
 #' @return A csv formatted as a WildTrax tag template
@@ -876,7 +876,7 @@ wt_songscope_tags <- function (input, output = c("env","csv"),
                     sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = F) %>%
     dplyr::mutate(startTime = as.numeric(startTime)) %>%
     dplyr::mutate(recordingDate = str_remove(recordingDate, '.+?(?:__)')) %>%
-    dplyr::mutate(recordingDate = lubridate::ymd_hms(recordingDate))
+    dplyr::mutate(recording_date_time = as.POSIXct(strptime(recording_date_time, format = "%Y-%m-%d %H:%M:%S")))
 
   if (method == "USPM") {
     in_tbl_wtd <- in_tbl_wtd %>%

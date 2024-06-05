@@ -12,8 +12,6 @@ wt_audio_scanner(path, file_type, extra_cols = F, tz = "")
 \item{file_type}{Character; Takes one of four values: wav, wac, flac or all. Use "all" if your directory contains many types of files.}
 
 \item{extra_cols}{Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.}
-
-\item{tz}{Character; Forces a timezone to each of the recording files; if the time falls into a daylight savings time break, \code{wt_audio_scanner} will assume the next valid time. Use \code{OlsonNames()} to get a list of valid names.}
 }
 \value{
 A tibble with a summary of your audio files.
@@ -23,7 +21,7 @@ Scans directories of audio data and returns the standard naming conventions
 }
 \examples{
 \dontrun{
-wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T, tz = "US/Mountain")
+wt_audio_scanner(path = ".", file_type = "wav", extra_cols = T)
 }
 
 }
