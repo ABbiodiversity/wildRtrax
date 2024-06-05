@@ -300,7 +300,8 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
 #' @description Request for the WildTrax species table
 #'
 #'
-#' @import dplyr httr readr
+#' @import dplyr httr
+#' @importFrom readr read_csv
 #' @export
 #'
 #' @examples
@@ -364,7 +365,8 @@ wt_get_species <- function(){
 #' @param output The output folder
 #' @param type Either recording, tag_clip_spectrogram or tag_clip_audio
 #'
-#' @import dplyr tibble purrr curl
+#' @import dplyr tibble purrr
+#' @importFrom curl curl_download
 #' @export
 #'
 #' @examples
@@ -450,7 +452,7 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
 #' @param species The species you want to search for (e.g. 'WTSP'). Multiple species can be included.
 #' @param boundary The custom boundary you want to use. Defined as at least a four vertex polygon. Definition can also be a bbox
 #'
-#' @import dplyr tibble readr httr
+#' @import dplyr tibble httr
 #' @export
 #'
 #' @examples

@@ -6,6 +6,7 @@
 #' @param input_from_file Use a file downloaded from either an organization or project
 #'
 #' @import dplyr tibble tidyr sf
+#' @importFrom readr read_csv
 #' @export
 #'
 #' @examples

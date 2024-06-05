@@ -133,7 +133,11 @@
 #'
 #' @keywords internal
 #'
-#' @import QPAD dplyr intrval terra curl
+#' @import QPAD dplyr intrval
+#' @importFrom curl curl_download
+#' @importFrom terra extract rast
+#'
+#' @export
 
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
