@@ -141,13 +141,10 @@ Use custom bounding areas:
 
 ```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
 # Define a polygon
-my_aoi <- list(
-  c(-110.85438, 57.13472),
-  c(-110.85438, 57.13472),
-  c(-114.14364, 54.74858),
-  c(-110.69368, 52.34150),
-  c(-110.85438, 57.13472)  # Adding the first coordinate to close the polygon
-)
+my_aoi <- list(c(-113.96067733931979, 56.238173020067734),
+            c(-117.06284589142298, 54.87576824970637),
+            c(-112.88035197161919, 54.90431032422126),
+            c(-113.96067733931979, 56.238173020067734))
 
 discover <- wt_dd_summary(sensor = "ARU", species = "White-throated Sparrow", boundary = my_aoi)
 
@@ -158,9 +155,9 @@ head(discover)
 ```{r, echo=T, include=T, eval=F, warning=F, message = FALSE}
 library(sf)
 # Alberta bounding box
-abbox <- read_sf("...shp") |> 
-  filter(PRANOM == "Alberta") |>
-  st_transform(crs = 4326) |> # Shapefile of Alberta
+abbox <- read_sf("...shp") |> # Shapefile of Alberta
+  filter(Province == "Alberta") |>
+  st_transform(crs = 4326) |> 
   st_bbox()
 
 discover <- wt_dd_summary(sensor = "ARU", species = "White-throated Sparrow", boundary = abbox)

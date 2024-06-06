@@ -112,6 +112,7 @@ wt_get_download_summary <- function(sensor_id) {
 #' }
 #'
 #' @import httr purrr dplyr
+#' @importFrom readr read_csv col_character col_logical
 #' @export
 #'
 #' @examples
@@ -263,8 +264,8 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   files.full <- list.files(td, pattern= "*.csv", full.names = TRUE)
   files.less <- basename(files.full)
   x <- purrr::map(.x = files.full, .f = ~ suppressWarnings(readr::read_csv(., show_col_types = F,
-                                                                           skip_empty_rows = T, col_types = list(abundance = col_character(),
-                                                                                                                 image_fire = col_logical())))) %>%
+                                                                           skip_empty_rows = T, col_types = list(abundance = readr::col_character(),
+                                                                                                                 image_fire = readr::col_logical())))) %>%
     purrr::set_names(files.less)
 
 
