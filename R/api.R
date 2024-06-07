@@ -686,7 +686,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
     # Extracting data from second response
     rpps <- httr::content(rr)
     orgs <- purrr::map(rpps$organizations, ~pluck(., "organizationName")) |> map_chr(~ ifelse(is.null(.x), "", .x))
-    counts <- map_dbl(rpps$projects, pluck, "count")
+    counts <- purrr::map_dbl(rpps$projects, pluck, "count")
     projectNames <- map(rpps$projects, ~pluck(., "projectName")) |> map_chr(~ ifelse(is.null(.x), "", .x))
     projectIds <- map(rpps$projects, ~pluck(., "projectId")) |> map_int(~ ifelse(is.null(.x), NA_integer_, .x))
 
