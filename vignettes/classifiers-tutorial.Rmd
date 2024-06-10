@@ -52,7 +52,7 @@ Precision ranged from 0.36 at a score threshold of 0.10 to 0.94 at a score thres
 ```{r, eval=T, include=T, echo=F, message=F, warning=F}
 
 dat <- read.csv(file.path("G:/Shared drives/ABMI_Recognizers/HawkEars", "Results", "ExpertData", "ExpertData_PR_Total.csv")) |> 
-  dplyr::filter(classifier=="BirdNET", thresh >= 0.1) ## Save as data
+  dplyr::filter(classifier=="BirdNET", thresh >= 0.1) ### Required data
 
 plot.p <- ggplot(dat) +
   geom_line(aes(x=thresh, y=p), size=1.5) +
@@ -328,7 +328,7 @@ Initial tests of HawkEars on the same expert dataset as above suggest it perform
 ```{r, eval=T, include=T, echo=F, message=F, warning=F}
 
 dat <- read.csv(file.path("G:/Shared drives/ABMI_Recognizers/HawkEars", "Results", "ExpertData", "ExpertData_PR_Total.csv")) |> 
-  dplyr::filter(thresh >= 0.1) ## Save as data
+  dplyr::filter(thresh >= 0.1) ### Required data
 
 plot.p <- ggplot(dat) +
   geom_line(aes(x=thresh, y=p, colour=classifier), size=1.5) +
