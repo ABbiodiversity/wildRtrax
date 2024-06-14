@@ -5,7 +5,7 @@
 #' @name wildRtrax
 "_PACKAGE"
 
-# Define global variables
+# Define global variables ---- working to reduce
 utils::globalVariables(c(".",
                            ":=",
                            "AUTO ID*",
