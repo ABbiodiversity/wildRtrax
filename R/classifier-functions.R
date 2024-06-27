@@ -5,7 +5,7 @@
 #' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
 #' @param resolution Character; either "recording" to summarize at the entire recording level or "minute" to summarize the minute level if the `task_method` is "1SPM"
 #' @param remove_species Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report
-#' @param species Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSLF", "BOCH"))
+#' @param species Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSFL", "BOCH"))
 #' @param thresholds Numeric; start and end of sequence of score thresholds at which to calculate performance metrics
 #'
 #' @import dplyr
