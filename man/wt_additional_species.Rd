@@ -28,9 +28,11 @@ Check for species reported by BirdNET that the human listeners did not detect in
 }
 \examples{
 \dontrun{
-data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
+data <- wt_download_report(project_id = 1144, sensor_id = "ARU",
+reports = c("main", "birdnet"), weather_cols = FALSE)
 
-new <- wt_additional_species(data, remove_species = TRUE, threshold = 80, resolution="location")
+new <- wt_additional_species(data, remove_species = TRUE,
+threshold = 80, resolution="location")
 }
 
 }

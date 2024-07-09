@@ -13,9 +13,11 @@
 #'
 #' @examples
 #' \dontrun{
-#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
+#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU",
+#' reports = c("main", "birdnet"), weather_cols = FALSE)
 #'
-#' eval <- wt_evaluate_classifier(data, resolution = "recording", remove_species = TRUE, thresholds = c(10, 99))
+#' eval <- wt_evaluate_classifier(data, resolution = "recording",
+#' remove_species = TRUE, thresholds = c(10, 99))
 #' }
 #'
 #' @return A tibble containing columsn for precision, recall, and F-score for each of the requested thresholds.
@@ -140,11 +142,13 @@ wt_calculate_prf <- function(threshold, data, human_total){
 #'
 #' @examples
 #' \dontrun{
-#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
+#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU",
+#' reports = c("main", "birdnet"), weather_cols = FALSE)
 #'
-#' eval <- wt_evaluate_classifier(data, resolution = "recording", remove_species = TRUE, thresholds = c(10, 99))
+#' eval <- wt_evaluate_classifier(data, resolution = "recording",
+#' remove_species = TRUE, thresholds = c(10, 99))
 #'
-#'threshold_use <- wt_get_threshold(eval) |> print()
+#' threshold_use <- wt_get_threshold(eval) |> print()
 #' }
 #'
 #' @return A single numeric value
@@ -168,22 +172,24 @@ wt_get_threshold <- function(data){
 #' @param data The `birdnet` report from the `wt_download_report()` function
 #' @param threshold Numeric; the desired score threshold
 #' @param remove_species Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report
-#' @param species Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSLF", "BOCH"))
+#' @param species Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSFL", "BOCH"))
 #'
 #' @import dplyr
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
+#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU",
+#' reports = c("main", "birdnet"), weather_cols = FALSE)
 #'
-#' eval <- wt_evaluate_classifier(data, resolution = "recording", remove_species = TRUE, thresholds = c(10, 99))
+#' eval <- wt_evaluate_classifier(data, resolution = "recording",
+#' remove_species = TRUE, thresholds = c(10, 99))
 #'
-#'threshold_use <- wt_get_threshold(eval) |> print()
+#' threshold_use <- wt_get_threshold(eval) |> print()
 #'
-#'birdnet <- data[[1]]
+#' birdnet <- data[[1]]
 #'
-#'detections <- wt_classifier_detections(birdnet, threshold = threshold_use, remove_species = TRUE)
+#' detections <- wt_classifier_detections(birdnet, threshold = threshold_use, remove_species = TRUE)
 #' }
 #'
 #' @return A tibble with the same fields as the `birdnet` report that contains only detections above the specified threshold.
@@ -223,9 +229,11 @@ wt_classifier_detections <- function(data, threshold, remove_species = TRUE, spe
 #'
 #' @examples
 #' \dontrun{
-#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
+#' data <- wt_download_report(project_id = 1144, sensor_id = "ARU",
+#' reports = c("main", "birdnet"), weather_cols = FALSE)
 #'
-#'new <- wt_additional_species(data, remove_species = TRUE, threshold = 80, resolution="location")
+#' new <- wt_additional_species(data, remove_species = TRUE,
+#' threshold = 80, resolution="location")
 #' }
 #'
 #' @return A tibble with the same fields as the `birdnet` report with the highest scoring detection for each new species detection in each recording.

@@ -18,7 +18,7 @@ wt_classifier_detections(
 
 \item{remove_species}{Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report}
 
-\item{species}{Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSLF", "BOCH"))}
+\item{species}{Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSFL", "BOCH"))}
 }
 \value{
 A tibble with the same fields as the \code{birdnet} report that contains only detections above the specified threshold.
@@ -28,9 +28,11 @@ Converts and filters the \code{birdnet} report from score probabilities to detec
 }
 \examples{
 \dontrun{
-data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
+data <- wt_download_report(project_id = 1144, sensor_id = "ARU",
+reports = c("main", "birdnet"), weather_cols = FALSE)
 
-eval <- wt_evaluate_classifier(data, resolution = "recording", remove_species = TRUE, thresholds = c(10, 99))
+eval <- wt_evaluate_classifier(data, resolution = "recording",
+remove_species = TRUE, thresholds = c(10, 99))
 
 threshold_use <- wt_get_threshold(eval) |> print()
 

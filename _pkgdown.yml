@@ -16,6 +16,7 @@ articles:
   - tutorials
 reference:
   - contents:
+    - wt_auth
     - wt_additional_species
     - wt_audio_scanner
     - wt_calculate_prf

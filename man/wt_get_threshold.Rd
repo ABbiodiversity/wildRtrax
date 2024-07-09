@@ -17,9 +17,11 @@ Retrieves the score threshold that maximizes F-score, which is a tradeoff betwee
 }
 \examples{
 \dontrun{
-data <- wt_download_report(project_id = 1144, sensor_id = "ARU", reports = c("main", "birdnet"), weather_cols = FALSE)
+data <- wt_download_report(project_id = 1144, sensor_id = "ARU",
+reports = c("main", "birdnet"), weather_cols = FALSE)
 
-eval <- wt_evaluate_classifier(data, resolution = "recording", remove_species = TRUE, thresholds = c(10, 99))
+eval <- wt_evaluate_classifier(data, resolution = "recording",
+remove_species = TRUE, thresholds = c(10, 99))
 
 threshold_use <- wt_get_threshold(eval) |> print()
 }

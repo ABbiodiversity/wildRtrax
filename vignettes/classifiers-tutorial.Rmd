@@ -1,8 +1,8 @@
 ---
-title: "How to use Classifier Reports"
+title: "How to use acoustic classifiers with WildTrax"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to use Classifier Reports}
+  %\VignetteIndexEntry{How to use acoustic classifiers with WildTrax}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

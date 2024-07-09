@@ -8,7 +8,7 @@ Authors@R:
            email = "agmacpha@ualberta.ca"),
       person(given = "Marcus",
              family = "Becker",
-             role = c("aut","cre"),
+             role = "aut",
              email = "mabecker@ualberta.ca"),
       person(given = "Elly",
              family = "Knight",
@@ -24,7 +24,6 @@ Imports:
     dplyr (>= 1.0.0),
     fs,
     ggplot2,
-    gridExtra,
     httr,
     intrval,
     lubridate,
@@ -46,6 +45,7 @@ Suggests:
     knitr,
     testthat (>= 3.0.0),
     usethis,
+    gridExtra,
     vembedr
 Remotes: psolymos/QPAD
 VignetteBuilder: knitr

@@ -4,7 +4,7 @@
 \alias{wt_audio_scanner}
 \title{Scan acoustic data to a standard format}
 \usage{
-wt_audio_scanner(path, file_type, extra_cols = F, tz = "")
+wt_audio_scanner(path, file_type, extra_cols = F)
 }
 \arguments{
 \item{path}{Character; The path to the directory with audio files you wish to scan. Can be done recursively.}
