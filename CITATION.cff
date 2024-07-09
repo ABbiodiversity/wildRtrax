@@ -1,8 +1,8 @@
-# -----------------------------------------------------------
-# CITATION file created with {cffr} R package, v0.5.0
+# --------------------------------------------
+# CITATION file created with {cffr} R package
 # See also: https://docs.ropensci.org/cffr/
-# -----------------------------------------------------------
- 
+# --------------------------------------------
+
 cff-version: 1.2.0
 message: 'To cite package "wildRtrax" in publications use:'
 type: software
@@ -27,9 +27,6 @@ contact:
 - family-names: MacPhail
   given-names: Alex
   email: agmacpha@ualberta.ca
-- family-names: Becker
-  given-names: Marcus
-  email: mabecker@ualberta.ca
 references:
 - type: software
   title: 'R: A Language and Environment for Statistical Computing'
@@ -37,11 +34,10 @@ references:
   url: https://www.R-project.org/
   authors:
   - name: R Core Team
-  location:
-    name: Vienna, Austria
-  year: '2024'
   institution:
     name: R Foundation for Statistical Computing
+    address: Vienna, Austria
+  year: '2024'
   version: '>= 4.1.0'
 - type: software
   title: curl
@@ -97,20 +93,6 @@ references:
     email: csardi.gabor@gmail.com
   year: '2024'
 - type: software
-  title: furrr
-  abstract: 'furrr: Apply Mapping Functions in Parallel using Futures'
-  notes: Imports
-  url: https://furrr.futureverse.org/
-  repository: https://CRAN.R-project.org/package=furrr
-  authors:
-  - family-names: Vaughan
-    given-names: Davis
-    email: davis@rstudio.com
-  - family-names: Dancho
-    given-names: Matt
-    email: mdancho@business-science.io
-  year: '2024'
-- type: software
   title: ggplot2
   abstract: 'ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics'
   notes: Imports
@@ -144,8 +126,9 @@ references:
   - family-names: Dunnington
     given-names: Dewey
     orcid: https://orcid.org/0000-0002-9415-4582
-  - family-names: van den Brand
+  - family-names: Brand
     given-names: Teun
+    name-particle: van den
     orcid: https://orcid.org/0000-0002-9335-7468
   year: '2024'
 - type: software
@@ -168,18 +151,6 @@ references:
   authors:
   - family-names: Solymos
     given-names: Peter
-  year: '2024'
-- type: software
-  title: jsonlite
-  abstract: 'jsonlite: A Simple and Robust JSON Parser and Generator for R'
-  notes: Imports
-  url: https://jeroen.r-universe.dev/jsonlite
-  repository: https://CRAN.R-project.org/package=jsonlite
-  authors:
-  - family-names: Ooms
-    given-names: Jeroen
-    email: jeroen@berkeley.edu
-    orcid: https://orcid.org/0000-0002-4035-0289
   year: '2024'
 - type: software
   title: lubridate
@@ -457,6 +428,16 @@ references:
     orcid: https://orcid.org/0000-0002-7840-692X
   year: '2024'
 - type: software
+  title: gridExtra
+  abstract: 'gridExtra: Miscellaneous Functions for "Grid" Graphics'
+  notes: Suggests
+  repository: https://CRAN.R-project.org/package=gridExtra
+  authors:
+  - family-names: Auguie
+    given-names: Baptiste
+    email: baptiste.auguie@gmail.com
+  year: '2024'
+- type: software
   title: vembedr
   abstract: 'vembedr: Embed Video in HTML'
   notes: Suggests
@@ -468,3 +449,4 @@ references:
     email: ian.lyttle@se.com
     orcid: https://orcid.org/0000-0001-9962-4849
   year: '2024'
+
