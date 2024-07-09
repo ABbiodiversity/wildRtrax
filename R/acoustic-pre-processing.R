@@ -17,7 +17,7 @@
 #'
 #' @return A tibble with a summary of your audio files.
 
-wt_audio_scanner <- function(path, file_type, extra_cols = F, tz = "") {
+wt_audio_scanner <- function(path, file_type, extra_cols = F) {
 
   # Create regex for file_type
   if (file_type == "wav" || file_type == "WAV") {
