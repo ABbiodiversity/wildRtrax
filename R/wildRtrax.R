@@ -118,5 +118,5 @@ utils::globalVariables(c(".",
                            "recording_url","audio_file_type",
                            "chardis", "chardismax", "chardur", "chardurmax", "distance1",
                            "survey_id","survey_date","survey_duration_method","observer","durationMethod","survey_distance_method",
-                           "task_id","task_duration","task_distance","location_id","is_missing","n_days_effort","sensor",
+                           "task_id","task_duration","task_distance","location_id","is_missing","n_days_effort","sensor","col_type_index",
                            "fp", "precision", "recall", "is_species_allowed_in_project", "start_s", "confidence", "recording_id", "human", "classifier", "fscore"))
