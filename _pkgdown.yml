@@ -15,36 +15,36 @@ articles:
   - classifiers-tutorial
   - tutorials
 reference:
-- contents:
-  - wt_additional_species
-  - wt_audio_scanner
-  - wt_calculate_prf
-  - wt_classifier_detections
-  - wt_chop
-  - wt_dd_summary
-  - wt_download_media
-  - wt_download_report
-  - wt_evaluate_classifier
-  - wt_flac_info
-  - wt_format_occupancy
-  - wt_glean_ap
-  - wt_get_download_summary
-  - wt_get_species
-  - wt_get_threshold
-  - wt_ind_detect
-  - wt_kaleidoscope_tags
-  - wt_location_distances
-  - wt_make_aru_tasks
-  - wt_make_wide
-  - wt_qpad_offsets
-  - wt_replace_tmtt
-  - wt_run_ap
-  - wt_signal_level
-  - wt_summarise_cam
-  - wt_tidy_species
-  - wt_songscope_tags
-  - wt_wac_info
-  - wildRtrax
+  - contents:
+    - wt_additional_species
+    - wt_audio_scanner
+    - wt_calculate_prf
+    - wt_classifier_detections
+    - wt_chop
+    - wt_dd_summary
+    - wt_download_media
+    - wt_download_report
+    - wt_evaluate_classifier
+    - wt_flac_info
+    - wt_format_occupancy
+    - wt_glean_ap
+    - wt_get_download_summary
+    - wt_get_species
+    - wt_get_threshold
+    - wt_ind_detect
+    - wt_kaleidoscope_tags
+    - wt_location_distances
+    - wt_make_aru_tasks
+    - wt_make_wide
+    - wt_qpad_offsets
+    - wt_replace_tmtt
+    - wt_run_ap
+    - wt_signal_level
+    - wt_summarise_cam
+    - wt_tidy_species
+    - wt_songscope_tags
+    - wt_wac_info
+    - wildRtrax
 news:
   releases:
   - text: wildRtrax 1.3.0
