@@ -15,6 +15,7 @@ library(ggplot2)
 library(stringr)
 library(gridExtra)
 
+load("classifiers.RData")
 ```
 
 # Deep learning in acoustic processing
@@ -51,8 +52,9 @@ Precision ranged from 0.36 at a score threshold of 0.10 to 0.94 at a score thres
 
 ```{r, eval=T, include=T, echo=F, message=F, warning=F}
 
-dat <- read.csv(file.path("G:/Shared drives/ABMI_Recognizers/HawkEars", "Results", "ExpertData", "ExpertData_PR_Total.csv")) |> 
-  dplyr::filter(classifier=="BirdNET", thresh >= 0.1) ### Required data
+dat <- curl::curl_download('https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/ExpertData_PR_Total.csv','ExpertData_PR_Total') |> 
+  readr::read_csv() |>
+  dplyr::filter(classifier=="BirdNET", thresh >= 0.1)
 
 plot.p <- ggplot(dat) +
   geom_line(aes(x=thresh, y=p), size=1.5) +
@@ -253,7 +255,7 @@ eval_ccsp <- wt_evaluate_classifier(data,
                               thresholds = c(10, 99))
 
 #Get the best threshold
-threshold_ccsp <- wt_get_threshold(eval_yrwa)
+threshold_ccsp <- wt_get_threshold(eval_ccsp)
 
 #Look at performance at that threshold
 eval_ccsp[eval_ccsp$threshold==threshold_ccsp,]
@@ -263,10 +265,6 @@ detections_ccsp <- wt_classifier_detections(birdnet,
                                             threshold = threshold_ccsp, 
                                             remove_species = TRUE,
                                             species = "CCSP")
-
-#Format for upload to WildTrax
-#upload_ccsp <- wt_upload_detections(detections_ccsp)
-
 ```
 
 As before, you'll probably want to upload your detections to WildTrax for verification, even though BirdNET performance for Clay-coloured Sparrow is pretty good. Use a new project with the "NONE" annotation method because this is just a single species.
@@ -327,7 +325,7 @@ Initial tests of HawkEars on the same expert dataset as above suggest it perform
 
 ```{r, eval=T, include=T, echo=F, message=F, warning=F}
 
-dat <- read.csv(file.path("G:/Shared drives/ABMI_Recognizers/HawkEars", "Results", "ExpertData", "ExpertData_PR_Total.csv")) |> 
+dat <- dat |> 
   dplyr::filter(thresh >= 0.1) ### Required data
 
 plot.p <- ggplot(dat) +

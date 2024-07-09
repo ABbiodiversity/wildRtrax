@@ -22,7 +22,6 @@ License: MIT + file LICENSE
 Imports:
     curl,
     dplyr (>= 1.0.0),
-    curl,
     fs,
     ggplot2,
     gridExtra,

@@ -19,7 +19,7 @@ wt_evaluate_classifier(
 
 \item{remove_species}{Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report}
 
-\item{species}{Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSLF", "BOCH"))}
+\item{species}{Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSFL", "BOCH"))}
 
 \item{thresholds}{Numeric; start and end of sequence of score thresholds at which to calculate performance metrics}
 }
