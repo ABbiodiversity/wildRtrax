@@ -18,6 +18,10 @@ wt_auth <- function(force = FALSE) {
   if (!exists("._wt_auth_env_"))
     stop("Cannot find the correct environment.", call. = TRUE)
 
+  if(is.null("._wt_auth_env_")){
+    message("Would you like to authorize to your WildTrax account?")
+  }
+
   if (force || .wt_auth_expired())
     .wt_auth()
 
@@ -158,7 +162,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   }
 
   # Allowable reports for each sensor
-  cam <- c("main", "project", "location", "image_set", "image_report", "tag", "megadetector", "megaclassifier", "definitions")
+  cam <- c("main", "project", "location", "image_set", "image_report", "tag", "megadetector", "megaclassifier", "daylight", "definitions")
   aru <- c("main", "project", "location", "birdnet", "recording", "tag", "definitions")
   pc <- c("main", "project", "location", "point_count", "definitions")
 
@@ -201,6 +205,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     birdnetReport = FALSE,
     megaDetectorReport = FALSE,
     megaClassifierReport = FALSE,
+    daylightReport = FALSE,
     includeMetaData = FALSE,
     splitLocation = FALSE
   )
@@ -217,6 +222,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   if ("birdnet" %in% reports) query_list$birdnetReport <- TRUE
   if ("megadetector" %in% reports) query_list$megaDetectorReport <- TRUE
   if ("megaclassifier" %in% reports) query_list$megaClassifierReport <- TRUE
+  if ("daylight" %in% reports) query_list$daylightReport <- TRUE
 
   # Include metadata
   query_list$includeMetaData <- TRUE
@@ -234,9 +240,10 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     accept = "application/zip",
     httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
     httr::user_agent(u),
-    httr::write_disk(tmp),
-    httr::progress()
+    httr::write_disk(tmp)
     )
+
+  print(r)
 
   # Stop if an error or bad request occurred
   if (httr::http_error(r))
@@ -261,6 +268,13 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     new_path <- file.path(directory, new_filename)
     file.rename(.x, new_path)
   })
+
+  # Index column types. Add more columns and their types as needed
+  col_types_index <- list(
+    abundance = readr::col_character(),
+    image_fire = readr::col_logical()
+  )
+
   files.full <- list.files(td, pattern= "*.csv", full.names = TRUE)
   files.less <- basename(files.full)
   x <- purrr::map(.x = files.full, .f = ~ suppressWarnings(readr::read_csv(., show_col_types = F,
@@ -546,6 +560,17 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
     }
   }
 
+  # Test for bbox
+  if (inherits(boundary,"bbox")){
+    boundary <- list(
+      c(boundary['xmin'], boundary['ymin']),
+      c(boundary['xmax'], boundary['ymin']),
+      c(boundary['xmax'], boundary['ymax']),
+      c(boundary['xmin'], boundary['ymax']),
+      c(boundary['xmin'], boundary['ymin']) # Closing the polygon
+    )
+  }
+
   # Validate boundary if provided
   if (!is.null(boundary)) {
     # Check the number of vertices
@@ -556,7 +581,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
     # Check for closure
     if (!identical(boundary[[1]], boundary[[length(boundary)]])) {
       # If the first and last points are not identical, check if they are 'close enough'
-      if (!all(boundary[[1]] == boundary[[length(boundary)]])) {
+      if (!all(abs(unlist(boundary[[1]]) - unlist(boundary[[length(boundary)]])) < 1e-6)) {
         stop("Error: Boundary must form a closed polygon.")
       }
     }
@@ -571,7 +596,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
     }
   }
 
-  # Here's da earth. That is a sweet earth you might say.
+  # Here's da earth. Dat is a sweet earth you might say.
   full_bounds <- list(
     `_sw` = list(
       lng = -180.0,
@@ -582,17 +607,6 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       lat = 90
     )
   )
-
-  # Test for bbox
-  if (inherits(boundary,"bbox")){
-    boundary <- list(
-      c(boundary['xmin'], boundary['ymin']),
-      c(boundary['xmax'], boundary['ymin']),
-      c(boundary['xmax'], boundary['ymax']),
-      c(boundary['xmin'], boundary['ymax']),
-      c(boundary['xmin'], boundary['ymin']) # Closing the polygon
-    )
-  }
 
   # Initialize lists to store results
   all_rpps_tibble <- list()
