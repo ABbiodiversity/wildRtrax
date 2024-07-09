@@ -1,4 +1,5 @@
 library(testthat)
+suppressWarnings(library(wildRtrax))
 
 Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
 wt_auth(force = TRUE)
@@ -6,9 +7,21 @@ wt_auth(force = TRUE)
 ################################### Camera Test suite
 
 test_that("Downloading CAM report", {
-  abmi_amph_cam <- wt_download_report(391, 'CAM', 'main', FALSE)
+  abmi_amph_cam <- wt_download_report(391, 'CAM', c('megadetector'), FALSE)
   expect_true(!is.null(abmi_amph_cam))
 })
+
+test_that("Downloading CAM report", {
+  suppressMessages(abmi_amph_cam <- wt_download_report(391, 'CAM', c('tag','image_set'), FALSE))
+  expect_true(length(abmi_amph_cam) == 2)
+})
+
+# Test other reports
+test_that("Downloading CAM report", {
+  abmi_amph_cam <- wt_download_report(391, 'CAM', c('project','location', 'image_set','image_report','megaclassifier','megadetector'), FALSE)
+  expect_true(!is.null(abmi_amph_cam))
+})
+
 
 test_that("Individual detections", {
   abmi_amph_cam <- wt_download_report(391, 'CAM', 'main', FALSE)
