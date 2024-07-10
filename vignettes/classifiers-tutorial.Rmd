@@ -233,7 +233,7 @@ table(new$species_code)
 
 ```
 
-There are 28 potential new species detections in our dataset. We can use the `wt_format_detections()` function to format our output for upload to WildTrax and verification. 
+There are `unique(new$species_code)` potential new species detections in our dataset. We can use the `wt_format_detections()` function to format our output for upload to WildTrax and verification. 
 
 Uploading additional BirdNET derived tags to an existing task has some complications and doing so should be avoided.  This is because the "Individual" field is a key field in WildTrax and the value is filled in differently in manual vetting vs. BirdNET derived tags when using the `wt_format_detections()` function. The best thing to do is to create a new project/task with the same recordings, and choose the None method to allow for multiple tags of the same species and to avoid overlapping "Individual" tags that can create problems when editing tags later.
 

@@ -3,7 +3,7 @@
 #' @description Calculates precision, recall, and F-score of BirdNET for a requested sequence of thresholds. You can request the metrics at the minute level for recordings that are processed with the species per minute method (1SPM). You can also exclude species that are not allowed in the project from the BirdNET results before evaluation.
 #'
 #' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
-#' @param resolution Character; either "recording" to summarize at the entire recording level or "minute" to summarize the minute level if the `task_method` is "1SPM"
+#' @param resolution Character; either "recording" to summarize at the entire recording level or "minute" to summarize the minute level if the `task_method` is "1SPM", or "task"
 #' @param remove_species Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report
 #' @param species Character; optional subset of species to calculate metrics for (e.g., species = c("OVEN", "OSFL", "BOCH"))
 #' @param thresholds Numeric; start and end of sequence of score thresholds at which to calculate performance metrics
@@ -47,6 +47,16 @@ wt_evaluate_classifier <- function(data, resolution = "recording", remove_specie
   }
 
   #Summarize the classifier report to the requested resolution
+  if(resolution=="task"){
+    detections <- class |>
+      dplyr::inner_join(data[[2]] |> dplyr::select(recording_id, task_id, task_duration), by = c("recording_id" = "recording_id")) |>
+      dplyr::filter(!start_s > task_duration) |>
+      group_by(project_id, location_id, recording_id, species_code) |>
+      summarize(confidence = max(confidence), .groups="keep") |>
+      ungroup() |>
+      mutate(classifier = 1)
+  }
+
   if(resolution=="minute"){
     detections <- class |>
       mutate(minute = ifelse(start_s==0, 1, ceiling(start_s/60))) |>
@@ -65,6 +75,13 @@ wt_evaluate_classifier <- function(data, resolution = "recording", remove_specie
   }
 
   #Tidy up the main report
+  if(resolution=="task"){
+    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+      dplyr::select(project_id, location_id, recording_id, task_id, species_code) |>
+      unique() |>
+      mutate(human = 1)
+  }
+
   if(resolution=="minute"){
     main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
       mutate(minute = ifelse(start_s==0, 1, ceiling(start_s/60))) |>
@@ -120,16 +137,25 @@ wt_evaluate_classifier <- function(data, resolution = "recording", remove_specie
 #'
 #' @return A vector of precision, recall, F-score, and threshold
 
-wt_calculate_prf <- function(threshold, data, human_total){
+wt_calculate_prf <- local({
+  message_shown <- FALSE
 
-  #Summarize
-  data_thresholded <- dplyr::filter(data, confidence >= threshold) |>
-    summarize(precision = sum(tp)/(sum(tp) + sum(fp)),
-              recall = sum(tp)/human_total) |>
-    mutate(fscore = (2*precision*recall)/(precision + recall),
-           threshold = threshold)
+  function(threshold, data, human_total){
+    # Summarize
+    data_thresholded <- dplyr::filter(data, confidence >= threshold) |>
+      summarize(precision = sum(tp)/(sum(tp) + sum(fp)),
+                recall = sum(tp)/human_total) |>
+      mutate(fscore = (2*precision*recall)/(precision + recall),
+             threshold = threshold)
 
-}
+    if(anyNA(data_thresholded$precision) && !message_shown){
+      message('No classifier detections for some higher selected thresholds; results will contain NAs')
+      message_shown <<- TRUE
+    }
+
+    return(data_thresholded)
+  }
+})
 
 #' Identify optimal threshold
 #'
@@ -158,7 +184,7 @@ wt_get_threshold <- function(data){
   #Filter to highest Fscore
   highest_fscore <- data |>
     mutate(fscore = round(fscore, 2)) |>
-    dplyr::filter(fscore==max(fscore))
+    dplyr::filter(fscore==max(fscore, na.rm = TRUE))
 
   #Take highest threshold of highest Fscore
   return(max(highest_fscore$threshold))
@@ -238,7 +264,7 @@ wt_classifier_detections <- function(data, threshold, remove_species = TRUE, spe
 #'
 #' @return A tibble with the same fields as the `birdnet` report with the highest scoring detection for each new species detection in each recording.
 
-wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, resolution="project"){
+wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, resolution="task"){
 
   #Check if the data object is in the right format
   if(!inherits(data, "list") | length(data)!=2 | str_sub(names(data)[1], -18, -1)!="birdnet_report.csv" | str_sub(names(data)[2], -15, -1)!="main_report.csv"){
@@ -254,6 +280,37 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
   }
 
   #Summarize the reports and put together at the desired resolution
+
+  #Create a join between task and recording
+  classed <- class |>
+    dplyr::inner_join(data[[2]] |> dplyr::select(recording_id, task_id, task_duration), by = c("recording_id" = "recording_id"))
+
+  if(resolution=="task"){
+
+    #Classifier report
+    detections <- class |>
+      dplyr::filter(confidence >= threshold) |>
+      dplyr::inner_join(data[[2]] |> dplyr::select(recording_id, task_id, task_duration), by = c("recording_id" = "recording_id")) |>
+      dplyr::filter(!start_s > task_duration) |>
+      group_by(project_id, location_id, recording_id, task_id, species_code) |>
+      summarize(confidence = max(confidence),  .groups="keep") |>
+      ungroup()
+
+    #Main report
+    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+      dplyr::select(project_id, location_id, recording_id, task_id, species_code) |>
+      unique()
+
+    #Put together
+    new <- anti_join(detections, main, by=c("project_id", "location_id", "recording_id", "task_id", "species_code")) |>
+      left_join(classed, by=c("project_id", "location_id", "recording_id", "task_id", "species_code", "confidence"), multiple="all") |>
+      group_by(project_id, location_id, recording_id,task_id, species_code, confidence) |>
+      sample_n(1) |>
+      ungroup()
+
+  }
+
+
   if(resolution=="recording"){
 
     #Classifier report
@@ -323,8 +380,5 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
 
   }
 
-
-
   return(new)
-
 }
