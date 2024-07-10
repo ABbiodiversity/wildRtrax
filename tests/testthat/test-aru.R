@@ -74,10 +74,16 @@ test_that('Occupancy formatting', {
   expect_true(class(occu)[1] == 'unmarkedFrameOccu')
 })
 
-##Pre-processing
+##Pre-processing & convenience
 ##wt_audio_scanner
 ##wt_run_ap
 ##wt_glean_ap
 ##wt_chop
 ##wt_location_distances
 
+
+test_that('Add GRTS ID', {
+  bats <- wt_download_report(1190, 'ARU', 'location', F)
+  grts <- wt_add_grts(bats, group_locations_in_cell = FALSE)
+  expect_that(!is.null(grts))
+})
