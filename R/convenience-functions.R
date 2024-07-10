@@ -562,3 +562,95 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALS
   cat("\nDone!")
 
 }
+
+#' Intersect locations to add a GRTS ID
+#'
+#' @description This function intersects location data with the GRTS ID provided by [NABAT](https://www.nabat.org)
+#'
+#' @param data Data containing locations
+#' @param group_points Option to provide distinct location names if points are found in the same cell
+#'
+#' @import curl dplyr sf
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' dat.grts <- wt_download_report(reports = "location")
+#' grts.data <- wt_add_grts(dat.grts)
+#' }
+#' @return A dataframe with the additional GRTS IDs
+
+wt_add_grts <- function(data, group_in_cell = FALSE) {
+
+  grts_canada <- curl::curl_download('https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/GRTS_CANADA.csv','GRTS_CANADA_MINE.csv') |>
+    readr::read_csv()
+
+  rm('GRTS_CANADA_MINE.csv')
+
+  if(!all(c("location","latitude","longitude") %in% names(data))){
+    stop('Data must contains columns for location, latitude and longitude')
+  }
+
+  if(anyNA(data$latitude) | anyNA(data$longitude)){
+    stop('Some latitdues and longitudes are missing. Cannot find GRTS cells without a latitude and longitude.')
+  }
+
+  # Convert grid cells to sf polygons
+  grid_cells_sf <- grts_canada %>%
+    separate(lowerleft, into = c("lowerleft_lat", "lowerleft_lon"), sep = ",", convert = TRUE) %>%
+    separate(upperleft, into = c("upperleft_lat", "upperleft_lon"), sep = ",", convert = TRUE) %>%
+    separate(upperright, into = c("upperright_lat", "upperright_lon"), sep = ",", convert = TRUE) %>%
+    separate(lowerright, into = c("lowerright_lat", "lowerright_lon"), sep = ",", convert = TRUE) %>%
+    separate(center, into = c("center_lat", "center_lon"), sep = ",", convert = TRUE) %>%
+    rowwise() %>%
+    mutate(
+      geometry = list(st_polygon(list(matrix(
+        c(
+          lowerleft_lon, lowerleft_lat,
+          upperleft_lon, upperleft_lat,
+          upperright_lon, upperright_lat,
+          lowerright_lon, lowerright_lat,
+          lowerleft_lon, lowerleft_lat
+        ),
+        ncol = 2,
+        byrow = TRUE
+      ))))
+    ) %>%
+    ungroup() %>%
+    st_as_sf(crs = 4326) %>%
+    select(GRTS_ID, geometry)
+
+  # Convert points to sf points
+  points_sf <- st_as_sf(data, coords = c("longitude", "latitude"), crs = 4326)
+  points_bbox <- st_as_sfc(st_bbox(points_sf))
+  bbox_sf <- st_sf(geometry = points_bbox)
+
+  grid_cells_filtered <- grid_cells_sf %>% st_intersection(bbox_sf)
+
+  # Perform spatial join to find which polygon each point falls into
+  result <- st_intersection(points_sf, grid_cells_filtered)
+
+  # Convert back to tibble and select relevant columns
+  new_data <- result %>%
+    as_tibble() %>%
+    relocate(GRTS_ID, .after = location) %>%
+    select(-geometry)
+
+  if(group_in_cell == TRUE){
+
+    new_data <- new_data %>%
+      group_by(GRTS_ID) %>%
+      mutate(GRTS_suffix = paste0(GRTS_ID,"-",row_number())) %>%
+      ungroup()
+
+  }
+
+  return(new_data)
+
+}
+
+
+
+
+

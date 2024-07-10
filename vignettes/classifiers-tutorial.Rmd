@@ -52,7 +52,7 @@ Precision ranged from 0.36 at a score threshold of 0.10 to 0.94 at a score thres
 
 ```{r, eval=T, include=T, echo=F, message=F, warning=F}
 
-dat <- curl::curl_download('https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/ExpertData_PR_Total.csv','ExpertData_PR_Total') |> 
+dat <- curl::curl_download('https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/ExpertData_PR_Total.csv','ExpertData_PR_Total.csv') |> 
   readr::read_csv() |>
   dplyr::filter(classifier=="BirdNET", thresh >= 0.1)
 
@@ -99,9 +99,9 @@ The sensitivity is set at 1.5 to reduce the probability of false positives and t
 
 ## Downloading the classifier reports
 
-Once a task has been transcribed, the BirdNET report can be retrieved on the following day via [WildTrax](http://www.wildtrax.ca) or the `wildRtrax` R package using the `wt_download_report()` function. 
+Once a task has been transcribed, the BirdNET results are available with 24 hours via [WildTrax](http://www.wildtrax.ca) or the `wildRtrax` R package using the `wt_download_report()` function. Before then the report will simply show NOT GENERATED entries for each recording.
 
-Use the `wt_download_report()` function to download the BirdNET report and the main report for further analysis. We'll use the ABMI Ecosystem Health dataset from 2022 as an example dataset. The output will be a list of tibbles in alphabetical order.
+Use `wt_download_report(reports = c('main','birdnet'))` to download the BirdNET report and the main report for further analysis. We'll use the ABMI Ecosystem Health dataset from 2022 as an example dataset. The output will be a list of tibbles in alphabetical order.
 
 ```{r, include=F, message=F, warning=F, echo=F, eval=T}
 library(wildRtrax)
