@@ -595,7 +595,7 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
     stop('Some latitdues and longitudes are missing. Cannot find GRTS cells without a latitude and longitude.')
   }
 
-  if(any(data$latitude <-90 | data$latitude > 90) | any(data$longitude <-180 | data$longitude > 180)) {
+  if (any(data$latitude < -90 | data$latitude > 90 | data$longitude < -180 | data$longitude > 180)) {
     stop('Some latitudes or longitudes are not within the correct coordinate system.')
   }
 

@@ -80,7 +80,10 @@ test_that('Occupancy formatting', {
 ##wt_glean_ap
 ##wt_chop
 ##wt_location_distances
+library(testthat)
 
+Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
+wt_auth(force = TRUE)
 
 test_that('Add GRTS ID', {
   bats <- wt_download_report(1190, 'ARU', 'location', F)
