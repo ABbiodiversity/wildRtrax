@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(wildRtrax)
+library(wildrtrax)
 
-test_check("wildRtrax")
+test_check("wildrtrax")

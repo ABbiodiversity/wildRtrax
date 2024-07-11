@@ -4,13 +4,13 @@
 # --------------------------------------------
 
 cff-version: 1.2.0
-message: 'To cite package "wildRtrax" in publications use:'
+message: 'To cite package "wildrtrax" in publications use:'
 type: software
 license: MIT
-title: 'wildRtrax: Environmental sensor data management and analytics to and from
+title: 'wildrtrax: Environmental sensor data management and analytics to and from
   WildTrax'
 version: 1.3.0
-abstract: wildRtrax is an R package that enables environmental sensor users to create
+abstract: wildrtrax is an R package that enables environmental sensor users to create
   comprehensive work flows for managing and analyzing data.
 authors:
 - family-names: MacPhail
@@ -22,7 +22,7 @@ authors:
 - family-names: Knight
   given-names: Elly
   email: ecknight@ualberta.ca
-url: https://abbiodiversity.github.io/wildRtrax/
+url: https://abbiodiversity.github.io/wildrtrax/
 contact:
 - family-names: MacPhail
   given-names: Alex

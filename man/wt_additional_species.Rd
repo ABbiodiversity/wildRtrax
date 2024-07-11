@@ -8,7 +8,7 @@ wt_additional_species(
   data,
   remove_species = TRUE,
   threshold = 50,
-  resolution = "project"
+  resolution = "task"
 )
 }
 \arguments{

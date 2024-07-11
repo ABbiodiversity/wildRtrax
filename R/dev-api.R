@@ -50,8 +50,8 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
                  paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
   }
 
-  # Add wildRtrax version information:
-  u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
+  # Add wildrtrax version information:
+  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
   # Create query list
   query_list <- list(

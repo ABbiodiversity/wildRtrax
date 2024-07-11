@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r setup, echo=FALSE, include=FALSE, eval=TRUE}
 # Attach package
-library(wildRtrax)
+library(wildrtrax)
 library(dplyr)
 
 load("package.RData")

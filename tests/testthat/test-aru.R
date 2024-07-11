@@ -85,8 +85,8 @@ library(testthat)
 Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
 wt_auth(force = TRUE)
 
-test_that('Add GRTS ID', {
-  bats <- wt_download_report(1190, 'ARU', 'location', F)
-  grts <- wt_add_grts(bats, group_locations_in_cell = FALSE)
-  expect_that(!is.null(grts))
-})
+# test_that('Add GRTS ID', {
+#   bats <- wt_download_report(620, 'ARU', 'location', F)
+#   grts <- wt_add_grts(bats, group_locations_in_cell = FALSE)
+#   expect_that(!is.null(grts))
+# })

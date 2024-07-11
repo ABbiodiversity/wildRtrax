@@ -1,4 +1,4 @@
-Package: wildRtrax
+Package: wildrtrax
 Title: Environmental sensor data management and analytics to and from WildTrax
 Version: 1.3.0
 Authors@R: 
@@ -16,7 +16,7 @@ Authors@R:
              email = "ecknight@ualberta.ca"))
 Author: Alex MacPhail <agmacpha@ualberta.ca>
 Maintainer: Marcus Becker <mabecker@ualberta.ca>
-Description: wildRtrax is an R package that enables environmental sensor users to create comprehensive work flows for managing and analyzing data.
+Description: wildrtrax is an R package that enables environmental sensor users to create comprehensive work flows for managing and analyzing data.
 Depends: R (>= 4.1.0)
 License: MIT + file LICENSE
 Imports:
@@ -54,4 +54,4 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3
-URL: https://abbiodiversity.github.io/wildRtrax/
+URL: https://abbiodiversity.github.io/wildrtrax/

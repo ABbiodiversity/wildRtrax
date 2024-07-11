@@ -225,7 +225,7 @@ wt_replace_tmtt <- function(data, calc="round"){
   }
 
   #load tmtt lookup table
-  .tmtt <- readRDS(system.file("extdata", "tmtt_predictions.rds", package="wildRtrax"))
+  .tmtt <- readRDS(system.file("extdata", "tmtt_predictions.rds", package="wildrtrax"))
 
   #wrangle to tmtts only
   dat.tmtt <- data %>%
@@ -565,7 +565,7 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALS
 
 #' Intersect locations to add a GRTS ID
 #'
-#' @description This function intersects location data with the GRTS ID provided by [NABAT](https://www.nabat.org)
+#' @description This function intersects location data with the GRTS ID provided by [NABat](https://www.nabatmonitoring.org/)
 #'
 #' @param data Data containing locations
 #' @param group_locations_in_cell Option to provide distinct location names if points are found in the same cell. Sequentially provides a number for each GRTS ID e.g. 3-1, 3-2, etc.
@@ -585,7 +585,7 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALS
 
 wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 
-  grts_canada <- readr::read_csv('https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/GRTS_CANADA.csv', show_col_types = FALSE)
+  grts_canada <- readr::read_csv('https://raw.githubusercontent.com/ABbiodiversity/wildrtrax-assets/main/GRTS_CANADA.csv', show_col_types = FALSE)
 
   if(!all(c("location","latitude","longitude") %in% names(data))){
     stop('Data must contains columns for location, latitude and longitude')

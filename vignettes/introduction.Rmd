@@ -16,41 +16,41 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, echo=FALSE, include=FALSE, eval=TRUE}
-library(wildRtrax)
+library(wildrtrax)
 ```
 
 ## Introduction
 
-### What is `wildRtrax`?
+### What is `wildrtrax`?
 
-`wildRtrax`, pronounced *'wild-R-tracks'*, is an R package for ecologists and advanced users who work with environmental sensors such as autonomous recording units (ARUs) and remote cameras. It contains functions designed to meet most needs in order to organize, analyze and standardize data with the [WildTrax](https://wwww.wildtrax.ca) infrastructure. `wildRtrax` iis self-contained and must be run under an R statistical environment, and it also depends on many other R packages. `wildRtrax` is free software and distributed under [MIT License (c) 2023](https://github.com/ABbiodiversity/wildRtrax/blob/master/LICENSE).
+`wildrtrax`, pronounced *'wild-R-tracks'*, is an R package for ecologists and advanced users who work with environmental sensors such as autonomous recording units (ARUs) and remote cameras. It contains functions designed to meet most needs in order to organize, analyze and standardize data with the [WildTrax](https://wwww.wildtrax.ca) infrastructure. `wildrtrax` iis self-contained and must be run under an R statistical environment, and it also depends on many other R packages. `wildrtrax` is free software and distributed under [MIT License (c) 2023](https://github.com/ABbiodiversity/wildrtrax/blob/master/LICENSE).
 
 ### What is **WildTrax**?
 
 [**WildTrax**](https://www.wildtrax.ca) is a web-enabled portal designed to manage, store, process, share and discover environmental sensor data and the biological data extracted from the media. WildTrax was developed by the [Alberta Biodiversity Monitoring Institute](https://abmi.ca) and the [Bioacoustic Unit](https://bioacoustic.abmi.ca).
 
-### Why did you build `wildRtrax`?
+### Why did you build `wildrtrax`?
 
-`wildRtrax` has been built in parallel with WildTrax to provide additional analytics and functionalities. By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of environmental sensor data, `wildRtrax` and WildTrax hope to provide open workflows for using ARUs and cameras to answer biological questions in order to inform meaningful conservation and decision-making.
+`wildrtrax` has been built in parallel with WildTrax to provide additional analytics and functionalities. By outlining a standardized and harmonized procedure for data intake, quality control, processing and verification of environmental sensor data, `wildrtrax` and WildTrax hope to provide open workflows for using ARUs and cameras to answer biological questions in order to inform meaningful conservation and decision-making.
 
-### What R packages does `wildRtrax` depend on?
+### What R packages does `wildrtrax` depend on?
 
-`wildRtrax` depends on a multitude of packages to provide flexible routines and work flows for data management. [`tidyverse`](https://tidyverse.org) for piping functions, standard grammar and tidy data manipulation, [`furrr`](https://davisvaughan.github.io/furrr/) for parallel computing, and acoustic analysis packages: [`bioacoustics`](https://cran.r-project.org/web/packages/bioacoustics/index.html), [`tuneR`](https://cran.r-project.org/web/packages/tuneR/index.html), [`seewave`](https://cran.r-project.org/web/packages/seewave/seewave.pdf). The `wt_run_ap` function and associated work flows are indebted to the [QUT Ecoacoustics Audio Analysis Software](https://github.com/QutEcoacoustics/audio-analysis). 
+`wildrtrax` depends on a multitude of packages to provide flexible routines and work flows for data management. [`tidyverse`](https://tidyverse.org) for piping functions, standard grammar and tidy data manipulation, [`furrr`](https://davisvaughan.github.io/furrr/) for parallel computing, and acoustic analysis packages: [`bioacoustics`](https://cran.r-project.org/web/packages/bioacoustics/index.html), [`tuneR`](https://cran.r-project.org/web/packages/tuneR/index.html), [`seewave`](https://cran.r-project.org/web/packages/seewave/seewave.pdf). The `wt_run_ap` function and associated work flows are indebted to the [QUT Ecoacoustics Audio Analysis Software](https://github.com/QutEcoacoustics/audio-analysis). 
 
-### How do I report a bug in `wildRtrax`?
+### How do I report a bug in `wildrtrax`?
 
-If you think you have found a bug in `wildRtrax`, you should report it to developers or maintainers. Please do not send bug reports to R mailing lists, since wildRtrax is not a standard R package. The preferred forum to report bugs is [GitHub](https://github.com/ABbiodiversity/wildRtrax/issues). Here is what is required in order to report a bug - reporting issues is welcomed and encouraged and are the only way to make wildRtrax non-buggy:
+If you think you have found a bug in `wildrtrax`, you should report it to developers or maintainers. Please do not send bug reports to R mailing lists, since wildrtrax is not a standard R package. The preferred forum to report bugs is [GitHub](https://github.com/ABbiodiversity/wildrtrax/issues). Here is what is required in order to report a bug - reporting issues is welcomed and encouraged and are the only way to make wildrtrax non-buggy:
 
 * The bug report should be sufficiently detailed that the bug can be replicated and corrected
 * Send an example that causes a bug
 * Send a minimal data set if it is not available in R
 * Paste the output or error message in your message
-* Specify which version of `wildRtrax` you used
+* Specify which version of `wildrtrax` you used
 
-### Can I contribute to `wildRtrax`?
+### Can I contribute to `wildrtrax`?
 
-Yes! `wildRtrax` is dependent on user contribution and all feedback is welcome. If you have problems with `wildRtrax`, it may be as simple as incomplete documentation. Feature requests also are welcome, but they are not necessarily fulfilled. A new feature will be added if it is easy to do and it looks useful to the user base of the package, or if you submit fully annotated code. See [here](https://abbiodiversity.github.io/wildRtrax/CONTRIBUTING.html) for more information and please read the [Code of Conduct](CODE_OF_CONDUCT.md).
+Yes! `wildrtrax` is dependent on user contribution and all feedback is welcome. If you have problems with `wildrtrax`, it may be as simple as incomplete documentation. Feature requests also are welcome, but they are not necessarily fulfilled. A new feature will be added if it is easy to do and it looks useful to the user base of the package, or if you submit fully annotated code. See [here](https://abbiodiversity.github.io/wildrtrax/CONTRIBUTING.html) for more information and please read the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ### Disclaimers
 
-The pronoun “you” throughout these articles refers to the reader. “We” refers to the `wildRtrax` team in general.
+The pronoun “you” throughout these articles refers to the reader. “We” refers to the `wildrtrax` team in general.

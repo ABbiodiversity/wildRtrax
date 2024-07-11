@@ -15,7 +15,7 @@ wt_evaluate_classifier(
 \arguments{
 \item{data}{Output from the \code{wt_download_report()} function when you request the \code{main} and \code{birdnet} reports}
 
-\item{resolution}{Character; either "recording" to summarize at the entire recording level or "minute" to summarize the minute level if the \code{task_method} is "1SPM"}
+\item{resolution}{Character; either "recording" to summarize at the entire recording level or "minute" to summarize the minute level if the \code{task_method} is "1SPM", or "task"}
 
 \item{remove_species}{Logical; indicates whether species that are not allowed in the WildTrax project should be removed from the BirdNET report}
 

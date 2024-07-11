@@ -101,8 +101,8 @@
                  getRversion(),
                  paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
   }
-  # Add wildRtrax version information:
-  u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
+  # Add wildrtrax version information:
+  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
   # POST request body
   r <- httr::POST(

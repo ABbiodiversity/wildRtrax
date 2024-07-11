@@ -17,7 +17,7 @@ Autonomous recording units (ARUs) and remote cameras collect data on the environ
 
 ### Audio file formats
 
-There are three major audio file types used within the **wildRtrax**: *wac*, *flac* and *wav*
+There are three major audio file types used within the **wildrtrax**: *wac*, *flac* and *wav*
 
 * *wac* is a proprietary, lossless compressed file format developed by [Wildlife Acoustics](https://www.wildlifeacoustics.com/)
 * *wav* is the standard, ubiquitous uncompressed audio file format
@@ -77,11 +77,11 @@ v <- seewave::ggspectro(tuneR::readWave(file, from = 0, to = 60, units = "second
 
 ### From the field to the office
 
-Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildRtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from raw data. But robust field or [*visit*](https://www.wildtrax.ca/home/resources/guide/organizations/visits.html) metadata is important to support the quality control process of the media.
+Familiarity with processes, protocols, equipment and data is an important first step in understanding how to manage environmental sensor data. Check with your study design or monitoring plan to ensure that you are correctly managing your data prior to heading into the field. **wildrtrax** doesn't focus on the field components of the data flows but is heavily dependent on it. Acoustic data has certain metadata dependencies that can be extracted from raw data. But robust field or [*visit*](https://www.wildtrax.ca/home/resources/guide/organizations/visits.html) metadata is important to support the quality control process of the media.
 
 ### Metadata dependencies for acoustic data
 
-The **wildRtrax** prefers that the file name string from which the data is deriving is composed of two parts: a *spatial* component and a *temporal* component. We call these fields the [*location*](https://www.wildtrax.ca/home/resources/guide/organizations/locations.html) and the *recording_date_time* of the audio respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
+The **wildrtrax** prefers that the file name string from which the data is deriving is composed of two parts: a *spatial* component and a *temporal* component. We call these fields the [*location*](https://www.wildtrax.ca/home/resources/guide/organizations/locations.html) and the *recording_date_time* of the audio respectively. The location, date and time should be critical pieces of information that should be collected and checked when you are visiting environmental sensors in the field. 
 
 ### Data volume, storage and computing power
 

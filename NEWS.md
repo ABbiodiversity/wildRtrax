@@ -1,18 +1,23 @@
-# wildRtrax 1.3.0
+# wildrtrax 1.3.0
 
 ## Major changes
 
-* Addition of four new functions: `wt_dd_summary()`, [BIRDNET FUNCTIONS]
+* Addition of six new functions: 
+  * `wt_dd_summary()` for querying data from Data Discover. See [APIs](https://abbiodiversity.github.io/wildrtrax/articles/apis.html#data-discover) for more information
+  * `wt_evaluate_classifier()`, `wt_get_threshold()`, `wt_classifier_detections()` and `wt_additional_species()` for wrangling acoustic automated classification results
+  * `wt_add_grts()` to intersect locations with GRTS IDs from [NABat](https://www.nabatmonitoring.org/)
 * `wt_download_tags()` now becomes `wt_download_media` to support broader media downloads in batch from WildTrax
+* Deprecated `wt_report()`
 
 ## Minor changes
 
 * Switch to `curl::curl_download()` for media and assets
-* Removed dependencies `pipeR`, `progressr`, `jsonlite`, `future`, `furrr`, `tools`, `magrittr`, `markdown`, `rmarkdown` to increase package stability but reduces speed for functions such as `wt_audio_scanner`, `wt_run_ap`. Moved `vembedr` to suggests for vignettes
+* Removed dependencies `pipeR`, `progressr`, `jsonlite`, `future`, `furrr`, `tools`, `magrittr`, `markdown`, `rmarkdown` to increase package stability but reduces speed for functions such as `wt_audio_scanner()`, `wt_run_ap()`. Moved `vembedr` to suggests for vignettes
+* Lowercase package name
 
 ---
 
-# wildRtrax 1.2.0
+# wildrtrax 1.2.0
 
 ## Major changes
 
@@ -23,20 +28,20 @@
 
 * Improvements to APIs and acoustic convenience functions to resolve issues and PRs
 * Improvements to test suite, testing dependencies, code coverage
-* Addition of [Camera data wrangling vignette](https://abbiodiversity.github.io/wildRtrax/articles/camera-data-wrangling.html) and additional [tutorials](https://abbiodiversity.github.io/wildRtrax/articles/tutorials.html)
+* Addition of [Camera data wrangling vignette](https://abbiodiversity.github.io/wildrtrax/articles/camera-data-wrangling.html) and additional [tutorials](https://abbiodiversity.github.io/wildrtrax/articles/tutorials.html)
 
 ---
 
-# wildRtrax 1.1.0
+# wildrtrax 1.1.0
 
 ## Major changes
 
-* `wildRtrax` now honours new WildTrax report structures. Future changes will incorporate standardized naming in syncing functions.
+* `wildrtrax` now honours new WildTrax report structures. Future changes will incorporate standardized naming in syncing functions.
 * Replaced geospatial functionalities from `rgdal`, `rgeos` and `maptools` with `sf`, `sp` and `terra` packages. Added functionality with the `suntools` package. Users should re-download the package by October 2023 in-line with the former package retirement: https://geocompx.org/post/2023/rgdal-retirement/.
 
 ## Minor changes
 
-* Tweaks to [Acoustic data wrangling](https://abbiodiversity.github.io/wildRtrax/articles/acoustic-data-wrangling.html) for (#16)
+* Tweaks to [Acoustic data wrangling](https://abbiodiversity.github.io/wildrtrax/articles/acoustic-data-wrangling.html) for (#16)
 * Addition of geospatial assets. Users should be warned package size is now ~40 MB.
 * Moved TMTT predictions from csv to .RDS file.
 * Work flow repairs to `wt_get_species()` and `wt_tidy_species()` (#21)
@@ -44,14 +49,14 @@
 
 ---
 
-# wildRtrax 1.0.1
+# wildrtrax 1.0.1
 
 * Patching API errors in `wt_download_report()`
-* Adding additional articles on [Acoustic data wrangling](https://abbiodiversity.github.io/wildRtrax/articles/acoustic-data-wrangling.html)
+* Adding additional articles on [Acoustic data wrangling](https://abbiodiversity.github.io/wildrtrax/articles/acoustic-data-wrangling.html)
 
 ---
 
-# wildRtrax 1.0.0
+# wildrtrax 1.0.0
 
 ## Major changes 
 
@@ -83,7 +88,7 @@
 
 ---
 
-# wildRtrax 0.1.0
+# wildrtrax 0.1.0
 
 * Addition of base functions:
   * **Acoustic**

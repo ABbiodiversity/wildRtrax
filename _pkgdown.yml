@@ -1,4 +1,4 @@
-url: https://abbiodiversity.github.io/wildRtrax/
+url: https://abbiodiversity.github.io/wildrtrax/
 template:
   bootstrap: 5
   bootswatch: flatly
@@ -7,12 +7,12 @@ articles:
   navbar: ~
   contents:
   - introduction
-  - audio-data-concepts
   - apis
+  - audio-data-concepts
   - acoustic-pre-processing
   - acoustic-data-wrangling
-  - camera-data-wrangling
   - classifiers-tutorial
+  - camera-data-wrangling
   - tutorials
 reference:
   - contents:
@@ -46,15 +46,15 @@ reference:
     - wt_tidy_species
     - wt_songscope_tags
     - wt_wac_info
-    - wildRtrax
+    - wildrtrax
 news:
   releases:
-  - text: wildRtrax 1.3.0
-  - text: wildRtrax 1.2.0
-  - text: wildRtrax 1.1.0
-  - text: wildRtrax 1.0.1
-  - text: wildRtrax 1.0.0
-  - text: wildRtrax 0.1.0
+  - text: wildrtrax 1.3.0
+  - text: wildrtrax 1.2.0
+  - text: wildrtrax 1.1.0
+  - text: wildrtrax 1.0.1
+  - text: wildrtrax 1.0.0
+  - text: wildrtrax 0.1.0
   one_page: yes
 development:
   mode: auto

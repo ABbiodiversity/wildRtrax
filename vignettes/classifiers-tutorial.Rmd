@@ -1,8 +1,8 @@
 ---
-title: "How to use acoustic classifiers with WildTrax"
+title: "Acoustic classifiers"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to use acoustic classifiers with WildTrax}
+  %\VignetteIndexEntry{Acoustic classifiers}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -99,12 +99,12 @@ The sensitivity is set at 1.5 to reduce the probability of false positives and t
 
 ## Downloading the classifier reports
 
-Once a task has been transcribed, the BirdNET results are available with 24 hours via [WildTrax](http://www.wildtrax.ca) or the `wildRtrax` R package using the `wt_download_report()` function. Before then the report will simply show NOT GENERATED entries for each recording.
+Once a task has been transcribed, the BirdNET results are available with 24 hours via [WildTrax](http://www.wildtrax.ca) or the `wildrtrax` R package using the `wt_download_report()` function. Before then the report will simply show NOT GENERATED entries for each recording.
 
 Use `wt_download_report(reports = c('main','birdnet'))` to download the BirdNET report and the main report for further analysis. We'll use the ABMI Ecosystem Health dataset from 2022 as an example dataset. The output will be a list of tibbles in alphabetical order.
 
 ```{r, include=F, message=F, warning=F, echo=F, eval=T}
-library(wildRtrax)
+library(wildrtrax)
 
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
@@ -118,7 +118,7 @@ data <- wt_download_report(project_id = 1144,
 ```
 
 ```{r, include=T, eval=F}
-library(wildRtrax)
+library(wildrtrax)
 
 Sys.setenv(WT_USERNAME = 'guest', WT_PASSWORD = 'Apple123')
 wt_auth()
@@ -137,7 +137,7 @@ Because BirdNET is only run on transcribed recordings in WildTrax, we can combin
 ```{r, message=F, warning=F}
 
 eval <- wt_evaluate_classifier(data,
-                              resolution = "recording",
+                              resolution = "task",
                               remove_species = TRUE,
                               thresholds = c(10, 99))
 
@@ -208,7 +208,7 @@ eval[eval$threshold==threshold_use,]
 
 ```
 
-A precision at our chosen score threshold of approximately 0.48 means that over half of these detections are likely still false positives, we should probably visually verify to remove those false positives. We can use the `wt_format_detections()` function to format our detections object into the format required to upload to WildTrax for verification.
+A precision at our chosen score threshold of approximately `round(eval$precision,2)` means that less than half of these detections are likely still false positives, we should probably visually verify to remove those false positives. We can use the `wt_format_detections()` function to format our detections object into the format required to upload to WildTrax for verification.
 
 # Using deep learning results in WildTrax
 
@@ -224,7 +224,7 @@ Let's use a high threshold (80) on our example dataset to see if any new species
 
 ```{r, message=F, warning=F}
 
-new <- wt_additional_species(data, remove_species = TRUE, threshold = 80, resolution="location")
+new <- wt_additional_species(data, remove_species = TRUE, threshold = 80, resolution="task")
 
 #potential new detections
 nrow(new)
@@ -249,7 +249,7 @@ You can use the workflow described above in the 'Deep learning in WildTrax' sect
 
 #Evaluate classifier performance
 eval_ccsp <- wt_evaluate_classifier(data,
-                              resolution = "recording",
+                              resolution = "task",
                               remove_species = TRUE,
                               species = "CCSP",
                               thresholds = c(10, 99))
@@ -319,7 +319,7 @@ ABMI continues to develop our approaches to computer listening including large m
 
 ## HawkEars
 
-The next WildTrax release will be accompanied by the introduction of a new deep learning model that can classify 306 of Canada's most common bird species. HawkEars was developed by Jan Huus and will be implemented in the same fashion as BirdNET so that users will also be able to download a 'hawkears' report and use the same set of `wildRtrax` functions demonstrated above on it. HawkEars is also freely available from [Github](https://www.github.com/jhuus/HawkEars) for users that want to run it on large volumes of recordings.
+The next WildTrax release will be accompanied by the introduction of a new deep learning model that can classify 306 of Canada's most common bird species. HawkEars was developed by Jan Huus and will be implemented in the same fashion as BirdNET so that users will also be able to download a 'hawkears' report and use the same set of `wildrtrax` functions demonstrated above on it. HawkEars is also freely available from [Github](https://www.github.com/jhuus/HawkEars) for users that want to run it on large volumes of recordings.
 
 Initial tests of HawkEars on the same expert dataset as above suggest it performs much better than BirdNET for Canadian species, with more than double the recall and higher precision at score thresholds above 50 (Figure 2; Huus et al. *In prep*).
 

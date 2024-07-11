@@ -17,11 +17,11 @@ knitr::opts_chunk$set(
 
 ```
 
-This vignette provides a series of additional tutorials to help you with using wildRtrax. 
+This vignette provides a series of additional tutorials to help you with using wildrtrax. 
 
 # Webinars 
 
-## wildRtrax 1.1.0 Public Webinar
+## wildrtrax 1.1.0 Public Webinar
 
 In this webinar, Alex MacPhail, Marcus Becker and Elly Knight, take you on a tour of the main components of the package, including authenticating into [WildTrax](https://www.wildtrax.ca) directly in R, downloading data reports as data frames, and an introduction to various functions that aid in downstream analyses of both ARU and remote camera data.
 

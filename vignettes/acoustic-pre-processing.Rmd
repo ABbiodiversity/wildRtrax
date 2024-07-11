@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
   comment = '#>'
 )
 
-library(wildRtrax)
+library(wildrtrax)
 library(dplyr)
 
 # Set the directory path

@@ -187,8 +187,8 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
                  paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
   }
 
-  # Add wildRtrax version information:
-  u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
+  # Add wildrtrax version information:
+  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
   # Create query list
   query_list <- list(
@@ -340,8 +340,8 @@ wt_get_species <- function(){
                  paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
   }
 
-  # Add wildRtrax version information:
-  u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
+  # Add wildrtrax version information:
+  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
   spp <- httr::POST(
     httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-all-species"),
@@ -494,7 +494,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
                  getRversion(),
                  paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
   }
-  u <- paste0("wildRtrax ", as.character(packageVersion("wildRtrax")), "; ", u)
+  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
   # Determine whether public or user
   if (!exists("access_token", envir = ._wt_auth_env_)) {
