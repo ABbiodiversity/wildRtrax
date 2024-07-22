@@ -378,7 +378,7 @@ wt_get_species <- function(){
 #'
 #' @param input The report data
 #' @param output The output folder
-#' @param type Either recording, tag_clip_spectrogram or tag_clip_audio
+#' @param type Either recording, image, tag_clip_spectrogram, tag_clip_audio
 #'
 #' @import dplyr tibble purrr
 #' @importFrom curl curl_download
@@ -387,12 +387,12 @@ wt_get_species <- function(){
 #' @examples
 #' \dontrun{
 #' dat.report <- wt_download_report() |>
-#' wt_download_media(output = "my/output/folder")
+#' wt_download_media(output = "my/output/folder", type = "recording")
 #' }
 #'
 #' @return An organized folder of media. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
 
-wt_download_media <- function(input, output, type = c("recording","tag_clip_audio","tag_clip_spectrogram")) {
+wt_download_media <- function(input, output, type = c("recording","image", "tag_clip_audio","tag_clip_spectrogram")) {
 
   input_data <- input
 
@@ -407,9 +407,9 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
   }
 
   # Check if type is valid
-  valid_types <- c("recording","tag_clip_audio","tag_clip_spectrogram")
+  valid_types <- c("recording", "image", "tag_clip_audio","tag_clip_spectrogram")
   if (!type %in% valid_types) {
-    stop("Invalid type. Valid types are 'recording', 'tag_clip_spectrogram', or 'tag_clip_audio'.")
+    stop("Invalid type. Valid types are 'recording', 'image', 'tag_clip_spectrogram', or 'tag_clip_audio'.")
   }
 
   # Process based on type
@@ -450,9 +450,15 @@ wt_download_media <- function(input, output, type = c("recording","tag_clip_audi
         purrr::map2_chr(.$spectrogram_url, .$clip_file_name_spec, ~ curl::curl_download(.x, .y, mode = "wb"))
         purrr::map2_chr(.$clip_url, .$clip_file_name_audio, ~ curl::curl_download(.x, .y, mode = "wb"))
       }
+  } else if ("media_url" %in% colnames(data)){
+    output_data <- input_data %>%
+      mutate(image_name = file.path(output, paste0(location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),".jpeg"))) %>%
+      {
+        purrr::map2_chr(.$spectrogram_url, .$image_name, ~ curl::curl_download(.x, .y, mode = "wb"))
+      }
 
   } else {
-    stop("Required columns are either 'recording_url', 'spectrogram_url', or 'clip_url'. Use wt_download_report(reports = 'recording' or 'tag') to get the correct media.")
+    stop("Required columns are either 'recording_url', 'media_url', 'spectrogram_url', or 'clip_url'. Use wt_download_report(reports = 'recording', 'image_report' or 'tag') to get the correct media.")
   }
 
   return(output_data)
