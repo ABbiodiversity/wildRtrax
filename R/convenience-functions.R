@@ -641,26 +641,59 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
   new_data <- result %>%
     tibble::as_tibble() %>%
     dplyr::relocate(GRTS_ID, .after = location) %>%
-    sf::st_drop_geometry(.) %>%
-    dplyr::mutate(longitude = unlist(purrr::map(.$geometry,1)),
-           latitude = unlist(purrr::map(.$geometry,2))) %>%
+    sf::st_drop_geometry() %>%
+    dplyr::mutate(longitude = unlist(purrr::map(.$geometry, 1)),
+                  latitude = unlist(purrr::map(.$geometry, 2))) %>%
     dplyr::relocate(latitude, .after = GRTS_ID) %>%
     dplyr::relocate(longitude, .after = latitude) %>%
     dplyr::select(-geometry)
 
-  if(group_locations_in_cell == TRUE){
-
-    new_data <- new_data %>%
+  if (group_locations_in_cell == TRUE) {
+    new_data2 <- new_data %>%
       dplyr::group_by(GRTS_ID) %>%
-      dplyr::mutate(GRTS_suffix = paste0(GRTS_ID,"-",row_number())) %>%
+      dplyr::mutate(GRTS_suffix = paste0(GRTS_ID, "-", row_number())) %>%
       dplyr::ungroup() %>%
       dplyr::relocate(GRTS_suffix, .after = GRTS_ID)
 
+    return(new_data2)
+  } else {
+    return(new_data)
   }
-
-  return(new_data)
-
 }
 
+#' Format data for a specified portal
+#'
+#' @description This function takes the WildTrax reports and converts them to the desired format
+#'
+#' @param input The report from `wt_download_report()`
+#' @param format A format i.e. 'FWMIS'
+#'
+#' @import dplyr
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#'
+#' dat <- wt_download_report(reports = c("main","visit","equipment")) |>
+#' wt_format_data(format = 'FWMIS')
+#' }
+#' @return A tibble with the formatted report
+
+wt_format_data <- function(input, format = 'FWMIS'){
+
+  if(format == "FWMIS"){
+
+    reports_needed <- c("equipment","main","visit")
+
+    if(!all(grepl(reports_needed %in% input))){
+      stop("You do not have all the required reports for the FWMIS reports. Use wt_download_report(reports = c('equipment','main','visit'))")
+    }
+
+  }
+
+  output_format <- input
+
+  return(output_format)
+}
 
 

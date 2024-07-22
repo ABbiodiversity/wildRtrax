@@ -74,19 +74,23 @@ test_that('Occupancy formatting', {
   expect_true(class(occu)[1] == 'unmarkedFrameOccu')
 })
 
+test_that('Classifier functions', {
+  rep <- wt_download_report(620, 'ARU', c('main','birdnet'), F)
+  eval <- wt_evaluate_classifier(rep, "recording", remove_species = TRUE, thresholds = c(10,99))
+  e1 <- wt_get_threshold(eval)
+  add_sp <- wt_additional_species(rep, remove_species = TRUE, threshold = e1, resolution = "task")
+  expect_true(!is.null(add_sp))
+})
+
+test_that('Add GRTS ID', {
+  bats <- wt_download_report(620, 'ARU', 'location', F)
+  grts <- wt_add_grts(bats, group_locations_in_cell = TRUE)
+  expect_true(!is.null(grts))
+})
+
 ##Pre-processing & convenience
 ##wt_audio_scanner
 ##wt_run_ap
 ##wt_glean_ap
 ##wt_chop
 ##wt_location_distances
-library(testthat)
-
-Sys.setenv(WT_USERNAME = "guest", WT_PASSWORD = "Apple123")
-wt_auth(force = TRUE)
-
-# test_that('Add GRTS ID', {
-#   bats <- wt_download_report(620, 'ARU', 'location', F)
-#   grts <- wt_add_grts(bats, group_locations_in_cell = FALSE)
-#   expect_that(!is.null(grts))
-# })

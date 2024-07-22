@@ -2,13 +2,15 @@
 % Please edit documentation in R/classifier-functions.R
 \name{wt_additional_species}
 \alias{wt_additional_species}
-\title{Find new species}
+\title{Find additional species}
 \usage{
 wt_additional_species(
   data,
   remove_species = TRUE,
   threshold = 50,
-  resolution = "task"
+  resolution = "task",
+  format_to_tags = FALSE,
+  output = NULL
 )
 }
 \arguments{
@@ -19,6 +21,10 @@ wt_additional_species(
 \item{threshold}{Numeric; the desired score threshold}
 
 \item{resolution}{Character; either "recording" to identify any new species for each recording or "location" to identify new species for each location}
+
+\item{format_to_tags}{Logical; when TRUE, creates a formatted output to turn detections into tags for uploading to WildTrax}
+
+\item{output}{Character; when a valid directory is entered, exports the additional detections as tags for sync with a WildTrax project}
 }
 \value{
 A tibble with the same fields as the \code{birdnet} report with the highest scoring detection for each new species detection in each recording.

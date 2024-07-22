@@ -11,7 +11,7 @@
 
 ## Overview
 
-`wildrtrax` (pronounced *wild-R-tracks*) is an R package containing functions to help manage and analyze environmental sensor data. It helps to simplify the entire data life cycle by offering tools for data pre-processing, wrangling, and analysis, facilitating seamless data transfer to and from [WildTrax](https://www.wildtrax.ca/home.html). With `wildrtrax`, users can effortlessly establish end-to-end workflows and ensure reproducibility in their analyses. By providing a consistent and organized framework, the package promotes transparency and integrity in research, making it effortless to share and replicate results.
+`wildrtrax` (pronounced *wild-r-tracks*) is an R package containing functions to help manage and analyze environmental sensor data. It helps to simplify the entire data life cycle by offering tools for data pre-processing, wrangling, and analysis, facilitating seamless data transfer to and from [WildTrax](https://www.wildtrax.ca/home.html). With `wildrtrax`, users can effortlessly establish end-to-end workflows and ensure reproducibility in their analyses. By providing a consistent and organized framework, the package promotes transparency and integrity in research, making it effortless to share and replicate results.
 
 ## Installation
 
@@ -70,7 +70,6 @@ Bats :bat:
 - Acoustic classification :sound:
   - `wt_evaluate_classifier()`:sound:
   - `wt_get_threshold()` :sound:
-  - `wt_classifier_detections()` :sound:
   - `wt_additional_species()` :sound:
 
 ## Issues

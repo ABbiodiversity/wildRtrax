@@ -17,17 +17,17 @@ articles:
 reference:
   - contents:
     - wt_add_grts
-    - wt_auth
     - wt_additional_species
+    - wt_auth
     - wt_audio_scanner
     - wt_calculate_prf
-    - wt_classifier_detections
     - wt_chop
     - wt_dd_summary
     - wt_download_media
     - wt_download_report
     - wt_evaluate_classifier
     - wt_flac_info
+    - wt_format_data
     - wt_format_occupancy
     - wt_glean_ap
     - wt_get_download_summary
