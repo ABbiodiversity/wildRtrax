@@ -234,7 +234,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   td <- tempdir()
 
   # Create GET request
-  r <- httr::GET(
+  r <- httr::POST(
     httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
     query = query_list,
     accept = "application/zip",
