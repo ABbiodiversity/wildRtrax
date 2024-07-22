@@ -315,3 +315,60 @@ Visit the [BirdNET Github repository](https://github.com/kahst/BirdNET-Analyzer)
 2. BirdNET data can be used for occupancy modelling (@wood_2023), and there are approaches that can accommodate false positive error rates to preclude verification of all detections (@rhinehart_2022). However, users should keep in mind that occupancy modelling is recommended only for detection probabilities > 30% and that recall from BirdNET may be too low for reliable occupancy estimates for many species (@knight_2017).
 
 See @perez-granados_2023 for a full review of BirdNET applications and performance.
+
+# Future WildTrax deep learning developments
+
+ABMI continues to develop our approaches to computer listening including large multispecies classifiers, smaller models for specific research projects, and the tools to implement and work with the output of those classifiers in the WildTrax ecosystem, including supporting our human listening methods.
+
+## HawkEars
+
+The next WildTrax release will be accompanied by the introduction of a new deep learning model that can classify 306 of Canada's most common bird species. HawkEars will be implemented in the same fashion as BirdNET so that users will also be able to download a report and use the same set of `wildrtrax` functions demonstrated above on it. HawkEars is also freely available from [Github](https://www.github.com/jhuus/HawkEars).
+
+Initial tests of HawkEars on the same expert dataset as above suggest it performs much better than BirdNET for Canadian species, with more than double the recall and higher precision at score thresholds above 50 (Figure 2; Huus et al. *In prep*).
+
+```{r, eval=T, include=T, echo=F, message=F, warning=F}
+
+dathawk <- curl::curl_download('https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/ExpertData_PR_Total_HawkEars.csv','ExpertData_PR_Total_HawkEars.csv') |>
+  readr::read_csv() |>
+  dplyr::filter(thresh >= 0.1) ### Required data
+
+plot.p.h <- ggplot(dathawk) +
+  geom_line(aes(x=thresh, y=p, colour=classifier), size=1.5) +
+  xlab("Score threshold") +
+  ylab("Precision") +
+  xlim(c(0, 1)) +
+  ylim(c(0, 1)) +
+  scale_colour_manual(values=c("black", "grey80")) +
+  theme_bw()
+
+plot.r.h <- ggplot(dathawk) +
+  geom_line(aes(x=thresh, y=r, colour=classifier), size=1.5) +
+  xlab("Score threshold") +
+  ylab("Recall") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  scale_colour_manual(values=c("black", "grey80")) +
+  theme_bw()
+
+plot.f.h <- ggplot(dathawk) +
+  geom_line(aes(x=thresh, y=f, colour=classifier), size=1.5) +
+  xlab("Score threshold") +
+  ylab("F-score") +
+  xlim(c(0.1, 1)) +
+  ylim(c(0, 1)) +
+  scale_colour_manual(values=c("black", "grey80")) +
+  theme_bw()
+
+plot.pr.h <- ggplot(dathawk) +
+  geom_line(aes(x=r, y=p, colour=classifier), size=1.5) +
+  xlab("Recall") +
+  xlim(0,1) +
+  ylim(0,1) +
+  ylab("Precision") +
+  scale_colour_manual(values=c("black", "grey80")) +
+  theme_bw()
+
+gridExtra::grid.arrange(plot.p.h, plot.r.h, plot.f.h, plot.pr.h, ncol=2,
+                        bottom = "Figure 2. Precision, recall, and F-score of BirdNET and HawkEars per minute of recording\ncompared to expert human listeners")
+
+```
