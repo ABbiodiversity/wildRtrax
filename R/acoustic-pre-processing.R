@@ -63,18 +63,13 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
     tidyr::unnest(file_path) %>%
     dplyr::mutate(size_Mb = round(purrr::map_dbl(.x = file_path, .f = ~ fs::file_size(.x)) / 10e5, digits = 2), # Convert file sizes to megabytes
                   file_path = as.character(file_path)) %>%
-    dplyr::select(file_path, size_Mb, unsafe) %>%
+    dplyr::select(file_path, size_Mb) %>%
     dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", ""),
                   file_type = sub('.*\\.(\\w+)$', '\\1', basename(file_path))) %>%
     # Parse location, recording date time and other temporal columns
     tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = FALSE) %>%
-    dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)'))
-
-  # old timezone stuff
-    df <- df %>%
-      dplyr::mutate(recording_date_time = as.POSIXct(strptime(recording_date_time, format = "%Y-%m-%d %H:%M:%S")))
-
-  df <- df %>%
+    dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)')) %>%
+    dplyr::mutate(recording_date_time = as.POSIXct(strptime(recording_date_time, format = "%Y%m%d_%H%M%S"))) %>%
     dplyr::mutate(julian = lubridate::yday(recording_date_time),
            year = as.numeric(format(recording_date_time,"%Y")),
            gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE)) %>%
