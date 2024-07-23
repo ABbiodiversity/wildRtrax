@@ -59,11 +59,10 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
   }
 
   # Create the main tibble
-  df <- df %>%
+  df <- z %>%
     tidyr::unnest(file_path) %>%
-    dplyr::mutate(size_Mb = round(purrr::map_dbl(.x = file_path, .f = ~ fs::file_size(.x)) / 10e5, digits = 2),
-                  file_path = as.character(file_path)) %>% # Convert file sizes to megabytes
-    dplyr::mutate(unsafe = dplyr::case_when(size_Mb <= 0.5 ~ "Unsafe", TRUE ~ "Safe")) %>% # Create safe scanning protocol, pretty much based on file size
+    dplyr::mutate(size_Mb = round(purrr::map_dbl(.x = file_path, .f = ~ fs::file_size(.x)) / 10e5, digits = 2), # Convert file sizes to megabytes
+                  file_path = as.character(file_path)) %>%
     dplyr::select(file_path, size_Mb, unsafe) %>%
     dplyr::mutate(file_name = stringr::str_replace(basename(file_path), "\\..*", ""),
                   file_type = sub('.*\\.(\\w+)$', '\\1', basename(file_path))) %>%
@@ -87,14 +86,6 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
   if (extra_cols == FALSE) {
     df_final_simple <- df # Omit the extra columns if chosen
   } else {
-
-    # Filter out the unsafe recordings - re-append later
-    df_unsafe <- df %>%
-      dplyr::filter(unsafe == "Unsafe") %>%
-      dplyr::select(-unsafe)
-    df <- df %>%
-      dplyr::filter(unsafe == "Safe") %>%
-      dplyr::select(-unsafe)
 
     # Scan the wav files first
     if ("wav" %in% df$file_type) {
@@ -134,19 +125,19 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
   if (rlang::env_has(rlang::current_env(), "df_final_simple")) {
     df_final <- df_final_simple
   } else if (exists("df_wav") & !exists("df_wac") & !exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wav, df_unsafe)
+    df_final <- dplyr::bind_rows(df_wav)
   } else if (exists("df_wav") & exists("df_wac") & !exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wav, df_wac, df_unsafe)
+    df_final <- dplyr::bind_rows(df_wav, df_wac)
   } else if (exists("df_wav") & !exists("df_wac") & exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wav, df_flac, df_unsafe)
+    df_final <- dplyr::bind_rows(df_wav, df_flac)
   } else if (!exists("df_wav") & exists("df_wac") & !exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wac, df_unsafe)
+    df_final <- dplyr::bind_rows(df_wac)
   } else if (!exists("df_wav") & !exists("df_wac") & exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_flac, df_unsafe)
+    df_final <- dplyr::bind_rows(df_flac)
   } else if (!exists("df_wav") & exists("df_wac") & exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wac, df_flac, df_unsafe)
+    df_final <- dplyr::bind_rows(df_wac, df_flac)
   } else if (exists("df_wav") & exists("df_wac") & exists("df_flac")) {
-    df_final <- dplyr::bind_rows(df_wac, df_wav, df_flac, df_unsafe)
+    df_final <- dplyr::bind_rows(df_wac, df_wav, df_flac)
   }
 
   # Return final data frame
