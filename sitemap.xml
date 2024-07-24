@@ -1,147 +1,58 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/404.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/CONTRIBUTING.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/SUPPORT.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/articles/acoustic-data-wrangling.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/articles/acoustic-pre-processing.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/articles/apis.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/articles/audio-data-concepts.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/articles/camera-data-wrangling.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/articles/introduction.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/articles/tutorials.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/index.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/dot-make_off.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/dot-make_x.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/dot-wt_api_pr.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/dot-wt_auth.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/dot-wt_auth_expired.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wildRtrax.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_audio_scanner.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_auth.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_chop.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_download_report.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_download_tags.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_flac_info.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_format_occupancy.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_get_download_summary.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_get_species.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_glean_ap.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_ind_detect.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_kaleidoscope_tags.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_location_distances.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_make_aru_tasks.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_make_wide.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_qpad_offsets.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_replace_tmtt.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_report.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_run_ap.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_signal_level.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_songscope_tags.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_summarise_cam.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_tidy_species.html</loc>
-  </url>
-  <url>
-    <loc>https://abbiodiversity.github.io/wildRtrax/reference/wt_wac_info.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/404.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/CONTRIBUTING.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/LICENSE-text.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/LICENSE.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/SUPPORT.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/articles/acoustic-data-wrangling.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/articles/acoustic-pre-processing.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/articles/apis.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/articles/audio-data-concepts.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/articles/camera-data-wrangling.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/articles/classifiers-tutorial.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/articles/index.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/articles/introduction.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/articles/tutorials.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/authors.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/index.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/news/index.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/dot-make_off.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/dot-make_x.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/dot-wt_api_pr.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/dot-wt_auth.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/dot-wt_auth_expired.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/index.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wildRtrax.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_add_grts.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_additional_species.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_audio_scanner.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_auth.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_calculate_prf.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_chop.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_dd_summary.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_download_media.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_download_report.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_evaluate_classifier.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_flac_info.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_format_data.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_format_occupancy.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_get_download_summary.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_get_species.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_get_threshold.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_glean_ap.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_ind_detect.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_kaleidoscope_tags.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_location_distances.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_make_aru_tasks.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_make_wide.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_qpad_offsets.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_replace_tmtt.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_run_ap.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_signal_level.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_songscope_tags.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_summarise_cam.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_tidy_species.html</loc></url>
+<url><loc>https://abbiodiversity.github.io/wildrtrax/reference/wt_wac_info.html</loc></url>
 </urlset>
+

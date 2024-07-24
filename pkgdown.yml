@@ -1,5 +1,5 @@
 pandoc: 3.1.11
-pkgdown: 2.0.7
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   acoustic-data-wrangling: acoustic-data-wrangling.html
@@ -7,10 +7,10 @@ articles:
   apis: apis.html
   audio-data-concepts: audio-data-concepts.html
   camera-data-wrangling: camera-data-wrangling.html
+  classifiers-tutorial: classifiers-tutorial.html
   introduction: introduction.html
   tutorials: tutorials.html
-last_built: 2024-04-03T19:32Z
+last_built: 2024-07-24T04:46Z
 urls:
-  reference: https://abbiodiversity.github.io/wildRtrax/reference
-  article: https://abbiodiversity.github.io/wildRtrax/articles
-
+  reference: https://abbiodiversity.github.io/wildrtrax/reference
+  article: https://abbiodiversity.github.io/wildrtrax/articles
