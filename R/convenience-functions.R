@@ -664,6 +664,7 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 #' Format data for a specified portal
 #'
 #' @description This function takes the WildTrax reports and converts them to the desired format
+#' `r lifecycle::badge("experimental")`
 #'
 #' @param input The report from `wt_download_report()`
 #' @param format A format i.e. 'FWMIS'

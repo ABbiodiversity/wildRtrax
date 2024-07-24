@@ -20,7 +20,7 @@
 #' remove_species = TRUE, thresholds = c(10, 99))
 #' }
 #'
-#' @return A tibble containing columsn for precision, recall, and F-score for each of the requested thresholds.
+#' @return A tibble containing columns for precision, recall, and F-score for each of the requested thresholds.
 
 wt_evaluate_classifier <- function(data, resolution = "recording", remove_species = TRUE,  species = NULL, thresholds = c(10, 99)){
 

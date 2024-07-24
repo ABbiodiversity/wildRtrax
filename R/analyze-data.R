@@ -213,7 +213,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 #' detections <- wt_ind_detect(x = df, threshold = 30, units = "minutes")
 #' }
 #'
-#' @return A dataframe of independent detections in your camera data, based on the threshold you specified. The df wil include information about the duration of each detection, the number of images, the average number of individual animals per image, and the max number of animals in the detection.
+#' @return A dataframe of independent detections in your camera data, based on the threshold you specified. The df will include information about the duration of each detection, the number of images, the average number of individual animals per image, and the max number of animals in the detection.
 
 wt_ind_detect <- function(x, threshold, units = "minutes", datetime_col = image_date_time, remove_human = TRUE, remove_domestic = TRUE) {
 

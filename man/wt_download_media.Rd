@@ -7,7 +7,7 @@
 wt_download_media(
   input,
   output,
-  type = c("recording", "tag_clip_audio", "tag_clip_spectrogram")
+  type = c("recording", "image", "tag_clip_audio", "tag_clip_spectrogram")
 )
 }
 \arguments{
@@ -15,7 +15,7 @@ wt_download_media(
 
 \item{output}{The output folder}
 
-\item{type}{Either recording, tag_clip_spectrogram or tag_clip_audio}
+\item{type}{Either recording, image, tag_clip_spectrogram, tag_clip_audio}
 }
 \value{
 An organized folder of media. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
@@ -26,7 +26,7 @@ Download acoustic media in batch
 \examples{
 \dontrun{
 dat.report <- wt_download_report() |>
-wt_download_media(output = "my/output/folder")
+wt_download_media(output = "my/output/folder", type = "recording")
 }
 
 }

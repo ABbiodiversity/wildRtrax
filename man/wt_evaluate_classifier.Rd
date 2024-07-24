@@ -24,7 +24,7 @@ wt_evaluate_classifier(
 \item{thresholds}{Numeric; start and end of sequence of score thresholds at which to calculate performance metrics}
 }
 \value{
-A tibble containing columsn for precision, recall, and F-score for each of the requested thresholds.
+A tibble containing columns for precision, recall, and F-score for each of the requested thresholds.
 }
 \description{
 Calculates precision, recall, and F-score of BirdNET for a requested sequence of thresholds. You can request the metrics at the minute level for recordings that are processed with the species per minute method (1SPM). You can also exclude species that are not allowed in the project from the BirdNET results before evaluation.

@@ -27,7 +27,7 @@ wt_ind_detect(
 \item{remove_domestic}{Logical; Should domestic animal tags (e.g. cows) be removed? Defaults to TRUE.}
 }
 \value{
-A dataframe of independent detections in your camera data, based on the threshold you specified. The df wil include information about the duration of each detection, the number of images, the average number of individual animals per image, and the max number of animals in the detection.
+A dataframe of independent detections in your camera data, based on the threshold you specified. The df will include information about the duration of each detection, the number of images, the average number of individual animals per image, and the max number of animals in the detection.
 }
 \description{
 Create an independent detections dataframe using camera data from WildTrax

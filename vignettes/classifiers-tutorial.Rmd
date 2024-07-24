@@ -217,7 +217,7 @@ eval[eval$threshold==threshold_use,]
 
 ```
 
-A precision at our chosen score threshold of approximately `r round(eval$precision,2)` means that more than half of these detections are likely still false positives, we should probably visually verify to remove those false positives. Given that the overall recall rate of BirdNET is < 10% for precision values above 0.7, the detections should be used with caution in ecological analyses. From a detectability perspective, a recall rate of 10% means that your detection probability with BirdNET is 10% of what it would be with a human listener.
+A precision at our chosen score threshold of approximately `round(eval[eval$threshold==threshold_use,]$precision,3)` means that ~1/3 of detections are likely still false positives, we should probably visually verify to remove those false positives. Given that the overall recall rate of BirdNET is < 10% for precision values above 0.7, the detections should be used with caution in ecological analyses. From a detectability perspective, a recall rate of 10% means that your detection probability with BirdNET is 10% of what it would be with a human listener.
 
 ## Check for additional species detected
 

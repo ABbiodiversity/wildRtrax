@@ -450,13 +450,12 @@ wt_download_media <- function(input, output, type = c("recording","image", "tag_
         purrr::map2_chr(.$spectrogram_url, .$clip_file_name_spec, ~ curl::curl_download(.x, .y, mode = "wb"))
         purrr::map2_chr(.$clip_url, .$clip_file_name_audio, ~ curl::curl_download(.x, .y, mode = "wb"))
       }
-  } else if ("media_url" %in% colnames(data)){
+  } else if ("media_url" %in% colnames(input_data)){
     output_data <- input_data %>%
-      mutate(image_name = file.path(output, paste0(location, "_", format(parse_date_time(recording_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),".jpeg"))) %>%
+      mutate(image_name = file.path(output, "/", paste0(location, "_", format(parse_date_time(image_date_time, "%Y-%m-%d %H:%M:%S"), "%Y%m%d_%H%M%S"),".jpeg"))) %>%
       {
-        purrr::map2_chr(.$spectrogram_url, .$image_name, ~ curl::curl_download(.x, .y, mode = "wb"))
+        purrr::map2_chr(.$media_url, .$image_name, ~ curl::curl_download(.x, .y, mode = "wb"))
       }
-
   } else {
     stop("Required columns are either 'recording_url', 'media_url', 'spectrogram_url', or 'clip_url'. Use wt_download_report(reports = 'recording', 'image_report' or 'tag') to get the correct media.")
   }

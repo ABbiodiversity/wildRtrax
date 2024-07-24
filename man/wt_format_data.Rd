@@ -16,6 +16,7 @@ A tibble with the formatted report
 }
 \description{
 This function takes the WildTrax reports and converts them to the desired format
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
 \examples{
 \dontrun{

@@ -23,7 +23,7 @@ library(wildrtrax)
 
 ### What is `wildrtrax`?
 
-`wildrtrax`, pronounced *'wild-R-tracks'*, is an R package for ecologists and advanced users who work with environmental sensors such as autonomous recording units (ARUs) and remote cameras. It contains functions designed to meet most needs in order to organize, analyze and standardize data with the [WildTrax](https://wwww.wildtrax.ca) infrastructure. `wildrtrax` iis self-contained and must be run under an R statistical environment, and it also depends on many other R packages. `wildrtrax` is free software and distributed under [MIT License (c) 2023](https://github.com/ABbiodiversity/wildrtrax/blob/master/LICENSE).
+`wildrtrax`, pronounced *'wild-R-tracks'*, is an R package for ecologists and advanced users who work with environmental sensors such as autonomous recording units (ARUs) and remote cameras. It contains functions designed to meet most needs in order to organize, analyze and standardize data with the [WildTrax](https://wwww.wildtrax.ca) infrastructure. `wildrtrax` is self-contained and must be run under an R statistical environment, and it also depends on many other R packages. `wildrtrax` is free software and distributed under [MIT License (c) 2023](https://github.com/ABbiodiversity/wildrtrax/blob/master/LICENSE).
 
 ### What is **WildTrax**?
 

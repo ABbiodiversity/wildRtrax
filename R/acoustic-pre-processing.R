@@ -59,7 +59,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
   }
 
   # Create the main tibble
-  df <- z %>%
+  df <- df %>%
     tidyr::unnest(file_path) %>%
     dplyr::mutate(size_Mb = round(purrr::map_dbl(.x = file_path, .f = ~ fs::file_size(.x)) / 10e5, digits = 2), # Convert file sizes to megabytes
                   file_path = as.character(file_path)) %>%

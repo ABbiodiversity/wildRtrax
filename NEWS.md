@@ -4,7 +4,7 @@
 
 * Addition of five new functions: 
   * `wt_dd_summary()` for querying data from Data Discover. See [APIs](https://abbiodiversity.github.io/wildrtrax/articles/apis.html#data-discover) for more information
-  * `wt_evaluate_classifier()`, `wt_get_threshold()`, and `wt_additional_species()` for wrangling acoustic automated classification results
+  * `wt_evaluate_classifier()`, `wt_get_threshold()`, and `wt_additional_species()` for wrangling acoustic automated classification results. See [Acoustic classifiers](https://abbiodiversity.github.io/wildrtrax/articles/acoustic-classifiers.html) for more information.
   * `wt_add_grts()` to intersect locations with GRTS IDs from [NABat](https://www.nabatmonitoring.org/)
 * `wt_download_tags()` now becomes `wt_download_media()` to support broader media downloads in batch from WildTrax
 * Deprecated `wt_report()`
@@ -13,6 +13,7 @@
 
 * Switch to `curl::curl_download()` for media and assets
 * Removed dependencies `pipeR`, `progressr`, `jsonlite`, `future`, `furrr`, `tools`, `magrittr`, `markdown`, `rmarkdown` to increase package stability but reduces speed for functions such as `wt_audio_scanner()`, `wt_run_ap()`. Moved `vembedr` to suggests for vignettes
+* Switched `wt_download_report()` to POST requests
 * Lowercase package name
 
 ---
