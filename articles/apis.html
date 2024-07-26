@@ -126,17 +126,17 @@ projects that you can download data for.</p>
 <span><span class="co">#&gt;   organization_id organization                                 project</span></span>
 <span><span class="co">#&gt; 1               5         ABMI    ABMI Adopt-a-Camera ARU Surveys 2017</span></span>
 <span><span class="co">#&gt; 2               5         ABMI          ABMI Amphibian Monitoring 2020</span></span>
-<span><span class="co">#&gt; 3               1           BU                             BATS &amp; LATS</span></span>
-<span><span class="co">#&gt; 4               5         ABMI Before-After Dose Response Project 2021</span></span>
-<span><span class="co">#&gt; 5               5         ABMI Before-After Dose Response Project 2022</span></span>
-<span><span class="co">#&gt; 6               1           BU                               Big Grids</span></span>
+<span><span class="co">#&gt; 3               5         ABMI Before-After Dose Response Project 2021</span></span>
+<span><span class="co">#&gt; 4               5         ABMI Before-After Dose Response Project 2022</span></span>
+<span><span class="co">#&gt; 5               5         ABMI                               Big Grids</span></span>
+<span><span class="co">#&gt; 6               5         ABMI                         BirdNET Example</span></span>
 <span><span class="co">#&gt;   project_id sensor tasks                      status</span></span>
 <span><span class="co">#&gt; 1         42    ARU   309 Published - Map+Report Only</span></span>
 <span><span class="co">#&gt; 2        382    ARU  1528 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 3       1667    ARU 66224          Published - Public</span></span>
-<span><span class="co">#&gt; 4        686    ARU  1873 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 5       1174    ARU  1014 Published - Map+Report Only</span></span>
-<span><span class="co">#&gt; 6         31    ARU  7594          Published - Public</span></span></code></pre></div>
+<span><span class="co">#&gt; 3        686    ARU  1873 Published - Map+Report Only</span></span>
+<span><span class="co">#&gt; 4       1174    ARU  1014 Published - Map+Report Only</span></span>
+<span><span class="co">#&gt; 5        381    ARU  2226 Published - Map+Report Only</span></span>
+<span><span class="co">#&gt; 6       2349    ARU     1 Published - Map+Report Only</span></span></code></pre></div>
 <p>Using the project_id number in the download summary you can then use
 <code><a href="../reference/wt_download_report.html">wt_download_report()</a></code> to access the species data. You can
 also find the project_id number in the url of a WildTrax project,
@@ -229,12 +229,12 @@ on integration of avian point count and ARU data.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 23</span></span></span>
 <span><span class="co">#&gt;   organization project         project_id location location_id location_buffer_m</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">94</span>517 <span style="color: #BB0000;">NA</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">94</span>518 <span style="color: #BB0000;">NA</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> BU           General-Commun…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">94</span>517 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">94</span>518 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 17 more variables: latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, survey_id &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   survey_date &lt;dttm&gt;, survey_url &lt;chr&gt;, observer &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   survey_distance_method &lt;chr&gt;, survey_duration_method &lt;chr&gt;,</span></span></span>
