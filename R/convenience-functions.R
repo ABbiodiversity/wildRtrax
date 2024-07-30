@@ -260,7 +260,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 
 #' Convert to a wide survey by species dataframe
 #'
-#' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values. This function is best preceded by the`wt_tidy_species` and `wt_replace_tmtt` functions  to ensure 'TMTT' and amphibian calling index values are not converted to zeros.
+#' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
 #' @param sound Character; vocalization type(s) to retain ("all", "Song", "Call", "Non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).
@@ -468,7 +468,7 @@ wt_format_occupancy <- function(data,
 
 #' Get QPAD offsets
 #'
-#' @description This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds. This function requires download of the `QPAD` R package and should be used on the output of the `wt_format_wide` function
+#' @description This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds. This function requires download of the `QPAD` R package and should be used on the output of the `wt_make_wide()` function
 #'
 #' @param data Dataframe output from the `wt_make_wide()` function.
 #' @param species Character; species for offset calculation. Can be a list of 4-letter AOU codes (e.g., c("TEWA", "OSFL", "OVEN")) or "all" to calculate offsets for every species in the input dataframe for which offsets are available. Defaults to "all".
@@ -489,7 +489,7 @@ wt_format_occupancy <- function(data,
 #' dat.wide <- wt_make_wide(dat.tmtt, sound="all")
 #' dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE)
 #' }
-#' @return A dataframe containing the QPAD values either by themselves or with the original wide data if together = T
+#' @return A dataframe containing the QPAD values either by themselves or with the original wide data if `together = TRUE`
 
 wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALSE) {
 
