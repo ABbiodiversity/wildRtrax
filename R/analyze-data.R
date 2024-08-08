@@ -266,7 +266,8 @@ wt_ind_detect <- function(x, threshold, units = "minutes", datetime_col = image_
     # Sometimes VNA sneaks in here
     mutate(individual_count = as.numeric(ifelse(individual_count == "VNA", 1, individual_count))) |>
     # Amalgamate tags of same species in same image; currently broken into two separate rows
-    group_by(location, {{datetime_col}}, species_common_name) |>
+    # Use image_id because sometimes {{datetime_col}} is same for 2 images
+    group_by(location, image_id, species_common_name) |>
     mutate(individual_count = sum(individual_count)) |>
     distinct(location, {{datetime_col}}, species_common_name, individual_count, .keep_all = TRUE) |>
     ungroup() |>
