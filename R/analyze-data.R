@@ -34,7 +34,7 @@
 
 wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
                              variable = "detections", output_format = "wide",
-                             species_col = species_common_name, effort_data = NULL,
+                             species_col = species_common_name, effort_data = NULL, exclude_outofrange = FALSE,
                              project_col = project_id, station_col = location,
                              date_time_col = image_date_time,
                              start_col = start_date, end_col = end_date,
@@ -80,34 +80,67 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 
   # Parse the raw or effort data to get time ranges for each camera deployment.
   if (!rlang::is_missing(raw_data)) {
-    x <- raw_data |>
-      mutate(image_date_time = ymd_hms({{date_time_col}})) |>
-      group_by({{project_col}}, .data[[station_col]]) |>
-      summarise(start_date = as.Date(min(image_date_time)),
-                end_date = as.Date(max(image_date_time))) |>
-      ungroup()
+    ## if exclude_outofrange == FALSE then include all operations days between deployment and check
+    if (exclude_outofrange == FALSE) {
+      x <- raw_data |>
+        mutate(image_date_time = ymd_hms(
+          #date work around due to ymd_hms failing to parse some times when 00:00:00
+          format(
+            as.POSIXct({{ date_time_col }}),
+            format = "%Y-%m-%d %T %Z"
+          )
+        )) |>
+        group_by({{ project_col }}, .data[[station_col]]) |>
+        summarise(
+          start_date = as.Date(min(image_date_time)),
+          end_date = as.Date(max(image_date_time))
+        ) |>
+        ungroup()
+
+      # Expand the time ranges into individual days of operation (smallest unit)
+      x <- x |>
+        group_by({{ project_col }}, .data[[station_col]]) |>
+        mutate(day = list(seq.Date(start_date, end_date, by = "day"))) |>
+        unnest(day) |>
+        mutate(year = year(day)) |>
+        select({{ project_col }}, .data[[station_col]], year, day)
+    }
+    ## if exclude_outofrange == TRUE then include remove periods of non operation
+    if (exclude_outofrange == TRUE) {
+      x <- raw_data |>
+        mutate(image_date_time = ymd_hms(
+          #date work around due to ymd_hms failing to parse some times when 00:00:00
+          format(
+            as.POSIXct({{ date_time_col }}),
+            format = "%Y-%m-%d %T %Z"
+          )
+        )) |>
+        group_by({{ project_col }}, .data[[station_col]]) |>
+        arrange(image_date_time) %>%
+        mutate(period = rep(seq_along(rle(image_fov)$lengths), rle(image_fov)$lengths)) %>%
+        filter(image_fov == "WITHIN") %>%
+        group_by({{ project_col }}, .data[[station_col]], period) |>
+        summarise(
+          start_date = as.Date(min(image_date_time)),
+          end_date = as.Date(max(image_date_time))
+        ) |>
+        ungroup()
+
+      # Expand the time ranges into individual days of operation (smallest unit)
+      x <- x |>
+        group_by({{ project_col }}, .data[[station_col]], period) |>
+        mutate(day = list(seq.Date(start_date, end_date, by = "day"))) |>
+        unnest(day) |>
+        mutate(year = year(day)) |>
+        select({{ project_col }}, .data[[station_col]], year, day)
+    }
 
     if (any(c(is.na(x$start_date), is.na(x$end_date)))) {
       message("Parsing of image date time produced NAs, these will be dropped")
       x <- drop_na(x)
     }
+    }
 
-  } else {
-    x <- effort_data |>
-      select(project_id = {{project_col}},
-             location = .data[[station_col]],
-             start_date = {{start_col}},
-             end_date = {{end_col}}) |>
-      ungroup()
-  }
-
-  # Expand the time ranges into individual days of operation (smallest unit)
-  x <- x |>
-    group_by({{project_col}}, .data[[station_col]]) |>
-    mutate(day = list(seq.Date(start_date, end_date, by = "day"))) |>
-    unnest(day) |>
-    mutate(year = year(day))  |>
-    select({{project_col}}, .data[[station_col]], year, day)
 
   # Based on the desired timeframe, assess when each detection occurred
   if (time_interval == "day" | time_interval == "full") {
