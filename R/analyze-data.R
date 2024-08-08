@@ -104,10 +104,6 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
         unnest(day) |>
         mutate(year = year(day)) |>
         select({{ project_col }}, .data[[station_col]], year, day)
-
-    if (any(c(is.na(x$start_date), is.na(x$end_date)))) {
-      message("Parsing of image date time produced NAs, these will be dropped")
-      x <- drop_na(x)
     }
     ## if exclude_outofrange == TRUE then include remove periods of non operation
     if (exclude_outofrange == TRUE) {
@@ -138,7 +134,13 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
         mutate(year = year(day)) |>
         select({{ project_col }}, .data[[station_col]], year, day)
     }
-  }
+
+    if (any(c(is.na(x$start_date), is.na(x$end_date)))) {
+      message("Parsing of image date time produced NAs, these will be dropped")
+      x <- drop_na(x)
+    }
+    }
+
 
   # Based on the desired timeframe, assess when each detection occurred
   if (time_interval == "day" | time_interval == "full") {
