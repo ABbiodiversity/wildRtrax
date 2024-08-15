@@ -371,3 +371,37 @@
     offset=log(p) + log(A) + log(q))
 
 }
+
+#' Column assignments
+#'
+#' @description Assign correct column types for reports
+#'
+#' @keywords internal
+#'
+.wt_col_types <- function(data) {
+  # Define a list of column names and their corresponding conversion functions
+  column_types <- list(
+    abundance = as.character,
+    image_fire = as.logical,
+    image_snow = as.logical,
+    image_snow_depth_m = as.numeric
+    # Add more columns as needed
+  )
+
+  # Iterate over each column in the list
+  for (col_name in names(column_types)) {
+    if (col_name %in% colnames(data)) {
+      tryCatch({
+        data[[col_name]] <- column_types[[col_name]](data[[col_name]])
+      }, warning = function(w) {
+        warning(sprintf("Failed to convert '%s' to %s: %s", col_name, deparse(substitute(column_types[[col_name]])), w$message))
+      }, error = function(e) {
+        warning(sprintf("Error occurred while converting '%s' to %s: %s", col_name, deparse(substitute(column_types[[col_name]])), e$message))
+      })
+    }
+  }
+
+  # Return the modified data
+  return(data)
+}
+
