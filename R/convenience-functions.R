@@ -585,8 +585,6 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALS
 
 wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 
-  grts_canada <- readr::read_csv('https://raw.githubusercontent.com/ABbiodiversity/wildrtrax-assets/main/GRTS_CANADA.csv', show_col_types = FALSE)
-
   if(!all(c("location","latitude","longitude") %in% names(data))){
     stop('Data must contains columns for location, latitude and longitude')
   }
@@ -599,8 +597,49 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
     stop('Some latitudes or longitudes are not within the correct coordinate system.')
   }
 
+  # Filter things down a bit by bbox so the intersection doesn't take too long
+  points_sf <- sf::st_as_sf(data, coords = c("longitude", "latitude"), crs = 4326)
+  points_bbox <- sf::st_as_sfc(st_bbox(points_sf))
+  # Define bounding boxes for each region
+  bbox_canada <- sf::st_set_crs(sf::st_as_sfc(sf::st_bbox(c(xmin = -141.0, ymin = 41.7, xmax = -52.6, ymax = 83.1)), crs = 4326), 4326)
+  bbox_alaska <- sf::st_set_crs(sf::st_as_sfc(sf::st_bbox(c(xmin = -179.99863, ymin = 51.214183, xmax = -129.9795, ymax = 71.538800)), crs = 4326), 4326)
+  bbox_contig <- sf::st_set_crs(sf::st_as_sfc(sf::st_bbox(c(xmin = -127.94485, ymin = 22.91700, xmax = -65.26265, ymax = 51.54421)), crs = 4326), 4326)
+
+  # Initialize an empty list to collect the datasets
+  grts_list <- list()
+
+  # Check for intersection
+  if (length(sf::st_intersects(bbox_sf, bbox_canada, sparse = FALSE)) > 0) {
+    message('Downloading Canada data from NABAT...')
+    grts_list[[length(grts_list) + 1]] <- readr::read_csv('https://code.usgs.gov/fort/nabat/nabatr/-/raw/dffbf6afda4d390dbe4d2bf8c51e854b960a33dd/data/GRTS_coords_Canada.csv', show_col_types = FALSE)
+  }
+
+  if (length(sf::st_intersects(bbox_sf, bbox_alaska, sparse = FALSE)) > 0) {
+    message('Downloading Alaska data from NABAT...')
+    grts_list[[length(grts_list) + 1]] <- readr::read_csv('https://code.usgs.gov/fort/nabat/nabatr/-/raw/dffbf6afda4d390dbe4d2bf8c51e854b960a33dd/data/GRTS_coords_Alaska.csv', show_col_types = FALSE)
+  }
+
+  # Check for intersection with contiguous US
+  if (length(sf::st_intersects(bbox_sf, bbox_contig, sparse = FALSE)) > 0) {
+    message('Downloading contiguous US data from NABAT...')
+    grts_list[[length(grts_list) + 1]] <- readr::read_csv('https://code.usgs.gov/fort/nabat/nabatr/-/raw/dffbf6afda4d390dbe4d2bf8c51e854b960a33dd/data/GRTS_coords_CONUS.csv', show_col_types = FALSE)
+  }
+
+  # If any datasets were downloaded, bind them together
+  if (length(grts_list) > 0) {
+    grts_chosen <- dplyr::bind_rows(grts_list)
+  } else {
+    message('No overlaps could be found with this data.')
+    grts_chosen <- NULL
+  }
+
+  # Optional: Check if grts_chosen is NULL before proceeding
+  if (is.null(grts_chosen)) {
+    stop('No intersected data to proceed with.')
+  }
+
   # Convert grid cells to sf polygons
-  grid_cells_sf <- grts_canada %>%
+  grid_cells_sf <- grts_chosen %>%
     tidyr::separate(lowerleft, into = c("lowerleft_lat", "lowerleft_lon"), sep = ",", convert = TRUE) %>%
     tidyr::separate(upperleft, into = c("upperleft_lat", "upperleft_lon"), sep = ",", convert = TRUE) %>%
     tidyr::separate(upperright, into = c("upperright_lat", "upperright_lon"), sep = ",", convert = TRUE) %>%
@@ -624,10 +663,6 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
     sf::st_as_sf(crs = 4326) %>%
     dplyr::select(GRTS_ID, geometry)
 
-  # Filter things down a bit by bbox so the intersection doesn't take too long
-  points_sf <- sf::st_as_sf(data, coords = c("longitude", "latitude"), crs = 4326)
-  points_bbox <- sf::st_as_sfc(st_bbox(points_sf))
-  bbox_sf <- sf::st_sf(geometry = points_bbox)
   grid_cells_filtered <- grid_cells_sf %>% sf::st_intersection(bbox_sf)
 
   # Perform spatial join to find which polygon each point falls into
@@ -682,19 +717,48 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 
 wt_format_data <- function(input, format = 'FWMIS'){
 
-  if(format == "FWMIS"){
+  # if(format == "FWMIS"){
+  #
+  #   reports_needed <- c("equipment","main","visit")
+  #
+  #   if(!all(grepl(reports_needed %in% input))){
+  #     stop("You do not have all the required reports for the FWMIS reports. Use wt_download_report(reports = c('equipment','main','visit'))")
+  #   }
+  #
+  # }
+  #
+  # output_format <- input
+  #
 
-    reports_needed <- c("equipment","main","visit")
-
-    if(!all(grepl(reports_needed %in% input))){
-      stop("You do not have all the required reports for the FWMIS reports. Use wt_download_report(reports = c('equipment','main','visit'))")
-    }
-
+  # User agent
+  u <- getOption("HTTPUserAgent")
+  if (is.null(u)) {
+    u <- sprintf("R/%s; R (%s)",
+                 getRversion(),
+                 paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
   }
 
-  output_format <- input
+  # Add wildrtrax version information:
+  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
-  return(output_format)
+  spp_fwmis <- httr::POST(
+    httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-species-fwmis-map"),
+    accept = "application/json",
+    httr::add_headers(Authorization = NULL),
+    httr::user_agent(u)
+  )
+
+  spps <- httr::content(spp_fwmis)
+  spps_tibble <- map_dfr(spps, ~ tibble(sfw_species_id = .x$sfw_species_id, sfw_name = .x$sfw_name))
+
+  visits <- httr::POST(
+    httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-"),
+    accept = "application/json",
+    httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
+    httr::user_agent(u)
+  )
+
+  return(spps_tibble)
 }
 
 
