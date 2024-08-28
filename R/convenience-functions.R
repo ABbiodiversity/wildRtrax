@@ -600,27 +600,28 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
   # Filter things down a bit by bbox so the intersection doesn't take too long
   points_sf <- sf::st_as_sf(data, coords = c("longitude", "latitude"), crs = 4326)
   points_bbox <- sf::st_as_sfc(st_bbox(points_sf))
+  bbox_sf <- sf::st_sf(geometry = points_bbox)
   # Define bounding boxes for each region
-  bbox_canada <- sf::st_set_crs(sf::st_as_sfc(sf::st_bbox(c(xmin = -141.0, ymin = 41.7, xmax = -52.6, ymax = 83.1)), crs = 4326), 4326)
-  bbox_alaska <- sf::st_set_crs(sf::st_as_sfc(sf::st_bbox(c(xmin = -179.99863, ymin = 51.214183, xmax = -129.9795, ymax = 71.538800)), crs = 4326), 4326)
-  bbox_contig <- sf::st_set_crs(sf::st_as_sfc(sf::st_bbox(c(xmin = -127.94485, ymin = 22.91700, xmax = -65.26265, ymax = 51.54421)), crs = 4326), 4326)
+  bbox_canada <- sf::st_set_crs(sf::st_sf(sf::st_as_sfc(sf::st_bbox(c(xmin = -173.179, ymin = 34.43, xmax = -16.35, ymax = 85.17)), crs = 4326)), 4326)
+  bbox_alaska <-  sf::st_set_crs(sf::st_sf(sf::st_as_sfc(sf::st_bbox(c(xmin = -179.99863, ymin = 51.214183, xmax = -129.9795, ymax = 71.538800)), crs = 4326)),4326)
+  bbox_contig <- sf::st_set_crs(sf::st_sf(sf::st_as_sfc(sf::st_bbox(c(xmin = -127.94485, ymin = 22.91700, xmax = -65.26265, ymax = 51.54421)), crs = 4326)),4326)
 
   # Initialize an empty list to collect the datasets
   grts_list <- list()
 
   # Check for intersection
-  if (length(sf::st_intersects(bbox_sf, bbox_canada, sparse = FALSE)) > 0) {
+  if (nrow(data) > 0) {
     message('Downloading Canada data from NABAT...')
     grts_list[[length(grts_list) + 1]] <- readr::read_csv('https://code.usgs.gov/fort/nabat/nabatr/-/raw/dffbf6afda4d390dbe4d2bf8c51e854b960a33dd/data/GRTS_coords_Canada.csv', show_col_types = FALSE)
   }
 
-  if (length(sf::st_intersects(bbox_sf, bbox_alaska, sparse = FALSE)) > 0) {
+  if (nrow(data) > 0) {
     message('Downloading Alaska data from NABAT...')
     grts_list[[length(grts_list) + 1]] <- readr::read_csv('https://code.usgs.gov/fort/nabat/nabatr/-/raw/dffbf6afda4d390dbe4d2bf8c51e854b960a33dd/data/GRTS_coords_Alaska.csv', show_col_types = FALSE)
   }
 
   # Check for intersection with contiguous US
-  if (length(sf::st_intersects(bbox_sf, bbox_contig, sparse = FALSE)) > 0) {
+  if (nrow(data) > 0) {
     message('Downloading contiguous US data from NABAT...')
     grts_list[[length(grts_list) + 1]] <- readr::read_csv('https://code.usgs.gov/fort/nabat/nabatr/-/raw/dffbf6afda4d390dbe4d2bf8c51e854b960a33dd/data/GRTS_coords_CONUS.csv', show_col_types = FALSE)
   }
@@ -629,7 +630,7 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
   if (length(grts_list) > 0) {
     grts_chosen <- dplyr::bind_rows(grts_list)
   } else {
-    message('No overlaps could be found with this data.')
+    stop('No overlaps could be found with this data.')
     grts_chosen <- NULL
   }
 
@@ -662,6 +663,11 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
     dplyr::ungroup() %>%
     sf::st_as_sf(crs = 4326) %>%
     dplyr::select(GRTS_ID, geometry)
+
+  # If CRS are different, transform bbox_sf to match the CRS of grid_cells_sf
+  if (!identical(st_crs(grid_cells_sf), st_crs(bbox_sf))) {
+    bbox_sf <- st_transform(sf::st_make_valid(bbox_sf), st_crs(sf::st_make_valid(grid_cells_sf)))
+  }
 
   grid_cells_filtered <- grid_cells_sf %>% sf::st_intersection(bbox_sf)
 
@@ -701,7 +707,7 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 #' @description This function takes the WildTrax reports and converts them to the desired format
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param input The report from `wt_download_report()`
+#' @param input A report containing locations from `wt_download_report()`
 #' @param format A format i.e. 'FWMIS'
 #'
 #' @import dplyr

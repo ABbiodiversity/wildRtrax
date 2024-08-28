@@ -7,7 +7,7 @@
 wt_format_data(input, format = "FWMIS")
 }
 \arguments{
-\item{input}{The report from \code{wt_download_report()}}
+\item{input}{A report containing locations from \code{wt_download_report()}}
 
 \item{format}{A format i.e. 'FWMIS'}
 }
