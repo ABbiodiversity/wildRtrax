@@ -163,9 +163,9 @@ wt_tidy_species <- function(data,
   #if you do need nones, add them
   if(zerofill==TRUE){
 
-    #first identify the unique visits (task_id)
+    #first identify the unique visits (task_id) ensure locations are included for proper join
     visit <- data %>%
-      dplyr::select(task_id) %>%
+      dplyr::select(organization, project_id, location, latitude, longitude, location_id, recording_id, recording_date_time, task_id) %>%
       dplyr::distinct()
 
     #see if there are any that have been removed

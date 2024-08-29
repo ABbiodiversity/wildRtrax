@@ -2,12 +2,11 @@
 # wildrtrax <img src="man/figures/logo.png" width="50%" align="right" />
 
 <!-- badges: start -->
-
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R-CMD-check](https://github.com/ABbiodiversity/wildrtrax/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ABbiodiversity/wildrtrax/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/ABbiodiversity/wildrtrax/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ABbiodiversity/wildrtrax)
 [![CRAN status](https://www.r-pkg.org/badges/version/wildrtrax)](https://CRAN.R-project.org/package=wildrtrax)
-[![Codecov test coverage](https://codecov.io/gh/ABbiodiversity/wildRtrax/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ABbiodiversity/wildRtrax?branch=main)
+[![Codecov test coverage](https://codecov.io/gh/ABbiodiversity/wildRtrax/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ABbiodiversity/wildRtrax?branch=dev)
 <!-- badges: end -->
 
 ## Overview
