@@ -335,7 +335,7 @@ wt_make_wide <- function(data, sound="all"){
 #' @param species Character; four-letter alpha code for the species desired for occupancy modelling.
 #' @param siteCovs Optional dataframe of site covariates. Must contain a column with the same values as the location field in the data, with one row per unique value of location (i.e., one row per site).
 #'
-#' @import dplyr lubridate unmarked
+#' @import dplyr unmarked
 #' @export
 #'
 #' @examples

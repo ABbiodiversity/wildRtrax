@@ -243,15 +243,14 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     httr::write_disk(tmp)
     )
 
-  print(r)
-
   # Stop if an error or bad request occurred
-  if (httr::http_error(r))
+  if (httr::http_error(r)) {
     stop(sprintf(
       "Authentication failed [%s]\n%s",
       httr::status_code(r),
       httr::content(r)$message),
       call. = FALSE)
+  }
 
   # Unzip
   unzip(tmp, exdir = td)
@@ -278,7 +277,9 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   files.full <- list.files(td, pattern= "*.csv", full.names = TRUE)
   files.less <- basename(files.full)
   x <- purrr::map(.x = files.full, .f = ~ suppressWarnings(readr::read_csv(., show_col_types = F,
-                                                                           skip_empty_rows = T, col_types = .wt_col_types()))) %>%
+                                                                           skip_empty_rows = T, col_types = list(abundance = readr::col_character(),
+                                                                                                                 image_fire = readr::col_logical(),
+                                                                                                                 image_snow_depth_m = readr::col_number())))) %>%
     purrr::set_names(files.less)
 
 

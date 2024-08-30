@@ -88,9 +88,15 @@ test_that('Add GRTS ID', {
   expect_true(!is.null(grts))
 })
 
+test_that('Location distances', {
+  locs <- wt_download_report(620, 'ARU', 'location', F)
+  locs_dist <- wt_location_distances(locs)
+  expect_true(!is.null(locs_dist))
+})
+
 ##Pre-processing & convenience
 ##wt_audio_scanner
 ##wt_run_ap
 ##wt_glean_ap
 ##wt_chop
-##wt_location_distances
+
