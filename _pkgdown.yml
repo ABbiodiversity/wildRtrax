@@ -16,6 +16,7 @@ articles:
   - tutorials
 reference:
   - contents:
+    - wildrtrax
     - wt_add_grts
     - wt_additional_species
     - wt_auth
@@ -29,10 +30,10 @@ reference:
     - wt_flac_info
     - wt_format_data
     - wt_format_occupancy
-    - wt_glean_ap
     - wt_get_download_summary
     - wt_get_species
     - wt_get_threshold
+    - wt_glean_ap
     - wt_ind_detect
     - wt_kaleidoscope_tags
     - wt_location_distances
@@ -42,11 +43,11 @@ reference:
     - wt_replace_tmtt
     - wt_run_ap
     - wt_signal_level
+    - wt_songscope_tags
     - wt_summarise_cam
     - wt_tidy_species
-    - wt_songscope_tags
     - wt_wac_info
-    - wildrtrax
+
 news:
   releases:
   - text: wildrtrax 1.3.1

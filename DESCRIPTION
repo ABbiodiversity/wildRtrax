@@ -14,7 +14,6 @@ Authors@R:
              family = "Knight",
              role = "aut",
              email = "ecknight@ualberta.ca"))
-Author: Alex MacPhail <agmacpha@ualberta.ca>
 Maintainer: Alex MacPhail <agmacpha@ualberta.ca>
 Description: wildrtrax is an R package that enables environmental sensor users to create comprehensive work flows for managing and analyzing data.
 Depends: R (>= 4.1.0)

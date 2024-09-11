@@ -83,7 +83,7 @@ test_that('Classifier functions', {
 })
 
 test_that('Add GRTS ID', {
-  bats <- wt_download_report(620, 'ARU', 'location', F)
+  bats <- wt_download_report(685, 'ARU', 'location', F)
   grts <- wt_add_grts(bats, group_locations_in_cell = TRUE)
   expect_true(!is.null(grts))
 })
