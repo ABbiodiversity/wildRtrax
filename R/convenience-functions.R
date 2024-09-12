@@ -743,7 +743,7 @@ wt_format_data <- function(input, format = 'FWMIS'){
 
   spps <- httr::content(spp_fwmis)
   spps_tibble <- map_dfr(spps, ~ tibble(species_id = .x$sfw_species_id, sfw_name = .x$sfw_name)) %>%
-    inner_join(., suppressMessages(wt_get_species()) %>% select(species_id, species_common_name), by = ("species_id"))
+    inner_join(., wt_get_species() %>% select(species_id, species_common_name), by = ("species_id"))
 
   org_id = 5
   #org_id <- input %>% select(organization) %>% distinct() %>% pull()

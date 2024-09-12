@@ -366,8 +366,6 @@ wt_get_species <- function(){
       species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
     )
 
-  message("Successfully downloaded the species table!")
-
  return(spp_table)
 
 }
@@ -546,7 +544,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       stop("Please authenticate with wt_auth().", call. = FALSE)
     } else {
       tok_used <- paste("Bearer", ._wt_auth_env_$access_token)
-      species_tibble <- suppressMessages(wt_get_species())
+      species_tibble <- wt_get_species()
     }
   }
 
