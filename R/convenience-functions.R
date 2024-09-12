@@ -744,10 +744,11 @@ wt_format_data <- function(input, format = 'FWMIS'){
   spps <- httr::content(spp_fwmis)
   spps_tibble <- map_dfr(spps, ~ tibble(sfw_species_id = .x$sfw_species_id, sfw_name = .x$sfw_name))
 
-  org_id <- input %>% select(organization) %>% distinct() %>% pull()
+  org_id = 5167
+  #org_id <- input %>% select(organization) %>% distinct() %>% pull()
 
   loceq_payload <- list(
-    limit = 100,
+    limit = 2e9,
     orderBy = "deploymentDate",
     orderDirection = "DESC",
     organizationId = org_id,
@@ -784,7 +785,7 @@ wt_format_data <- function(input, format = 'FWMIS'){
                                    parent_equipment = .x$parentEquipment))
 
    visit_payload <- list(
-    limit = 100,
+    limit = 2e9,
     orderBy = "locationName",
     orderDirection = "DESC",
     organizationId = org_id,
@@ -812,7 +813,7 @@ wt_format_data <- function(input, format = 'FWMIS'){
                                           snow_depth_m = .x$snowDepth,
                                           water_depth_cm = .x$waterDepth,
                                           bait = .x$baitId,
-                                          crew = .x$crewName,.
+                                          crew = .x$crewName,
                                           access_method = .x$accessMethodId,
                                           distance_to_clutter = .x$distanceToClutter,
                                           distance_to_water = .x$distanceToWater,
@@ -822,7 +823,20 @@ wt_format_data <- function(input, format = 'FWMIS'){
                                           timezone = .x$timeZone,
                                           land_features = .x$landFeatureIds))
 
-  return(spps_tibble)
+  output <- input
+  #%>% inner_join(spps_tibble, by = c("species_id" = "sfw_species_id"))
+
+  output <- output %>%
+    inner_join(., visits %>% select(location, visit_date, crew, land_features), by = c("location" = "location"))
+
+  if (nrow(output) == 0) {stop('There were no visits to join for this project. Enter visits in your Organization.')}
+
+  output <- output %>%
+    inner_join(., loceq %>% select(location, deployment_date, retrieval_date, equipment_condition, equipment_direction, equipment_mount, stake_distance), by = c("location" = "location"))
+
+  if (nrow(output) == 0) {stop('There was no location equipment for this project. Enter your equipment and visits in your Organization.')}
+
+  return(output)
 }
 
 
