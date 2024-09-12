@@ -742,9 +742,10 @@ wt_format_data <- function(input, format = 'FWMIS'){
   )
 
   spps <- httr::content(spp_fwmis)
-  spps_tibble <- map_dfr(spps, ~ tibble(sfw_species_id = .x$sfw_species_id, sfw_name = .x$sfw_name))
+  spps_tibble <- map_dfr(spps, ~ tibble(species_id = .x$sfw_species_id, sfw_name = .x$sfw_name)) %>%
+    inner_join(., suppressMessages(wt_get_species()) %>% select(species_id, species_common_name), by = ("species_id"))
 
-  org_id = 5167
+  org_id = 5
   #org_id <- input %>% select(organization) %>% distinct() %>% pull()
 
   loceq_payload <- list(
@@ -823,8 +824,8 @@ wt_format_data <- function(input, format = 'FWMIS'){
                                           timezone = .x$timeZone,
                                           land_features = .x$landFeatureIds))
 
-  output <- input
-  #%>% inner_join(spps_tibble, by = c("species_id" = "sfw_species_id"))
+  output <- input %>%
+    inner_join(spps_tibble, by = c("species_common_name"))
 
   output <- output %>%
     inner_join(., visits %>% select(location, visit_date, crew, land_features), by = c("location" = "location"))
@@ -836,7 +837,210 @@ wt_format_data <- function(input, format = 'FWMIS'){
 
   if (nrow(output) == 0) {stop('There was no location equipment for this project. Enter your equipment and visits in your Organization.')}
 
-  return(output)
+  if (any(grepl("image", names(output), ignore.case = TRUE))) {
+    # DO CAMERA STUFF
+    output <- output %>%
+      select(location, latitude, longitude, location_buffer_m, visit_date, deployment_date, retrieval_date, image_date_time, sfw_name, individual_count, age_class, sex_class) %>%
+      distinct()
+    return(output)
+    # FORMAT AND OUTPUT
+  } else {
+    # DO ARU STUFF
+    output <- output %>%
+      select(organization, location, latitude, longitude, location_buffer_m, recording_date_time, deployment_date, retrieval_date, visit_date, sfw_name, individual_order, individual_count) %>%
+      distinct() %>%
+      mutate(`sc_SURVEYTYPE.domainCodeIdSurveyType` = "Breeding -BREEDING", .before = organization) %>%
+      rename("wi_stakeholderInSurveyCrew" = organization,
+             "sd_effectiveDate" = deployment_date,
+             "sd_terminationDate" = retrieval_date) %>%
+      relocate(sd_effectiveDate, .after = `sc_SURVEYTYPE.domainCodeIdSurveyType`) %>%
+      relocate(sd_terminationDate, .after = sd_effectiveDate)
+
+    new_columns <- list(
+      sc_TAXONOMIC.targetSpecies = NA,
+      ss_sensitiveFlag = NA,
+      sc_SNOWCOVER.domainCodeIdSnowCoverCondition = NA,
+      sc_PRECIPITTN.domainCodeIdPrecipitation = NA,
+      si_cloudCover = NA,
+      sf_temperature = NA,
+      si_windSpeed = NA,
+      sc_WINDDIRCTN.domainCodeIdWindDirection = NA,
+      ss_comments = NA,
+      wc_OBSEXPTISE.domainCodeExpertiseLevel = NA,
+      ws_comments = NA,
+      li_parentLocationNumber = NA,
+      ls_locationNumber = NA,
+      ls_inAlbertaFlag = NA,
+      lf_startUtmEasting = NA,
+      lf_startUtmNorthing = NA,
+      lc_GISREFMER.domainCodeIdStartReferenceMeridian = NA,
+      lc_LOCTYPE.domainCodeIdLocationType = NA,
+      li_blockNumber = NA,
+      lc_GISSOURCE.domainCodeIdMeasurementSource = NA,
+      lc_GISDATUM.domainCodeIdDatum = NA,
+      li_startAtsLegalSubdivision = NA,
+      lc_ATSQUARTER.domainCodeIdStartAtsQuarter = NA,
+      li_startAtsSection = NA,
+      li_startAtsTownship = NA,
+      li_startAtsRange = NA,
+      lc_ATSMERIDIA.domainCodeIdStartAtsMeridian = NA,
+      lf_endLatitude = NA,
+      lf_endLongitude = NA,
+      lf_endUtmEasting = NA,
+      lf_endUtmNorthing = NA,
+      lc_GISREFMER.domainCodeIdEndReferenceMeridian = NA,
+      li_endAtsLegalSubdivision = NA,
+      lc_ATSQUARTER.domainCodeIdEndAtsQuarter = NA,
+      li_endAtsSection = NA,
+      li_endAtsTownship = NA,
+      li_endAtsRange = NA,
+      lc_ATSMERIDIA.domainCodeIdEndAtsMeridian = NA,
+      lc_GEOADMTYP.WMU.geoAdminWmuId = NA,
+      li_waterbodyId = NA,
+      ls_waterbodyOfficialName = NA,
+      li_transectLength = NA,
+      ls_comments = NA,
+      cs_sampleNumber = NA,
+      cs_offTransect = NA,
+      cc_SPECHEALTH.domainCodeHealth = NA,
+      pc_OBSDISTANC.Distance_from_Observer.surveyParameterId = NA,
+      pc_BIRD.Age_Categories.surveyParameterId = NA,
+      ds_sampleNumber = NA,
+      dt_effectiveTimestamp = NA,
+      dt_terminationTimestamp = NA,
+      dc_TAXONOMIC.targetSpecies = NA,
+      dc_AGE_GROUP.domainCodeAgeGroup = NA,
+      ds_gender = NA,
+      dc_SPECMARKTP.domainCodeMarking = NA,
+      ds_dissected = NA,
+      dc_SPECHEALTH.domainCodeHealth = NA,
+      ds_healthDescription = NA,
+      dc_DEATHCAUSE.domainCodeCauseOfDeath = NA,
+      ds_contaminants = NA,
+      ds_enforNumber = NA,
+      ds_comments = NA,
+      ds_initialCapture = NA,
+      IndividualSpeciesId = NA,
+      `1s_internalFlag` = NA,
+      `1c_SPECIDTYPE.domainCodeIdIdType` = NA,
+      `1c_SPECIDCOLR.domainCodeIdIdColor` = NA,
+      `1i_idNumber` = NA,
+      `1i_radioFrequency` = NA,
+      `1i_radioChannel` = NA,
+      `1i_radioCode` = NA,
+      UseTag1Flag = NA,
+      `2s_internalFlag` = NA,
+      `2c_SPECIDTYPE.domainCodeIdIdType` = NA,
+      `2c_SPECIDCOLR.domainCodeIdIdColor` = NA,
+      `2i_idNumber` = NA,
+      `2i_radioFrequency` = NA,
+      `2i_radioChannel` = NA,
+      `2i_radioCode` = NA,
+      UseTag2Flag = NA,
+      `3s_internalFlag` = NA,
+      `3c_SPECIDTYPE.domainCodeIdIdType` = NA,
+      `3c_SPECIDCOLR.domainCodeIdIdColor` = NA,
+      `3i_idNumber` = NA,
+      `3i_radioFrequency` = NA,
+      `3i_radioChannel` = NA,
+      `3i_radioCode` = NA,
+      UseTag3Flag = NA,
+      as_subsampleId1 = NA,
+      as_subsampleId2 = NA,
+      as_subsampleId3 = NA,
+      ac_SUBSAMPTYP.domainCodeIdSubsampleType = NA,
+      ac_BODYSOURCE.domainCodeIdBodySource = NA,
+      ac_TESTTYPE.domainCodeIdTestType = NA,
+      ac_TESTRESULT.domainCodeIdTestResult = NA,
+      as_testResultChar = NA,
+      at_testTimestamp = NA,
+      as_testOrganization = NA,
+      as_storeLocation = NA,
+      at_letterSentTimestamp = NA,
+      as_comments = NA,
+      tc_BIRD.Age_Categories.surveyParameterId = NA,
+      hi_siteNumber = NA,
+      ht_effectiveTimestamp = NA,
+      hi_transectNumber = NA,
+      hi_stationNumber = NA,
+      hi_depth = NA,
+      hs_comments = NA,
+      bc_HABGENERAL.Primary_Habitat.surveyParameterId = NA,
+      bc_HABGENERAL.Secondary_Habitat.surveyParameterId = NA,
+      bc_HABGENERAL.Topography.surveyParameterId = NA,
+      fc_SITFEATURE.domainCodeFeature = NA,
+      fs_sampleNumber = NA,
+      ft_effectiveTimestamp = NA,
+      fc_CONFDNTLVL.domainCodeConfidence = NA,
+      fc_TAXONOMIC.targetSpecies = NA,
+      fs_comments = NA,
+      gc_FEATURE.Feature_Status.surveyParameterId = NA,
+      gc_BIRD.Lek_Status.surveyParameterId = NA,
+      gc_FEATURE.Feature_Count.surveyParameterId = NA,
+      cc_DEATHCAUSE.domainCodeCauseOfDeath = NA,
+      cc_CONFDNTLVL.domainCodeConfidence = NA,
+      cc_EVIDENCE.domainCodeEvidence = NA,
+      cc_SPECMARKTP.domainCodeMarking = NA,
+      ct_effectiveTimestamp = NA,
+      cc_AGE_GROUP.domainCodeAgeGroup = NA,
+      cs_gender = NA
+    )
+
+    output <- output %>%
+      mutate(!!!new_columns) %>%  # Add new columns
+      relocate(any_of(names(new_columns)), .after = sd_terminationDate) %>%
+      rename('cs_comments' = location,
+             'lf_startLatitude' = latitude,
+             'lf_startLongitude' = longitude,
+             'lf_gisPrecision' = location_buffer_m,
+             'ct_effectiveTimestamp' = recording_date_time,
+             'ct_terminationTimestamp' = recording_date_time,
+             'cc_TAXONOMIC.targetSpecies' = sfw_name,
+             'ci_totalCount' = individual_order,
+             'cc_ABUNDANCE.domainCodeAbundance' = individual_count)
+
+    new_column_order <- c(
+      "sc_SURVEYTYPE.domainCodeIdSurveyType", "sd_effectiveDate", "sd_terminationDate", "sc_TAXONOMIC.targetSpecies",
+      "ss_sensitiveFlag", "sc_SNOWCOVER.domainCodeIdSnowCoverCondition", "sc_PRECIPITTN.domainCodeIdPrecipitation",
+      "si_cloudCover", "sf_temperature", "si_windSpeed", "sc_WINDDIRCTN.domainCodeIdWindDirection", "ss_comments",
+      "ss_comments", "wi_stakeholderInSurveyCrew", "wc_OBSEXPTISE.domainCodeExpertiseLevel", "ws_comments",
+      "li_parentLocationNumber", "ls_locationNumber", "lc_LOCTYPE.domainCodeIdLocationType", "li_blockNumber",
+      "lc_GISSOURCE.domainCodeIdMeasurementSource", "lc_GISDATUM.domainCodeIdDatum", "lf_gisPrecision",
+      "ls_inAlbertaFlag", "lf_startLatitude", "lf_startLongitude", "lf_startUtmEasting", "lf_startUtmNorthing",
+      "lc_GISREFMER.domainCodeIdStartReferenceMeridian", "li_startAtsLegalSubdivision", "lc_ATSQUARTER.domainCodeIdStartAtsQuarter",
+      "li_startAtsSection", "li_startAtsTownship", "li_startAtsRange", "lc_ATSMERIDIA.domainCodeIdStartAtsMeridian",
+      "lf_endLatitude", "lf_endLongitude", "lf_endUtmEasting", "lf_endUtmNorthing", "lc_GISREFMER.domainCodeIdEndReferenceMeridian",
+      "li_endAtsLegalSubdivision", "lc_ATSQUARTER.domainCodeIdEndAtsQuarter", "li_endAtsSection", "li_endAtsTownship",
+      "li_endAtsRange", "lc_ATSMERIDIA.domainCodeIdEndAtsMeridian", "lc_GEOADMTYP.WMU.geoAdminWmuId", "li_waterbodyId",
+      "ls_waterbodyOfficialName", "li_transectLength", "ls_comments", "ls_comments", "cs_sampleNumber",
+      "ct_effectiveTimestamp", "ct_terminationTimestamp", "cc_TAXONOMIC.targetSpecies", "ci_totalCount",
+      "cc_ABUNDANCE.domainCodeAbundance", "cc_AGE_GROUP.domainCodeAgeGroup", "cs_gender", "cs_offTransect",
+      "cc_SPECHEALTH.domainCodeHealth", "cc_DEATHCAUSE.domainCodeCauseOfDeath", "cc_CONFDNTLVL.domainCodeConfidence",
+      "cc_EVIDENCE.domainCodeEvidence", "cc_SPECMARKTP.domainCodeMarking", "cs_comments", "pc_OBSDISTANC.Distance_from_Observer.surveyParameterId",
+      "pc_BIRD.Age_Categories.surveyParameterId", "ds_sampleNumber", "dt_effectiveTimestamp", "dt_terminationTimestamp",
+      "dc_TAXONOMIC.targetSpecies", "dc_AGE_GROUP.domainCodeAgeGroup", "ds_gender", "dc_SPECMARKTP.domainCodeMarking",
+      "ds_dissected", "dc_SPECHEALTH.domainCodeHealth", "ds_healthDescription", "dc_DEATHCAUSE.domainCodeCauseOfDeath",
+      "ds_contaminants", "ds_enforNumber", "ds_comments", "ds_initialCapture", "IndividualSpeciesId", "1s_internalFlag",
+      "1c_SPECIDTYPE.domainCodeIdIdType", "1c_SPECIDCOLR.domainCodeIdIdColor", "1i_idNumber", "1i_radioFrequency",
+      "1i_radioChannel", "1i_radioCode", "UseTag1Flag", "2s_internalFlag", "2c_SPECIDTYPE.domainCodeIdIdType",
+      "2c_SPECIDCOLR.domainCodeIdIdColor", "2i_idNumber", "2i_radioFrequency", "2i_radioChannel", "2i_radioCode",
+      "UseTag2Flag", "3s_internalFlag", "3c_SPECIDTYPE.domainCodeIdIdType", "3c_SPECIDCOLR.domainCodeIdIdColor",
+      "3i_idNumber", "3i_radioFrequency", "3i_radioChannel", "3i_radioCode", "UseTag3Flag", "as_subsampleId1",
+      "as_subsampleId2", "as_subsampleId3", "ac_SUBSAMPTYP.domainCodeIdSubsampleType", "ac_BODYSOURCE.domainCodeIdBodySource",
+      "ac_TESTTYPE.domainCodeIdTestType", "ac_TESTRESULT.domainCodeIdTestResult", "as_testResultChar", "at_testTimestamp",
+      "as_testOrganization", "as_storeLocation", "at_letterSentTimestamp", "as_comments", "tc_BIRD.Age_Categories.surveyParameterId",
+      "hi_siteNumber", "ht_effectiveTimestamp", "hi_transectNumber", "hi_stationNumber", "hi_depth", "hs_comments",
+      "bc_HABGENERAL.Primary_Habitat.surveyParameterId", "bc_HABGENERAL.Secondary_Habitat.surveyParameterId",
+      "bc_HABGENERAL.Topography.surveyParameterId", "fc_SITFEATURE.domainCodeFeature", "fs_sampleNumber",
+      "ft_effectiveTimestamp", "fc_CONFDNTLVL.domainCodeConfidence", "fc_TAXONOMIC.targetSpecies", "fs_comments",
+      "gc_FEATURE.Feature_Status.surveyParameterId", "gc_BIRD.Lek_Status.surveyParameterId", "gc_FEATURE.Feature_Count.surveyParameterId"
+    )
+
+    output <- output %>%
+      select(all_of(new_column_order))
+
+    return(output)
+  }
 }
 
 
