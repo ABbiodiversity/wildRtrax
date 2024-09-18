@@ -6,7 +6,7 @@
 #'
 #' @keywords internal
 #'
-#' @import httr
+#' @import httr2
 #'
 .wt_auth <- function() {
 
@@ -17,40 +17,42 @@
              0x39, 0x37, 0x6e, 0x78, 0x55, 0x31, 0x33, 0x5a, 0x32, 0x4b, 0x31,
              0x69)))
 
-  # POST request
-  r <- httr::POST(
-    url = "https://abmi.auth0.com/oauth/token",
-    encode = "form",
-    body = list(
+  # Initialize request to Auth0
+  req <-  httr2::request("https://abmi.auth0.com/")
+
+  r <-   req |>
+    httr2::req_url_path("oauth/token") |>
+    httr2::req_body_form(
       audience = "http://www.wildtrax.ca",
       grant_type = "password",
       client_id = cid,
-      username = Sys.getenv("WT_USERNAME"),
-      password = Sys.getenv("WT_PASSWORD")
-    )
-  )
+      username = username,
+      password = Sys.getenv('WT_PASSWORD')) |>
+    httr2::req_perform()
 
-  # Write error message if POST request failed:
-  if (httr::http_error(r))
-    stop(sprintf(
+  # Check for authentication errors
+  if (httr2::resp_is_error(r)) {
+    rlang::abort(sprintf(
       "Authentication failed [%s]\n%s",
-      httr::status_code(r),
-      httr::content(r)$error_description
+      httr2::resp_status(r),
+      httr2::resp_body_json(r)$error_description
     ),
     call. = FALSE)
+  }
 
-  # Retrieve content from request
-  x <- httr::content(r)
+  # Parse the JSON response
+  x <- httr2::resp_body_json(r)
 
-  # Time until token expires
+  # Calculate token expiry time
   t0 <- Sys.time()
   x$expiry_time <- t0 + x$expires_in
 
-  # Check that ._wt_auth_env_ exists
-  if (!exists("._wt_auth_env_"))
+  # Check if the authentication environment exists
+  if (!exists("._wt_auth_env_")) {
     stop("Cannot find the correct environment.", call. = FALSE)
+  }
 
-  # Send content ('x') to ._wt_auth_env_
+  # Send the token information to the ._wt_auth_env_ environment
   list2env(x, envir = ._wt_auth_env_)
 
   message("Authentication into WildTrax successful.")
@@ -110,6 +112,18 @@
     query = list(...),
     httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
     httr::user_agent(u))
+
+
+  #req <- httr2::request("https://www-api.wildtrax.ca")
+
+  # r <- req |>
+  #   httr2::req_url_path(path) |>
+  #   httr2::req_url_query(...) |>
+  #   httr2::req_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)) |>
+  #   httr2::req_user_agent(u) |>
+  #   httr2::req_method("POST") |>
+  #   httr2::req_perform()
+
 
   if (httr::http_error(r))
     stop(sprintf(

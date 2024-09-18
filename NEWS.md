@@ -1,8 +1,12 @@
 # wildrtrax 1.3.1
 
+# Major changes
+
+* Upgrade authorization and API requests to `httr2`
+
 ## Minor changes
 
-* Deal with abundance and other camera issues (#60, #62)
+* Address camera functionalities from #60, #62
 * Add GRTS grid cells for Alaska and contiguous United States (#64)
 * Use `.wt_col_types()` to dynamically adjust column reports to help address (#55)
 
