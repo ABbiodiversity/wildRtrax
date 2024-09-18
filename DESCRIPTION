@@ -24,6 +24,7 @@ Imports:
     fs,
     ggplot2,
     httr,
+    httr2,
     intrval,
     lubridate,
     magick,

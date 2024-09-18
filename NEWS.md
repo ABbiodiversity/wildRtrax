@@ -1,8 +1,8 @@
 # wildrtrax 1.3.1
 
-# Major changes
+## Major changes
 
-* Upgrade authorization and API requests to `httr2`
+* Upgraded authorization and API requests to `httr2` to help support Google OAuth and public users
 
 ## Minor changes
 

@@ -70,7 +70,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
     tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = FALSE) %>%
     dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)')) %>%
     dplyr::mutate(recording_date_time = as.POSIXct(strptime(recording_date_time, format = "%Y%m%d_%H%M%S"))) %>%
-    dplyr::mutate(julian = as.POSIXlt(df$recording_date_time)$yday + 1,
+    dplyr::mutate(julian = as.POSIXlt(recording_date_time)$yday + 1,
            year = as.numeric(format(recording_date_time,"%Y")),
            gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE)) %>%
     dplyr::arrange(location, recording_date_time) %>%
@@ -233,7 +233,8 @@ wt_wac_info <- function(path) {
 #'
 #' @param path Character; The flac file path
 #'
-#' @import seewave tuneR
+#' @importFrom seewave wav2flac
+#' @importFrom tuneR readWave
 #' @export
 #'
 #' @return a list with relevant information
@@ -440,7 +441,9 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
 #' @param channel Choose "left" or "right" channel
 #' @param aggregate Aggregate detections by this number of seconds, if desired
 #'
-#' @import tuneR dplyr
+#' @import dplyr
+#' @importFrom tuneR readWave
+#' @importFrom seewave spectro
 #' @export
 #'
 #' @examples

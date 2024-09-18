@@ -18,10 +18,6 @@ wt_auth <- function(force = FALSE) {
   if (!exists("._wt_auth_env_"))
     stop("Cannot find the correct environment.", call. = TRUE)
 
-  if(is.null("._wt_auth_env_")){
-    message("Would you like to authorize to your WildTrax account?")
-  }
-
   if (force || .wt_auth_expired())
     .wt_auth()
 

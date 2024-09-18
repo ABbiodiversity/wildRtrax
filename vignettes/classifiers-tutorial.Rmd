@@ -1,7 +1,6 @@
 ---
 title: "Acoustic classifiers"
 output: rmarkdown::html_vignette
-bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Acoustic classifiers}
   %\VignetteEngine{knitr::rmarkdown}
@@ -9,6 +8,8 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
+
+#bibliography: references.bib
 knitr::opts_chunk$set(echo = TRUE)
 
 library(dplyr)
