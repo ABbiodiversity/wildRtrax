@@ -243,15 +243,14 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     httr::write_disk(tmp)
     )
 
-  print(r)
-
   # Stop if an error or bad request occurred
-  if (httr::http_error(r))
+  if (httr::http_error(r)) {
     stop(sprintf(
       "Authentication failed [%s]\n%s",
       httr::status_code(r),
       httr::content(r)$message),
       call. = FALSE)
+  }
 
   # Unzip
   unzip(tmp, exdir = td)
@@ -279,7 +278,8 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   files.less <- basename(files.full)
   x <- purrr::map(.x = files.full, .f = ~ suppressWarnings(readr::read_csv(., show_col_types = F,
                                                                            skip_empty_rows = T, col_types = list(abundance = readr::col_character(),
-                                                                                                                 image_fire = readr::col_logical())))) %>%
+                                                                                                                 image_fire = readr::col_logical(),
+                                                                                                                 image_snow_depth_m = readr::col_number())))) %>%
     purrr::set_names(files.less)
 
 
@@ -365,8 +365,6 @@ wt_get_species <- function(){
       species_order = map_chr(spps, ~ ifelse(!is.null(.x$order), .x$order, NA)),
       species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
     )
-
-  message("Successfully downloaded the species table!")
 
  return(spp_table)
 
@@ -546,7 +544,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       stop("Please authenticate with wt_auth().", call. = FALSE)
     } else {
       tok_used <- paste("Bearer", ._wt_auth_env_$access_token)
-      species_tibble <- suppressMessages(wt_get_species())
+      species_tibble <- wt_get_species()
     }
   }
 

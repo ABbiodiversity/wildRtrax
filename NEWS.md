@@ -1,3 +1,11 @@
+# wildrtrax 1.3.1
+
+## Minor changes
+
+* Deal with abundance and other camera issues (#60, #62)
+* Add GRTS grid cells for Alaska and contiguous United States (#64)
+* Use `.wt_col_types()` to dynamically adjust column reports to help address (#55)
+
 # wildrtrax 1.3.0
 
 ## Major changes

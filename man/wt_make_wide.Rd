@@ -15,7 +15,7 @@ wt_make_wide(data, sound = "all")
 A dataframe identical to input with observations of the specified groups removed.
 }
 \description{
-This function converts a long-formatted report into a wide survey by species dataframe of abundance values. This function is best preceded by the\code{wt_tidy_species} and \code{wt_replace_tmtt} functions  to ensure 'TMTT' and amphibian calling index values are not converted to zeros.
+This function converts a long-formatted report into a wide survey by species dataframe of abundance values.
 }
 \examples{
 \dontrun{

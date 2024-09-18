@@ -70,7 +70,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
     tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = FALSE) %>%
     dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)')) %>%
     dplyr::mutate(recording_date_time = as.POSIXct(strptime(recording_date_time, format = "%Y%m%d_%H%M%S"))) %>%
-    dplyr::mutate(julian = lubridate::yday(recording_date_time),
+    dplyr::mutate(julian = as.POSIXlt(df$recording_date_time)$yday + 1,
            year = as.numeric(format(recording_date_time,"%Y")),
            gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE)) %>%
     dplyr::arrange(location, recording_date_time) %>%
@@ -578,7 +578,6 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' @param output_folder Character; output path to where the segments will be stored
 #'
 #' @import tuneR dplyr
-#' @importFrom lubridate seconds
 #' @export
 #'
 #' @examples
@@ -629,7 +628,7 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
       ..5 = .$length_sec,
       ..6 = .$start_times,
       .f = ~ tuneR::writeWave(tuneR::readWave(..1, from = ..6, to = ..6 + ..5, units = "seconds"),
-                              filename = paste0(outroot, "/", ..3, "_", format(..2 + lubridate::seconds(..6), "%Y%m%d_%H%M%S"), ".", ..4),
+                              filename = paste0(outroot, "/", ..3, "_", format(..2 + as.difftime(..6, units = "secs"), "%Y%m%d_%H%M%S"), ".", ..4),
                               extensible = T))
 
   return(inp2)
@@ -825,7 +824,6 @@ wt_kaleidoscope_tags <- function (input, output, freq_bump = T) {
 #'
 #' @import dplyr tidyr tibble
 #' @importFrom readr read_table
-#' @importFrom lubridate yday
 #' @export
 #'
 #' @return A csv formatted as a WildTrax tag template

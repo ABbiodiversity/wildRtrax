@@ -163,9 +163,9 @@ wt_tidy_species <- function(data,
   #if you do need nones, add them
   if(zerofill==TRUE){
 
-    #first identify the unique visits (task_id)
+    #first identify the unique visits (task_id) ensure locations are included for proper join
     visit <- data %>%
-      dplyr::select(task_id) %>%
+      dplyr::select(organization, project_id, location, latitude, longitude, location_id, recording_id, recording_date_time, task_id) %>%
       dplyr::distinct()
 
     #see if there are any that have been removed
@@ -260,7 +260,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 
 #' Convert to a wide survey by species dataframe
 #'
-#' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values. This function is best preceded by the`wt_tidy_species` and `wt_replace_tmtt` functions  to ensure 'TMTT' and amphibian calling index values are not converted to zeros.
+#' @description This function converts a long-formatted report into a wide survey by species dataframe of abundance values.
 #'
 #' @param data WildTrax main report or tag report from the `wt_download_report()` function.
 #' @param sound Character; vocalization type(s) to retain ("all", "Song", "Call", "Non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).
@@ -335,7 +335,7 @@ wt_make_wide <- function(data, sound="all"){
 #' @param species Character; four-letter alpha code for the species desired for occupancy modelling.
 #' @param siteCovs Optional dataframe of site covariates. Must contain a column with the same values as the location field in the data, with one row per unique value of location (i.e., one row per site).
 #'
-#' @import dplyr lubridate unmarked
+#' @import dplyr unmarked
 #' @export
 #'
 #' @examples
@@ -468,7 +468,7 @@ wt_format_occupancy <- function(data,
 
 #' Get QPAD offsets
 #'
-#' @description This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds. This function requires download of the `QPAD` R package and should be used on the output of the `wt_format_wide` function
+#' @description This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds. This function requires download of the `QPAD` R package and should be used on the output of the `wt_make_wide()` function
 #'
 #' @param data Dataframe output from the `wt_make_wide()` function.
 #' @param species Character; species for offset calculation. Can be a list of 4-letter AOU codes (e.g., c("TEWA", "OSFL", "OVEN")) or "all" to calculate offsets for every species in the input dataframe for which offsets are available. Defaults to "all".
@@ -489,7 +489,7 @@ wt_format_occupancy <- function(data,
 #' dat.wide <- wt_make_wide(dat.tmtt, sound="all")
 #' dat.qpad <- wt_qpad_offsets(dat.wide, species="all", version=3, together = TRUE)
 #' }
-#' @return A dataframe containing the QPAD values either by themselves or with the original wide data if together = T
+#' @return A dataframe containing the QPAD values either by themselves or with the original wide data if `together = TRUE`
 
 wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALSE) {
 
@@ -585,8 +585,6 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALS
 
 wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 
-  grts_canada <- readr::read_csv('https://raw.githubusercontent.com/ABbiodiversity/wildrtrax-assets/main/GRTS_CANADA.csv', show_col_types = FALSE)
-
   if(!all(c("location","latitude","longitude") %in% names(data))){
     stop('Data must contains columns for location, latitude and longitude')
   }
@@ -599,8 +597,48 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
     stop('Some latitudes or longitudes are not within the correct coordinate system.')
   }
 
+  # Filter things down a bit by bbox so the intersection doesn't take too long
+  points_sf <- sf::st_as_sf(data, coords = c("longitude", "latitude"), crs = 4326)
+  points_bbox <- sf::st_as_sfc(st_bbox(points_sf))
+  bbox_sf <- sf::st_sf(geometry = points_bbox)
+  # Define bounding boxes for each region
+  bbox_canada <- sf::st_set_crs(sf::st_sf(sf::st_as_sfc(sf::st_bbox(c(xmin = -173.179, ymin = 34.43, xmax = -16.35, ymax = 85.17)), crs = 4326)), 4326)
+  bbox_alaska <-  sf::st_set_crs(sf::st_sf(sf::st_as_sfc(sf::st_bbox(c(xmin = -179.99863, ymin = 51.214183, xmax = -129.9795, ymax = 71.538800)), crs = 4326)),4326)
+  bbox_contig <- sf::st_set_crs(sf::st_sf(sf::st_as_sfc(sf::st_bbox(c(xmin = -127.94485, ymin = 22.91700, xmax = -65.26265, ymax = 51.54421)), crs = 4326)),4326)
+
+  # Initialize an empty list to collect the datasets
+  grts_list <- list()
+
+  # Check for intersection eventually
+  if (nrow(data) > 0) {
+    message('Downloading NABAT data...')
+    grts_list[[length(grts_list) + 1]] <- readr::read_csv('https://code.usgs.gov/fort/nabat/nabatr/-/raw/dffbf6afda4d390dbe4d2bf8c51e854b960a33dd/data/GRTS_coords_Canada.csv', show_col_types = FALSE)
+  }
+
+  if (nrow(data) > 0) {
+    grts_list[[length(grts_list) + 1]] <- readr::read_csv('https://code.usgs.gov/fort/nabat/nabatr/-/raw/dffbf6afda4d390dbe4d2bf8c51e854b960a33dd/data/GRTS_coords_Alaska.csv', show_col_types = FALSE)
+  }
+
+  # Check for intersection with contiguous US
+  if (nrow(data) > 0) {
+    grts_list[[length(grts_list) + 1]] <- readr::read_csv('https://code.usgs.gov/fort/nabat/nabatr/-/raw/dffbf6afda4d390dbe4d2bf8c51e854b960a33dd/data/GRTS_coords_CONUS.csv', show_col_types = FALSE)
+  }
+
+  # If any datasets were downloaded, bind them together
+  if (length(grts_list) > 0) {
+    grts_chosen <- dplyr::bind_rows(grts_list)
+  } else {
+    stop('No overlaps could be found with this data.')
+    grts_chosen <- NULL
+  }
+
+  # Optional: Check if grts_chosen is NULL before proceeding
+  if (is.null(grts_chosen)) {
+    stop('No intersected data to proceed with.')
+  }
+
   # Convert grid cells to sf polygons
-  grid_cells_sf <- grts_canada %>%
+  grid_cells_sf <- grts_chosen %>%
     tidyr::separate(lowerleft, into = c("lowerleft_lat", "lowerleft_lon"), sep = ",", convert = TRUE) %>%
     tidyr::separate(upperleft, into = c("upperleft_lat", "upperleft_lon"), sep = ",", convert = TRUE) %>%
     tidyr::separate(upperright, into = c("upperright_lat", "upperright_lon"), sep = ",", convert = TRUE) %>%
@@ -624,11 +662,12 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
     sf::st_as_sf(crs = 4326) %>%
     dplyr::select(GRTS_ID, geometry)
 
-  # Filter things down a bit by bbox so the intersection doesn't take too long
-  points_sf <- sf::st_as_sf(data, coords = c("longitude", "latitude"), crs = 4326)
-  points_bbox <- sf::st_as_sfc(st_bbox(points_sf))
-  bbox_sf <- sf::st_sf(geometry = points_bbox)
-  grid_cells_filtered <- grid_cells_sf %>% sf::st_intersection(bbox_sf)
+  # If CRS are different, transform bbox_sf to match the CRS of grid_cells_sf
+  if (!identical(st_crs(grid_cells_sf), st_crs(bbox_sf))) {
+    bbox_sf <- st_transform(sf::st_make_valid(bbox_sf), st_crs(sf::st_make_valid(grid_cells_sf)))
+  }
+
+  grid_cells_filtered <- grid_cells_sf %>% suppressWarnings(sf::st_intersection(bbox_sf))
 
   # Perform spatial join to find which polygon each point falls into
   if(nrow(grid_cells_filtered) == 0){
@@ -666,7 +705,7 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 #' @description This function takes the WildTrax reports and converts them to the desired format
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param input The report from `wt_download_report()`
+#' @param input A report containing locations from `wt_download_report()`
 #' @param format A format i.e. 'FWMIS'
 #'
 #' @import dplyr
@@ -682,19 +721,324 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 
 wt_format_data <- function(input, format = 'FWMIS'){
 
-  if(format == "FWMIS"){
-
-    reports_needed <- c("equipment","main","visit")
-
-    if(!all(grepl(reports_needed %in% input))){
-      stop("You do not have all the required reports for the FWMIS reports. Use wt_download_report(reports = c('equipment','main','visit'))")
-    }
-
+  # User agent
+  u <- getOption("HTTPUserAgent")
+  if (is.null(u)) {
+    u <- sprintf("R/%s; R (%s)",
+                 getRversion(),
+                 paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
   }
 
-  output_format <- input
+  # Add wildrtrax version information:
+  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
-  return(output_format)
+  spp_fwmis <- httr::POST(
+    httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-species-fwmis-map"),
+    accept = "application/json",
+    httr::add_headers(Authorization = NULL),
+    httr::user_agent(u)
+  )
+
+  spps <- httr::content(spp_fwmis)
+  spps_tibble <- map_dfr(spps, ~ tibble(species_id = .x$sfw_species_id, sfw_name = .x$sfw_name)) %>%
+    inner_join(., wt_get_species() %>% select(species_id, species_common_name), by = ("species_id"))
+
+  org_id = 5
+  #org_id <- input %>% select(organization) %>% distinct() %>% pull()
+
+  loceq_payload <- list(
+    limit = 2e9,
+    orderBy = "deploymentDate",
+    orderDirection = "DESC",
+    organizationId = org_id,
+    page = 1)
+
+  location_equipment <- httr::POST(
+    httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-location-visit-equipment-summary"),
+    accept = "application/json",
+    httr::add_headers(
+      Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+      Origin = "https://dev.wildtrax.ca",
+      Pragma = "no-cache",
+      Referer = "https://dev.wildtrax.ca"
+    ),
+    httr::user_agent(u),
+    body = loceq_payload,
+    encode = "json"
+  )
+
+  loceq <- httr::content(location_equipment)
+  loceq <- map_dfr(loceq[[2]], ~ tibble(location = .x$locationName,
+                                   deployment_date = .x$deploymentDate,
+                                   retrieval_date = .x$retrieveDate,
+                                   equipment_type = .x$typeId,
+                                   equipment_code = .x$code,
+                                   serial_number = .x$serialNo,
+                                   equipment_make = .x$make,
+                                   equipment_model = .x$model,
+                                   equipment_condition = .x$conditionId,
+                                   equipment_direction = .x$directionDegree,
+                                   equipment_mount = .x$mountId,
+                                   equipment_target = .x$targetId,
+                                   stake_distance = .x$stakeDistance,
+                                   parent_equipment = .x$parentEquipment))
+
+   visit_payload <- list(
+    limit = 2e9,
+    orderBy = "locationName",
+    orderDirection = "DESC",
+    organizationId = org_id,
+    page = 1)
+
+  visits <- httr::POST(
+    httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-location-visits"),
+    accept = "application/json",
+    httr::add_headers(
+      Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+      Origin = "https://dev.wildtrax.ca",
+      Pragma = "no-cache",
+      Referer = "https://dev.wildtrax.ca"
+    ),
+    httr::user_agent(u),
+    body = visit_payload,
+    encode = "json"
+  )
+
+  visits <- httr::content(visits)
+  visits <- map_dfr(visits[[2]], ~ tibble(location = .x$locationName,
+                                          latitude = .x$latitude,
+                                          longitude = .x$longitude,
+                                          visit_date = .x$date,
+                                          snow_depth_m = .x$snowDepth,
+                                          water_depth_cm = .x$waterDepth,
+                                          bait = .x$baitId,
+                                          crew = .x$crewName,
+                                          access_method = .x$accessMethodId,
+                                          distance_to_clutter = .x$distanceToClutter,
+                                          distance_to_water = .x$distanceToWater,
+                                          clutter_percent = .x$clutterPercent,
+                                          sunrise = .x$sunRise,
+                                          sunset = .x$sunSet,
+                                          timezone = .x$timeZone,
+                                          land_features = .x$landFeatureIds))
+
+  output <- input %>%
+    inner_join(spps_tibble, by = c("species_common_name"))
+
+  output <- output %>%
+    inner_join(., visits %>% select(location, visit_date, crew, land_features), by = c("location" = "location"))
+
+  if (nrow(output) == 0) {stop('There were no visits to join for this project. Enter visits in your Organization.')}
+
+  output <- output %>%
+    inner_join(., loceq %>% select(location, deployment_date, retrieval_date, equipment_condition, equipment_direction, equipment_mount, stake_distance), by = c("location" = "location"))
+
+  if (nrow(output) == 0) {stop('There was no location equipment for this project. Enter your equipment and visits in your Organization.')}
+
+  if (any(grepl("image", names(output), ignore.case = TRUE))) {
+    # DO CAMERA STUFF
+    output <- output %>%
+      select(location, latitude, longitude, location_buffer_m, visit_date, deployment_date, retrieval_date, image_date_time, sfw_name, individual_count, age_class, sex_class) %>%
+      distinct()
+    return(output)
+    # FORMAT AND OUTPUT
+  } else {
+    # DO ARU STUFF
+    output <- output %>%
+      select(organization, location, latitude, longitude, location_buffer_m, recording_date_time, deployment_date, retrieval_date, visit_date, sfw_name, individual_order, individual_count) %>%
+      distinct() %>%
+      mutate(`sc_SURVEYTYPE.domainCodeIdSurveyType` = "Breeding -BREEDING", .before = organization) %>%
+      rename("wi_stakeholderInSurveyCrew" = organization,
+             "sd_effectiveDate" = deployment_date,
+             "sd_terminationDate" = retrieval_date) %>%
+      relocate(sd_effectiveDate, .after = `sc_SURVEYTYPE.domainCodeIdSurveyType`) %>%
+      relocate(sd_terminationDate, .after = sd_effectiveDate)
+
+    new_columns <- list(
+      sc_TAXONOMIC.targetSpecies = NA,
+      ss_sensitiveFlag = NA,
+      sc_SNOWCOVER.domainCodeIdSnowCoverCondition = NA,
+      sc_PRECIPITTN.domainCodeIdPrecipitation = NA,
+      si_cloudCover = NA,
+      sf_temperature = NA,
+      si_windSpeed = NA,
+      sc_WINDDIRCTN.domainCodeIdWindDirection = NA,
+      ss_comments = NA,
+      wc_OBSEXPTISE.domainCodeExpertiseLevel = NA,
+      ws_comments = NA,
+      li_parentLocationNumber = NA,
+      ls_locationNumber = NA,
+      ls_inAlbertaFlag = NA,
+      lf_startUtmEasting = NA,
+      lf_startUtmNorthing = NA,
+      lc_GISREFMER.domainCodeIdStartReferenceMeridian = NA,
+      lc_LOCTYPE.domainCodeIdLocationType = NA,
+      li_blockNumber = NA,
+      lc_GISSOURCE.domainCodeIdMeasurementSource = NA,
+      lc_GISDATUM.domainCodeIdDatum = NA,
+      li_startAtsLegalSubdivision = NA,
+      lc_ATSQUARTER.domainCodeIdStartAtsQuarter = NA,
+      li_startAtsSection = NA,
+      li_startAtsTownship = NA,
+      li_startAtsRange = NA,
+      lc_ATSMERIDIA.domainCodeIdStartAtsMeridian = NA,
+      lf_endLatitude = NA,
+      lf_endLongitude = NA,
+      lf_endUtmEasting = NA,
+      lf_endUtmNorthing = NA,
+      lc_GISREFMER.domainCodeIdEndReferenceMeridian = NA,
+      li_endAtsLegalSubdivision = NA,
+      lc_ATSQUARTER.domainCodeIdEndAtsQuarter = NA,
+      li_endAtsSection = NA,
+      li_endAtsTownship = NA,
+      li_endAtsRange = NA,
+      lc_ATSMERIDIA.domainCodeIdEndAtsMeridian = NA,
+      lc_GEOADMTYP.WMU.geoAdminWmuId = NA,
+      li_waterbodyId = NA,
+      ls_waterbodyOfficialName = NA,
+      li_transectLength = NA,
+      ls_comments = NA,
+      cs_sampleNumber = NA,
+      cs_offTransect = NA,
+      cc_SPECHEALTH.domainCodeHealth = NA,
+      pc_OBSDISTANC.Distance_from_Observer.surveyParameterId = NA,
+      pc_BIRD.Age_Categories.surveyParameterId = NA,
+      ds_sampleNumber = NA,
+      dt_effectiveTimestamp = NA,
+      dt_terminationTimestamp = NA,
+      dc_TAXONOMIC.targetSpecies = NA,
+      dc_AGE_GROUP.domainCodeAgeGroup = NA,
+      ds_gender = NA,
+      dc_SPECMARKTP.domainCodeMarking = NA,
+      ds_dissected = NA,
+      dc_SPECHEALTH.domainCodeHealth = NA,
+      ds_healthDescription = NA,
+      dc_DEATHCAUSE.domainCodeCauseOfDeath = NA,
+      ds_contaminants = NA,
+      ds_enforNumber = NA,
+      ds_comments = NA,
+      ds_initialCapture = NA,
+      IndividualSpeciesId = NA,
+      `1s_internalFlag` = NA,
+      `1c_SPECIDTYPE.domainCodeIdIdType` = NA,
+      `1c_SPECIDCOLR.domainCodeIdIdColor` = NA,
+      `1i_idNumber` = NA,
+      `1i_radioFrequency` = NA,
+      `1i_radioChannel` = NA,
+      `1i_radioCode` = NA,
+      UseTag1Flag = NA,
+      `2s_internalFlag` = NA,
+      `2c_SPECIDTYPE.domainCodeIdIdType` = NA,
+      `2c_SPECIDCOLR.domainCodeIdIdColor` = NA,
+      `2i_idNumber` = NA,
+      `2i_radioFrequency` = NA,
+      `2i_radioChannel` = NA,
+      `2i_radioCode` = NA,
+      UseTag2Flag = NA,
+      `3s_internalFlag` = NA,
+      `3c_SPECIDTYPE.domainCodeIdIdType` = NA,
+      `3c_SPECIDCOLR.domainCodeIdIdColor` = NA,
+      `3i_idNumber` = NA,
+      `3i_radioFrequency` = NA,
+      `3i_radioChannel` = NA,
+      `3i_radioCode` = NA,
+      UseTag3Flag = NA,
+      as_subsampleId1 = NA,
+      as_subsampleId2 = NA,
+      as_subsampleId3 = NA,
+      ac_SUBSAMPTYP.domainCodeIdSubsampleType = NA,
+      ac_BODYSOURCE.domainCodeIdBodySource = NA,
+      ac_TESTTYPE.domainCodeIdTestType = NA,
+      ac_TESTRESULT.domainCodeIdTestResult = NA,
+      as_testResultChar = NA,
+      at_testTimestamp = NA,
+      as_testOrganization = NA,
+      as_storeLocation = NA,
+      at_letterSentTimestamp = NA,
+      as_comments = NA,
+      tc_BIRD.Age_Categories.surveyParameterId = NA,
+      hi_siteNumber = NA,
+      ht_effectiveTimestamp = NA,
+      hi_transectNumber = NA,
+      hi_stationNumber = NA,
+      hi_depth = NA,
+      hs_comments = NA,
+      bc_HABGENERAL.Primary_Habitat.surveyParameterId = NA,
+      bc_HABGENERAL.Secondary_Habitat.surveyParameterId = NA,
+      bc_HABGENERAL.Topography.surveyParameterId = NA,
+      fc_SITFEATURE.domainCodeFeature = NA,
+      fs_sampleNumber = NA,
+      ft_effectiveTimestamp = NA,
+      fc_CONFDNTLVL.domainCodeConfidence = NA,
+      fc_TAXONOMIC.targetSpecies = NA,
+      fs_comments = NA,
+      gc_FEATURE.Feature_Status.surveyParameterId = NA,
+      gc_BIRD.Lek_Status.surveyParameterId = NA,
+      gc_FEATURE.Feature_Count.surveyParameterId = NA,
+      cc_DEATHCAUSE.domainCodeCauseOfDeath = NA,
+      cc_CONFDNTLVL.domainCodeConfidence = NA,
+      cc_EVIDENCE.domainCodeEvidence = NA,
+      cc_SPECMARKTP.domainCodeMarking = NA,
+      ct_effectiveTimestamp = NA,
+      cc_AGE_GROUP.domainCodeAgeGroup = NA,
+      cs_gender = NA
+    )
+
+    output <- output %>%
+      mutate(!!!new_columns) %>%  # Add new columns
+      relocate(any_of(names(new_columns)), .after = sd_terminationDate) %>%
+      rename('cs_comments' = location,
+             'lf_startLatitude' = latitude,
+             'lf_startLongitude' = longitude,
+             'lf_gisPrecision' = location_buffer_m,
+             'ct_effectiveTimestamp' = recording_date_time,
+             'ct_terminationTimestamp' = recording_date_time,
+             'cc_TAXONOMIC.targetSpecies' = sfw_name,
+             'ci_totalCount' = individual_order,
+             'cc_ABUNDANCE.domainCodeAbundance' = individual_count)
+
+    new_column_order <- c(
+      "sc_SURVEYTYPE.domainCodeIdSurveyType", "sd_effectiveDate", "sd_terminationDate", "sc_TAXONOMIC.targetSpecies",
+      "ss_sensitiveFlag", "sc_SNOWCOVER.domainCodeIdSnowCoverCondition", "sc_PRECIPITTN.domainCodeIdPrecipitation",
+      "si_cloudCover", "sf_temperature", "si_windSpeed", "sc_WINDDIRCTN.domainCodeIdWindDirection", "ss_comments",
+      "ss_comments", "wi_stakeholderInSurveyCrew", "wc_OBSEXPTISE.domainCodeExpertiseLevel", "ws_comments",
+      "li_parentLocationNumber", "ls_locationNumber", "lc_LOCTYPE.domainCodeIdLocationType", "li_blockNumber",
+      "lc_GISSOURCE.domainCodeIdMeasurementSource", "lc_GISDATUM.domainCodeIdDatum", "lf_gisPrecision",
+      "ls_inAlbertaFlag", "lf_startLatitude", "lf_startLongitude", "lf_startUtmEasting", "lf_startUtmNorthing",
+      "lc_GISREFMER.domainCodeIdStartReferenceMeridian", "li_startAtsLegalSubdivision", "lc_ATSQUARTER.domainCodeIdStartAtsQuarter",
+      "li_startAtsSection", "li_startAtsTownship", "li_startAtsRange", "lc_ATSMERIDIA.domainCodeIdStartAtsMeridian",
+      "lf_endLatitude", "lf_endLongitude", "lf_endUtmEasting", "lf_endUtmNorthing", "lc_GISREFMER.domainCodeIdEndReferenceMeridian",
+      "li_endAtsLegalSubdivision", "lc_ATSQUARTER.domainCodeIdEndAtsQuarter", "li_endAtsSection", "li_endAtsTownship",
+      "li_endAtsRange", "lc_ATSMERIDIA.domainCodeIdEndAtsMeridian", "lc_GEOADMTYP.WMU.geoAdminWmuId", "li_waterbodyId",
+      "ls_waterbodyOfficialName", "li_transectLength", "ls_comments", "ls_comments", "cs_sampleNumber",
+      "ct_effectiveTimestamp", "ct_terminationTimestamp", "cc_TAXONOMIC.targetSpecies", "ci_totalCount",
+      "cc_ABUNDANCE.domainCodeAbundance", "cc_AGE_GROUP.domainCodeAgeGroup", "cs_gender", "cs_offTransect",
+      "cc_SPECHEALTH.domainCodeHealth", "cc_DEATHCAUSE.domainCodeCauseOfDeath", "cc_CONFDNTLVL.domainCodeConfidence",
+      "cc_EVIDENCE.domainCodeEvidence", "cc_SPECMARKTP.domainCodeMarking", "cs_comments", "pc_OBSDISTANC.Distance_from_Observer.surveyParameterId",
+      "pc_BIRD.Age_Categories.surveyParameterId", "ds_sampleNumber", "dt_effectiveTimestamp", "dt_terminationTimestamp",
+      "dc_TAXONOMIC.targetSpecies", "dc_AGE_GROUP.domainCodeAgeGroup", "ds_gender", "dc_SPECMARKTP.domainCodeMarking",
+      "ds_dissected", "dc_SPECHEALTH.domainCodeHealth", "ds_healthDescription", "dc_DEATHCAUSE.domainCodeCauseOfDeath",
+      "ds_contaminants", "ds_enforNumber", "ds_comments", "ds_initialCapture", "IndividualSpeciesId", "1s_internalFlag",
+      "1c_SPECIDTYPE.domainCodeIdIdType", "1c_SPECIDCOLR.domainCodeIdIdColor", "1i_idNumber", "1i_radioFrequency",
+      "1i_radioChannel", "1i_radioCode", "UseTag1Flag", "2s_internalFlag", "2c_SPECIDTYPE.domainCodeIdIdType",
+      "2c_SPECIDCOLR.domainCodeIdIdColor", "2i_idNumber", "2i_radioFrequency", "2i_radioChannel", "2i_radioCode",
+      "UseTag2Flag", "3s_internalFlag", "3c_SPECIDTYPE.domainCodeIdIdType", "3c_SPECIDCOLR.domainCodeIdIdColor",
+      "3i_idNumber", "3i_radioFrequency", "3i_radioChannel", "3i_radioCode", "UseTag3Flag", "as_subsampleId1",
+      "as_subsampleId2", "as_subsampleId3", "ac_SUBSAMPTYP.domainCodeIdSubsampleType", "ac_BODYSOURCE.domainCodeIdBodySource",
+      "ac_TESTTYPE.domainCodeIdTestType", "ac_TESTRESULT.domainCodeIdTestResult", "as_testResultChar", "at_testTimestamp",
+      "as_testOrganization", "as_storeLocation", "at_letterSentTimestamp", "as_comments", "tc_BIRD.Age_Categories.surveyParameterId",
+      "hi_siteNumber", "ht_effectiveTimestamp", "hi_transectNumber", "hi_stationNumber", "hi_depth", "hs_comments",
+      "bc_HABGENERAL.Primary_Habitat.surveyParameterId", "bc_HABGENERAL.Secondary_Habitat.surveyParameterId",
+      "bc_HABGENERAL.Topography.surveyParameterId", "fc_SITFEATURE.domainCodeFeature", "fs_sampleNumber",
+      "ft_effectiveTimestamp", "fc_CONFDNTLVL.domainCodeConfidence", "fc_TAXONOMIC.targetSpecies", "fs_comments",
+      "gc_FEATURE.Feature_Status.surveyParameterId", "gc_BIRD.Lek_Status.surveyParameterId", "gc_FEATURE.Feature_Count.surveyParameterId"
+    )
+
+    output <- output %>%
+      select(all_of(new_column_order))
+
+    return(output)
+  }
 }
 
 

@@ -16,10 +16,10 @@ wt_qpad_offsets(data, species = c("all"), version = 3, together = FALSE)
 \item{together}{Logical; whether or not offsets should be bound to the input dataframe or returned as a separate object.}
 }
 \value{
-A dataframe containing the QPAD values either by themselves or with the original wide data if together = T
+A dataframe containing the QPAD values either by themselves or with the original wide data if \code{together = TRUE}
 }
 \description{
-This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds. This function requires download of the \code{QPAD} R package and should be used on the output of the \code{wt_format_wide} function
+This function calculates statistical offsets that account for survey-specific and species-specific variation in availability for detection and perceptibility of birds. This function requires download of the \code{QPAD} R package and should be used on the output of the \code{wt_make_wide()} function
 }
 \examples{
 \dontrun{

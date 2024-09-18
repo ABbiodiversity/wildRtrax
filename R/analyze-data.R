@@ -329,3 +329,41 @@ wt_ind_detect <- function(x, threshold, units = "minutes", datetime_col = image_
   return(x2)
 
 }
+
+
+#' Nest report
+#'
+#' @description Create a report for the Abandoned Nest Registry
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param input A camera or ARU data from `wt_download_report()`.
+#'
+#' @import dplyr
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' nest_report <- wt_nest_report(x = input)
+#' }
+#'
+#' @return A tibble of required field necessary for the Abandoned Nest Registry
+#'
+wt_nest_report <- function(input) {
+
+  if (any(grepl("image", names(output), ignore.case = TRUE))) {
+
+    output <- input %>%
+      select(organization, latitude, longitude, image_date_time) %>%
+      distinct()
+
+    return(output)
+
+  } else {
+
+    output <- input %>%
+      select(organization, latitude, longitude, recording_date_time) %>%
+      distinct()
+
+    return(output)
+  }
+}

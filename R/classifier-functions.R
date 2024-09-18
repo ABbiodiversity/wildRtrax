@@ -76,14 +76,14 @@ wt_evaluate_classifier <- function(data, resolution = "recording", remove_specie
 
   #Tidy up the main report
   if(resolution=="task"){
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, location_id, recording_id, task_id, species_code) |>
       unique() |>
       mutate(human = 1)
   }
 
   if(resolution=="minute"){
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       mutate(minute = ifelse(start_s==0, 1, ceiling(start_s/60))) |>
       dplyr::select(project_id, location_id, recording_id, species_code, minute) |>
       unique() |>
@@ -91,7 +91,7 @@ wt_evaluate_classifier <- function(data, resolution = "recording", remove_specie
   }
 
   if(resolution=="recording"){
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, location_id, recording_id, species_code) |>
       unique() |>
       mutate(human = 1)
@@ -250,7 +250,7 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
       ungroup()
 
     #Main report
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, location_id, recording_id, task_id, species_code) |>
       unique()
 
@@ -274,7 +274,7 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
       ungroup()
 
     #Main report
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, location_id, recording_id, species_code) |>
       unique()
 
@@ -297,7 +297,7 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
       ungroup()
 
     #Main report
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, location_id, species_code) |>
       unique()
 
@@ -320,7 +320,7 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
       ungroup()
 
     #Main report
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, species_code) |>
       unique()
 
