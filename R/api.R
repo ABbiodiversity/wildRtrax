@@ -229,24 +229,29 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   # tmp directory
   td <- tempdir()
 
-  # Create GET request
-  r <- httr::POST(
-    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/download-report"),
-    query = query_list,
-    accept = "application/zip",
-    httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
-    httr::user_agent(u),
-    httr::write_disk(tmp)
-    )
+  r <- request("https://www-api.wildtrax.ca") %>%
+    req_url_path_append("/bis/download-report") %>%
+    req_url_query(!!!query_list) %>%
+    req_headers(
+      Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+      Accept = "application/zip"
+    ) %>%
+    req_user_agent(u) %>%
+    req_perform(path = tmp)
 
-  # Stop if an error or bad request occurred
-  if (httr::http_error(r)) {
-    stop(sprintf(
+
+  # Check for authentication errors
+  if (httr2::resp_is_error(r)) {
+    rlang::abort(sprintf(
       "Authentication failed [%s]\n%s",
-      httr::status_code(r),
-      httr::content(r)$message),
-      call. = FALSE)
+      httr2::resp_status(r),
+      httr2::resp_body_json(r)$error_description
+    ),
+    call. = FALSE)
   }
+
+  # Parse the JSON response
+  #x <- httr2::resp_body_json(r)
 
   # Unzip
   unzip(tmp, exdir = td)
@@ -263,12 +268,6 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     new_path <- file.path(directory, new_filename)
     file.rename(.x, new_path)
   })
-
-  # Index column types. Add more columns and their types as needed
-  col_types_index <- list(
-    abundance = readr::col_character(),
-    image_fire = readr::col_logical()
-  )
 
   files.full <- list.files(td, pattern= "*.csv", full.names = TRUE)
   files.less <- basename(files.full)
@@ -339,19 +338,22 @@ wt_get_species <- function(){
   # Add wildrtrax version information:
   u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
-  spp <- httr::POST(
-    httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-all-species"),
-    accept = "application/json",
-    httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
-    httr::user_agent(u)
-  )
+  spp <- request("https://www-api.wildtrax.ca") %>%
+    req_url_path_append("/bis/get-all-species") %>%
+    req_headers(
+      Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+      Accept = "application/json"
+    ) %>%
+    req_user_agent(u) %>%
+    req_method("POST") %>%
+    req_perform()
 
-  if (spp$status_code == 200) {
+  if (resp_status(spp) == 200) {
+    # Extract the content as JSON
+    spps <- spp %>% resp_body_json()
   } else {
     stop("The species table could not be downloaded.")
   }
-
-  spps <- httr::content(spp)
 
   spp_table <- tibble(
       species_id = map_dbl(spps, ~ ifelse(!is.null(.x$id), .x$id, NA)),
