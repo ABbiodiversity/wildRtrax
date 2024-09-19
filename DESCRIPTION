@@ -23,10 +23,7 @@ Imports:
     dplyr (>= 1.0.0),
     fs,
     ggplot2,
-    httr,
     httr2,
-    intrval,
-    lubridate,
     magick,
     purrr,
     QPAD,
@@ -45,12 +42,10 @@ Suggests:
     knitr,
     testthat (>= 3.0.0),
     usethis,
-    gridExtra,
-    vembedr
+    gridExtra
 Remotes: psolymos/QPAD
 VignetteBuilder: knitr
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3

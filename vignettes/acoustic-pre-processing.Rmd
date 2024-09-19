@@ -58,7 +58,7 @@ files %>%
 ```{r, echo=TRUE, include=TRUE, eval=T, warning = F, message = F}
 
 files %>%
-  dplyr::mutate(hour = lubridate::hour(recording_date_time)) %>%
+  dplyr::mutate(hour = as.numeric(format(recording_date_time, "%H"))) %>%
   dplyr::filter(julian == 176, 
          hour %in% c(4:8))
 
@@ -83,7 +83,7 @@ Then use `wt_glean_ap()` to plot the acoustic index and long-duration false-colo
 my_files <- wt_audio_scanner(".../ABMI-986-SE", file_type = "wav", extra_cols = )
 
 wt_glean_ap(my_files %>% 
-               mutate(hour = lubridate::hour(recording_date_time)) %>%
+               dplyr::mutate(hour = as.numeric(format(recording_date_time, "%H"))) %>%
                filter(between(julian,110,220),
                       hour %in% c(0:3,22:23)), input_dir = ".../ap_outputs", purpose = "biotic")
 

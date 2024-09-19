@@ -4,7 +4,7 @@
 \alias{.wt_api_pr}
 \title{An internal function to handle generic POST requests to WildTrax API}
 \usage{
-.wt_api_pr(path, query_list = list(), ...)
+.wt_api_pr(path, ...)
 }
 \arguments{
 \item{path}{The path to the API}

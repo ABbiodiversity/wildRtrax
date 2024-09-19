@@ -169,6 +169,19 @@ utils::globalVariables(
     "visit_date", "crew", "land_features", "deployment_date", "retrieval_date",
     "equipment_condition", "equipment_direction", "equipment_mount", "stake_distance",
     "location_buffer_m", "sfw_name", "age_class", "sex_class", "sd_effectiveDate",
-    "sc_SURVEYTYPE.domainCodeIdSurveyType", "sd_terminationDate"
+    "sc_SURVEYTYPE.domainCodeIdSurveyType", "sd_terminationDate",
+    "day",
+    "image_fov",
+    "interval",
+    "crossing",
+    "isoweek",
+    "minute",
+    "month",
+    "parse_date_time",
+    "period",
+    "spps",
+    "u",
+    "week",
+    "year"
   )
 )

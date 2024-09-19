@@ -6,8 +6,9 @@
 #' @param file_type Character; Takes one of four values: wav, wac, flac or all. Use "all" if your directory contains many types of files.
 #' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.
 #'
-#' @import fs tibble dplyr tidyr stringr tuneR purrr seewave
+#' @import fs tibble dplyr stringr tuneR purrr seewave
 #' @importFrom rlang env_has current_env
+#' @importFrom tidyr separate pivot_longer unnest_longer
 #' @export
 #'
 #' @examples
@@ -50,7 +51,6 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
         fail = FALSE
       )
     ))
-
   # Check if nothing was returned
   if (nrow(df) == 0) {
     stop (
@@ -60,7 +60,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
 
   # Create the main tibble
   df <- df %>%
-    tidyr::unnest(file_path) %>%
+    tidyr::unnest_longer(file_path) %>%
     dplyr::mutate(size_Mb = round(purrr::map_dbl(.x = file_path, .f = ~ fs::file_size(.x)) / 10e5, digits = 2), # Convert file sizes to megabytes
                   file_path = as.character(file_path)) %>%
     dplyr::select(file_path, size_Mb) %>%
@@ -344,7 +344,8 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #' @param input_dir Character; A folder path where outputs from \code{`wt_run_ap()`} are stored.
 #' @param purpose Character; type of filtering you can choose from
 #'
-#' @import magick dplyr tidyr ggplot2
+#' @import magick dplyr ggplot2
+#' @importFrom tidyr pivot_longer
 #' @importFrom readr read_csv
 #' @export
 #'
@@ -581,6 +582,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' @param output_folder Character; output path to where the segments will be stored
 #'
 #' @import tuneR dplyr
+#' @importFrom tidyr unnest
 #' @export
 #'
 #' @examples
@@ -734,8 +736,9 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
 #' @param output Character; Path where the output file will be stored
 #' @param freq_bump Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification
 #'
-#' @import dplyr tidyr tibble
+#' @import dplyr tibble
 #' @importFrom readr read_csv
+#' @importFrom tidyr drop_na separate
 #' @export
 #'
 #' @examples
@@ -823,8 +826,9 @@ wt_kaleidoscope_tags <- function (input, output, freq_bump = T) {
 #' @param score_filter Numeric; Filter the detections by score
 #' @param task_length Numeric; length of the task in seconds
 #'
-#' @import dplyr tidyr tibble
+#' @import dplyr tibble
 #' @importFrom readr read_table
+#' @importFrom tidyr separate
 #' @export
 #'
 #' @return A csv formatted as a WildTrax tag template

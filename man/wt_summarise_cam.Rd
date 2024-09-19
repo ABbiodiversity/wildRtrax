@@ -37,6 +37,8 @@ wt_summarise_cam(
 
 \item{effort_data}{Optionally supply your own effort data.}
 
+\item{exclude_outofrange}{Remove days from effort when camera field-of-view is obscured.}
+
 \item{project_col}{Defaults to \code{project_id}. The column referring to project in your effort data.}
 
 \item{station_col}{Defaults to \code{location}. The column referring to each individual camera station/location in your effort data.}

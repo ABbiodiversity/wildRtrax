@@ -2,13 +2,14 @@
 
 ## Major changes
 
-* Upgraded authorization and API requests to `httr2` to help support Google OAuth and public users
+* Upgraded authorization and API requests to \pkg(httr2)
 
 ## Minor changes
 
 * Address camera functionalities from #60, #62
 * Add GRTS grid cells for Alaska and contiguous United States (#64)
 * Use `.wt_col_types()` to dynamically adjust column reports to help address (#55)
+* Removed `lubridate` and `intrval` as dependencies
 
 # wildrtrax 1.3.0
 

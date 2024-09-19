@@ -185,6 +185,8 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
   # tmp directory
   td <- tempdir()
 
+  query_list <- list()
+
   r <- .wt_api_pr(
     path = "/bis/download-report",
     projectIds = project_id,
@@ -198,6 +200,7 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     imageReport = if ("image_report" %in% reports) query_list$imageReport <- TRUE,
     imageSetReport = if ("image_set" %in% reports) query_list$imageSetReport <- TRUE,
     birdnetReport = if ("birdnet" %in% reports) query_list$birdnetReport <- TRUE,
+    #hawkEarReport = if ("hawkears" %in% reports) query_list$hawkEarReport <- TRUE,
     megaDetectorReport = if ("megadetector" %in% reports) query_list$megaDetectorReport <- TRUE,
     megaClassifierReport = if ("megaclassifier" %in% reports) query_list$megaClassifierReport <- TRUE,
     daylightReport = if ("daylight" %in% reports) query_list$daylightReport <- TRUE,

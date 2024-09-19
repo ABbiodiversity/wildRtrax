@@ -5,8 +5,9 @@
 #' @param input_from_tibble Use a tibble constructed with a distinct list of location names, latitude and longitude
 #' @param input_from_file Use a file downloaded from either an organization or project
 #'
-#' @import dplyr tibble tidyr sf
+#' @import dplyr tibble sf
 #' @importFrom readr read_csv
+#' @importFrom tidyr pivot_longer
 #' @export
 #'
 #' @examples
@@ -199,7 +200,7 @@ wt_tidy_species <- function(data,
 #' @param data Dataframe of WildTrax observations, for example the summary report.
 #' @param calc Character; method to convert model predictions to integer ("round", "ceiling", or "floor"). See `?round()` for details.
 #'
-#' @import dplyr tidyr
+#' @import dplyr
 #' @export
 #'
 #' @examples
@@ -266,6 +267,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 #' @param sound Character; vocalization type(s) to retain ("all", "Song", "Call", "Non-vocal"). Can be used to remove certain types of detections. Defaults to "all" (i.e., no filtering).
 #'
 #' @import dplyr
+#' @importFrom tidyr pivot_wider
 #' @export
 #'
 #' @examples
@@ -336,6 +338,7 @@ wt_make_wide <- function(data, sound="all"){
 #' @param siteCovs Optional dataframe of site covariates. Must contain a column with the same values as the location field in the data, with one row per unique value of location (i.e., one row per site).
 #'
 #' @import dplyr unmarked
+#' @importFrom tidyr pivot_wider
 #' @export
 #'
 #' @examples
@@ -369,8 +372,8 @@ wt_format_occupancy <- function(data,
                  dplyr::distinct(),
                by=c("location", "recording_date_time")) %>%
     dplyr::mutate(occur = ifelse(is.na(occur), 0, 1),
-           doy = yday(recording_date_time),
-           hr = as.numeric(hour(recording_date_time) + minute(recording_date_time)/60)) %>%
+                  doy = as.POSIXlt(recording_date_time)$yday + 1,
+                  hr = as.numeric(as.numeric(format(recording_date_time, "%H")) + as.numeric(format(recording_date_time, "%M")) / 60)) %>%
     dplyr::group_by(location) %>%
     dplyr::arrange(recording_date_time) %>%
     dplyr::mutate(visit = row_number()) %>%
@@ -708,7 +711,7 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 #' @param input A report containing locations from `wt_download_report()`
 #' @param format A format i.e. 'FWMIS' or 'NABAT'
 #'
-#' @import dplyr
+#' @import dplyr httr2
 #' @export
 #'
 #' @examples
@@ -732,14 +735,14 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
   # Add wildrtrax version information:
   u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
-  spp_fwmis <- httr::POST(
-    httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-species-fwmis-map"),
-    accept = "application/json",
-    httr::add_headers(Authorization = NULL),
-    httr::user_agent(u)
-  )
+  # spp_fwmis <- httr::POST(
+  #   httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-species-fwmis-map"),
+  #   accept = "application/json",
+  #   httr::add_headers(Authorization = NULL),
+  #   httr::user_agent(u)
+  # )
 
-  spps <- httr::content(spp_fwmis)
+  # spps <- httr::content(spp_fwmis)
   spps_tibble <- map_dfr(spps, ~ tibble(species_id = .x$sfw_species_id, sfw_name = .x$sfw_name)) %>%
     inner_join(., wt_get_species() %>% select(species_id, species_common_name), by = ("species_id"))
 
@@ -752,22 +755,22 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
     orderDirection = "DESC",
     organizationId = org_id,
     page = 1)
+#
+#   location_equipment <- httr::POST(
+#     httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-location-visit-equipment-summary"),
+#     accept = "application/json",
+#     httr::add_headers(
+#       Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+#       Origin = "https://dev.wildtrax.ca",
+#       Pragma = "no-cache",
+#       Referer = "https://dev.wildtrax.ca"
+#     ),
+#     httr::user_agent(u),
+#     body = loceq_payload,
+#     encode = "json"
+#   )
 
-  location_equipment <- httr::POST(
-    httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-location-visit-equipment-summary"),
-    accept = "application/json",
-    httr::add_headers(
-      Authorization = paste("Bearer", ._wt_auth_env_$access_token),
-      Origin = "https://dev.wildtrax.ca",
-      Pragma = "no-cache",
-      Referer = "https://dev.wildtrax.ca"
-    ),
-    httr::user_agent(u),
-    body = loceq_payload,
-    encode = "json"
-  )
-
-  loceq <- httr::content(location_equipment)
+  # loceq <- httr::content(location_equipment)
   loceq <- map_dfr(loceq[[2]], ~ tibble(location = .x$locationName,
                                    deployment_date = .x$deploymentDate,
                                    retrieval_date = .x$retrieveDate,
@@ -789,22 +792,22 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
     orderDirection = "DESC",
     organizationId = org_id,
     page = 1)
+#
+#   visits <- httr::POST(
+#     httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-location-visits"),
+#     accept = "application/json",
+#     httr::add_headers(
+#       Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+#       Origin = "https://dev.wildtrax.ca",
+#       Pragma = "no-cache",
+#       Referer = "https://dev.wildtrax.ca"
+#     ),
+#     httr::user_agent(u),
+#     body = visit_payload,
+#     encode = "json"
+#   )
 
-  visits <- httr::POST(
-    httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-location-visits"),
-    accept = "application/json",
-    httr::add_headers(
-      Authorization = paste("Bearer", ._wt_auth_env_$access_token),
-      Origin = "https://dev.wildtrax.ca",
-      Pragma = "no-cache",
-      Referer = "https://dev.wildtrax.ca"
-    ),
-    httr::user_agent(u),
-    body = visit_payload,
-    encode = "json"
-  )
-
-  visits <- httr::content(visits)
+  # visits <- httr::content(visits)
   visits <- map_dfr(visits[[2]], ~ tibble(location = .x$locationName,
                                           latitude = .x$latitude,
                                           longitude = .x$longitude,
