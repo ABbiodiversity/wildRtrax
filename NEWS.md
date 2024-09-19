@@ -2,7 +2,7 @@
 
 ## Major changes
 
-* Upgraded authorization and API requests to \pkg(httr2)
+* Upgraded authorization and API requests to `httr`
 
 ## Minor changes
 

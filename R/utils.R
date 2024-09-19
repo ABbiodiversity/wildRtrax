@@ -543,3 +543,37 @@
   return(data)
 }
 
+#' Internal evaluation function
+#'
+#' @description Internal function to calculate precision, recall, and F-score for a given score threshold.
+#'
+#' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
+#' @param threshold A single numeric value for score threshold
+#' @param human_total The total number of detections in the gold standard, typically from human listening data (e.g., the main report)
+#'
+#' @import dplyr
+#' @export
+#'
+#' @return A vector of precision, recall, F-score, and threshold
+
+.wt_calculate_prf <- local({
+  message_shown <- FALSE
+
+  function(threshold, data, human_total){
+    # Summarize
+    data_thresholded <- dplyr::filter(data, confidence >= threshold) |>
+      summarize(precision = sum(tp)/(sum(tp) + sum(fp)),
+                recall = sum(tp)/human_total) |>
+      mutate(fscore = (2*precision*recall)/(precision + recall),
+             threshold = threshold)
+
+    if(anyNA(data_thresholded$precision) && !message_shown){
+      message('No classifier detections for some higher selected thresholds; results will contain NAs')
+      message_shown <<- TRUE
+    }
+
+    return(data_thresholded)
+  }
+})
+
+
