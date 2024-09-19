@@ -60,7 +60,7 @@ wt_get_download_summary <- function(sensor_id) {
     order = "asc"
   )
 
-  if(is.null(r)) {stop('something didnt work')}
+  if(is.null(r)) {stop('')}
 
   x <- data.frame(do.call(rbind, r$results)) |>
        dplyr::select(organization_id = organizationId,
@@ -330,20 +330,13 @@ wt_get_species <- function(){
     path = "/bis/get-all-species"
   )
 
-  if (resp_status(spp) == 200) {
-    # Extract the content as JSON
-    spps <- spp %>% resp_body_json()
-  } else {
-    stop("The species table could not be downloaded.")
-  }
-
   spp_table <- tibble(
-      species_id = map_dbl(spps, ~ ifelse(!is.null(.x$id), .x$id, NA)),
-      species_code = map_chr(spps, ~ ifelse(!is.null(.x$code), .x$code, NA)),
-      species_common_name = map_chr(spps, ~ ifelse(!is.null(.x$commonName), .x$commonName, NA)),
-      species_class = map_chr(spps, ~ ifelse(!is.null(.x$className), .x$className, NA)),
-      species_order = map_chr(spps, ~ ifelse(!is.null(.x$order), .x$order, NA)),
-      species_scientific_name = map_chr(spps, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
+      species_id = map_dbl(spp, ~ ifelse(!is.null(.x$id), .x$id, NA)),
+      species_code = map_chr(spp, ~ ifelse(!is.null(.x$code), .x$code, NA)),
+      species_common_name = map_chr(spp, ~ ifelse(!is.null(.x$commonName), .x$commonName, NA)),
+      species_class = map_chr(spp, ~ ifelse(!is.null(.x$className), .x$className, NA)),
+      species_order = map_chr(spp, ~ ifelse(!is.null(.x$order), .x$order, NA)),
+      species_scientific_name = map_chr(spp, ~ ifelse(!is.null(.x$scientificName), .x$scientificName, NA))
     )
 
  return(spp_table)
