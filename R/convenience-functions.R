@@ -706,7 +706,7 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 #' `r lifecycle::badge("experimental")`
 #'
 #' @param input A report containing locations from `wt_download_report()`
-#' @param format A format i.e. 'FWMIS'
+#' @param format A format i.e. 'FWMIS' or 'NABAT'
 #'
 #' @import dplyr
 #' @export
@@ -719,7 +719,7 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 #' }
 #' @return A tibble with the formatted report
 
-wt_format_data <- function(input, format = 'FWMIS'){
+wt_format_data <- function(input, format = c('FWMIS','NABAT')){
 
   # User agent
   u <- getOption("HTTPUserAgent")
