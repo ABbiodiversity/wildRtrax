@@ -393,7 +393,7 @@ wt_download_media <- function(input, output, type = c("recording","image", "tag_
 #' @param species The species you want to search for (e.g. 'WTSP'). Multiple species can be included.
 #' @param boundary The custom boundary you want to use. Defined as at least a four vertex polygon. Definition can also be a bbox
 #'
-#' @import dplyr tibble httr
+#' @import dplyr tibble httr2
 #' @export
 #'
 #' @examples
@@ -418,21 +418,21 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
     message("Currently searching as a public user, access to data will be limited. Use wt_auth() to login.")
     tok_used <- NULL
 
-    ddspp <- httr::POST(
-      httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/dd-get-species"),
-      accept = "application/json",
-      httr::add_headers(
+    # Make POST request using httr2
+    ddspp <- request("https://www-api.wildtrax.ca") %>%
+      req_url_path_append("/bis/dd-get-species") %>%
+      req_headers(
         Authorization = NULL,
         Origin = "https://discover.wildtrax.ca",
         Pragma = "no-cache",
         Referer = "https://discover.wildtrax.ca/"
-      ),
-      httr::user_agent(u),
-      body = list(sensorId = sensor),
-      encode = "json" # Specify that the payload should be encoded as JSON
-    )
+      ) %>%
+      req_user_agent(u) %>%
+      req_body_json(list(sensorId = sensor)) %>%
+      req_perform()
 
-    spp_t <- httr::content(ddspp)
+    # Extract JSON content from the response
+    spp_t <- resp_body_json(ddspp)
 
     species_tibble <- purrr::map_df(spp_t, ~{
       # Check if each column exists in the list
@@ -532,7 +532,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
   # Iterate over each species
   for (sp in spp) {
 
-    # Construct payload for httr::POST request
+    # Construct payload for first request
     payload <- list(
       isSpeciesTab = FALSE,
       zoomLevel = 20,
@@ -544,22 +544,19 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       speciesIds = list(sp)  # Wrap the integer value in a list to make it an array
     )
 
-    # Make request to get-data-discoverer-long-lat-summary endpoint
-    rr <- httr::POST(
-      httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-data-discoverer-long-lat-summary"),
-      accept = "application/json",
-      httr::add_headers(
+    rr <- request("https://www-api.wildtrax.ca") %>%
+      req_url_path_append("/bis/get-data-discoverer-long-lat-summary") %>%
+      req_headers(
         Authorization = tok_used,
         Origin = "https://discover.wildtrax.ca",
         Pragma = "no-cache",
         Referer = "https://discover.wildtrax.ca/"
-      ),
-      httr::user_agent(u),
-      body = payload,
-      encode = "json" # Specify that the payload should be encoded as JSON
-    )
+      ) %>%
+      req_user_agent(u) %>%
+      req_body_json(payload) %>%
+      req_perform()
 
-    # Construct payload for second httr::POST request
+    # Construct payload for second request
     payload_small <- list(
       isSpeciesTab = FALSE,
       zoomLevel = 20,
@@ -569,25 +566,22 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       speciesIds = list(sp)
     )
 
-    # Make request to get-data-discoverer-map-and-projects endpoint
-    rr2 <- httr::POST(
-      httr::modify_url("https://www-api.wildtrax.ca", path = "/bis/get-data-discoverer-map-and-projects"),
-      accept = "application/json",
-      httr::add_headers(
+    rr2 <- request("https://www-api.wildtrax.ca") %>%
+      req_url_path_append("/bis/get-data-discoverer-map-and-projects") %>%
+      req_headers(
         Authorization = tok_used,
         Origin = "https://discover.wildtrax.ca",
         Pragma = "no-cache",
         Referer = "https://discover.wildtrax.ca/"
-      ),
-      httr::user_agent(u),
-      body = payload_small,
-      encode = "json" # Specify that the payload should be encoded as JSON
-    )
+      ) %>%
+      req_user_agent(u) %>%
+      req_body_json(payload_small) %>%
+      req_perform()
 
-    # Extract content from second request
-    mapproj <- httr::content(rr2)
+    # Extract content from the second request
+    mapproj <- resp_body_json(rr2)
 
-    # Extract features from response
+    # Extract features from the response
     features <- mapproj$map$features
 
     # Initialize empty vectors to store data
@@ -614,12 +608,13 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       latitude = latitude
     )
 
-    # Extracting data from second response
-    rpps <- httr::content(rr)
-    orgs <- purrr::map(rpps$organizations, ~pluck(., "organizationName")) |> map_chr(~ ifelse(is.null(.x), "", .x))
-    counts <- purrr::map_dbl(rpps$projects, pluck, "count")
-    projectNames <- map(rpps$projects, ~pluck(., "projectName")) |> map_chr(~ ifelse(is.null(.x), "", .x))
-    projectIds <- map(rpps$projects, ~pluck(., "projectId")) |> map_int(~ ifelse(is.null(.x), NA_integer_, .x))
+    # Extract data from the first request
+    rpps <- resp_body_json(rr)
+
+    orgs <- map_chr(rpps$organizations, ~pluck(.x, "organizationName", .default = ""))
+    counts <- map_dbl(rpps$projects, pluck, "count")
+    projectNames <- map_chr(rpps$projects, ~pluck(.x, "projectName", .default = ""))
+    projectIds <- map_int(rpps$projects, ~pluck(.x, "projectId", .default = NA_integer_))
 
     # Create tibble for project summary
     rpps_tibble <- tibble(
