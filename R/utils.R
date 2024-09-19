@@ -32,7 +32,7 @@
 
   # Check for authentication errors
   if (httr2::resp_is_error(r)) {
-    rlang::abort(sprintf(
+    stop(sprintf(
       "Authentication failed [%s]\n%s",
       httr2::resp_status(r),
       httr2::resp_body_json(r)$error_description
@@ -88,7 +88,7 @@
 #'
 #' @keywords internal
 #'
-#' @import httr
+#' @import httr2
 #'
 .wt_api_pr <- function(path, ...) {
 
@@ -104,9 +104,18 @@
   # Add wildrtrax version information:
   u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
+  # Convert ... into a list
+  query_params <- list(...)
+
+  # Check if query_params is a list; if not, ensure it is treated as a list
+  if (length(query_params) == 1 && is.character(query_params[[1]])) {
+    # If there's only one element and it's a character, treat it as a named query
+    query_params <- as.list(query_params)
+  }
+
   r <- request("https://www-api.wildtrax.ca") %>%
     req_url_path_append(path) %>%
-    req_url_query(!!!list(...)) %>%  # Unpack the list of query parameters
+    req_url_query(!!!query_params) %>%  # Unpack the list of query parameters
     req_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)) %>%
     req_user_agent(u) %>%
     req_method("POST") %>%
@@ -114,14 +123,13 @@
 
   # Handle errors
   if (resp_status(r) >= 400) {
-    message <- resp_body_json(r)$message
     stop(sprintf(
       "Authentication failed [%s]\n%s",
       resp_status(r),
       message),
       call. = FALSE)
   } else {
-    return(resp_body_json(r))
+    return(r)
   }
 
 }

@@ -31,7 +31,7 @@ wt_auth <- function(force = FALSE) {
 #'
 #' @param sensor_id Can be one of "ARU", "CAM", or "PC"
 #'
-#' @import httr dplyr
+#' @import dplyr
 #'
 #' @export
 #'
@@ -62,7 +62,7 @@ wt_get_download_summary <- function(sensor_id) {
 
   if(is.null(r)) {stop('')}
 
-  x <- data.frame(do.call(rbind, r$results)) |>
+  x <- data.frame(do.call(rbind, resp_body_json(r)$results)) |>
        dplyr::select(organization_id = organizationId,
                      organization = organizationName,
                      project = fullNm,
@@ -115,7 +115,7 @@ wt_get_download_summary <- function(sensor_id) {
 #'  \item definitions
 #' }
 #'
-#' @import httr purrr dplyr
+#' @import httr2 purrr dplyr
 #' @importFrom readr read_csv col_character col_logical
 #' @export
 #'
@@ -142,13 +142,13 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     stop("Please authenticate with wt_auth().", call. = FALSE)
 
   # Check if the project_id is valid:
-  i <- wt_get_download_summary(sensor_id = sensor_id) %>%
-    tibble::as_tibble() %>%
+  i <- wt_get_download_summary(sensor_id = sensor_id) |>
+    tibble::as_tibble() |>
     dplyr::select(project_id, sensor)
 
   sensor_value <- i %>%
-    dplyr::rename('id' = 1) %>%
-    dplyr::filter(id %in% project_id) %>%
+    dplyr::rename('id' = 1) |>
+    dplyr::filter(id %in% project_id) |>
     dplyr::pull(sensor)
 
   if (!project_id %in% i$project_id) {
@@ -179,82 +179,33 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     stop("Please supply a valid report type. Use ?wt_download_report to view options.", call. = TRUE)
   }
 
-  # User agent
-  u <- getOption("HTTPUserAgent")
-  if (is.null(u)) {
-    u <- sprintf("R/%s; R (%s)",
-                 getRversion(),
-                 paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
-  }
-
-  # Add wildrtrax version information:
-  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
-
-  # Create query list
-  query_list <- list(
-    projectIds = project_id,
-    sensorId = sensor_id,
-    mainReport = FALSE,
-    projectReport = FALSE,
-    recordingReport = FALSE,
-    pointCountReport = FALSE,
-    locationReport = FALSE,
-    tagReport = FALSE,
-    imageReport = FALSE,
-    imageSetReport = FALSE,
-    birdnetReport = FALSE,
-    megaDetectorReport = FALSE,
-    megaClassifierReport = FALSE,
-    daylightReport = FALSE,
-    includeMetaData = FALSE,
-    splitLocation = FALSE
-  )
-
-  # Create the list of objects
-  if ("main" %in% reports) query_list$mainReport <- TRUE
-  if ("project" %in% reports) query_list$projectReport <- TRUE
-  if ("recording" %in% reports) query_list$recordingReport <- TRUE
-  if ("point_count" %in% reports) query_list$pointCountReport <- TRUE
-  if ("location" %in% reports) query_list$locationReport <- TRUE
-  if ("tag" %in% reports) query_list$tagReport <- TRUE
-  if ("image_report" %in% reports) query_list$imageReport <- TRUE
-  if ("image_set" %in% reports) query_list$imageSetReport <- TRUE
-  if ("birdnet" %in% reports) query_list$birdnetReport <- TRUE
-  if ("megadetector" %in% reports) query_list$megaDetectorReport <- TRUE
-  if ("megaclassifier" %in% reports) query_list$megaClassifierReport <- TRUE
-  if ("daylight" %in% reports) query_list$daylightReport <- TRUE
-
-  # Include metadata
-  query_list$includeMetaData <- TRUE
-  query_list$splitLocation <- TRUE
-
   # Prepare temporary file:
   tmp <- tempfile(fileext = ".zip")
+
   # tmp directory
   td <- tempdir()
 
-  r <- request("https://www-api.wildtrax.ca") %>%
-    req_url_path_append("/bis/download-report") %>%
-    req_url_query(!!!query_list) %>%
-    req_headers(
-      Authorization = paste("Bearer", ._wt_auth_env_$access_token),
-      Accept = "application/zip"
-    ) %>%
-    req_user_agent(u) %>%
-    req_perform(path = tmp)
+  r <- .wt_api_pr(
+    path = "/bis/download-report",
+    projectIds = project_id,
+    sensorId = sensor_id,
+    mainReport = if ("main" %in% reports) query_list$mainReport <- TRUE,
+    projectReport = if ("project" %in% reports) query_list$projectReport <- TRUE,
+    recordingReport = if ("recording" %in% reports) query_list$recordingReport <- TRUE,
+    pointCountReport = if ("point_count" %in% reports) query_list$pointCountReport <- TRUE,
+    locationReport = if ("location" %in% reports) query_list$locationReport <- TRUE,
+    tagReport = if ("tag" %in% reports) query_list$tagReport <- TRUE,
+    imageReport = if ("image_report" %in% reports) query_list$imageReport <- TRUE,
+    imageSetReport = if ("image_set" %in% reports) query_list$imageSetReport <- TRUE,
+    birdnetReport = if ("birdnet" %in% reports) query_list$birdnetReport <- TRUE,
+    megaDetectorReport = if ("megadetector" %in% reports) query_list$megaDetectorReport <- TRUE,
+    megaClassifierReport = if ("megaclassifier" %in% reports) query_list$megaClassifierReport <- TRUE,
+    daylightReport = if ("daylight" %in% reports) query_list$daylightReport <- TRUE,
+    includeMetaData = TRUE,
+    splitLocation = TRUE
+  )
 
-  # Check for authentication errors
-  if (httr2::resp_is_error(r)) {
-    rlang::abort(sprintf(
-      "Authentication failed [%s]\n%s",
-      httr2::resp_status(r),
-      httr2::resp_body_json(r)$error_description
-    ),
-    call. = FALSE)
-  }
-
-  # Parse the JSON response
-  #x <- httr2::resp_body_json(r)
+  writeBin(httr2::resp_body_raw(r), tmp)
 
   # Unzip
   unzip(tmp, exdir = td)
@@ -279,7 +230,6 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
                                                                                                                  image_fire = readr::col_logical(),
                                                                                                                  image_snow_depth_m = readr::col_number())))) %>%
     purrr::set_names(files.less)
-
 
   # Remove weather columns, if desired
   if(weather_cols) {
@@ -307,14 +257,12 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
 
 }
 
-
 #' Get the WildTrax species table
 #'
 #' @description Request for the WildTrax species table
 #'
 #'
-#' @import dplyr httr
-#' @importFrom readr read_csv
+#' @import purrr
 #' @export
 #'
 #' @examples
@@ -329,6 +277,8 @@ wt_get_species <- function(){
   spp <- .wt_api_pr(
     path = "/bis/get-all-species"
   )
+
+  spp <- resp_body_json(spp)
 
   spp_table <- tibble(
       species_id = map_dbl(spp, ~ ifelse(!is.null(.x$id), .x$id, NA)),
@@ -462,15 +412,6 @@ wt_download_media <- function(input, output, type = c("recording","image", "tag_
 #' @return Return
 
 wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary = NULL) {
-
-  # Set user agent
-  u <- getOption("HTTPUserAgent")
-  if (is.null(u)) {
-    u <- sprintf("R/%s; R (%s)",
-                 getRversion(),
-                 paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
-  }
-  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
   # Determine whether public or user
   if (!exists("access_token", envir = ._wt_auth_env_)) {

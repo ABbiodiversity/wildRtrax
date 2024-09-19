@@ -12,6 +12,7 @@ wt_summarise_cam(
   output_format = "wide",
   species_col = species_common_name,
   effort_data = NULL,
+  exclude_outofrange = FALSE,
   project_col = project_id,
   station_col = location,
   date_time_col = image_date_time,
