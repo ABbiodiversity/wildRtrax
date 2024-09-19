@@ -93,45 +93,36 @@
 .wt_api_pr <- function(path, ...) {
 
   # Check if authentication has expired:
-  if (.wt_auth_expired())
-    stop("Please authenticate with wt_auth().", call. = FALSE)
+  if (.wt_auth_expired()) {stop("Please authenticate with wt_auth().", call. = FALSE)}
 
   ## User agent
   u <- getOption("HTTPUserAgent")
-  if (is.null(u)) {
     u <- sprintf("R/%s; R (%s)",
                  getRversion(),
                  paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
-  }
+
   # Add wildrtrax version information:
   u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
-  # POST request body
-  r <- httr::POST(
-    httr::modify_url("https://www-api.wildtrax.ca", path = path),
-    query = list(...),
-    httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
-    httr::user_agent(u))
+  r <- request("https://www-api.wildtrax.ca") %>%
+    req_url_path_append(path) %>%
+    req_url_query(!!!list(...)) %>%  # Unpack the list of query parameters
+    req_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)) %>%
+    req_user_agent(u) %>%
+    req_method("POST") %>%
+    req_perform()
 
-
-  #req <- httr2::request("https://www-api.wildtrax.ca")
-
-  # r <- req |>
-  #   httr2::req_url_path(path) |>
-  #   httr2::req_url_query(...) |>
-  #   httr2::req_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)) |>
-  #   httr2::req_user_agent(u) |>
-  #   httr2::req_method("POST") |>
-  #   httr2::req_perform()
-
-
-  if (httr::http_error(r))
+  # Handle errors
+  if (resp_status(r) >= 400) {
+    message <- resp_body_json(r)$message
     stop(sprintf(
       "Authentication failed [%s]\n%s",
-      httr::status_code(r),
-      httr::content(r)$message),
+      resp_status(r),
+      message),
       call. = FALSE)
-  r
+  } else {
+    return(resp_body_json(r))
+  }
 
 }
 

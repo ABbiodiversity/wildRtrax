@@ -60,7 +60,9 @@ wt_get_download_summary <- function(sensor_id) {
     order = "asc"
   )
 
-  x <- data.frame(do.call(rbind, httr::content(r)$results)) |>
+  if(is.null(r)) {stop('something didnt work')}
+
+  x <- data.frame(do.call(rbind, r$results)) |>
        dplyr::select(organization_id = organizationId,
                      organization = organizationName,
                      project = fullNm,
@@ -69,6 +71,8 @@ wt_get_download_summary <- function(sensor_id) {
                      tasks,
                      status) |>
     dplyr::mutate(dplyr::across(dplyr::everything(), unlist))
+
+  return(x)
 
 }
 
@@ -239,7 +243,6 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
     req_user_agent(u) %>%
     req_perform(path = tmp)
 
-
   # Check for authentication errors
   if (httr2::resp_is_error(r)) {
     rlang::abort(sprintf(
@@ -323,30 +326,9 @@ wt_download_report <- function(project_id, sensor_id, reports, weather_cols = TR
 
 wt_get_species <- function(){
 
-  # Check if authentication has expired:
-  if (.wt_auth_expired())
-    stop("Please authenticate with wt_auth().", call. = FALSE)
-
-  # User agent
-  u <- getOption("HTTPUserAgent")
-  if (is.null(u)) {
-    u <- sprintf("R/%s; R (%s)",
-                 getRversion(),
-                 paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
-  }
-
-  # Add wildrtrax version information:
-  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
-
-  spp <- request("https://www-api.wildtrax.ca") %>%
-    req_url_path_append("/bis/get-all-species") %>%
-    req_headers(
-      Authorization = paste("Bearer", ._wt_auth_env_$access_token),
-      Accept = "application/json"
-    ) %>%
-    req_user_agent(u) %>%
-    req_method("POST") %>%
-    req_perform()
+  spp <- .wt_api_pr(
+    path = "/bis/get-all-species"
+  )
 
   if (resp_status(spp) == 200) {
     # Extract the content as JSON
