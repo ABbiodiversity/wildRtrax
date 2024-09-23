@@ -134,7 +134,7 @@
 
 }
 
-#' Internal functions
+#' Internal function for QPAD offsets
 #'
 #' QPAD offsets, wrapped by the `wt_qpad_offsets` function.
 #'
@@ -543,13 +543,15 @@
   return(data)
 }
 
-#' Internal evaluation function
+#' Internal evaluation function for acoustic classifiers
 #'
 #' @description Internal function to calculate precision, recall, and F-score for a given score threshold.
 #'
 #' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
 #' @param threshold A single numeric value for score threshold
 #' @param human_total The total number of detections in the gold standard, typically from human listening data (e.g., the main report)
+#'
+#' @keywords internal
 #'
 #' @import dplyr
 #' @export

@@ -8,6 +8,7 @@
 #' @import dplyr tibble sf
 #' @importFrom readr read_csv
 #' @importFrom tidyr pivot_longer
+#' @importFrom stringr str_replace
 #' @export
 #'
 #' @examples
@@ -89,6 +90,7 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
 #' @param zerofill Logical; indicates if zerofilling should be completed. If TRUE, unique surveys with no observations after filtering are added to the dataset with "NONE" as the value for species_code and/or species_common_name. If FALSE, only surveys with observations of the retained groups are returned. Default is TRUE.
 #'
 #' @import dplyr
+#' @importFrom stringr str_sub
 #' @export
 #'
 #' @examples
@@ -268,6 +270,7 @@ wt_replace_tmtt <- function(data, calc="round"){
 #'
 #' @import dplyr
 #' @importFrom tidyr pivot_wider
+#' @importFrom stringr str_to_title str_sub str_locate_all
 #' @export
 #'
 #' @examples

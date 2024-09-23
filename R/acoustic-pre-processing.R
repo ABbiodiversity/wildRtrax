@@ -6,9 +6,10 @@
 #' @param file_type Character; Takes one of four values: wav, wac, flac or all. Use "all" if your directory contains many types of files.
 #' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.
 #'
-#' @import fs tibble dplyr stringr tuneR purrr seewave
+#' @import fs tibble dplyr tuneR purrr seewave
 #' @importFrom rlang env_has current_env
 #' @importFrom tidyr separate pivot_longer unnest_longer
+#' @importFrom stringr str_replace
 #' @export
 #'
 #' @examples
@@ -274,7 +275,8 @@ wt_flac_info <- function(path) {
 #' @param output_dir Character; path to directory where you want outputs to be stored.
 #' @param path_to_ap Character; file path to the AnalysisPrograms software package. Defaults to "C:\\AP\\AnalysisPrograms.exe".
 #'
-#' @import dplyr stringr
+#' @import dplyr
+#' @importFrom stringr str_detect
 #' @export
 #'
 #' @return Output will return to the specific root directory
@@ -739,6 +741,7 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
 #' @import dplyr tibble
 #' @importFrom readr read_csv
 #' @importFrom tidyr drop_na separate
+#' @importFrom stringr str_remove
 #' @export
 #'
 #' @examples

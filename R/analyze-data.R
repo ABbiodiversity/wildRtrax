@@ -242,6 +242,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 #'
 #' @import dplyr
 #' @importFrom rlang is_missing
+#' @importFrom stringr str_detect
 #' @export
 #'
 #' @examples

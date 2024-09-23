@@ -2,7 +2,7 @@
 
 ## Major changes
 
-* Upgraded authorization and API requests to `httr`
+* Upgraded authorization and API requests to `httr2`
 
 ## Minor changes
 
@@ -10,6 +10,7 @@
 * Add GRTS grid cells for Alaska and contiguous United States (#64)
 * Use `.wt_col_types()` to dynamically adjust column reports to help address (#55)
 * Removed `lubridate` and `intrval` as dependencies
+* Moved `wt_calculate_prf()` to internal function
 
 # wildrtrax 1.3.0
 

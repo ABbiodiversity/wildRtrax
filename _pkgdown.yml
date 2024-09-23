@@ -21,7 +21,6 @@ reference:
     - wt_additional_species
     - wt_auth
     - wt_audio_scanner
-    - wt_calculate_prf
     - wt_chop
     - wt_dd_summary
     - wt_download_media
