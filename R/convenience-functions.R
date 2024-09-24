@@ -49,32 +49,32 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
     message('All rows have a latitude and longitude! Creating the matrix...')
   }
 
-  locs <- locs %>%
-    dplyr::select(location, latitude, longitude) %>%
-    dplyr::distinct() %>%
-    sf::st_as_sf(., coords = c("longitude","latitude"), crs = 4326) %>%
-    dplyr::select(location, geometry) %>%
+  locs <- locs |>
+    dplyr::select(location, latitude, longitude) |>
+    dplyr::distinct() |>
+    sf::st_as_sf(coords = c("longitude","latitude"), crs = 4326) |>
+    dplyr::select(location, geometry) |>
     dplyr::mutate(id = row_number())
 
   distances <- sf::st_distance(locs, locs)
 
-  location_ids <- locs %>%
-    tibble::as_tibble() %>%
-    dplyr::select(location, id) %>%
+  location_ids <- locs |>
+    tibble::as_tibble() |>
+    dplyr::select(location, id) |>
     dplyr::relocate(id)
 
-  final_distances <- distances %>%
-    tibble::as_tibble() %>%
-    tibble::rownames_to_column(var = "location_from") %>%
-    tidyr::pivot_longer(cols = -location_from, names_to = "distance_to", values_to = "distance") %>%
-    dplyr::mutate(distance_to = str_replace(distance_to, "V","")) %>%
-    dplyr::mutate_at(vars(location_from, distance, distance_to), as.numeric) %>%
-    dplyr::filter(!distance == 0) %>%
-    dplyr::left_join(., location_ids, by = c("location_from" = "id")) %>%
-    dplyr::left_join(., location_ids, by = c("distance_to" = "id")) %>%
-    dplyr::select(location.x, location.y, distance) %>%
-    dplyr::rename("location_from" = 1) %>%
-    dplyr::rename("distance_to" = 2) %>%
+  final_distances <- distances |>
+    tibble::as_tibble() |>
+    tibble::rownames_to_column(var = "location_from") |>
+    tidyr::pivot_longer(cols = -location_from, names_to = "distance_to", values_to = "distance") |>
+    dplyr::mutate(distance_to = str_replace(distance_to, "V","")) |>
+    dplyr::mutate_at(vars(location_from, distance, distance_to), as.numeric) |>
+    dplyr::filter(!distance == 0) |>
+    dplyr::left_join(., location_ids, by = c("location_from" = "id")) |>
+    dplyr::left_join(., location_ids, by = c("distance_to" = "id")) |>
+    dplyr::select(location.x, location.y, distance) |>
+    dplyr::rename("location_from" = 1) |>
+    dplyr::rename("distance_to" = 2) |>
     dplyr::select(location_from, distance_to, distance)
 
   return(final_distances)
@@ -113,7 +113,7 @@ wt_tidy_species <- function(data,
 
   #Rename fields if PC
   if("survey_url" %in% colnames(data)){
-    data <- data %>%
+    data <- data |>
       rename(task_id=survey_id,
              recording_date_time = survey_date)
   }
@@ -135,7 +135,7 @@ wt_tidy_species <- function(data,
   .species <- wt_get_species()
 
   #Get the species codes for what you want to filter out
-  species.remove <- .species %>%
+  species.remove <- .species |>
     dplyr::filter(species_class %in% remove)
 
   #Add the unknowns if requested
@@ -155,7 +155,7 @@ wt_tidy_species <- function(data,
 
     #Translate point count field names back
     if("survey_url" %in% colnames(data)){
-      filtered.sp <- filtered.sp %>%
+      filtered.sp <- filtered.sp |>
         rename(survey_id=task_id,
                survey_date = recording_date_time)
     }
@@ -167,23 +167,23 @@ wt_tidy_species <- function(data,
   if(zerofill==TRUE){
 
     #first identify the unique visits (task_id) ensure locations are included for proper join
-    visit <- data %>%
-      dplyr::select(organization, project_id, location, latitude, longitude, location_id, recording_id, recording_date_time, task_id) %>%
+    visit <- data |>
+      dplyr::select(organization, project_id, location, latitude, longitude, location_id, recording_id, recording_date_time, task_id) |>
       dplyr::distinct()
 
     #see if there are any that have been removed
-    none <- suppressMessages(anti_join(visit, filtered)) %>%
+    none <- suppressMessages(anti_join(visit, filtered)) |>
       dplyr::mutate(species_code = "NONE",
              species_common_name = "NONE",
              species_scientific_name = "NONE")
 
     #add to the filtered data
-    filtered.none <- suppressMessages(full_join(filtered, none)) %>%
+    filtered.none <- suppressMessages(full_join(filtered, none)) |>
       dplyr::arrange(organization, project_id, location, recording_date_time)
 
     #Translate point count field names back
     if("survey_url" %in% colnames(data)){
-      filtered.none <- filtered.none %>%
+      filtered.none <- filtered.none |>
         rename(survey_id=task_id,
                survey_date = recording_date_time)
     }
@@ -236,21 +236,21 @@ wt_replace_tmtt <- function(data, calc="round"){
 
   #replace values with random selection from bootstraps
   if(nrow(dat.tmtt) > 0){
-    dat.abun <- dat.tmtt %>%
+    dat.abun <- dat.tmtt |>
       mutate(species_code = ifelse(species_code %in% .tmtt$species_code, species_code, "species"),
-             observer_id = as.integer(ifelse(observer_id %in% .tmtt$observer_id, observer_id, 0))) %>%
-      data.frame() %>%
-      inner_join(.tmtt %>% select(species_code, observer_id, pred), by=c("species_code", "observer_id")) %>%
+             observer_id = as.integer(ifelse(observer_id %in% .tmtt$observer_id, observer_id, 0))) |>
+      data.frame() |>
+      inner_join(.tmtt |> select(species_code, observer_id, pred), by=c("species_code", "observer_id")) |>
       mutate(individual_count = case_when(calc == "round" ~ round(pred),
                                           calc == "ceiling" ~ ceiling(pred),
                                           calc == "floor" ~ floor(pred),
-                                          TRUE ~ NA_real_)) %>%
+                                          TRUE ~ NA_real_)) |>
       select(-pred)
   } else { dat.abun <- dat.tmtt }
 
   #join back to data
-  out <- data %>%
-    dplyr::filter(individual_count!="TMTT") %>%
+  out <- data |>
+    dplyr::filter(individual_count!="TMTT") |>
     rbind(., dat.abun)
 
   #return the unmarked object
@@ -287,10 +287,10 @@ wt_make_wide <- function(data, sound="all"){
   if(!"survey_url" %in% colnames(data)){
 
     #Filter to first detection per individual
-    summed <- data %>%
-      dplyr::group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, individual_order) %>%
-      dplyr::mutate(first = max(detection_time)) %>%
-      dplyr::ungroup() %>%
+    summed <- data |>
+      dplyr::group_by(organization, project_id, location, recording_date_time, task_method, aru_task_status, observer_id, species_code, species_common_name, individual_order) |>
+      dplyr::mutate(first = max(detection_time)) |>
+      dplyr::ungroup() |>
       dplyr::filter(detection_time==first)
 
     #Remove undesired sound types
@@ -300,9 +300,9 @@ wt_make_wide <- function(data, sound="all"){
     }
 
     #Make it wide
-    wide <- summed %>%
-      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_, TRUE ~ as.character(individual_count)) %>% as.numeric()) %>%
-      dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
+    wide <- summed |>
+      dplyr::mutate(individual_count = case_when(grepl("^C",  individual_count) ~ NA_character_, TRUE ~ as.character(individual_count)) |> as.numeric()) |>
+      dplyr::filter(!is.na(individual_count)) |> # Filter out things that aren't "TMTT" species. Fix for later.
       tidyr::pivot_wider(id_cols = organization:task_method,
                   names_from = "species_code",
                   values_from = "individual_count",
@@ -316,9 +316,9 @@ wt_make_wide <- function(data, sound="all"){
   if("survey_url" %in% colnames(data)){
 
     #Make it wide and return field names to point count format
-    wide <- data %>%
-      dplyr::mutate(individual_count = as.numeric(individual_count)) %>%
-      dplyr::filter(!is.na(individual_count)) %>% # Filter out things that aren't "TMTT" species. Fix for later.
+    wide <- data |>
+      dplyr::mutate(individual_count = as.numeric(individual_count)) |>
+      dplyr::filter(!is.na(individual_count)) |> # Filter out things that aren't "TMTT" species. Fix for later.
       tidyr::pivot_wider(id_cols = organization:survey_duration_method,
                   names_from = "species_code",
                   values_from = "individual_count",
@@ -357,7 +357,7 @@ wt_format_occupancy <- function(data,
 
   #Rename fields if PC
   if("survey_url" %in% colnames(data)){
-    data <- data %>%
+    data <- data |>
       rename(task_id=survey_id,
              recording_date_time = survey_date,
              observer_id = observer,
@@ -365,76 +365,76 @@ wt_format_occupancy <- function(data,
   }
 
   #Wrangle observations and observation covariates for the species of interest
-  visits <- data %>%
-    dplyr::filter(species_code==species) %>%
-    dplyr::select(location, recording_date_time) %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(occur=1) %>%
-    dplyr::right_join(data %>%
-                 dplyr::select(location, recording_date_time, observer_id, task_method) %>%
+  visits <- data |>
+    dplyr::filter(species_code==species) |>
+    dplyr::select(location, recording_date_time) |>
+    dplyr::distinct() |>
+    dplyr::mutate(occur=1) |>
+    dplyr::right_join(data |>
+                 dplyr::select(location, recording_date_time, observer_id, task_method) |>
                  dplyr::distinct(),
-               by=c("location", "recording_date_time")) %>%
+               by=c("location", "recording_date_time")) |>
     dplyr::mutate(occur = ifelse(is.na(occur), 0, 1),
                   doy = as.POSIXlt(recording_date_time)$yday + 1,
-                  hr = as.numeric(as.numeric(format(recording_date_time, "%H")) + as.numeric(format(recording_date_time, "%M")) / 60)) %>%
-    dplyr::group_by(location) %>%
-    dplyr::arrange(recording_date_time) %>%
-    dplyr::mutate(visit = row_number()) %>%
+                  hr = as.numeric(as.numeric(format(recording_date_time, "%H")) + as.numeric(format(recording_date_time, "%M")) / 60)) |>
+    dplyr::group_by(location) |>
+    dplyr::arrange(recording_date_time) |>
+    dplyr::mutate(visit = row_number()) |>
     dplyr::ungroup()
 
   #Create location X recording dataframe of observations (1 for detected, 0 for undetected)
-  y <- visits %>%
-    dplyr::select(location, visit, occur) %>%
-    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = occur) %>%
-    dplyr::arrange(location) %>%
-    dplyr::select(-location) %>%
+  y <- visits |>
+    dplyr::select(location, visit, occur) |>
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = occur) |>
+    dplyr::arrange(location) |>
+    dplyr::select(-location) |>
     data.frame()
 
   #Create location X recording dataframes for observation covariates (doy = day of year, hr = hour of day, method = processing method, observer = observer ID)
-  doy <- visits %>%
-    dplyr::select(location, visit, doy) %>%
-    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = doy) %>%
-    dplyr::arrange(location) %>%
-    dplyr::select(-location) %>%
+  doy <- visits |>
+    dplyr::select(location, visit, doy) |>
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = doy) |>
+    dplyr::arrange(location) |>
+    dplyr::select(-location) |>
     data.frame()
 
-  doy2 <- visits %>%
-    dplyr::mutate(doy2 = doy^2) %>%
-    dplyr::select(location, visit, doy2) %>%
-    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = doy2) %>%
-    dplyr::arrange(location) %>%
-    dplyr::select(-location) %>%
+  doy2 <- visits |>
+    dplyr::mutate(doy2 = doy^2) |>
+    dplyr::select(location, visit, doy2) |>
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = doy2) |>
+    dplyr::arrange(location) |>
+    dplyr::select(-location) |>
     data.frame()
 
-  hr <- visits %>%
-    dplyr::select(location, visit, hr) %>%
-    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = hr) %>%
-    dplyr::arrange(location) %>%
-    dplyr::select(-location) %>%
+  hr <- visits |>
+    dplyr::select(location, visit, hr) |>
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = hr) |>
+    dplyr::arrange(location) |>
+    dplyr::select(-location) |>
     data.frame()
 
-  hr2 <- visits %>%
-    dplyr::mutate(hr2 = hr^2) %>%
-    dplyr::select(location, visit, hr2) %>%
-    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = hr2) %>%
-    dplyr::arrange(location) %>%
-    dplyr::select(-location) %>%
+  hr2 <- visits |>
+    dplyr::mutate(hr2 = hr^2) |>
+    dplyr::select(location, visit, hr2) |>
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = hr2) |>
+    dplyr::arrange(location) |>
+    dplyr::select(-location) |>
     data.frame()
 
-  method <- visits %>%
-    dplyr::select(location, visit, task_method) %>%
-    dplyr::mutate(task_method = as.factor(task_method)) %>%
-    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = task_method) %>%
-    dplyr::arrange(location) %>%
-    dplyr::select(-location) %>%
+  method <- visits |>
+    dplyr::select(location, visit, task_method) |>
+    dplyr::mutate(task_method = as.factor(task_method)) |>
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = task_method) |>
+    dplyr::arrange(location) |>
+    dplyr::select(-location) |>
     data.frame()
 
-  observer <- visits %>%
-    dplyr::select(location, visit, observer_id) %>%
-    dplyr::mutate(observer = as.factor(observer_id)) %>%
-    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = observer) %>%
-    dplyr::arrange(location) %>%
-    dplyr::select(-location) %>%
+  observer <- visits |>
+    dplyr::select(location, visit, observer_id) |>
+    dplyr::mutate(observer = as.factor(observer_id)) |>
+    tidyr::pivot_wider(id_cols = location, names_from = visit, values_from = observer) |>
+    dplyr::arrange(location) |>
+    dplyr::select(-location) |>
     data.frame()
 
   #Create a list of the observation covariates
@@ -453,7 +453,7 @@ wt_format_occupancy <- function(data,
 
     else{
       #Arrange by location so that matches the location X recording dataframes
-      siteCovs <- siteCovs %>%
+      siteCovs <- siteCovs |>
         arrange(location)
     }
   }
@@ -501,11 +501,11 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALS
 
   #Rename fields if PC
   if("survey_url" %in% colnames(data)){
-    data <- data %>%
+    data <- data |>
       rename(task_id=survey_id,
              recording_date_time = survey_date,
-             observer_id = observer) %>%
-      rowwise() %>%
+             observer_id = observer) |>
+      rowwise() |>
       mutate(durationMethod = ifelse(str_sub(survey_duration_method, -1, -1)=="+",
                                      str_sub(survey_duration_method, -100, -2),
                                      survey_duration_method),
@@ -515,7 +515,7 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALS
              chardis = str_locate_all(survey_distance_method, "-"),
              chardismax = max(chardis),
              distance1 = str_sub(survey_distance_method, chardismax+1, -2),
-             task_distance = ifelse(distance1 %in% c("AR", "IN"), Inf, as.numeric(distance1))) %>%
+             task_distance = ifelse(distance1 %in% c("AR", "IN"), Inf, as.numeric(distance1))) |>
       ungroup()
   }
 
@@ -550,15 +550,15 @@ wt_qpad_offsets <- function(data, species = c("all"), version = 3, together=FALS
   #Put together if requested
   if(together==TRUE){
     out <- cbind(data,
-                 data.frame(off) %>%
+                 data.frame(off) |>
                    rename_with(.fn=~paste0(.x, ".off")))
 
     #Translate point count field names back
     if("survey_url" %in% colnames(data)){
-      out <- out %>%
+      out <- out |>
         rename(survey_id=task_id,
                survey_date = recording_date_time,
-               observer = observer_id) %>%
+               observer = observer_id) |>
         dplyr::select(-durationMethod, -chardur, -chardurmax, -task_duration, -chardis, -chardismax, -distance1, -task_distance)
     }
 
@@ -644,13 +644,13 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
   }
 
   # Convert grid cells to sf polygons
-  grid_cells_sf <- grts_chosen %>%
+  grid_cells_sf <- grts_chosen |>
     tidyr::separate(lowerleft, into = c("lowerleft_lat", "lowerleft_lon"), sep = ",", convert = TRUE) %>%
     tidyr::separate(upperleft, into = c("upperleft_lat", "upperleft_lon"), sep = ",", convert = TRUE) %>%
     tidyr::separate(upperright, into = c("upperright_lat", "upperright_lon"), sep = ",", convert = TRUE) %>%
     tidyr::separate(lowerright, into = c("lowerright_lat", "lowerright_lon"), sep = ",", convert = TRUE) %>%
     tidyr::separate(center, into = c("center_lat", "center_lon"), sep = ",", convert = TRUE) %>%
-    dplyr::rowwise() %>%
+    dplyr::rowwise() |>
     dplyr::mutate(
       geometry = list(sf::st_polygon(list(matrix(
         c(
@@ -663,9 +663,9 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
         ncol = 2,
         byrow = TRUE
       ))))
-    ) %>%
-    dplyr::ungroup() %>%
-    sf::st_as_sf(crs = 4326) %>%
+    ) |>
+    dplyr::ungroup() |>
+    sf::st_as_sf(crs = 4326) |>
     dplyr::select(GRTS_ID, geometry)
 
   # If CRS are different, transform bbox_sf to match the CRS of grid_cells_sf
@@ -673,7 +673,7 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
     bbox_sf <- st_transform(sf::st_make_valid(bbox_sf), st_crs(sf::st_make_valid(grid_cells_sf)))
   }
 
-  grid_cells_filtered <- grid_cells_sf %>% suppressWarnings(sf::st_intersection(bbox_sf))
+  grid_cells_filtered <- grid_cells_sf |> suppressWarnings(sf::st_intersection(bbox_sf))
 
   # Perform spatial join to find which polygon each point falls into
   if(nrow(grid_cells_filtered) == 0){
@@ -683,21 +683,21 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
   }
 
   # Convert back to tibble and select relevant columns
-  new_data <- result %>%
-    tibble::as_tibble() %>%
-    dplyr::relocate(GRTS_ID, .after = location) %>%
-    sf::st_drop_geometry() %>%
+  new_data <- result |>
+    tibble::as_tibble() |>
+    dplyr::relocate(GRTS_ID, .after = location) |>
+    sf::st_drop_geometry() |>
     dplyr::mutate(longitude = unlist(purrr::map(.$geometry, 1)),
-                  latitude = unlist(purrr::map(.$geometry, 2))) %>%
-    dplyr::relocate(latitude, .after = GRTS_ID) %>%
-    dplyr::relocate(longitude, .after = latitude) %>%
+                  latitude = unlist(purrr::map(.$geometry, 2))) |>
+    dplyr::relocate(latitude, .after = GRTS_ID) |>
+    dplyr::relocate(longitude, .after = latitude) |>
     dplyr::select(-geometry)
 
   if (group_locations_in_cell == TRUE) {
-    new_data2 <- new_data %>%
-      dplyr::group_by(GRTS_ID) %>%
-      dplyr::mutate(GRTS_suffix = paste0(GRTS_ID, "-", row_number())) %>%
-      dplyr::ungroup() %>%
+    new_data2 <- new_data |>
+      dplyr::group_by(GRTS_ID) |>
+      dplyr::mutate(GRTS_suffix = paste0(GRTS_ID, "-", row_number())) |>
+      dplyr::ungroup() |>
       dplyr::relocate(GRTS_suffix, .after = GRTS_ID)
 
     return(new_data2)
@@ -727,6 +727,15 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 
 wt_format_data <- function(input, format = c('FWMIS','NABAT')){
 
+  ## User agent
+  u <- getOption("HTTPUserAgent")
+  u <- sprintf("R/%s; R (%s)",
+               getRversion(),
+               paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
+
+  # Add wildrtrax version information:
+  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
+
   # Enabled functionalized api
   spp <- .wt_api_pr(
     path = "/bis/get-species-fwmis-map"
@@ -734,8 +743,8 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
   spp_fwmis <- resp_body_json(spp)
 
   # spps <- httr::content(spp_fwmis)
-  spps_tibble <- map_dfr(spp_fwmis, ~ tibble(species_id = .x$sfw_species_id, sfw_name = .x$sfw_name, sfw_name_cam = .x$sfw_name_cam)) %>%
-    inner_join(., wt_get_species() %>% select(species_id, species_common_name), by = ("species_id"))
+  spps_tibble <- map_dfr(spp_fwmis, ~ tibble(species_id = .x$sfw_species_id, sfw_name = .x$sfw_name, sfw_name_cam = .x$sfw_name_cam)) |>
+    inner_join(wt_get_species() |> select(species_id, species_common_name), by = ("species_id"))
 
   org_id = 5
   #DO THIS INSTEAD org_id <- input %>% select(organization) %>% distinct() %>% pull()
@@ -756,23 +765,23 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
     ) |>
     req_user_agent(u) |>
     req_body_json(loceq_payload) |>
-    req_perform()
+    req_perform() |>
+    resp_body_json()
 
-  # # loceq <- httr::content(location_equipment)
-  # loceq <- map_dfr(loceq[[2]], ~ tibble(location = .x$locationName,
-  #                                  deployment_date = .x$deploymentDate,
-  #                                  retrieval_date = .x$retrieveDate,
-  #                                  equipment_type = .x$typeId,
-  #                                  equipment_code = .x$code,
-  #                                  serial_number = .x$serialNo,
-  #                                  equipment_make = .x$make,
-  #                                  equipment_model = .x$model,
-  #                                  equipment_condition = .x$conditionId,
-  #                                  equipment_direction = .x$directionDegree,
-  #                                  equipment_mount = .x$mountId,
-  #                                  equipment_target = .x$targetId,
-  #                                  stake_distance = .x$stakeDistance,
-  #                                  parent_equipment = .x$parentEquipment))
+  location_equipment <- map_dfr(location_equipment[[2]], ~ tibble(location = .x$locationName,
+                                   deployment_date = .x$deploymentDate,
+                                   retrieval_date = .x$retrieveDate,
+                                   equipment_type = .x$typeId,
+                                   equipment_code = .x$code,
+                                   serial_number = .x$serialNo,
+                                   equipment_make = .x$make,
+                                   equipment_model = .x$model,
+                                   equipment_condition = .x$conditionId,
+                                   equipment_direction = .x$directionDegree,
+                                   equipment_mount = .x$mountId,
+                                   equipment_target = .x$targetId,
+                                   stake_distance = .x$stakeDistance,
+                                   parent_equipment = .x$parentEquipment))
 
    visit_payload <- list(
     limit = 2e9,
@@ -790,56 +799,56 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
      ) |>
      req_user_agent(u) |>
      req_body_json(visit_payload) |>
-     req_perform()
+     req_perform() |>
+     resp_body_json()
 
-  # # visits <- httr::content(visits)
-  # visits <- map_dfr(visits[[2]], ~ tibble(location = .x$locationName,
-  #                                         latitude = .x$latitude,
-  #                                         longitude = .x$longitude,
-  #                                         visit_date = .x$date,
-  #                                         snow_depth_m = .x$snowDepth,
-  #                                         water_depth_cm = .x$waterDepth,
-  #                                         bait = .x$baitId,
-  #                                         crew = .x$crewName,
-  #                                         access_method = .x$accessMethodId,
-  #                                         distance_to_clutter = .x$distanceToClutter,
-  #                                         distance_to_water = .x$distanceToWater,
-  #                                         clutter_percent = .x$clutterPercent,
-  #                                         sunrise = .x$sunRise,
-  #                                         sunset = .x$sunSet,
-  #                                         timezone = .x$timeZone,
-  #                                         land_features = .x$landFeatureIds))
+   visits <- map_dfr(visits[[2]], ~ tibble(location = .x$locationName,
+                                          latitude = .x$latitude,
+                                          longitude = .x$longitude,
+                                          visit_date = .x$date,
+                                          snow_depth_m = .x$snowDepth,
+                                          water_depth_cm = .x$waterDepth,
+                                          bait = .x$baitId,
+                                          crew = .x$crewName,
+                                          access_method = .x$accessMethodId,
+                                          distance_to_clutter = .x$distanceToClutter,
+                                          distance_to_water = .x$distanceToWater,
+                                          clutter_percent = .x$clutterPercent,
+                                          sunrise = .x$sunRise,
+                                          sunset = .x$sunSet,
+                                          timezone = .x$timeZone,
+                                          land_features = .x$landFeatureIds))
 
-  output <- input %>%
+  output <- input |>
     inner_join(spps_tibble, by = c("species_common_name"))
 
-  output <- output %>%
-    inner_join(., visits %>% select(location, visit_date, crew, land_features), by = c("location" = "location"))
+  output <- output |>
+    inner_join(., visits |> select(location, visit_date, crew, land_features), by = c("location" = "location"))
 
   if (nrow(output) == 0) {stop('There were no visits to join for this project. Enter visits in your Organization.')}
 
-  output <- output %>%
-    inner_join(., loceq %>% select(location, deployment_date, retrieval_date, equipment_condition, equipment_direction, equipment_mount, stake_distance), by = c("location" = "location"))
+  output <- output |>
+    inner_join(location_equipment |> select(location, deployment_date, retrieval_date, equipment_condition, equipment_direction, equipment_mount, stake_distance), by = c("location" = "location"))
 
   if (nrow(output) == 0) {stop('There was no location equipment for this project. Enter your equipment and visits in your Organization.')}
 
   if (any(grepl("image", names(output), ignore.case = TRUE))) {
     # DO CAMERA STUFF
-    output <- output %>%
-      select(location, latitude, longitude, location_buffer_m, visit_date, deployment_date, retrieval_date, image_date_time, sfw_name, individual_count, age_class, sex_class) %>%
+    output <- output |>
+      select(location, latitude, longitude, location_buffer_m, visit_date, deployment_date, retrieval_date, image_date_time, sfw_name, individual_count, age_class, sex_class) |>
       distinct()
     return(output)
     # FORMAT AND OUTPUT
   } else {
     # DO ARU STUFF
-    output <- output %>%
-      select(organization, location, latitude, longitude, location_buffer_m, recording_date_time, deployment_date, retrieval_date, visit_date, sfw_name, individual_order, individual_count) %>%
-      distinct() %>%
-      mutate(`sc_SURVEYTYPE.domainCodeIdSurveyType` = "Breeding -BREEDING", .before = organization) %>%
+    output <- output |>
+      select(organization, location, latitude, longitude, location_buffer_m, recording_date_time, deployment_date, retrieval_date, visit_date, sfw_name, individual_order, individual_count) |>
+      distinct() |>
+      mutate(`sc_SURVEYTYPE.domainCodeIdSurveyType` = "Breeding -BREEDING", .before = organization) |>
       rename("wi_stakeholderInSurveyCrew" = organization,
              "sd_effectiveDate" = deployment_date,
-             "sd_terminationDate" = retrieval_date) %>%
-      relocate(sd_effectiveDate, .after = `sc_SURVEYTYPE.domainCodeIdSurveyType`) %>%
+             "sd_terminationDate" = retrieval_date) |>
+      relocate(sd_effectiveDate, .after = `sc_SURVEYTYPE.domainCodeIdSurveyType`) |>
       relocate(sd_terminationDate, .after = sd_effectiveDate)
 
     new_columns <- list(
@@ -972,9 +981,9 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
       cs_gender = NA
     )
 
-    output <- output %>%
-      mutate(!!!new_columns) %>%  # Add new columns
-      relocate(any_of(names(new_columns)), .after = sd_terminationDate) %>%
+    output <- output |>
+      mutate(!!!new_columns) |>  # Add new columns
+      relocate(any_of(names(new_columns)), .after = sd_terminationDate) |>
       rename('cs_comments' = location,
              'lf_startLatitude' = latitude,
              'lf_startLongitude' = longitude,
@@ -1022,7 +1031,7 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
       "gc_FEATURE.Feature_Status.surveyParameterId", "gc_BIRD.Lek_Status.surveyParameterId", "gc_FEATURE.Feature_Count.surveyParameterId"
     )
 
-    output <- output %>%
+    output <- output |>
       select(all_of(new_column_order))
 
     return(output)
