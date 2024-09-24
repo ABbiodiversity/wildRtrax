@@ -532,31 +532,36 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
   all_rpps_tibble <- list()
   all_result_tables <- list()
 
+  ## User agent
+  u <- getOption("HTTPUserAgent")
+  u <- sprintf("R/%s; R (%s)",
+               getRversion(),
+               paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
+
+  # Add wildrtrax version information:
+  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
+
   # Iterate over each species
   for (sp in spp) {
 
     # Construct payload for first request
     payload <- list(
-      isSpeciesTab = FALSE,
-      zoomLevel = 20,
-      bounds = full_bounds,
       sensorId = sensor,
-      polygonBoundary = boundary,
       organizationIds = NULL,
       projectIds = NULL,
       speciesIds = list(sp)  # Wrap the integer value in a list to make it an array
     )
 
-    rr <- request("https://www-api.wildtrax.ca") %>%
-      req_url_path_append("/bis/get-data-discoverer-long-lat-summary") %>%
+    rr <- request("https://www-api.wildtrax.ca") |>
+      req_url_path_append("/bis/get-data-discoverer-long-lat-summary") |>
       req_headers(
         Authorization = tok_used,
         Origin = "https://discover.wildtrax.ca",
         Pragma = "no-cache",
         Referer = "https://discover.wildtrax.ca/"
       ) %>%
-      req_user_agent(u) %>%
-      req_body_json(payload) %>%
+      req_user_agent(u) |>
+      req_body_json(payload) |>
       req_perform()
 
     # Construct payload for second request
@@ -569,16 +574,16 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
       speciesIds = list(sp)
     )
 
-    rr2 <- request("https://www-api.wildtrax.ca") %>%
-      req_url_path_append("/bis/get-data-discoverer-map-and-projects") %>%
+    rr2 <- request("https://www-api.wildtrax.ca") |>
+      req_url_path_append("/bis/get-data-discoverer-map-and-projects") |>
       req_headers(
         Authorization = tok_used,
         Origin = "https://discover.wildtrax.ca",
         Pragma = "no-cache",
         Referer = "https://discover.wildtrax.ca/"
-      ) %>%
-      req_user_agent(u) %>%
-      req_body_json(payload_small) %>%
+      ) |>
+      req_user_agent(u) |>
+      req_body_json(payload_small) |>
       req_perform()
 
     # Extract content from the second request
@@ -614,6 +619,8 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
     # Extract data from the first request
     rpps <- resp_body_json(rr)
 
+    if(is.null(rpps)) {stop('Request was NULL.')}
+
     orgs <- map_chr(rpps$organizations, ~pluck(.x, "organizationName", .default = ""))
     counts <- map_dbl(rpps$projects, pluck, "count")
     projectNames <- map_chr(rpps$projects, ~pluck(.x, "projectName", .default = ""))
@@ -640,11 +647,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
   combined_result_table <- bind_rows(all_result_tables)
 
   # Check if any results found
-  if (nrow(combined_rpps_tibble) == 0) {
-    stop("No results were found on any of the search layers. Broaden your search and try again.")
-  }
-
-  if (nrow(combined_result_table) == 0) {
+  if (nrow(combined_rpps_tibble) == 0 | nrow(combined_result_table) == 0) {
     stop("No results were found on any of the search layers. Broaden your search and try again.")
   }
 
