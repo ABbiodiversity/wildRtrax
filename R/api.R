@@ -296,9 +296,9 @@ wt_get_species <- function(){
 
 }
 
-#' Download acoustic media
+#' Download media
 #'
-#' @description Download acoustic media in batch
+#' @description Download acoustic and image media in batch. Includes the download of tag clips and spectrograms for the ARU sensor.
 #'
 #' @param input The report data
 #' @param output The output folder
@@ -422,16 +422,16 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
     tok_used <- NULL
 
     # Make POST request using httr2
-    ddspp <- request("https://www-api.wildtrax.ca") %>%
-      req_url_path_append("/bis/dd-get-species") %>%
+    ddspp <- request("https://www-api.wildtrax.ca") |>
+      req_url_path_append("/bis/dd-get-species") |>
       req_headers(
         Authorization = NULL,
         Origin = "https://discover.wildtrax.ca",
         Pragma = "no-cache",
         Referer = "https://discover.wildtrax.ca/"
-      ) %>%
-      req_user_agent(u) %>%
-      req_body_json(list(sensorId = sensor)) %>%
+      ) |>
+      req_user_agent(u) |>
+      req_body_json(list(sensorId = sensor)) |>
       req_perform()
 
     # Extract JSON content from the response
@@ -559,7 +559,7 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
         Origin = "https://discover.wildtrax.ca",
         Pragma = "no-cache",
         Referer = "https://discover.wildtrax.ca/"
-      ) %>%
+      ) |>
       req_user_agent(u) |>
       req_body_json(payload) |>
       req_perform()

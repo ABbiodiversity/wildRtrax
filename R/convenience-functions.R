@@ -727,30 +727,18 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
 
 wt_format_data <- function(input, format = c('FWMIS','NABAT')){
 
-  # User agent
-  u <- getOption("HTTPUserAgent")
-  if (is.null(u)) {
-    u <- sprintf("R/%s; R (%s)",
-                 getRversion(),
-                 paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
-  }
-
-  # Add wildrtrax version information:
-  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
-
-  # spp_fwmis <- httr::POST(
-  #   httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-species-fwmis-map"),
-  #   accept = "application/json",
-  #   httr::add_headers(Authorization = NULL),
-  #   httr::user_agent(u)
-  # )
+  # Enabled functionalized api
+  spp <- .wt_api_pr(
+    path = "/bis/get-species-fwmis-map"
+  )
+  spp_fwmis <- resp_body_json(spp)
 
   # spps <- httr::content(spp_fwmis)
-  spps_tibble <- map_dfr(spps, ~ tibble(species_id = .x$sfw_species_id, sfw_name = .x$sfw_name)) %>%
+  spps_tibble <- map_dfr(spp_fwmis, ~ tibble(species_id = .x$sfw_species_id, sfw_name = .x$sfw_name, sfw_name_cam = .x$sfw_name_cam)) %>%
     inner_join(., wt_get_species() %>% select(species_id, species_common_name), by = ("species_id"))
 
   org_id = 5
-  #org_id <- input %>% select(organization) %>% distinct() %>% pull()
+  #DO THIS INSTEAD org_id <- input %>% select(organization) %>% distinct() %>% pull()
 
   loceq_payload <- list(
     limit = 2e9,
@@ -758,75 +746,69 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
     orderDirection = "DESC",
     organizationId = org_id,
     page = 1)
-#
-#   location_equipment <- httr::POST(
-#     httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-location-visit-equipment-summary"),
-#     accept = "application/json",
-#     httr::add_headers(
-#       Authorization = paste("Bearer", ._wt_auth_env_$access_token),
-#       Origin = "https://dev.wildtrax.ca",
-#       Pragma = "no-cache",
-#       Referer = "https://dev.wildtrax.ca"
-#     ),
-#     httr::user_agent(u),
-#     body = loceq_payload,
-#     encode = "json"
-#   )
 
-  # loceq <- httr::content(location_equipment)
-  loceq <- map_dfr(loceq[[2]], ~ tibble(location = .x$locationName,
-                                   deployment_date = .x$deploymentDate,
-                                   retrieval_date = .x$retrieveDate,
-                                   equipment_type = .x$typeId,
-                                   equipment_code = .x$code,
-                                   serial_number = .x$serialNo,
-                                   equipment_make = .x$make,
-                                   equipment_model = .x$model,
-                                   equipment_condition = .x$conditionId,
-                                   equipment_direction = .x$directionDegree,
-                                   equipment_mount = .x$mountId,
-                                   equipment_target = .x$targetId,
-                                   stake_distance = .x$stakeDistance,
-                                   parent_equipment = .x$parentEquipment))
+  location_equipment <- request("https://dev-api.wildtrax.ca") |>
+    req_url_path_append("/bis/get-location-visit-equipment-summary") |>
+    req_headers(
+      Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+      Pragma = "no-cache",
+      Referer = "https://dev.wildtrax.ca/"
+    ) |>
+    req_user_agent(u) |>
+    req_body_json(loceq_payload) |>
+    req_perform()
+
+  # # loceq <- httr::content(location_equipment)
+  # loceq <- map_dfr(loceq[[2]], ~ tibble(location = .x$locationName,
+  #                                  deployment_date = .x$deploymentDate,
+  #                                  retrieval_date = .x$retrieveDate,
+  #                                  equipment_type = .x$typeId,
+  #                                  equipment_code = .x$code,
+  #                                  serial_number = .x$serialNo,
+  #                                  equipment_make = .x$make,
+  #                                  equipment_model = .x$model,
+  #                                  equipment_condition = .x$conditionId,
+  #                                  equipment_direction = .x$directionDegree,
+  #                                  equipment_mount = .x$mountId,
+  #                                  equipment_target = .x$targetId,
+  #                                  stake_distance = .x$stakeDistance,
+  #                                  parent_equipment = .x$parentEquipment))
 
    visit_payload <- list(
     limit = 2e9,
     orderBy = "locationName",
-    orderDirection = "DESC",
+    orderDirection = "ASC",
     organizationId = org_id,
     page = 1)
-#
-#   visits <- httr::POST(
-#     httr::modify_url("https://dev-api.wildtrax.ca", path = "/bis/get-location-visits"),
-#     accept = "application/json",
-#     httr::add_headers(
-#       Authorization = paste("Bearer", ._wt_auth_env_$access_token),
-#       Origin = "https://dev.wildtrax.ca",
-#       Pragma = "no-cache",
-#       Referer = "https://dev.wildtrax.ca"
-#     ),
-#     httr::user_agent(u),
-#     body = visit_payload,
-#     encode = "json"
-#   )
 
-  # visits <- httr::content(visits)
-  visits <- map_dfr(visits[[2]], ~ tibble(location = .x$locationName,
-                                          latitude = .x$latitude,
-                                          longitude = .x$longitude,
-                                          visit_date = .x$date,
-                                          snow_depth_m = .x$snowDepth,
-                                          water_depth_cm = .x$waterDepth,
-                                          bait = .x$baitId,
-                                          crew = .x$crewName,
-                                          access_method = .x$accessMethodId,
-                                          distance_to_clutter = .x$distanceToClutter,
-                                          distance_to_water = .x$distanceToWater,
-                                          clutter_percent = .x$clutterPercent,
-                                          sunrise = .x$sunRise,
-                                          sunset = .x$sunSet,
-                                          timezone = .x$timeZone,
-                                          land_features = .x$landFeatureIds))
+   visits <- request("https://dev-api.wildtrax.ca") |>
+     req_url_path_append("/bis/get-location-visits") |>
+     req_headers(
+       Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+       Pragma = "no-cache",
+       Referer = "https://dev.wildtrax.ca/"
+     ) |>
+     req_user_agent(u) |>
+     req_body_json(visit_payload) |>
+     req_perform()
+
+  # # visits <- httr::content(visits)
+  # visits <- map_dfr(visits[[2]], ~ tibble(location = .x$locationName,
+  #                                         latitude = .x$latitude,
+  #                                         longitude = .x$longitude,
+  #                                         visit_date = .x$date,
+  #                                         snow_depth_m = .x$snowDepth,
+  #                                         water_depth_cm = .x$waterDepth,
+  #                                         bait = .x$baitId,
+  #                                         crew = .x$crewName,
+  #                                         access_method = .x$accessMethodId,
+  #                                         distance_to_clutter = .x$distanceToClutter,
+  #                                         distance_to_water = .x$distanceToWater,
+  #                                         clutter_percent = .x$clutterPercent,
+  #                                         sunrise = .x$sunRise,
+  #                                         sunset = .x$sunSet,
+  #                                         timezone = .x$timeZone,
+  #                                         land_features = .x$landFeatureIds))
 
   output <- input %>%
     inner_join(spps_tibble, by = c("species_common_name"))
