@@ -737,10 +737,22 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
   u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
   # Enabled functionalized api
-  spp <- .wt_api_pr(
-    path = "/bis/get-species-fwmis-map"
-  )
-  spp_fwmis <- resp_body_json(spp)
+  #spp <- .wt_api_pr(
+    #path = "/bis/get-species-fwmis-map"
+  #)
+  #spp_fwmis <- resp_body_json(spp)
+
+  spp_fwmis <- request("https://dev-api.wildtrax.ca") |>
+    req_url_path_append("/bis/get-species-fwmis-map") |>
+    req_headers(
+      Authorization = paste("Bearer", ._wt_auth_env_$access_token),
+      Pragma = "no-cache",
+      Referer = "https://dev.wildtrax.ca/"
+    ) |>
+    req_user_agent(u) |>
+    req_perform() |>
+    resp_body_json()
+
 
   # spps <- httr::content(spp_fwmis)
   spps_tibble <- map_dfr(spp_fwmis, ~ tibble(species_id = .x$sfw_species_id, sfw_name = .x$sfw_name, sfw_name_cam = .x$sfw_name_cam)) |>
