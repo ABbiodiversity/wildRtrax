@@ -251,7 +251,7 @@ wt_replace_tmtt <- function(data, calc="round"){
   #join back to data
   out <- data |>
     dplyr::filter(individual_count!="TMTT") |>
-    rbind(., dat.abun)
+    rbind(dat.abun)
 
   #return the unmarked object
   return(out)

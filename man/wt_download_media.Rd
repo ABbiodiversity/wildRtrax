@@ -2,7 +2,7 @@
 % Please edit documentation in R/api.R
 \name{wt_download_media}
 \alias{wt_download_media}
-\title{Download acoustic media}
+\title{Download media}
 \usage{
 wt_download_media(
   input,
@@ -21,7 +21,7 @@ wt_download_media(
 An organized folder of media. Assigning wt_download_tags to an object will return the table form of the data with the functions returning the after effects in the output directory
 }
 \description{
-Download acoustic media in batch
+Download acoustic and image media in batch. Includes the download of tag clips and spectrograms for the ARU sensor.
 }
 \examples{
 \dontrun{
