@@ -345,10 +345,14 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #' @param x A data frame or tibble; must contain the file name. Use output from \code{`wt_audio_scanner()`}.
 #' @param input_dir Character; A folder path where outputs from \code{`wt_run_ap()`} are stored.
 #' @param purpose Character; type of filtering you can choose from
+#' @param include_ind Logical; Include index results
+#' @param include_ldfcs Logical; Include LDFC results
+#' @param delete_media Removes the underlying sectioned wav files from the Towsey output. Leave to TRUE to save on space after runs.
 #'
-#' @import magick dplyr ggplot2
+#' @import dplyr ggplot2
 #' @importFrom tidyr pivot_longer
 #' @importFrom readr read_csv
+#' @importFrom magick image_read image_append
 #' @export
 #'
 #' @examples
@@ -358,7 +362,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #'
 #' @return Output will return the merged tibble with all information, the summary plots of the indices and the LDFC
 
-wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","biotic")) {
+wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","biotic"), include_ind = TRUE, include_ldfcs = TRUE, delete_media = TRUE) {
 
   # Check to see if the input exists and reading it in
   files <- x
@@ -378,10 +382,10 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   # Check to see if the input exists and reading it in
   if (dir.exists(input_dir)) {
     ind <-
-      fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) %>%
-      purrr::map_dfr( ~ readr::read_csv(., show_col_types = F)) %>%
-      dplyr::relocate(c(FileName, ResultMinute)) %>%
-      dplyr::select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
+      fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) |>
+      purrr::map_dfr( ~ readr::read_csv(show_col_types = F)) |>
+      dplyr::relocate(c(FileName, ResultMinute)) |>
+      dplyr::select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) |>
       tidyr::pivot_longer(!c(FileName, ResultMinute),
                    names_to = "index_variable",
                    values_to = "index_value")
@@ -397,9 +401,15 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   }
 
   # Join the indices and LDFCs to the media
-  joined <- files %>%
-    dplyr::inner_join(., ind, by = c("file_name" = "FileName")) %>%
-    dplyr::inner_join(., ldfcs, by = c("file_name" = "file_name"))
+  data_to_join <- list(
+    files,
+    if (include_ind) ind else NULL,
+    if (include_ldfcs) ldfcs else NULL
+  ) %>%
+    discard(is.null)
+
+  # Perform inner joins conditionally
+  joined <- reduce(data_to_join, ~ inner_join(.x, .y, by = c("file_name" = "FileName")), .init = files)
 
   if(nrow(joined) > 0){
     print('Files joined!')
@@ -423,11 +433,11 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
     ggplot2::ggtitle("Summary of indices")
 
   # Plot the LDFC
-  ldfc <- joined_purpose %>%
-    dplyr::select(image) %>%
-    dplyr::distinct() %>%
-    purrr::map(function(x){magick::image_read(x)}) %>%
-    do.call("c", .) %>%
+  ldfc <- joined_purpose |>
+    dplyr::select(image) |>
+    dplyr::distinct() |>
+    purrr::map(function(x){magick::image_read(x)}) |>
+    do.call("c", .) |>
     magick::image_append()
 
   return(list(joined,plotted,ldfc))
