@@ -1,6 +1,6 @@
 #' wildrtrax: A series of functions for environmental sensor data management and analysis to and from WildTrax
 #'
-#' @author Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca}
+#' @author Alex MacPhail \email{agmacpha@ualberta.ca}
 #' @docType package
 #' @name wildrtrax
 "_PACKAGE"
