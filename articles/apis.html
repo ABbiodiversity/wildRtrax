@@ -181,7 +181,7 @@ by WildTrax.</p>
 <span><span class="va">spp_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wt_get_species.html">wt_get_species</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spp_table</span> <span class="op">|&gt;</span> <span class="fu">arrange</span><span class="op">(</span><span class="va">species_code</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5,109 × 6</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5,114 × 6</span></span></span>
 <span><span class="co">#&gt;    species_id species_code species_common_name       species_class species_order</span></span>
 <span><span class="co">#&gt;         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>       <span style="text-decoration: underline;">2</span>780 10           Wolves, Coyotes and Alli… MAMMALIA      Carnivora    </span></span>
@@ -194,7 +194,7 @@ by WildTrax.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>       <span style="text-decoration: underline;">2</span>694 110          Train                     NONE          <span style="color: #BB0000;">NA</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>       <span style="text-decoration: underline;">2</span>728 114          Kermode Bear              MAMMALIA      Carnivora    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>       <span style="text-decoration: underline;">2</span>819 129          Opossum                   MAMMALIA      Didelphimorp…</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5,099 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5,104 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: species_scientific_name &lt;chr&gt;</span></span></span></code></pre></div>
 <p>WildTrax also pre-formats ARU to point count (PC) data depending on
 the type of analysis you wish to perform. See the <a href="https://borealbirds.ca/" class="external-link">Boreal Avian Modelling project</a>
@@ -229,12 +229,12 @@ on integration of avian point count and ARU data.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 23</span></span></span>
 <span><span class="co">#&gt;   organization project         project_id location location_id location_buffer_m</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">94</span>517 <span style="color: #BB0000;">NA</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">94</span>518 <span style="color: #BB0000;">NA</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> BU           Community - Cy…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BU           Community - Co…        620 CHPP-WP…       <span style="text-decoration: underline;">94</span>517 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> BU           Community - Co…        620 CHPP-WP…       <span style="text-decoration: underline;">94</span>518 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> BU           Community - Co…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> BU           Community - Co…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> BU           Community - Co…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> BU           Community - Co…        620 CHPP-WP…       <span style="text-decoration: underline;">89</span>972 <span style="color: #BB0000;">NA</span>               </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 17 more variables: latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, survey_id &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   survey_date &lt;dttm&gt;, survey_url &lt;chr&gt;, observer &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   survey_distance_method &lt;chr&gt;, survey_duration_method &lt;chr&gt;,</span></span></span>
@@ -320,7 +320,7 @@ pertinent to your account or those publicly available on WildTrax.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
