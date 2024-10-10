@@ -7,6 +7,7 @@
 [![R-CMD-check](https://github.com/ABbiodiversity/wildrtrax/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ABbiodiversity/wildrtrax/actions/workflows/R-CMD-check.yaml)
 [![CRAN status](https://www.r-pkg.org/badges/version/wildrtrax)](https://CRAN.R-project.org/package=wildrtrax)
 [![Codecov test coverage](https://codecov.io/gh/ABbiodiversity/wildRtrax/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ABbiodiversity/wildRtrax?branch=main)
+[![DOI](https://zenodo.org/badge/)](https://zenodo.org/doi/10.5281/zenodo.13916881)
 <!-- badges: end -->
 
 ## Overview
