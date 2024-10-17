@@ -274,6 +274,7 @@ wt_flac_info <- function(path) {
 #' @param audio_dir (optional) Character; path to directory storing audio files.
 #' @param output_dir Character; path to directory where you want outputs to be stored.
 #' @param path_to_ap Character; file path to the AnalysisPrograms software package. Defaults to "C:\\AP\\AnalysisPrograms.exe".
+#' @param delete_media Logical; when TRUE, removes the underlying sectioned wav files from the Towsey output. Leave to TRUE to save on space after runs.
 #'
 #' @import dplyr
 #' @importFrom stringr str_detect
@@ -281,7 +282,7 @@ wt_flac_info <- function(path) {
 #'
 #' @return Output will return to the specific root directory
 
-wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir, path_to_ap = "C:\\AP\\AnalysisPrograms.exe") {
+wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir, path_to_ap = "C:\\AP\\AnalysisPrograms.exe", delete_media = FALSE) {
 
   # Make sure at least (and only) one of x or audio_folder has been supplied
   if (is.null(x) & is.null(audio_dir)) {
@@ -332,7 +333,9 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
       dplyr::rename("file_path" = 1) %>%
       purrr::map(.x = .$file_path, .f = ~suppressMessages(system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir))))
 
-  return(message('Done!'))
+    if (delete_media == TRUE) {.delete_wav_files(output_dir) message("Deleting media as requested. This may take a moment...")}
+
+  return(message('Done AP Run! Check output folder for results and then run wt_glean_ap for visualizations.'))
 
 }
 
@@ -347,7 +350,6 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #' @param purpose Character; type of filtering you can choose from
 #' @param include_ind Logical; Include index results
 #' @param include_ldfcs Logical; Include LDFC results
-#' @param delete_media Removes the underlying sectioned wav files from the Towsey output. Leave to TRUE to save on space after runs.
 #'
 #' @import dplyr ggplot2
 #' @importFrom tidyr pivot_longer
@@ -441,6 +443,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
     magick::image_append()
 
   return(list(joined,plotted,ldfc))
+
 }
 
 #' Get signals from specific windows of audio

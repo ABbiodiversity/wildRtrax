@@ -578,4 +578,18 @@
   }
 })
 
+#' Internal function to delete media
+#'
+#' @description Internal function to delete media.
+#'
+#' @param dir Directory containing files
+#'
+#' @keywords internal
+#' @export
+#'
+
+.delete_wav_files <- function(dir) {
+  wav_files <- list.files(path = dir, pattern = "\\.wav$", recursive = TRUE, full.names = TRUE)
+  file.remove(wav_files)
+}
 
