@@ -587,14 +587,13 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 
 #' Segment large audio files
 #'
-#' @description "Chops" up wav files into many smaller files of a desired duration
+#' @description "Chops" up wav files into many smaller files of a desired duration and writes them to an output folder.
 #'
 #' @param input A data frame or tibble containing information about audio files
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
 #' @param output_folder Character; output path to where the segments will be stored
 #'
-#' @import tuneR dplyr
-#' @importFrom tidyr unnest
+#' @import tuneR dplyr tidyr
 #' @export
 #'
 #' @examples
@@ -602,8 +601,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' wt_chop(input = my_files, segment_length = 60, output_folder = "output_folder")
 #' }
 #'
-#' @return Segmented files written to the output_folder
-#'
+#' @return No return value, called for file-writing side effects.
 
 wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
 
@@ -613,7 +611,7 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
     stop('The output directory does not exist.')
   }
 
-  inp <- input %>%
+  inp <- typ %>%
     dplyr::select(file_path,
                   recording_date_time,
                   location,
@@ -635,17 +633,36 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
     tidyr::unnest(start_times) %>%
     dplyr::mutate(val = max(start_times) + segment_length,
            ry = case_when(val < length_sec ~ "Modulo", TRUE ~ "Fixed"),
-           new_file = paste0(outroot, "/", location, "_", format(recording_date_time + as.difftime(start_times, units = "secs"), "%Y%m%d_%H%M%S"), ".", file_type))
+           new_file = paste0(outroot, location, "_", format(recording_date_time + as.difftime(start_times, units = "secs"), "%Y%m%d_%H%M%S"), ".", file_type)) %>%
+    dplyr::mutate(across(c(length_sec, start_times), as.numeric))
 
   inp2 %>%
     purrr::pmap(
-      ..1 = .$file_path,
-      ..2 = .$new_file,
-      ..3 = .$length_sec,
-      ..4 = .$start_times,
-      .f = ~ tuneR::writeWave(tuneR::readWave(..1, from = ..4, to = ..4 + ..3, units = "seconds"),
-                              filename = ..2,
-                              extensible = TRUE)
+      .l = list(
+        .$file_path,
+        .$new_file,
+        .$length_sec,
+        .$start_times
+      ),
+      .f = ~ {
+        file_path <- ..1
+        new_file <- ..2
+        length_sec <- as.numeric(..3)
+        start_times <- as.numeric(..4)
+
+        # Debugging: print the values to ensure they're correct
+        print(paste("File Path:", file_path))
+        print(paste("New File:", new_file))
+        print(paste("Start Time:", start_times))
+        print(paste("Length:", length_sec))
+
+        # Perform wave file processing
+        tuneR::writeWave(
+          tuneR::readWave(file_path, from = start_times, to = start_times + length_sec, units = "seconds"),
+          filename = new_file,
+          extensible = TRUE
+        )
+      }
     )
 
 }
