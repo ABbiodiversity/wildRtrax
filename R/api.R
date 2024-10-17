@@ -423,6 +423,15 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
     tok_used <- ._wt_auth_env_$access_token
   }
 
+  # Have to user agent here maybe something better for later
+  u <- getOption("HTTPUserAgent")
+  u <- sprintf("R/%s; R (%s)",
+               getRversion(),
+               paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
+
+  # Add wildrtrax version information:
+  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
+
   # Make POST request using httr2
   ddspp <- request("https://www-api.wildtrax.ca") |>
     req_url_path_append("/bis/dd-get-species") |>
@@ -535,15 +544,6 @@ wt_dd_summary <- function(sensor = c('ARU','CAM','PC'), species = NULL, boundary
   # Initialize lists to store results
   all_rpps_tibble <- list()
   all_result_tables <- list()
-
-  ## User agent
-  u <- getOption("HTTPUserAgent")
-  u <- sprintf("R/%s; R (%s)",
-               getRversion(),
-               paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
-
-  # Add wildrtrax version information:
-  u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
   # Iterate over each species
   for (sp in spp) {
