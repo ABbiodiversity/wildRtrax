@@ -333,7 +333,10 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
       dplyr::rename("file_path" = 1) %>%
       purrr::map(.x = .$file_path, .f = ~suppressMessages(system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir))))
 
-    if (delete_media == TRUE) {.delete_wav_files(output_dir) message("Deleting media as requested. This may take a moment...")}
+    if (delete_media == TRUE) {
+      .delete_wav_files(output_dir)
+      message("Deleting media as requested. This may take a moment...")
+    }
 
   return(message('Done AP Run! Check output folder for results and then run wt_glean_ap for visualizations.'))
 
@@ -353,6 +356,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #'
 #' @import dplyr ggplot2
 #' @importFrom tidyr pivot_longer
+#' @importFrom purrr reduce
 #' @importFrom readr read_csv
 #' @importFrom magick image_read image_append
 #' @export
@@ -364,7 +368,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #'
 #' @return Output will return the merged tibble with all information, the summary plots of the indices and the LDFC
 
-wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","biotic"), include_ind = TRUE, include_ldfcs = TRUE, delete_media = TRUE) {
+wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","biotic"), include_ind = TRUE, include_ldfcs = TRUE) {
 
   # Check to see if the input exists and reading it in
   files <- x
@@ -411,7 +415,7 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
     discard(is.null)
 
   # Perform inner joins conditionally
-  joined <- reduce(data_to_join, ~ inner_join(.x, .y, by = c("file_name" = "FileName")), .init = files)
+  joined <- purrr::reduce(data_to_join, ~ dplyr::inner_join(.x, .y, by = c("file_name" = "FileName")), .init = files)
 
   if(nrow(joined) > 0){
     print('Files joined!')
@@ -596,7 +600,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
 #' @param output_folder Character; output path to where the segments will be stored
 #'
-#' @import tuneR dplyr tidyr
+#' @import tuneR dplyr
 #' @export
 #'
 #' @examples
