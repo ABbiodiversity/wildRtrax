@@ -147,7 +147,6 @@
 #' @keywords internal
 #'
 #' @import QPAD dplyr
-#' @importFrom curl curl_download
 #' @importFrom terra extract rast vect project
 #'
 #' @export
@@ -157,15 +156,22 @@
   # Download message
   message("Downloading geospatial assets. This may take a moment.")
 
-  # Get tifs from assets repo. Maybe something better later!
-  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", "lcc.tif")
-  .rlcc <- terra::rast("lcc.tif")
-  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", "tree.tif")
-  .rtree <- terra::rast("tree.tif")
-  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", "seedgrow.tif")
-  .rd1 <- terra::rast("seedgrow.tif")
-  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", "utcoffset.tif")
-  .rtz <- terra::rast("utcoffset.tif")
+  # Function to download and read a raster file using httr2
+  download_and_read_raster <- function(url, filename) {
+    req <- request(url) %>%
+      req_perform()  # Perform the request
+
+    # Save the response content to a file
+    writeBin(req$body, filename)
+
+    return(terra::rast(filename))  # Read the raster file
+  }
+
+  # Download and read TIFF files
+  .rlcc <- download_and_read_raster("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", "lcc.tif")
+  .rtree <- download_and_read_raster("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", "tree.tif")
+  .rd1 <- download_and_read_raster("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", "seedgrow.tif")
+  .rtz <- download_and_read_raster("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", "utcoffset.tif")
 
   crs <- terra::crs(.rtree)
 
