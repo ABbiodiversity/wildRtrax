@@ -70,8 +70,8 @@ wt_location_distances <- function(input_from_tibble = NULL, input_from_file = NU
     dplyr::mutate(distance_to = str_replace(distance_to, "V","")) |>
     dplyr::mutate_at(vars(location_from, distance, distance_to), as.numeric) |>
     dplyr::filter(!distance == 0) |>
-    dplyr::left_join(., location_ids, by = c("location_from" = "id")) |>
-    dplyr::left_join(., location_ids, by = c("distance_to" = "id")) |>
+    dplyr::left_join(location_ids, by = c("location_from" = "id")) |>
+    dplyr::left_join(location_ids, by = c("distance_to" = "id")) |>
     dplyr::select(location.x, location.y, distance) |>
     dplyr::rename("location_from" = 1) |>
     dplyr::rename("distance_to" = 2) |>
@@ -650,7 +650,7 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
     tidyr::separate(upperright, into = c("upperright_lat", "upperright_lon"), sep = ",", convert = TRUE) %>%
     tidyr::separate(lowerright, into = c("lowerright_lat", "lowerright_lon"), sep = ",", convert = TRUE) %>%
     tidyr::separate(center, into = c("center_lat", "center_lon"), sep = ",", convert = TRUE) %>%
-    dplyr::rowwise() |>
+    dplyr::rowwise() %>%
     dplyr::mutate(
       geometry = list(sf::st_polygon(list(matrix(
         c(
@@ -685,10 +685,10 @@ wt_add_grts <- function(data, group_locations_in_cell = FALSE) {
   # Convert back to tibble and select relevant columns
   new_data <- result |>
     tibble::as_tibble() |>
-    dplyr::relocate(GRTS_ID, .after = location) |>
-    sf::st_drop_geometry() |>
+    dplyr::relocate(GRTS_ID, .after = location) %>%
+    sf::st_drop_geometry() %>%
     dplyr::mutate(longitude = unlist(purrr::map(.$geometry, 1)),
-                  latitude = unlist(purrr::map(.$geometry, 2))) |>
+                  latitude = unlist(purrr::map(.$geometry, 2))) %>%
     dplyr::relocate(latitude, .after = GRTS_ID) |>
     dplyr::relocate(longitude, .after = latitude) |>
     dplyr::select(-geometry)
@@ -835,7 +835,7 @@ wt_format_data <- function(input, format = c('FWMIS','NABAT')){
     inner_join(spps_tibble, by = c("species_common_name"))
 
   output <- output |>
-    inner_join(., visits |> select(location, visit_date, crew, land_features), by = c("location" = "location"))
+    inner_join(visits |> select(location, visit_date, crew, land_features), by = c("location" = "location"))
 
   if (nrow(output) == 0) {stop('There were no visits to join for this project. Enter visits in your Organization.')}
 
