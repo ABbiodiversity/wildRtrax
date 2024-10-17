@@ -14,10 +14,10 @@ wt_chop(input = NULL, segment_length = NULL, output_folder = NULL)
 \item{output_folder}{Character; output path to where the segments will be stored}
 }
 \value{
-Segmented files written to the output_folder
+No return value, called for file-writing side effects.
 }
 \description{
-"Chops" up wav files into many smaller files of a desired duration
+"Chops" up wav files into many smaller files of a desired duration and writes them to an output folder.
 }
 \examples{
 \dontrun{
