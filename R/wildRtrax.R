@@ -182,6 +182,7 @@ utils::globalVariables(
     "spps",
     "u",
     "week",
-    "year"
+    "year",
+    "start_date","end_date","typ","length_sec"
   )
 )

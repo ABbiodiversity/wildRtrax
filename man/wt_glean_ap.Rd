@@ -9,8 +9,7 @@ wt_glean_ap(
   input_dir,
   purpose = c("quality", "abiotic", "biotic"),
   include_ind = TRUE,
-  include_ldfcs = TRUE,
-  delete_media = TRUE
+  include_ldfcs = TRUE
 )
 }
 \arguments{
@@ -23,8 +22,6 @@ wt_glean_ap(
 \item{include_ind}{Logical; Include index results}
 
 \item{include_ldfcs}{Logical; Include LDFC results}
-
-\item{delete_media}{Removes the underlying sectioned wav files from the Towsey output. Leave to TRUE to save on space after runs.}
 }
 \value{
 Output will return the merged tibble with all information, the summary plots of the indices and the LDFC

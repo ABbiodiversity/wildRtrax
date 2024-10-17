@@ -12,7 +12,7 @@ wt_summarise_cam(
   output_format = "wide",
   species_col = species_common_name,
   effort_data = NULL,
-  exclude_outofrange = FALSE,
+  exclude_out_of_range = FALSE,
   project_col = project_id,
   station_col = location,
   date_time_col = image_date_time,
@@ -37,7 +37,7 @@ wt_summarise_cam(
 
 \item{effort_data}{Optionally supply your own effort data.}
 
-\item{exclude_outofrange}{Remove days from effort when camera field-of-view is obscured.}
+\item{exclude_out_of_range}{Logical; Remove days from effort when camera field-of-view is obscured.}
 
 \item{project_col}{Defaults to \code{project_id}. The column referring to project in your effort data.}
 
