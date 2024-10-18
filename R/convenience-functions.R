@@ -115,7 +115,7 @@ wt_tidy_species <- function(data,
   if("survey_url" %in% colnames(data)){
     data <- data |>
       rename(task_id=survey_id,
-             recording_date_time = survey_date)
+             recording_date_time=survey_date)
   }
 
   if('bird' %in% remove){
@@ -168,7 +168,7 @@ wt_tidy_species <- function(data,
 
     #first identify the unique visits (task_id) ensure locations are included for proper join
     visit <- data |>
-      dplyr::select(organization, project_id, location, latitude, longitude, location_id, recording_id, recording_date_time, task_id) |>
+      dplyr::select(organization, project_id, location, latitude, longitude, location_id, recording_date_time, task_id) |>
       dplyr::distinct()
 
     #see if there are any that have been removed
