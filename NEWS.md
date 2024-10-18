@@ -3,13 +3,13 @@
 ## Major changes
 
 * Upgraded authorization and API requests to `httr2`
+* Removed `lubridate`, `curl` and `intrval` as dependencies
 
 ## Minor changes
 
 * Address camera functionalities from #60, #62
-* Add GRTS grid cells for Alaska and contiguous United States (#64)
+* Add GRTS grid cells for Alaska and contiguous United States for `wt_add_grts()` (#64)
 * Use `.wt_col_types()` to dynamically adjust column reports to help address (#55)
-* Removed `lubridate` and `intrval` as dependencies
 * Moved `wt_calculate_prf()` to internal function
 
 # wildrtrax 1.3.0

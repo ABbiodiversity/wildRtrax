@@ -7,7 +7,7 @@
 #' @keywords internal
 #'
 #' @import httr2
-#'
+
 .wt_auth <- function() {
 
   # ABMI Auth0 client ID
@@ -67,7 +67,7 @@
 #'
 #' @keywords internal
 #'
-#'
+
 .wt_auth_expired <- function () {
 
   if (!exists("._wt_auth_env_"))
@@ -89,7 +89,7 @@
 #' @keywords internal
 #'
 #' @import httr2
-#'
+
 .wt_api_pr <- function(path, ...) {
 
   # Check if authentication has expired:
@@ -150,7 +150,7 @@
 #' @importFrom terra extract rast vect project
 #'
 #' @export
-#'
+
 .make_x <- function(data, tz="local", check_xy=TRUE) {
 
   # Download message
@@ -310,7 +310,7 @@
 #' @keywords internal
 #'
 #' @import QPAD dplyr
-#'
+
 .make_off <- function(spp, x){
 
   if (length(spp) > 1L)
@@ -399,6 +399,7 @@
 #' @keywords internal
 #'
 #'
+
 .wt_col_types <- function(data) {
   # Define a list of column names and their corresponding conversion functions
   column_types <- list(

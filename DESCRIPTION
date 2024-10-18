@@ -19,7 +19,6 @@ Description: wildrtrax is an R package that enables environmental sensor users t
 Depends: R (>= 4.1.0)
 License: MIT + file LICENSE
 Imports:
-    curl,
     dplyr (>= 1.0.0),
     fs,
     ggplot2,

@@ -46,7 +46,6 @@ reference:
     - wt_summarise_cam
     - wt_tidy_species
     - wt_wac_info
-
 news:
   releases:
   - text: wildrtrax 1.3.1
