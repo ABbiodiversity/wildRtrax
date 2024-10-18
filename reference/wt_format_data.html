@@ -9,7 +9,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">wildrtrax</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-news" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">News</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-news"><li><h6 class="dropdown-header" data-toc-skip>Releases</h6></li>
+    <li><h6 class="dropdown-header" data-toc-skip>wildrtrax 1.3.1</h6></li>
     <li><h6 class="dropdown-header" data-toc-skip>wildrtrax 1.3.0</h6></li>
     <li><h6 class="dropdown-header" data-toc-skip>wildrtrax 1.2.0</h6></li>
     <li><h6 class="dropdown-header" data-toc-skip>wildrtrax 1.1.0</h6></li>
@@ -62,7 +63,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">wt_format_data</span><span class="op">(</span><span class="va">input</span>, format <span class="op">=</span> <span class="st">"FWMIS"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">wt_format_data</span><span class="op">(</span><span class="va">input</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"FWMIS"</span>, <span class="st">"NABAT"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -70,11 +71,11 @@
 
 
 <dl><dt id="arg-input">input<a class="anchor" aria-label="anchor" href="#arg-input"></a></dt>
-<dd><p>The report from <code><a href="wt_download_report.html">wt_download_report()</a></code></p></dd>
+<dd><p>A report containing locations from <code><a href="wt_download_report.html">wt_download_report()</a></code></p></dd>
 
 
 <dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
-<dd><p>A format i.e. 'FWMIS'</p></dd>
+<dd><p>A format i.e. 'FWMIS' or 'NABAT'</p></dd>
 
 </dl></div>
     <div class="section level2">
