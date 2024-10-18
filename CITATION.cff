@@ -40,19 +40,6 @@ references:
   year: '2024'
   version: '>= 4.1.0'
 - type: software
-  title: curl
-  abstract: 'curl: A Modern and Flexible Web Client for R'
-  notes: Imports
-  url: https://jeroen.r-universe.dev/curl
-  repository: https://CRAN.R-project.org/package=curl
-  authors:
-  - family-names: Ooms
-    given-names: Jeroen
-    email: jeroen@berkeley.edu
-    orcid: https://orcid.org/0000-0002-4035-0289
-  year: '2024'
-  doi: 10.32614/CRAN.package.curl
-- type: software
   title: dplyr
   abstract: 'dplyr: A Grammar of Data Manipulation'
   notes: Imports
@@ -156,7 +143,7 @@ references:
   authors:
   - family-names: Ooms
     given-names: Jeroen
-    email: jeroen@berkeley.edu
+    email: jeroenooms@gmail.com
     orcid: https://orcid.org/0000-0002-4035-0289
   year: '2024'
   doi: 10.32614/CRAN.package.magick
