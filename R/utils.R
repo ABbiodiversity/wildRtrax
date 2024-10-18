@@ -6,8 +6,8 @@
 #'
 #' @keywords internal
 #'
-#' @import httr
-#'
+#' @import httr2
+
 .wt_auth <- function() {
 
   # ABMI Auth0 client ID
@@ -17,40 +17,42 @@
              0x39, 0x37, 0x6e, 0x78, 0x55, 0x31, 0x33, 0x5a, 0x32, 0x4b, 0x31,
              0x69)))
 
-  # POST request
-  r <- httr::POST(
-    url = "https://abmi.auth0.com/oauth/token",
-    encode = "form",
-    body = list(
+  # Initialize request to Auth0
+  req <-  httr2::request("https://abmi.auth0.com/")
+
+  r <-   req |>
+    httr2::req_url_path("oauth/token") |>
+    httr2::req_body_form(
       audience = "http://www.wildtrax.ca",
       grant_type = "password",
       client_id = cid,
-      username = Sys.getenv("WT_USERNAME"),
-      password = Sys.getenv("WT_PASSWORD")
-    )
-  )
+      username = Sys.getenv('WT_USERNAME'),
+      password = Sys.getenv('WT_PASSWORD')) |>
+    httr2::req_perform()
 
-  # Write error message if POST request failed:
-  if (httr::http_error(r))
+  # Check for authentication errors
+  if (httr2::resp_is_error(r)) {
     stop(sprintf(
       "Authentication failed [%s]\n%s",
-      httr::status_code(r),
-      httr::content(r)$error_description
+      httr2::resp_status(r),
+      httr2::resp_body_json(r)$error_description
     ),
     call. = FALSE)
+  }
 
-  # Retrieve content from request
-  x <- httr::content(r)
+  # Parse the JSON response
+  x <- httr2::resp_body_json(r)
 
-  # Time until token expires
+  # Calculate token expiry time
   t0 <- Sys.time()
   x$expiry_time <- t0 + x$expires_in
 
-  # Check that ._wt_auth_env_ exists
-  if (!exists("._wt_auth_env_"))
+  # Check if the authentication environment exists
+  if (!exists("._wt_auth_env_")) {
     stop("Cannot find the correct environment.", call. = FALSE)
+  }
 
-  # Send content ('x') to ._wt_auth_env_
+  # Send the token information to the ._wt_auth_env_ environment
   list2env(x, envir = ._wt_auth_env_)
 
   message("Authentication into WildTrax successful.")
@@ -65,7 +67,7 @@
 #'
 #' @keywords internal
 #'
-#'
+
 .wt_auth_expired <- function () {
 
   if (!exists("._wt_auth_env_"))
@@ -86,42 +88,53 @@
 #'
 #' @keywords internal
 #'
-#' @import httr
-#'
+#' @import httr2
+
 .wt_api_pr <- function(path, ...) {
 
   # Check if authentication has expired:
-  if (.wt_auth_expired())
-    stop("Please authenticate with wt_auth().", call. = FALSE)
+  if (.wt_auth_expired()) {stop("Please authenticate with wt_auth().", call. = FALSE)}
 
   ## User agent
   u <- getOption("HTTPUserAgent")
-  if (is.null(u)) {
     u <- sprintf("R/%s; R (%s)",
                  getRversion(),
                  paste(getRversion(), R.version$platform, R.version$arch, R.version$os))
-  }
+
   # Add wildrtrax version information:
   u <- paste0("wildrtrax ", as.character(packageVersion("wildrtrax")), "; ", u)
 
-  # POST request body
-  r <- httr::POST(
-    httr::modify_url("https://www-api.wildtrax.ca", path = path),
-    query = list(...),
-    httr::add_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)),
-    httr::user_agent(u))
+  # Convert ... into a list
+  query_params <- list(...)
 
-  if (httr::http_error(r))
+  # Check if query_params is a list; if not, ensure it is treated as a list
+  if (length(query_params) == 1 && is.character(query_params[[1]])) {
+    # If there's only one element and it's a character, treat it as a named query
+    query_params <- as.list(query_params)
+  }
+
+  r <- request("https://www-api.wildtrax.ca") |>
+    req_url_path_append(path) |>
+    req_url_query(!!!query_params) |>  # Unpack the list of query parameters
+    req_headers(Authorization = paste("Bearer", ._wt_auth_env_$access_token)) |>
+    req_user_agent(u) |>
+    req_method("POST") |>
+    req_perform()
+
+  # Handle errors
+  if (resp_status(r) >= 400) {
     stop(sprintf(
       "Authentication failed [%s]\n%s",
-      httr::status_code(r),
-      httr::content(r)$message),
+      resp_status(r),
+      message),
       call. = FALSE)
-  r
+  } else {
+    return(r)
+  }
 
 }
 
-#' Internal functions
+#' Internal function for QPAD offsets
 #'
 #' QPAD offsets, wrapped by the `wt_qpad_offsets` function.
 #'
@@ -133,9 +146,8 @@
 #'
 #' @keywords internal
 #'
-#' @import QPAD dplyr intrval
-#' @importFrom curl curl_download
-#' @importFrom terra extract rast
+#' @import QPAD dplyr httr2
+#' @importFrom terra extract rast vect project
 #'
 #' @export
 
@@ -144,15 +156,22 @@
   # Download message
   message("Downloading geospatial assets. This may take a moment.")
 
-  # Get tifs from assets repo. Maybe something better later!
-  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", "lcc.tif")
-  .rlcc <- terra::rast("lcc.tif")
-  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", "tree.tif")
-  .rtree <- terra::rast("tree.tif")
-  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", "seedgrow.tif")
-  .rd1 <- terra::rast("seedgrow.tif")
-  curl::curl_download("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", "utcoffset.tif")
-  .rtz <- terra::rast("utcoffset.tif")
+  # Function to download and read a raster file using httr2
+  download_and_read_raster <- function(url, filename) {
+    req <- request(url) %>%
+      req_perform()  # Perform the request
+
+    # Save the response content to a file
+    writeBin(req$body, filename)
+
+    return(terra::rast(filename))  # Read the raster file
+  }
+
+  # Download and read TIFF files
+  .rlcc <- download_and_read_raster("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/lcc.tif", "lcc.tif")
+  .rtree <- download_and_read_raster("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/tree.tif", "tree.tif")
+  .rd1 <- download_and_read_raster("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/seedgrow.tif", "seedgrow.tif")
+  .rtz <- download_and_read_raster("https://raw.githubusercontent.com/ABbiodiversity/wildRtrax-assets/main/utcoffset.tif", "utcoffset.tif")
 
   crs <- terra::crs(.rtree)
 
@@ -178,8 +197,9 @@
 
   #checks
   checkfun <- function(x, name="", range=c(-Inf, Inf)) {
-    if (any(x[!is.na(x)] %)(% range))
+    if (any(x[!is.na(x)] < range[1] | x[!is.na(x)] > range[2])) {
       stop(sprintf("Parameter %s is out of range [%.0f, %.0f]", name, range[1], range[2]))
+    }
     invisible(NULL)
   }
   #Coordinates
@@ -203,8 +223,8 @@
   xydf <- data.frame(x=lon, y=lat)
   xydf$x[is.na(xydf$x)] <- mean(xydf$x, na.rm=TRUE)
   xydf$y[is.na(xydf$y)] <- mean(xydf$y, na.rm=TRUE)
-  xy <- terra::vect(xydf, geom=c("x", "y"), crs="+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
-  xy <- terra::project(xy, crs)
+  xy <- vect(xydf, geom=c("x", "y"), crs="+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0")
+  xy <- project(xy, crs)
 
   #LCC4 and LCC2
   vlcc <- terra::extract(.rlcc, xy)$lcc
@@ -219,7 +239,7 @@
   #TREE
   vtree <- terra::extract(.rtree, xy)$tree
   TREE <- vtree / 100
-  TREE[TREE %)(% c(0, 1)] <- 0
+  TREE[TREE < 0 | TREE > 1] <- 0
 
   #raster::extract seedgrow value (this is rounded)
   d1 <- terra::extract(.rd1, xy)$seedgrow
@@ -289,7 +309,7 @@
 #'
 #' @keywords internal
 #'
-#' @import QPAD dplyr intrval
+#' @import QPAD dplyr
 
 .make_off <- function(spp, x){
 
@@ -371,3 +391,212 @@
     offset=log(p) + log(A) + log(q))
 
 }
+
+#' Column assignments
+#'
+#' @description Assign correct column types for reports
+#'
+#' @keywords internal
+#'
+#'
+
+.wt_col_types <- function(data) {
+  # Define a list of column names and their corresponding conversion functions
+  column_types <- list(
+    abundance = as.character,
+    age_class = as.character,
+    behaviours = as.character,
+    bounding_box_number = as.character,
+    category = as.character,
+    clip_channel_used = as.character,
+    classifier_confidence = as.numeric,
+    classifier_version = as.character,
+    coat_attributes = as.character,
+    coat_colours = as.character,
+    date_deployed = as.Date,
+    date_retrieved = as.Date,
+    detection_time = as.POSIXct,
+    disabled_for_autotag = as.logical,
+    elevation = as.numeric,
+    equipment = as.character,
+    equipment_make = as.character,
+    equipment_model = as.character,
+    equipment_serial = as.character,
+    has_collar = as.logical,
+    has_eartag = as.logical,
+    health_diseases = as.character,
+    ihf = as.character,
+    image_comments = as.character,
+    image_date_time = as.POSIXct,
+    image_exif_sequence = as.character,
+    image_exif_temperature = as.numeric,
+    image_fire = as.logical,
+    image_fov = as.numeric,
+    image_id = as.character,
+    image_in_wildtrax = as.logical,
+    image_is_blurred = as.logical,
+    image_malfunction = as.logical,
+    image_nice = as.logical,
+    image_snow = as.logical,
+    image_snow_depth_m = as.numeric,
+    image_water_depth_m = as.numeric,
+    image_trigger_mode = as.character,
+    image_set_count_motion = as.integer,
+    image_set_count_timelapse = as.integer,
+    image_set_count_total = as.integer,
+    image_set_end_date_time = as.POSIXct,
+    image_set_id = as.character,
+    image_set_start_date_time = as.POSIXct,
+    image_set_status = as.character,
+    image_set_url = as.character,
+    image_url = as.character,
+    is_enabled_project_species = as.logical,
+    is_species_allowed_in_project = as.logical,
+    latitude = as.numeric,
+    location = as.character,
+    location_buffer_m = as.numeric,
+    location_comments = as.character,
+    location_id = as.character,
+    location_visibility = as.character,
+    longitude = as.numeric,
+    min_tag_freq = as.numeric,
+    max_tag_freq = as.numeric,
+    needs_review = as.logical,
+    observer = as.character,
+    observer_id = as.character,
+    organization = as.character,
+    project = as.character,
+    project_description = as.character,
+    project_id = as.character,
+    project_results = as.character,
+    project_status = as.character,
+    recording_date_time = as.POSIXct,
+    recording_id = as.character,
+    recording_length = as.numeric,
+    rms_peak_dbfs = as.numeric,
+    source_file_name = as.character,
+    species_class = as.character,
+    species_code = as.character,
+    species_common_name = as.character,
+    species_individual_comments = as.character,
+    species_scientific_name = as.character,
+    start_s = as.numeric,
+    end_s = as.numeric,
+    tag_comments = as.character,
+    tag_duration = as.numeric,
+    tag_id = as.character,
+    tag_is_verified = as.logical,
+    tag_needs_review = as.logical,
+    tag_rating = as.character,
+    tagged_in_wildtrax = as.logical,
+    task_comments = as.character,
+    task_duration = as.numeric,
+    task_id = as.character,
+    task_method = as.character,
+    task_url = as.character,
+    task_status = as.character,
+    version = as.character,
+    vocalization = as.character,
+    width = as.numeric,
+    x_loc = as.numeric,
+    y_loc = as.numeric,
+    height = as.numeric,
+    left_dc_offset = as.numeric,
+    left_full_freq_tag_dc_offset = as.numeric,
+    left_full_freq_tag_max_level = as.numeric,
+    left_full_freq_tag_min_level = as.numeric,
+    left_full_freq_tag_pk_count = as.integer,
+    left_full_freq_tag_peak_level_dbfs = as.numeric,
+    left_full_freq_tag_rms_peak_dbfs = as.numeric,
+    left_full_freq_tag_rms_trough_dbfs = as.numeric,
+    left_freq_filter_tag_dc_offset = as.numeric,
+    left_freq_filter_tag_max_level = as.numeric,
+    left_freq_filter_tag_min_level = as.numeric,
+    left_freq_filter_tag_pk_count = as.integer,
+    left_freq_filter_tag_peak_level_dbfs = as.numeric,
+    left_freq_filter_tag_rms_peak_dbfs = as.numeric,
+    left_freq_filter_tag_rms_trough_dbfs = as.numeric,
+    right_dc_offset = as.numeric,
+    right_full_freq_tag_dc_offset = as.numeric,
+    right_full_freq_tag_max_level = as.numeric,
+    right_full_freq_tag_min_level = as.numeric,
+    right_full_freq_tag_pk_count = as.integer,
+    right_full_freq_tag_peak_level_dbfs = as.numeric,
+    right_full_freq_tag_rms_peak_dbfs = as.numeric,
+    right_full_freq_tag_rms_trough_dbfs = as.numeric,
+    right_freq_filter_tag_dc_offset = as.numeric,
+    right_freq_filter_tag_max_level = as.numeric,
+    right_freq_filter_tag_min_level = as.numeric,
+    right_freq_filter_tag_pk_count = as.integer,
+    right_freq_filter_tag_peak_level_dbfs = as.numeric,
+    right_freq_filter_tag_rms_peak_dbfs = as.numeric,
+    right_freq_filter_tag_rms_trough_dbfs = as.numeric
+  )
+
+  # Iterate over each column in the list
+  for (col_name in names(column_types)) {
+    if (col_name %in% colnames(data)) {
+      tryCatch({
+        data[[col_name]] <- column_types[[col_name]](data[[col_name]])
+      }, warning = function(w) {
+        warning(sprintf("Failed to convert '%s' to %s: %s", col_name, deparse(substitute(column_types[[col_name]])), w$message))
+      }, error = function(e) {
+        warning(sprintf("Error occurred while converting '%s' to %s: %s", col_name, deparse(substitute(column_types[[col_name]])), e$message))
+      })
+    }
+  }
+
+  # Return the modified data
+  return(data)
+}
+
+#' Internal evaluation function for acoustic classifiers
+#'
+#' @description Internal function to calculate precision, recall, and F-score for a given score threshold.
+#'
+#' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
+#' @param threshold A single numeric value for score threshold
+#' @param human_total The total number of detections in the gold standard, typically from human listening data (e.g., the main report)
+#'
+#' @keywords internal
+#'
+#' @import dplyr
+#' @export
+#'
+#' @return A vector of precision, recall, F-score, and threshold
+
+.wt_calculate_prf <- local({
+  message_shown <- FALSE
+
+  function(threshold, data, human_total){
+    # Summarize
+    data_thresholded <- dplyr::filter(data, confidence >= threshold) |>
+      summarize(precision = sum(tp)/(sum(tp) + sum(fp)),
+                recall = sum(tp)/human_total) |>
+      mutate(fscore = (2*precision*recall)/(precision + recall),
+             threshold = threshold)
+
+    if(anyNA(data_thresholded$precision) && !message_shown){
+      message('No classifier detections for some higher selected thresholds; results will contain NAs')
+      message_shown <<- TRUE
+    }
+
+    return(data_thresholded)
+  }
+})
+
+#' Internal function to delete media
+#'
+#' @description Internal function to delete media.
+#'
+#' @param dir Directory containing files
+#'
+#' @keywords internal
+#' @export
+#'
+
+.delete_wav_files <- function(dir) {
+  wav_files <- list.files(path = dir, pattern = "\\.wav$", recursive = TRUE, full.names = TRUE)
+  file.remove(wav_files)
+}
+

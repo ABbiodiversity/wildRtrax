@@ -1,6 +1,6 @@
 #' wildrtrax: A series of functions for environmental sensor data management and analysis to and from WildTrax
 #'
-#' @author Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca}
+#' @author Alex MacPhail \email{agmacpha@ualberta.ca}
 #' @docType package
 #' @name wildrtrax
 "_PACKAGE"
@@ -165,6 +165,24 @@ utils::globalVariables(
     "recording_id",
     "human",
     "classifier",
-    "fscore"
+    "fscore",
+    "visit_date", "crew", "land_features", "deployment_date", "retrieval_date",
+    "equipment_condition", "equipment_direction", "equipment_mount", "stake_distance",
+    "location_buffer_m", "sfw_name", "age_class", "sex_class", "sd_effectiveDate",
+    "sc_SURVEYTYPE.domainCodeIdSurveyType", "sd_terminationDate",
+    "day",
+    "image_fov",
+    "interval",
+    "crossing",
+    "isoweek",
+    "minute",
+    "month",
+    "parse_date_time",
+    "period",
+    "spps",
+    "u",
+    "week",
+    "year",
+    "start_date","end_date","typ","length_sec"
   )
 )

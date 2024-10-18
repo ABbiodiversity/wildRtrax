@@ -11,6 +11,7 @@
 #' @param output_format Character; The format of the dataframe returned to you. Can be either "wide" (default) or "long".
 #' @param species_col Defaults to `species_common_name`. The column referring to species. Use to switch between common and scientific names of species, if you have both.
 #' @param effort_data Optionally supply your own effort data.
+#' @param exclude_out_of_range Logical; Remove days from effort when camera field-of-view is obscured.
 #' @param project_col Defaults to `project_id`. The column referring to project in your effort data.
 #' @param station_col Defaults to `location`. The column referring to each individual camera station/location in your effort data.
 #' @param date_time_col Defaults to `image_date_time`. The column referring to image date-time stamp.
@@ -19,7 +20,8 @@
 #' @param detection_id_col Defaults to `detection`. The column indicating the detection id
 #' @param start_col_det Defaults to `start_time`. The column indicating the start time of the independent detections
 #'
-#' @import dplyr lubridate tidyr
+#' @import dplyr
+#' @importFrom tidyr pivot_longer pivot_wider unnest crossing replace_na drop_na
 #' @importFrom rlang is_missing
 #' @export
 #'
@@ -35,6 +37,7 @@
 wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
                              variable = "detections", output_format = "wide",
                              species_col = species_common_name, effort_data = NULL,
+                             exclude_out_of_range = FALSE,
                              project_col = project_id, station_col = location,
                              date_time_col = image_date_time,
                              start_col = start_date, end_col = end_date,
@@ -47,7 +50,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
   }
 
   # Check that only one is supplied
-  if (!is_missing(raw_data) & !is.null(effort_data)) {
+  if (!rlang::is_missing(raw_data) & !is.null(effort_data)) {
     stop("Please only supply a value for one of `raw_data` or `effort_data`.")
   }
 
@@ -80,49 +83,66 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 
   # Parse the raw or effort data to get time ranges for each camera deployment.
   if (!rlang::is_missing(raw_data)) {
-    x <- raw_data |>
-      mutate(image_date_time = ymd_hms({{date_time_col}})) |>
-      group_by({{project_col}}, .data[[station_col]]) |>
-      summarise(start_date = as.Date(min(image_date_time)),
-                end_date = as.Date(max(image_date_time))) |>
-      ungroup()
+    ## if exclude_outofrange == FALSE then include all operations days between deployment and check
+    if (exclude_out_of_range == FALSE) {
+      x <- raw_data |>
+        group_by({{project_col}}, .data[[station_col]]) |>
+        summarise(start_date = as.Date(min(image_date_time)),
+                  end_date = as.Date(max(image_date_time))) |>
+        ungroup()
+
+      # Expand the time ranges into individual days of operation (smallest unit)
+      x <- x |>
+        group_by({{ project_col }}, .data[[station_col]]) |>
+        mutate(day = list(seq.Date(start_date, end_date, by = "day"))) |>
+        tidyr::unnest(day) |>
+        mutate(year = as.integer(format(day, "%Y"))) |>
+        select({{ project_col }}, .data[[station_col]], year, day)
+    }
+    ## if exclude_out_of_range == TRUE then include remove periods of non operation
+    if (exclude_out_of_range == TRUE) {
+      x <- raw_data |>
+        group_by({{ project_col }}, .data[[station_col]]) |>
+        arrange(image_date_time) %>%
+        mutate(period = rep(seq_along(rle(image_fov)$lengths), rle(image_fov)$lengths)) %>%
+        filter(image_fov == "WITHIN") %>%
+        group_by({{ project_col }}, .data[[station_col]], period) |>
+        summarise(
+          start_date = as.Date(min(image_date_time)),
+          end_date = as.Date(max(image_date_time))
+        ) |>
+        ungroup()
+
+      # Expand the time ranges into individual days of operation (smallest unit)
+      x <- x |>
+        group_by({{ project_col }}, .data[[station_col]], period) |>
+        mutate(day = list(seq.Date(start_date, end_date, by = "day"))) |>
+        tidyr::unnest(day) |>
+        mutate(year = as.integer(format(day, "%Y"))) |>
+        select({{ project_col }}, .data[[station_col]], year, day)
+    }
 
     if (any(c(is.na(x$start_date), is.na(x$end_date)))) {
       message("Parsing of image date time produced NAs, these will be dropped")
       x <- drop_na(x)
     }
+    }
 
-  } else {
-    x <- effort_data |>
-      select(project_id = {{project_col}},
-             location = .data[[station_col]],
-             start_date = {{start_col}},
-             end_date = {{end_col}}) |>
-      ungroup()
-  }
-
-  # Expand the time ranges into individual days of operation (smallest unit)
-  x <- x |>
-    group_by({{project_col}}, .data[[station_col]]) |>
-    mutate(day = list(seq.Date(start_date, end_date, by = "day"))) |>
-    unnest(day) |>
-    mutate(year = year(day))  |>
-    select({{project_col}}, .data[[station_col]], year, day)
 
   # Based on the desired timeframe, assess when each detection occurred
   if (time_interval == "day" | time_interval == "full") {
     y <- detect_data |>
-      mutate(year = year({{start_col_det}}),
-             day = as.Date({{start_col_det}}))
+      mutate(year = as.integer(format({{ start_col_det }}, "%Y")),
+             day = as.Date({{ start_col_det }}))
     time_interval <- "day"
   } else if (time_interval == "week") {
     y <- detect_data |>
-      mutate(year = year({{start_col_det}}),
-             week = isoweek({{start_col_det}}))
+      mutate(year = as.integer(format(.data[[start_col_det]], "%Y")),
+             week = as.integer(format(.data[[start_col_det]], "%V")))  # ISO week
   } else if (time_interval == "month") {
     y <- detect_data |>
-      mutate(year = year({{start_col_det}}),
-             month = month({{start_col_det}}, label = TRUE, abbr = FALSE))
+      mutate(year = as.integer(format(.data[[start_col_det]], "%Y")),
+             month = format(.data[[start_col_det]], "%B"))  # Full month name
   }
 
   # Summarise variable of interest
@@ -142,7 +162,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
       mutate(n_days_effort = 1) |>
       crossing(sp) |>
       left_join(y) |>
-      mutate(across(all_vars, ~ replace_na(.x, 0)))
+      mutate(across(all_vars, ~ tidyr::replace_na(.x, 0)))
   } else if (time_interval == "week") {
     x <- x |>
       mutate(week = isoweek(day)) |>
@@ -152,7 +172,7 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
     z <- x |>
       crossing(sp) |>
       left_join(y) |>
-      mutate(across(all_vars, ~ replace_na(.x, 0)))
+      mutate(across(all_vars, ~ tidyr::replace_na(.x, 0)))
   } else if (time_interval == "month") {
     x <- x |>
       mutate(month = month(day, label = TRUE, abbr = FALSE)) |>
@@ -162,12 +182,12 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
     z <- x |>
       crossing(sp) |>
       left_join(y) |>
-      mutate(across(all_vars, ~ replace_na(.x, 0)))
+      mutate(across(all_vars, ~ tidyr::replace_na(.x, 0)))
   } else if (time_interval == "full") {
     z <- x |>
       crossing(sp) |>
       left_join(y) |>
-      mutate(across(all_vars, ~ replace_na(.x, 0))) |>
+      mutate(across(all_vars, ~ tidyr::replace_na(.x, 0))) |>
       group_by({{project_col}}, .data[[station_col]], year, {{species_col}}) |>
       summarise(detections = sum(detections),
                 counts = sum(counts),
@@ -178,14 +198,14 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
   # Make wide if desired, using
   if (output_format == "wide") {
     z <- z |>
-      pivot_wider(id_cols = c({{project_col}}, .data[[station_col]], year,
+      tidyr::pivot_wider(id_cols = c({{project_col}}, .data[[station_col]], year,
                               .data[[time_interval]], n_days_effort),
         names_from = {{species_col}}, values_from = {{variable}}, names_sep = ".")
   } else if (output_format == "long") {
     z <- z |> select({{project_col}}, .data[[station_col]], year,
                       .data[[time_interval]], n_days_effort,
                       {{species_col}}, {{variable}}) |>
-      pivot_longer(cols = {{variable}}, names_to = "variable", values_to = "value")
+      tidyr::pivot_longer(cols = {{variable}}, names_to = "variable", values_to = "value")
   }
 
   # If neither 'wide' or 'long' is specified, just return z without pivoting.
@@ -204,8 +224,9 @@ wt_summarise_cam <- function(detect_data, raw_data, time_interval = "day",
 #' @param remove_human Logical; Should human and human-related tags (e.g. vehicles) be removed? Defaults to TRUE.
 #' @param remove_domestic Logical; Should domestic animal tags (e.g. cows) be removed? Defaults to TRUE.
 #'
-#' @import dplyr lubridate
+#' @import dplyr
 #' @importFrom rlang is_missing
+#' @importFrom stringr str_detect
 #' @export
 #'
 #' @examples
@@ -225,10 +246,9 @@ wt_ind_detect <- function(x, threshold, units = "minutes", datetime_col = image_
   # Ensure that datetime_col is of class POSIXct; if not, try to convert.
   name <- enquo(datetime_col) |> quo_name()
   if (!inherits(x[[name]], c("POSIXct"))) {
-    x <- x |> mutate({{datetime_col}} := lubridate::as_datetime({{datetime_col}}))
-    message("Your datetime_col has been converted to a Date.")
+    x <- x |> mutate({{datetime_col}} := as.POSIXct({{datetime_col}}, format = "%Y-%m-%d %H:%M:%S", tz = "UTC"))
+    message("Your datetime_col has been converted to a POSIXct DateTime.")
   }
-
   # Check if x contains the required columns - standard output from WildTrax. Probably should make this more flexible.
   req_cols <- c("project_id", "location", "species_common_name", "individual_count")
   if (!all(req_cols %in% colnames(x))) {
@@ -274,7 +294,7 @@ wt_ind_detect <- function(x, threshold, units = "minutes", datetime_col = image_
     arrange(project_id, location, {{datetime_col}}, species_common_name) |>
     group_by(project_id, location, species_common_name) |>
     # Calculate the time difference between subsequent images
-    mutate(interval = int_length({{datetime_col}} %--% lag({{datetime_col}}))) |>
+    mutate(interval = as.numeric(difftime({{datetime_col}}, lag({{datetime_col}}), units = "secs"))) |>
     # Is this considered a new detection?
     mutate(new_detection = ifelse(is.na(interval) | abs(interval) >= threshold, TRUE, FALSE)) |>
     ungroup() |>
@@ -286,7 +306,7 @@ wt_ind_detect <- function(x, threshold, units = "minutes", datetime_col = image_
     group_by(detection, project_id, location, species_common_name) |>
     summarise(start_time = min({{datetime_col}}),
               end_time = max({{datetime_col}}),
-              total_duration_seconds = int_length(start_time %--% end_time),
+              total_duration_seconds = as.numeric(difftime(end_time, start_time, units = "secs")),
               n_images = n(),
               avg_animals_per_image = mean(individual_count),
               max_animals = max(individual_count)) |>

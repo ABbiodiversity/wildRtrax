@@ -6,8 +6,10 @@
 #' @param file_type Character; Takes one of four values: wav, wac, flac or all. Use "all" if your directory contains many types of files.
 #' @param extra_cols Boolean; Default set to FALSE for speed. If TRUE, returns additional columns for file duration, sample rate and number of channels.
 #'
-#' @import fs tibble dplyr tidyr stringr tuneR purrr seewave
+#' @import fs tibble dplyr tuneR purrr seewave
 #' @importFrom rlang env_has current_env
+#' @importFrom tidyr separate pivot_longer unnest_longer
+#' @importFrom stringr str_replace
 #' @export
 #'
 #' @examples
@@ -50,7 +52,6 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
         fail = FALSE
       )
     ))
-
   # Check if nothing was returned
   if (nrow(df) == 0) {
     stop (
@@ -60,7 +61,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
 
   # Create the main tibble
   df <- df %>%
-    tidyr::unnest(file_path) %>%
+    tidyr::unnest_longer(file_path) %>%
     dplyr::mutate(size_Mb = round(purrr::map_dbl(.x = file_path, .f = ~ fs::file_size(.x)) / 10e5, digits = 2), # Convert file sizes to megabytes
                   file_path = as.character(file_path)) %>%
     dplyr::select(file_path, size_Mb) %>%
@@ -70,7 +71,7 @@ wt_audio_scanner <- function(path, file_type, extra_cols = F) {
     tidyr::separate(file_name, into = c("location", "recording_date_time"), sep = "(?:_0\\+1_|_|__0__|__1__)", extra = "merge", remove = FALSE) %>%
     dplyr::mutate(recording_date_time = str_remove(recording_date_time, '.+?(?:__)')) %>%
     dplyr::mutate(recording_date_time = as.POSIXct(strptime(recording_date_time, format = "%Y%m%d_%H%M%S"))) %>%
-    dplyr::mutate(julian = lubridate::yday(recording_date_time),
+    dplyr::mutate(julian = as.POSIXlt(recording_date_time)$yday + 1,
            year = as.numeric(format(recording_date_time,"%Y")),
            gps_enabled = dplyr::case_when(grepl('\\$', file_name) ~ TRUE)) %>%
     dplyr::arrange(location, recording_date_time) %>%
@@ -233,7 +234,8 @@ wt_wac_info <- function(path) {
 #'
 #' @param path Character; The flac file path
 #'
-#' @import seewave tuneR
+#' @importFrom seewave wav2flac
+#' @importFrom tuneR readWave
 #' @export
 #'
 #' @return a list with relevant information
@@ -272,13 +274,15 @@ wt_flac_info <- function(path) {
 #' @param audio_dir (optional) Character; path to directory storing audio files.
 #' @param output_dir Character; path to directory where you want outputs to be stored.
 #' @param path_to_ap Character; file path to the AnalysisPrograms software package. Defaults to "C:\\AP\\AnalysisPrograms.exe".
+#' @param delete_media Logical; when TRUE, removes the underlying sectioned wav files from the Towsey output. Leave to TRUE to save on space after runs.
 #'
-#' @import dplyr stringr
+#' @import dplyr
+#' @importFrom stringr str_detect
 #' @export
 #'
 #' @return Output will return to the specific root directory
 
-wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir, path_to_ap = "C:\\AP\\AnalysisPrograms.exe") {
+wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir, path_to_ap = "C:\\AP\\AnalysisPrograms.exe", delete_media = FALSE) {
 
   # Make sure at least (and only) one of x or audio_folder has been supplied
   if (is.null(x) & is.null(audio_dir)) {
@@ -329,7 +333,12 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
       dplyr::rename("file_path" = 1) %>%
       purrr::map(.x = .$file_path, .f = ~suppressMessages(system2(path_to_ap, sprintf('audio2csv "%s" "Towsey.Acoustic.yml" "%s" "-p"', .x, output_dir))))
 
-  return(message('Done!'))
+    if (delete_media == TRUE) {
+      .delete_wav_files(output_dir)
+      message("Deleting media as requested. This may take a moment...")
+    }
+
+  return(message('Done AP Run! Check output folder for results and then run wt_glean_ap for visualizations.'))
 
 }
 
@@ -342,9 +351,14 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #' @param x A data frame or tibble; must contain the file name. Use output from \code{`wt_audio_scanner()`}.
 #' @param input_dir Character; A folder path where outputs from \code{`wt_run_ap()`} are stored.
 #' @param purpose Character; type of filtering you can choose from
+#' @param include_ind Logical; Include index results
+#' @param include_ldfcs Logical; Include LDFC results
 #'
-#' @import magick dplyr tidyr ggplot2
+#' @import dplyr ggplot2
+#' @importFrom tidyr pivot_longer
+#' @importFrom purrr reduce
 #' @importFrom readr read_csv
+#' @importFrom magick image_read image_append
 #' @export
 #'
 #' @examples
@@ -354,7 +368,7 @@ wt_run_ap <- function(x = NULL, fp_col = file_path, audio_dir = NULL, output_dir
 #'
 #' @return Output will return the merged tibble with all information, the summary plots of the indices and the LDFC
 
-wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","biotic")) {
+wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","biotic"), include_ind = TRUE, include_ldfcs = TRUE) {
 
   # Check to see if the input exists and reading it in
   files <- x
@@ -374,10 +388,10 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   # Check to see if the input exists and reading it in
   if (dir.exists(input_dir)) {
     ind <-
-      fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) %>%
-      purrr::map_dfr( ~ readr::read_csv(., show_col_types = F)) %>%
-      dplyr::relocate(c(FileName, ResultMinute)) %>%
-      dplyr::select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) %>%
+      fs::dir_ls(input_dir, regexp = "*.Indices.csv", recurse = T) |>
+      purrr::map_dfr( ~ readr::read_csv(show_col_types = F)) |>
+      dplyr::relocate(c(FileName, ResultMinute)) |>
+      dplyr::select(-c(ResultStartSeconds, SegmentDurationSeconds,RankOrder,ZeroSignal)) |>
       tidyr::pivot_longer(!c(FileName, ResultMinute),
                    names_to = "index_variable",
                    values_to = "index_value")
@@ -393,9 +407,15 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
   }
 
   # Join the indices and LDFCs to the media
-  joined <- files %>%
-    dplyr::inner_join(., ind, by = c("file_name" = "FileName")) %>%
-    dplyr::inner_join(., ldfcs, by = c("file_name" = "file_name"))
+  data_to_join <- list(
+    files,
+    if (include_ind) ind else NULL,
+    if (include_ldfcs) ldfcs else NULL
+  ) %>%
+    discard(is.null)
+
+  # Perform inner joins conditionally
+  joined <- purrr::reduce(data_to_join, ~ dplyr::inner_join(.x, .y, by = c("file_name" = "FileName")), .init = files)
 
   if(nrow(joined) > 0){
     print('Files joined!')
@@ -419,14 +439,15 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
     ggplot2::ggtitle("Summary of indices")
 
   # Plot the LDFC
-  ldfc <- joined_purpose %>%
-    dplyr::select(image) %>%
-    dplyr::distinct() %>%
-    purrr::map(function(x){magick::image_read(x)}) %>%
-    do.call("c", .) %>%
+  ldfc <- joined_purpose |>
+    dplyr::select(image) |>
+    dplyr::distinct() |>
+    purrr::map(function(x){magick::image_read(x)}) |>
+    do.call("c", .) |>
     magick::image_append()
 
   return(list(joined,plotted,ldfc))
+
 }
 
 #' Get signals from specific windows of audio
@@ -440,7 +461,9 @@ wt_glean_ap <- function(x = NULL, input_dir, purpose = c("quality","abiotic","bi
 #' @param channel Choose "left" or "right" channel
 #' @param aggregate Aggregate detections by this number of seconds, if desired
 #'
-#' @import tuneR dplyr
+#' @import dplyr
+#' @importFrom tuneR readWave
+#' @importFrom seewave spectro
 #' @export
 #'
 #' @examples
@@ -571,14 +594,13 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 
 #' Segment large audio files
 #'
-#' @description "Chops" up wav files into many smaller files of a desired duration
+#' @description "Chops" up wav files into many smaller files of a desired duration and writes them to an output folder.
 #'
 #' @param input A data frame or tibble containing information about audio files
 #' @param segment_length Numeric; Segment length in seconds. Modulo recording will be exported should there be any trailing time left depending on the segment length used
 #' @param output_folder Character; output path to where the segments will be stored
 #'
 #' @import tuneR dplyr
-#' @importFrom lubridate seconds
 #' @export
 #'
 #' @examples
@@ -586,8 +608,7 @@ wt_signal_level <- function(path, fmin = 500, fmax = NA, threshold, channel = "l
 #' wt_chop(input = my_files, segment_length = 60, output_folder = "output_folder")
 #' }
 #'
-#' @return Segmented files written to the output_folder
-#'
+#' @return No return value, called for file-writing side effects.
 
 wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
 
@@ -597,7 +618,7 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
     stop('The output directory does not exist.')
   }
 
-  inp <- input %>%
+  inp <- typ %>%
     dplyr::select(file_path,
                   recording_date_time,
                   location,
@@ -618,21 +639,38 @@ wt_chop <- function(input = NULL, segment_length = NULL, output_folder = NULL) {
     dplyr::mutate(start_times = map2(.x = length_seconds, .y = segment_length, .f = ~seq(0, .x - .y, by = .y))) %>%
     tidyr::unnest(start_times) %>%
     dplyr::mutate(val = max(start_times) + segment_length,
-           ry = case_when(val < length_sec ~ "Modulo", TRUE ~ "Fixed"))
+           ry = case_when(val < length_sec ~ "Modulo", TRUE ~ "Fixed"),
+           new_file = paste0(outroot, location, "_", format(recording_date_time + as.difftime(start_times, units = "secs"), "%Y%m%d_%H%M%S"), ".", file_type)) %>%
+    dplyr::mutate(across(c(length_sec, start_times), as.numeric))
 
   inp2 %>%
     purrr::pmap(
-      ..1 = .$file_path,
-      ..2 = .$recording_date_time,
-      ..3 = .$location,
-      ..4 = .$file_type,
-      ..5 = .$length_sec,
-      ..6 = .$start_times,
-      .f = ~ tuneR::writeWave(tuneR::readWave(..1, from = ..6, to = ..6 + ..5, units = "seconds"),
-                              filename = paste0(outroot, "/", ..3, "_", format(..2 + lubridate::seconds(..6), "%Y%m%d_%H%M%S"), ".", ..4),
-                              extensible = T))
+      .l = list(
+        .$file_path,
+        .$new_file,
+        .$length_sec,
+        .$start_times
+      ),
+      .f = ~ {
+        file_path <- ..1
+        new_file <- ..2
+        length_sec <- as.numeric(..3)
+        start_times <- as.numeric(..4)
 
-  return(inp2)
+        # Debugging: print the values to ensure they're correct
+        print(paste("File Path:", file_path))
+        print(paste("New File:", new_file))
+        print(paste("Start Time:", start_times))
+        print(paste("Length:", length_sec))
+
+        # Perform wave file processing
+        tuneR::writeWave(
+          tuneR::readWave(file_path, from = start_times, to = start_times + length_sec, units = "seconds"),
+          filename = new_file,
+          extensible = TRUE
+        )
+      }
+    )
 
 }
 
@@ -734,8 +772,10 @@ wt_make_aru_tasks <- function(input, output=NULL, task_method = c("1SPM","1SPT",
 #' @param output Character; Path where the output file will be stored
 #' @param freq_bump Boolean; Set to TRUE to add a buffer to the frequency values exported from Kaleidoscope. Helpful for getting more context around a signal in species verification
 #'
-#' @import dplyr tidyr tibble
+#' @import dplyr tibble
 #' @importFrom readr read_csv
+#' @importFrom tidyr drop_na separate
+#' @importFrom stringr str_remove
 #' @export
 #'
 #' @examples
@@ -823,9 +863,9 @@ wt_kaleidoscope_tags <- function (input, output, freq_bump = T) {
 #' @param score_filter Numeric; Filter the detections by score
 #' @param task_length Numeric; length of the task in seconds
 #'
-#' @import dplyr tidyr tibble
+#' @import dplyr tibble
 #' @importFrom readr read_table
-#' @importFrom lubridate yday
+#' @importFrom tidyr separate
 #' @export
 #'
 #' @return A csv formatted as a WildTrax tag template

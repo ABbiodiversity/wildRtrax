@@ -83,9 +83,15 @@ test_that('Classifier functions', {
 })
 
 test_that('Add GRTS ID', {
-  bats <- wt_download_report(620, 'ARU', 'location', F)
+  bats <- wt_download_report(685, 'ARU', 'location', F)
   grts <- wt_add_grts(bats, group_locations_in_cell = TRUE)
   expect_true(!is.null(grts))
+})
+
+test_that('Location distances', {
+  locs <- wt_download_report(620, 'ARU', 'location', F)
+  locs_dist <- wt_location_distances(locs)
+  expect_true(!is.null(locs_dist))
 })
 
 ##Pre-processing & convenience
@@ -93,4 +99,4 @@ test_that('Add GRTS ID', {
 ##wt_run_ap
 ##wt_glean_ap
 ##wt_chop
-##wt_location_distances
+

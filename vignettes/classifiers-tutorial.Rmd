@@ -8,6 +8,8 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
+
+#bibliography: references.bib
 knitr::opts_chunk$set(echo = TRUE)
 
 library(dplyr)
@@ -275,8 +277,6 @@ detections_ccsp <- data[[1]] |>
 As before, you'll probably want to upload your detections to WildTrax for verification, even though BirdNET performance for Clay-coloured Sparrow is pretty good. Let's take a look at our BirdNET output as call rate to see if it's higher at the beginning of the season, as we would expect:
 
 ```{r, include=T, message=F, warning=F}
-library(lubridate)
-
 #Calculate detections per second and mean confidence in each recording
 rate_ccsp <- detections_ccsp |> 
   group_by(location_id, recording_date_time, recording_length) |>
@@ -285,9 +285,9 @@ rate_ccsp <- detections_ccsp |>
             .groups = "keep") |> 
   ungroup() |> 
   mutate(rate = calls/recording_length*60,
-         recording_date_time = ymd_hms(recording_date_time),
-         yday = yday(recording_date_time),
-         hour = hour(recording_date_time))
+  recording_date_time = as.POSIXct(recording_date_time, format = "%Y-%m-%d %H:%M:%S"),
+  yday = as.numeric(format(recording_date_time, "%j")),
+  hour = as.numeric(format(recording_date_time, "%H")))
 
 #Filter to the sites with most recordings with detections
 occupied_ccsp <- rate_ccsp |> 

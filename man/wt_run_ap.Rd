@@ -9,7 +9,8 @@ wt_run_ap(
   fp_col = file_path,
   audio_dir = NULL,
   output_dir,
-  path_to_ap = "C:\\\\AP\\\\AnalysisPrograms.exe"
+  path_to_ap = "C:\\\\AP\\\\AnalysisPrograms.exe",
+  delete_media = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ wt_run_ap(
 \item{output_dir}{Character; path to directory where you want outputs to be stored.}
 
 \item{path_to_ap}{Character; file path to the AnalysisPrograms software package. Defaults to "C:\\AP\\AnalysisPrograms.exe".}
+
+\item{delete_media}{Logical; when TRUE, removes the underlying sectioned wav files from the Towsey output. Leave to TRUE to save on space after runs.}
 }
 \value{
 Output will return to the specific root directory

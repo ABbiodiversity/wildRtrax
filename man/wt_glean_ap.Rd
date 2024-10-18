@@ -4,7 +4,13 @@
 \alias{wt_glean_ap}
 \title{Extract and plot relevant acoustic index metadata and LDFCs}
 \usage{
-wt_glean_ap(x = NULL, input_dir, purpose = c("quality", "abiotic", "biotic"))
+wt_glean_ap(
+  x = NULL,
+  input_dir,
+  purpose = c("quality", "abiotic", "biotic"),
+  include_ind = TRUE,
+  include_ldfcs = TRUE
+)
 }
 \arguments{
 \item{x}{A data frame or tibble; must contain the file name. Use output from \code{`wt_audio_scanner()`}.}
@@ -12,6 +18,10 @@ wt_glean_ap(x = NULL, input_dir, purpose = c("quality", "abiotic", "biotic"))
 \item{input_dir}{Character; A folder path where outputs from \code{`wt_run_ap()`} are stored.}
 
 \item{purpose}{Character; type of filtering you can choose from}
+
+\item{include_ind}{Logical; Include index results}
+
+\item{include_ldfcs}{Logical; Include LDFC results}
 }
 \value{
 Output will return the merged tibble with all information, the summary plots of the indices and the LDFC

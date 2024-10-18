@@ -76,14 +76,14 @@ wt_evaluate_classifier <- function(data, resolution = "recording", remove_specie
 
   #Tidy up the main report
   if(resolution=="task"){
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, location_id, recording_id, task_id, species_code) |>
       unique() |>
       mutate(human = 1)
   }
 
   if(resolution=="minute"){
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       mutate(minute = ifelse(start_s==0, 1, ceiling(start_s/60))) |>
       dplyr::select(project_id, location_id, recording_id, species_code, minute) |>
       unique() |>
@@ -91,7 +91,7 @@ wt_evaluate_classifier <- function(data, resolution = "recording", remove_specie
   }
 
   if(resolution=="recording"){
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, location_id, recording_id, species_code) |>
       unique() |>
       mutate(human = 1)
@@ -117,45 +117,12 @@ wt_evaluate_classifier <- function(data, resolution = "recording", remove_specie
   threshold <- seq(thresholds[1], thresholds[2], 1)
 
   #Calculate metrics
-  prf <- do.call(rbind, lapply(X=threshold, FUN=wt_calculate_prf, data=both, human_total=human_total))
+  prf <- do.call(rbind, lapply(X=threshold, FUN=.wt_calculate_prf, data=both, human_total=human_total))
 
   #return metrics
   return(prf)
 
 }
-
-#' Internal evaluation function
-#'
-#' @description Internal function to calculate precision, recall, and F-score for a given score threshold.
-#'
-#' @param data Output from the `wt_download_report()` function when you request the `main` and `birdnet` reports
-#' @param threshold A single numeric value for score threshold
-#' @param human_total The total number of detections in the gold standard, typically from human listening data (e.g., the main report)
-#'
-#' @import dplyr
-#' @export
-#'
-#' @return A vector of precision, recall, F-score, and threshold
-
-wt_calculate_prf <- local({
-  message_shown <- FALSE
-
-  function(threshold, data, human_total){
-    # Summarize
-    data_thresholded <- dplyr::filter(data, confidence >= threshold) |>
-      summarize(precision = sum(tp)/(sum(tp) + sum(fp)),
-                recall = sum(tp)/human_total) |>
-      mutate(fscore = (2*precision*recall)/(precision + recall),
-             threshold = threshold)
-
-    if(anyNA(data_thresholded$precision) && !message_shown){
-      message('No classifier detections for some higher selected thresholds; results will contain NAs')
-      message_shown <<- TRUE
-    }
-
-    return(data_thresholded)
-  }
-})
 
 #' Identify optimal threshold
 #'
@@ -250,7 +217,7 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
       ungroup()
 
     #Main report
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, location_id, recording_id, task_id, species_code) |>
       unique()
 
@@ -274,7 +241,7 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
       ungroup()
 
     #Main report
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, location_id, recording_id, species_code) |>
       unique()
 
@@ -297,7 +264,7 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
       ungroup()
 
     #Main report
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, location_id, species_code) |>
       unique()
 
@@ -320,7 +287,7 @@ wt_additional_species <- function(data, remove_species = TRUE, threshold = 50, r
       ungroup()
 
     #Main report
-    main <- suppressMessages(wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown"))) |>
+    main <- wt_tidy_species(data[[2]], remove=c("mammal", "amphibian", "abiotic", "insect", "human", "unknown")) |>
       dplyr::select(project_id, species_code) |>
       unique()
 

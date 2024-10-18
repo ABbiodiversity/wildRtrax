@@ -18,5 +18,5 @@ Useful links:
 
 }
 \author{
-Alex MacPhail \email{agmacpha@ualberta.ca} Marcus Becker \email{mabecker89@ualberta.ca}
+Alex MacPhail \email{agmacpha@ualberta.ca}
 }

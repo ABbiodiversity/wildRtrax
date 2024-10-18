@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{.make_x}
 \alias{.make_x}
-\title{Internal functions}
+\title{Internal function for QPAD offsets}
 \usage{
 .make_x(data, tz = "local", check_xy = TRUE)
 }

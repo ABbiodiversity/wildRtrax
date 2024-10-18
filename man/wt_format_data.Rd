@@ -4,12 +4,12 @@
 \alias{wt_format_data}
 \title{Format data for a specified portal}
 \usage{
-wt_format_data(input, format = "FWMIS")
+wt_format_data(input, format = c("FWMIS", "NABAT"))
 }
 \arguments{
-\item{input}{The report from \code{wt_download_report()}}
+\item{input}{A report containing locations from \code{wt_download_report()}}
 
-\item{format}{A format i.e. 'FWMIS'}
+\item{format}{A format i.e. 'FWMIS' or 'NABAT'}
 }
 \value{
 A tibble with the formatted report
