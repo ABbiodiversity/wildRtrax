@@ -7,7 +7,6 @@
 [![Codecov test coverage](https://codecov.io/gh/ABbiodiversity/wildRtrax/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ABbiodiversity/wildRtrax?branch=main)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13916882.svg)](https://doi.org/10.5281/zenodo.13916882)
 [![R-CMD-check](https://github.com/ABbiodiversity/wildRtrax/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ABbiodiversity/wildRtrax/actions/workflows/R-CMD-check.yaml)
->>>>>>> development
 <!-- badges: end -->
 
 ## Overview
