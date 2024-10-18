@@ -74,7 +74,8 @@ You can use the output from <code>`wt_audio_scanner()`</code> in the function, o
 <span>  fp_col <span class="op">=</span> <span class="va">file_path</span>,</span>
 <span>  audio_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">output_dir</span>,</span>
-<span>  path_to_ap <span class="op">=</span> <span class="st">"C:\\AP\\AnalysisPrograms.exe"</span></span>
+<span>  path_to_ap <span class="op">=</span> <span class="st">"C:\\AP\\AnalysisPrograms.exe"</span>,</span>
+<span>  delete_media <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -100,6 +101,10 @@ You can use the output from <code>`wt_audio_scanner()`</code> in the function, o
 
 <dt id="arg-path-to-ap">path_to_ap<a class="anchor" aria-label="anchor" href="#arg-path-to-ap"></a></dt>
 <dd><p>Character; file path to the AnalysisPrograms software package. Defaults to "C:\AP\AnalysisPrograms.exe".</p></dd>
+
+
+<dt id="arg-delete-media">delete_media<a class="anchor" aria-label="anchor" href="#arg-delete-media"></a></dt>
+<dd><p>Logical; when TRUE, removes the underlying sectioned wav files from the Towsey output. Leave to TRUE to save on space after runs.</p></dd>
 
 </dl></div>
     <div class="section level2">

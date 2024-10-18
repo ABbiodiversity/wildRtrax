@@ -146,7 +146,7 @@
 #'
 #' @keywords internal
 #'
-#' @import QPAD dplyr
+#' @import QPAD dplyr httr2
 #' @importFrom terra extract rast vect project
 #'
 #' @export
